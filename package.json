@@ -29,7 +29,7 @@
     "prettier-plugin-organize-imports": "^3.2.3",
     "ts-node": "^10.9.1",
     "tsc-esm-fix": "^2.20.27",
-    "typescript": "^5.2.2"
+    "typescript": "^5.6.3"
   },
   "engines": {
     "node": ">=18"
