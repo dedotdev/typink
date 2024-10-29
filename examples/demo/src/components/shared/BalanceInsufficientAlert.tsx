@@ -9,7 +9,7 @@ export default function BalanceInsufficientAlert() {
 
   const balance = useBalance(selectedAccount?.address);
 
-  if (balance === undefined || balance > 0n) return null;
+  if (balance === undefined || balance.free > 0n) return null;
 
   return (
     <Alert status='warning' mb={4}>

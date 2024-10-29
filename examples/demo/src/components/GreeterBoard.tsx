@@ -39,7 +39,7 @@ export default function GreetBoard() {
       return;
     }
 
-    if (balance === 0n) {
+    if (balance?.free === 0n) {
       toast.error('Balance insufficient to make transaction.');
       return;
     }

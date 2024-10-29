@@ -12,10 +12,12 @@ export interface Props {
   [prop: string]: any;
 }
 
+export type SubstrateAddress = string;
+
 export interface ContractDeployment {
   id: string;
   metadata: ContractMetadata | string;
-  address: string;
+  address: SubstrateAddress;
   network: string;
 }
 
@@ -40,7 +42,7 @@ export interface NetworkInfo {
 export type KeypairType = 'ed25519' | 'sr25519' | 'ecdsa' | 'ethereum';
 
 export interface InjectedAccount {
-  address: string;
+  address: SubstrateAddress;
   genesisHash?: string | null;
   name?: string;
   type?: KeypairType;

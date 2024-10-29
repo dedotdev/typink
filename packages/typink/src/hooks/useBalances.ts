@@ -1,16 +1,29 @@
 import { useState } from 'react';
 import { useAsync } from 'react-use';
 import { useTypink } from '../providers/index.js';
+import { SubstrateAddress } from '../types';
 
-export interface Balances {
-  [address: string]: {
-    free: bigint;
-    reserved: bigint;
-    frozen: bigint;
-  };
+export interface Balance {
+  free: bigint;
+  reserved: bigint;
+  frozen: bigint;
 }
 
-export function useBalances(accounts: string[]) {
+export interface Balances {
+  [address: SubstrateAddress]: Balance;
+}
+
+/**
+ * A custom React hook that fetches and manages balances for multiple Substrate addresses.
+ * 
+ * This hook uses the connected Substrate client to query the system accounts for the provided addresses.
+ * It updates the balances state whenever the client or addresses change.
+ * 
+ * @param addresses - An array of Substrate addresses to fetch balances for.
+ * @returns An object containing the balances for each provided address. The object keys are the addresses,
+ *          and the values are Balance objects containing free, reserved, and frozen amounts.
+ */
+export function useBalances(addresses: SubstrateAddress[]) {
   const [balances, setBalances] = useState<Balances>({});
   const { client } = useTypink();
 
@@ -21,15 +34,15 @@ export function useBalances(accounts: string[]) {
       return;
     }
 
-    return await client.query.system.account.multi(accounts, (balances) => {
+    return await client.query.system.account.multi(addresses, (balances) => {
       setBalances(
         balances.reduce((balances, accountInfo, currentIndex) => {
-          balances[accounts[currentIndex]] = accountInfo.data;
+          balances[addresses[currentIndex]] = accountInfo.data;
           return balances;
         }, {} as Balances),
       );
     });
-  }, [client, accounts]);
+  }, [client, addresses]);
 
   return balances;
 }
