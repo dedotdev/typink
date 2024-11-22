@@ -1,15 +1,15 @@
 import { createContext } from 'react';
-import {
-  ClientContextProps,
-  ClientProvider,
-  ClientProviderProps,
-  useClientContext,
-} from '../providers/ClientProvider.js';
-import { useWalletContext, WalletContextProps, WalletProvider } from '../providers/WalletProvider.js';
+import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
+import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
-import { useLocalStorage } from 'react-use';
+import {
+  useWalletSetup,
+  WalletSetupContextProps,
+  WalletSetupProvider,
+  WalletSetupProviderProps,
+} from './WalletSetupProvider.js';
 
-export interface TypinkContextProps extends ClientContextProps, WalletContextProps {
+export interface TypinkContextProps extends ClientContextProps, WalletSetupContextProps, WalletContextProps {
   deployments: ContractDeployment[];
   // TODO validate substrate address
   defaultCaller: SubstrateAddress;
@@ -20,17 +20,19 @@ export interface TypinkContextProps extends ClientContextProps, WalletContextPro
 
 export const TypinkContext = createContext<TypinkContextProps>({} as any);
 
-export interface TypinkProviderProps extends ClientProviderProps {
+export interface TypinkProviderProps extends ClientProviderProps, WalletSetupProviderProps {
   deployments: ContractDeployment[];
-  defaultCaller: string;
+  defaultCaller: SubstrateAddress;
 }
 
 function TypinkProviderWrapper({ children, deployments, defaultCaller }: TypinkProviderProps) {
-  const clientContext = useClientContext();
-  const walletContext = useWalletContext();
+  const clientContext = useClient();
+  const walletSetupContext = useWalletSetup();
+  const walletContext = useWallet();
 
   return (
-    <TypinkContext.Provider value={{ ...clientContext, ...walletContext, deployments, defaultCaller }}>
+    <TypinkContext.Provider
+      value={{ ...clientContext, ...walletSetupContext, ...walletContext, deployments, defaultCaller }}>
       {children}
     </TypinkContext.Provider>
   );
@@ -43,9 +45,11 @@ export function TypinkProvider({
   defaultNetworkId,
   cacheMetadata = false,
   supportedNetworks,
+  signer,
+  connectedAccount,
 }: TypinkProviderProps) {
   return (
-    <WalletProvider>
+    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount}>
       <ClientProvider
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}
@@ -54,6 +58,6 @@ export function TypinkProvider({
           {children}
         </TypinkProviderWrapper>
       </ClientProvider>
-    </WalletProvider>
+    </WalletSetupProvider>
   );
 }

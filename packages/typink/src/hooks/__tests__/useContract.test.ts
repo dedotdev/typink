@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react';
-import { useContract } from '../useContract';
-import { useTypink } from '../useTypink';
+import { useContract } from '../useContract.js';
+import { useTypink } from '../useTypink.js';
 import { Contract } from 'dedot/contracts';
-import { TypinkError } from '../../utils';
+import { TypinkError } from '../../utils/index.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { waitForNextUpdate } from './test-utils';
+import { waitForNextUpdate } from './test-utils.js';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),

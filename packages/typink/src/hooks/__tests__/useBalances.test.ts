@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useBalances } from '../useBalances';
-import { useTypink } from '../useTypink';
+import { useBalances } from '../useBalances.js';
+import { useTypink } from '../useTypink.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({

@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useInitializeClient } from '../hooks/internal/index.js';
-import { useWalletContext } from './WalletProvider.js';
 import { NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development, NetworkId } from '../networks/index.js';
+import { useWallet } from './WalletProvider.js';
 
-export interface ClientContextProps extends Props {
+export interface ClientContextProps {
   client?: ISubstrateClient<SubstrateApi[RpcVersion]>;
   ready: boolean;
   supportedNetworks: NetworkInfo[];
@@ -20,7 +20,7 @@ export interface ClientContextProps extends Props {
 
 export const ClientContext = createContext<ClientContextProps>({} as any);
 
-export const useClientContext = () => {
+export const useClient = () => {
   return useContext(ClientContext);
 };
 
@@ -40,7 +40,7 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
-  const { signer } = useWalletContext();
+  const { signer } = useWallet();
 
   const initialNetworkId = useMemo<NetworkId>(() => {
     return (defaultNetworkId || supportedNetworks[0].id) as NetworkId;

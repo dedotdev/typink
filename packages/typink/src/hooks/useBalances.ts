@@ -15,10 +15,10 @@ export interface Balances {
 
 /**
  * A custom React hook that fetches and manages balances for multiple Substrate addresses.
- * 
+ *
  * This hook uses the connected Substrate client to query the system accounts for the provided addresses.
  * It updates the balances state whenever the client or addresses change.
- * 
+ *
  * @param addresses - An array of Substrate addresses to fetch balances for.
  * @returns An object containing the balances for each provided address. The object keys are the addresses,
  *          and the values are Balance objects containing free, reserved, and frozen amounts.
