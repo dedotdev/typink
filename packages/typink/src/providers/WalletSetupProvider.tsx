@@ -57,7 +57,11 @@ export function WalletSetupProvider({
   }, [initialSigner]);
 
   useEffect(() => {
-    setConnectedAccount(initialConnectedAccount);
+    if (initialConnectedAccount) {
+      setConnectedAccount(initialConnectedAccount);
+    } else {
+      removeConnectedAccount();
+    }
   }, [initialConnectedAccount]);
 
   useEffect(() => {
@@ -84,7 +88,7 @@ export function WalletSetupProvider({
 
       unsub = injected.accounts.subscribe(setAccounts);
 
-      setSigner(injected.signer);
+      setSigner(injected.signer as any);
     })();
 
     return () => unsub && unsub();
