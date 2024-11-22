@@ -6,5 +6,5 @@
 yarn dev
 
 # From the project root folder
-yarn workspace dapp dev
+yarn workspace demo dev
 ```
