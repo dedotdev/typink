@@ -1,0 +1,48 @@
+{
+  "name": "demo-subconnect",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "typink": "npx dedot typink -m ./src/contracts/artifacts/psp22/psp22.contract -o ./src/contracts/types && npx dedot typink -m ./src/contracts/artifacts/greeter/greeter.contract -o ./src/contracts/types"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.6.1",
+    "@chakra-ui/system": "^2.6.1",
+    "@dedot/chaintypes": "^0.31.0",
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@subwallet-connect/ledger-polkadot": "^1.0.7",
+    "@subwallet-connect/polkadot-js": "^1.0.7",
+    "@subwallet-connect/react": "^1.0.7",
+    "@subwallet-connect/subwallet-polkadot": "^1.0.7",
+    "@subwallet-connect/talisman": "^1.0.7",
+    "dedot": "^0.6.0",
+    "framer-motion": "^10.12.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-toastify": "^9.1.1",
+    "react-use": "^17.5.0",
+    "svelte-qrcode": "^1.0.1",
+    "typink": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "typescript": "^5.5.2",
+    "vite": "^5.4.8",
+    "vite-tsconfig-paths": "^5.0.1"
+  }
+}
