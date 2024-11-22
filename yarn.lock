@@ -7583,6 +7583,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@topoconfig/extends@npm:^0.16.2":
+  version: 0.16.2
+  resolution: "@topoconfig/extends@npm:0.16.2"
+  bin:
+    xtends: target/esm/cli.mjs
+  checksum: 10/319348cf05a2994eaf481266cd7e66c464b588cdf57a1a6e083f7ea562f5d29f9d4094abd4e1f04838fd7ffbae884e8ad65d6a8eb38d8b95d869c92ef7276954
+  languageName: node
+  linkType: hard
+
 "@trivago/prettier-plugin-sort-imports@npm:^4.1.1":
   version: 4.3.0
   resolution: "@trivago/prettier-plugin-sort-imports@npm:4.3.0"
@@ -14236,7 +14245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
   dependencies:
@@ -15140,19 +15149,6 @@ __metadata:
     merge2: "npm:^1.4.1"
     slash: "npm:^3.0.0"
   checksum: 10/288e95e310227bbe037076ea81b7c2598ccbc3122d87abc6dab39e1eec309aa14f0e366a98cdc45237ffcfcbad3db597778c0068217dcb1950fef6249104e1b1
-  languageName: node
-  linkType: hard
-
-"globby@npm:^13.2.2":
-  version: 13.2.2
-  resolution: "globby@npm:13.2.2"
-  dependencies:
-    dir-glob: "npm:^3.0.1"
-    fast-glob: "npm:^3.3.0"
-    ignore: "npm:^5.2.4"
-    merge2: "npm:^1.4.1"
-    slash: "npm:^4.0.0"
-  checksum: 10/4494a9d2162a7e4d327988b26be66d8eab87d7f59a83219e74b065e2c3ced23698f68fb10482bf9337133819281803fb886d6ae06afbb2affa743623eb0b1949
   languageName: node
   linkType: hard
 
@@ -18378,13 +18374,6 @@ __metadata:
     next-tick: "npm:^1.1.0"
     timers-ext: "npm:^0.1.7"
   checksum: 10/b7abda74d1057878f3570c45995f24da8a4f8636e0e9a7c29a6709be2314bf40c7d78e3be93c0b1660ba419de5740fa5e447c400ab5df407ffbd236421066380
-  languageName: node
-  linkType: hard
-
-"meow@npm:^12.1.1":
-  version: 12.1.1
-  resolution: "meow@npm:12.1.1"
-  checksum: 10/8594c319f4671a562c1fef584422902f1bbbad09ea49cdf9bb26dc92f730fa33398dd28a8cf34fcf14167f1d1148d05a867e50911fc4286751a4fb662fdd2dc2
   languageName: node
   linkType: hard
 
@@ -24839,19 +24828,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsc-esm-fix@npm:^2.20.27":
-  version: 2.20.27
-  resolution: "tsc-esm-fix@npm:2.20.27"
+"tsc-esm-fix@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "tsc-esm-fix@npm:3.1.2"
   dependencies:
+    "@topoconfig/extends": "npm:^0.16.2"
     depseek: "npm:^0.4.1"
+    fast-glob: "npm:^3.3.2"
     fs-extra: "npm:^11.2.0"
-    globby: "npm:^13.2.2"
     json5: "npm:^2.2.3"
-    meow: "npm:^12.1.1"
-    tslib: "npm:^2.6.2"
+    type-flag: "npm:^3.0.0"
   bin:
-    tsc-esm-fix: target/es6/cli.mjs
-  checksum: 10/10216d35f90620d37a708d4b37cffa378a27ce8451bc0a31df31115dd01cd1416e79fd0826dd2105f579695653dc9356cc6bb6213c7edb102da28ffaff731385
+    tsc-esm-fix: target/esm/cli.mjs
+  checksum: 10/bccaf74aeae01d3cc2aedbbd628d809659027a594710886c48ed7cb01884e4f57d7130e1e5dfa0000cb238daa50683ed692609959572c0ddf687765eca3c1813
   languageName: node
   linkType: hard
 
@@ -25060,6 +25049,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-flag@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "type-flag@npm:3.0.0"
+  checksum: 10/1a9ddaba06355666ca5d26725604dd707d31dadf7536eb6e7e3c2520d84d773944b4e53f94da8b08bf9064be721a6b9ebbff65d524e5f03767a729966087fd32
+  languageName: node
+  linkType: hard
+
 "type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -25207,7 +25203,7 @@ __metadata:
     prettier: "npm:^3.3.3"
     prettier-plugin-organize-imports: "npm:^3.2.3"
     ts-node: "npm:^10.9.1"
-    tsc-esm-fix: "npm:^2.20.27"
+    tsc-esm-fix: "npm:^3.1.2"
     typescript: "npm:^5.2.2"
     vitest: "npm:^2.1.5"
   languageName: unknown
