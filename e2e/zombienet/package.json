@@ -8,7 +8,8 @@
   "dependencies": {
     "@dedot/chaintypes": "*",
     "@polkadot/keyring": "^13.2.3",
-    "typink": "workspace:*"
+    "typink": "workspace:*",
+    "dedot": "^0.6.0"
   },
   "devDependencies": {
     "@polkadot/types": "^14.3.1"
