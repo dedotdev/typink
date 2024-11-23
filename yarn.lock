@@ -26988,6 +26988,7 @@ __metadata:
     "@dedot/chaintypes": "npm:*"
     "@polkadot/keyring": "npm:^13.2.3"
     "@polkadot/types": "npm:^14.3.1"
+    dedot: "npm:^0.6.0"
     typink: "workspace:*"
   languageName: unknown
   linkType: soft
