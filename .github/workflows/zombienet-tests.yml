@@ -22,7 +22,6 @@ jobs:
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn build
-      - run: yarn zombienet-test-preps
       - name: Download executables
         run: |
           curl -L -O https://github.com/paritytech/zombienet/releases/download/v1.3.102/zombienet-linux-x64
