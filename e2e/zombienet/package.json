@@ -2,6 +2,9 @@
   "name": "zombienet",
   "author": "Thang Vu <thang@dedot.dev>",
   "private": true,
+  "scripts": {
+    "test": "vitest --watch=false"
+  },
   "dependencies": {
     "@dedot/chaintypes": "*",
     "@polkadot/keyring": "^13.2.3",

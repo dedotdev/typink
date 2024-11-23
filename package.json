@@ -5,7 +5,8 @@
   "packageManager": "yarn@4.3.1",
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "examples/*",
+    "e2e/*"
   ],
   "scripts": {
     "build": "yarn clean && npx lerna run build --no-private",

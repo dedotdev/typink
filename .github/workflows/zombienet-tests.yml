@@ -38,7 +38,7 @@ jobs:
           
           curl -L -O https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.7.0/polkadot-parachain
           chmod +x polkadot-parachain
-      - name: Run tests on small network
+      - name: Spawn network
         run: |
           export PATH=$(pwd):$PATH
           export RUST_BACKTRACE=full
@@ -47,3 +47,5 @@ jobs:
           chmod +x ./e2e/zombienet/wait-for-port.sh
           ./e2e/zombienet/wait-for-port.sh 9933 30
           ./e2e/zombienet/wait-for-port.sh 9944 30
+      - name: Run tests
+        run: yarn workspace zombienet run test

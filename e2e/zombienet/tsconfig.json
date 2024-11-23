@@ -6,14 +6,14 @@
     "rootDir": "src",
     "declarationDir": "dist",
     "paths": {
-      "dedot": ["../packages/dedot/src"],
-      "dedot/*": ["../packages/dedot/src/*"]
+      "typink": ["../../packages/typink/src"],
+      "typink/*": ["../../packages/typink/src/*"]
     }
   },
   "include": ["src/**/*"],
   "references": [
     {
-      "path": "../packages/dedot/tsconfig.json"
+      "path": "../../packages/typink/tsconfig.json"
     }
   ]
 }
