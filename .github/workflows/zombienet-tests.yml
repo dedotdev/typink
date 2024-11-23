@@ -48,4 +48,4 @@ jobs:
           ./e2e/zombienet/wait-for-port.sh 9933 30
           ./e2e/zombienet/wait-for-port.sh 9944 30
       - name: Run tests
-        run: yarn workspace zombienet run test
+        run: yarn workspace zombienet run e2e:test
