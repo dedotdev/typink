@@ -10,7 +10,7 @@
     "build": "tsc --project tsconfig.build.json && yarn copy",
     "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
     "copy": "cp -R ./src/* ./dist",
-    "test": "vitest --watch=false"
+    "test": "npx vitest --watch=false"
   },
   "dependencies": {
     "dedot": "^0.6.0",
