@@ -36,7 +36,7 @@
       "collator": {
         "name": "collator-0",
         "command": "polkadot-parachain",
-        "args": ["--rpc-port", "9944"]
+        "rpc_port": 9944
       }
     }
   ]
