@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest';
 import { DedotClient, WsProvider } from 'dedot';
 
-const client = await DedotClient.new(new WsProvider('http://localhost:9944'));
+const client = await DedotClient.new(new WsProvider('ws://localhost:9944'));
 
 describe('Contracts', () => {
   it('should get current block number', async () => {
