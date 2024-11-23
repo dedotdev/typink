@@ -44,6 +44,6 @@ jobs:
           export RUST_BACKTRACE=full
           ./zombienet-linux-x64 -p native spawn ./e2e/zombienet/networks.json &
           
-          chmod +x ./wait-for-port.sh
+          chmod +x ./e2e/zombienet/wait-for-port.sh
           ./e2e/zombienet/wait-for-port.sh 9933 30
           ./e2e/zombienet/wait-for-port.sh 9944 30
