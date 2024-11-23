@@ -42,4 +42,11 @@ jobs:
         run: |
           export PATH=$(pwd):$PATH
           export RUST_BACKTRACE=full
-          ./zombienet-linux-x64 -p native spawn ./e2e/zombienet/networks.json
+          ./zombienet-linux-x64 -p native spawn ./networks.json &
+          
+          chmod +x ./wait-for-port.sh
+          ./wait-for-port.sh 9933 30
+          ./wait-for-port.sh 9944 30
+          
+        working-directory: e2e/zombienet
+

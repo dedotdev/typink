@@ -7,11 +7,13 @@
     "nodes": [
       {
         "name": "alice",
-        "validator": true
+        "validator": true,
+        "ws_port": 9933
       },
       {
         "name": "bob",
-        "validator": true
+        "validator": true,
+        "ws_port": 9934
       }
     ],
     "genesis": {
@@ -36,6 +38,17 @@
           "count": 3,
           "name": "collator",
           "command": "polkadot-parachain"
+        }
+      ],
+      "nodes": [
+        {
+          "ws_port": 9944
+        },
+        {
+          "ws_port": 9945
+        },
+        {
+          "ws_port": 9946
         }
       ]
     }
