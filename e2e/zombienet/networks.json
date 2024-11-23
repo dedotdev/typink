@@ -33,22 +33,10 @@
     {
       "id": 2000,
       "chain": "contracts-rococo-dev",
-      "collator_groups": [
+      "collator": [
         {
-          "count": 3,
-          "name": "collator",
-          "command": "polkadot-parachain"
-        }
-      ],
-      "nodes": [
-        {
-          "ws_port": 9944
-        },
-        {
-          "ws_port": 9945
-        },
-        {
-          "ws_port": 9946
+          "name": "collator-0",
+          "command_with_args": "polkadot-parachain --ws-port 9944"
         }
       ]
     }
