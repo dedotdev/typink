@@ -2,7 +2,7 @@ import { afterAll, beforeAll } from 'vitest';
 import { DedotClient, WsProvider } from 'dedot';
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
-import { BOB } from 'utils';
+import { BOB } from './utils';
 
 const CONTRACTS_NODE_ENDPOINT = 'ws://127.0.0.1:9944';
 
