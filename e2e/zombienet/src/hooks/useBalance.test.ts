@@ -1,7 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBalance } from 'typink';
-import { ALICE, BOB, wrapper } from '../utils';
+import { ALICE, wrapper } from '../utils';
 
 describe('useBalance', () => {
   it('should load balance properly', async () => {
@@ -32,8 +32,8 @@ describe('useBalance', () => {
 
     const aliceBalance = result.current;
 
-    // Change the address to BOB
-    rerender({ address: '5DFdEZVVJyT7Bz1XMznaXxPeRUTfNn2mhbKmzMnKdMfFpECD' });
+    const address = '5DFdEZVVJyT7Bz1XMznaXxPeRUTfNn2mhbKmzMnKdMfFpECD';
+    rerender({ address });
 
     // Initially, the balance should be undefined again
     expect(result.current).toBeUndefined();
@@ -52,7 +52,7 @@ describe('useBalance', () => {
     const { result } = renderHook(() => useBalance('invalid_address'), { wrapper });
 
     // The balance should remain undefined
-    await vi.waitFor(
+    await waitFor(
       () => {
         expect(result.current).toBeUndefined();
       },
