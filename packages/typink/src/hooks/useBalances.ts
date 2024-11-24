@@ -27,8 +27,10 @@ export function useBalances(addresses: SubstrateAddress[]) {
   const [balances, setBalances] = useState<Balances>({});
   const { client } = useTypink();
 
+  // TODO filter out invalid addresses
+
   useEffect(() => {
-    if (!client) {
+    if (!client || addresses.length === 0) {
       setBalances({});
 
       return;
