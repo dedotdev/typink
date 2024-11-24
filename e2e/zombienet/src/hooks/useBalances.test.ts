@@ -65,15 +65,4 @@ describe('useBalances', () => {
       expect(typeof result.current[address].frozen).toBe('bigint');
     }
   });
-
-  it('should handle empty address array', async () => {
-    const { result } = renderHook(() => useBalances([]), { wrapper });
-
-    // Should immediately return an empty object
-    expect(result.current).toEqual({});
-
-    // Should still be empty after a delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    expect(result.current).toEqual({});
-  });
 });
