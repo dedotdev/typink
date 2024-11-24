@@ -41,8 +41,8 @@ describe('useBalances', () => {
     });
 
     expect(result.current[ALICE]).toBeDefined();
+    expect(result.current[BOB]).toBeDefined();
     expect(result.current[CHARLIE]).toBeDefined();
-    expect(result.current[ALICE]).toBeUndefined();
   });
 
   // it('should return correct balance properties for multiple addresses', async () => {
