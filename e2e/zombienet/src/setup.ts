@@ -15,12 +15,15 @@ beforeAll(async () => {
   const aliceKeypair = new Keyring({ type: 'sr25519' }).addFromUri('//Alice');
 
   // just to make sure ALICE & BOB balances are different!
-  await new Promise<void>((resolve) => {
-    client.tx.balances.transferKeepAlive(BOB, 1_000_000_000_000n).signAndSend(aliceKeypair, ({ status }) => {
-      if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
-        resolve();
-      }
-    });
+  await new Promise<void>((resolve, reject) => {
+    client.tx.balances
+      .transferKeepAlive('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty', 1_000_000_000_000n)
+      .signAndSend(aliceKeypair, ({ status }) => {
+        if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
+          resolve();
+        }
+      })
+      .catch(reject);
   });
 
   global.client = client;
