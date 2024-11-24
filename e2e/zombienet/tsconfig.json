@@ -6,7 +6,6 @@
     "rootDir": "src",
     "declarationDir": "dist",
     "paths": {
-      "@/*": ["./*"],
       "typink": ["../../packages/typink/src"],
       "typink/*": ["../../packages/typink/src/*"]
     },
