@@ -21,29 +21,29 @@ describe('useBalances', () => {
     expect(result.current[BOB].free).toBeGreaterThan(0n);
   });
 
-  // it('should update balances when addresses change', async () => {
-  //   const { result, rerender } = renderHook(({ addresses }) => useBalances(addresses), {
-  //     wrapper,
-  //     initialProps: { addresses: [ALICE, BOB] },
-  //   });
-  //
-  //   // Wait for initial balances to be fetched
-  //   await waitFor(() => {
-  //     expect(Object.keys(result.current).length).toBe(2);
-  //   });
-  //
-  //   // Change addresses
-  //   rerender({ addresses: [ALICE, BOB, CHARLIE] });
-  //
-  //   // Wait for new balances to be fetched
-  //   await waitFor(() => {
-  //     expect(Object.keys(result.current).length).toBe(3);
-  //   });
-  //
-  //   expect(result.current[ALICE]).toBeDefined();
-  //   expect(result.current[CHARLIE]).toBeDefined();
-  //   expect(result.current[ALICE]).toBeUndefined();
-  // });
+  it('should update balances when addresses change', async () => {
+    const { result, rerender } = renderHook(({ addresses }) => useBalances(addresses), {
+      wrapper,
+      initialProps: { addresses: [ALICE, BOB] },
+    });
+
+    // Wait for initial balances to be fetched
+    await waitFor(() => {
+      expect(Object.keys(result.current).length).toBe(2);
+    });
+
+    // Change addresses
+    rerender({ addresses: [ALICE, BOB, CHARLIE] });
+
+    // Wait for new balances to be fetched
+    await waitFor(() => {
+      expect(Object.keys(result.current).length).toBe(3);
+    });
+
+    expect(result.current[ALICE]).toBeDefined();
+    expect(result.current[CHARLIE]).toBeDefined();
+    expect(result.current[ALICE]).toBeUndefined();
+  });
 
   // it('should return correct balance properties for multiple addresses', async () => {
   //   const addresses = [ALICE, BOB, CHARLIE];
