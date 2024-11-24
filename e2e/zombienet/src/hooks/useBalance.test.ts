@@ -33,7 +33,7 @@ describe('useBalance', () => {
     const aliceBalance = result.current;
 
     // Change the address to BOB
-    rerender({ address: BOB });
+    rerender({ address: '5DFdEZVVJyT7Bz1XMznaXxPeRUTfNn2mhbKmzMnKdMfFpECD' });
 
     // Initially, the balance should be undefined again
     expect(result.current).toBeUndefined();
@@ -44,6 +44,7 @@ describe('useBalance', () => {
     });
 
     // BOB's balance should be different from ALICE's
+    expect(result.current?.free).toEqual(0n);
     expect(result.current).not.toEqual(aliceBalance);
   });
 
