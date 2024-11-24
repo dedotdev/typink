@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useAsync } from 'react-use';
+import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { SubstrateAddress } from '../types.js';
+import { Unsub } from 'dedot/types';
 
 export interface Balance {
   free: bigint;
@@ -27,21 +27,38 @@ export function useBalances(addresses: SubstrateAddress[]) {
   const [balances, setBalances] = useState<Balances>({});
   const { client } = useTypink();
 
-  useAsync(async () => {
+  useEffect(() => {
     if (!client) {
       setBalances({});
 
       return;
     }
 
-    return await client.query.system.account.multi(addresses, (balances) => {
-      setBalances(
-        balances.reduce((balances, accountInfo, currentIndex) => {
-          balances[addresses[currentIndex]] = accountInfo.data;
-          return balances;
-        }, {} as Balances),
-      );
-    });
+    let done = false;
+    let unsub: Unsub;
+
+    client.query.system.account
+      .multi(addresses, (balances) => {
+        setBalances(
+          balances.reduce((balances, accountInfo, currentIndex) => {
+            balances[addresses[currentIndex]] = accountInfo.data;
+            return balances;
+          }, {} as Balances),
+        );
+      })
+      .then((x) => {
+        if (done) {
+          x().catch(console.error);
+        } else {
+          unsub = x;
+        }
+      })
+      .catch(console.error); // TODO should show exception for the wrapper component to handle
+
+    return () => {
+      done = true;
+      unsub && unsub();
+    };
   }, [client, addresses]);
 
   return balances;
