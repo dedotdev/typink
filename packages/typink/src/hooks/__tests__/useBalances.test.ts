@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useBalances } from '../useBalances.js';
 import { useTypink } from '../useTypink.js';
 
@@ -29,10 +29,9 @@ describe('useBalances', () => {
 
     const { result } = renderHook(() => useBalances(mockAddresses));
 
-    // Wait for the next update
-    await act(async () => {});
-
-    expect(result.current).toEqual({});
+    await waitFor(() => {
+      expect(result.current).toEqual({});
+    });
   });
 
   it('should fetch and return balances for given addresses', async () => {
@@ -43,13 +42,17 @@ describe('useBalances', () => {
 
     (useTypink as ReturnType<typeof vi.fn>).mockReturnValue({ client: mockClient });
     mockClient.query.system.account.multi.mockImplementation((addresses, callback) => {
-      callback(mockBalances);
+      return new Promise<void>((resolve) => {
+        callback(mockBalances);
+        resolve();
+      });
     });
 
     const { result } = renderHook(() => useBalances(mockAddresses));
 
-    // Wait for the next update
-    await act(async () => {});
+    await waitFor(() => {
+      expect(Object.keys(result.current).length).toBe(2);
+    });
 
     expect(result.current).toEqual({
       address1: { free: 100n, reserved: 10n, frozen: 5n },
@@ -72,18 +75,25 @@ describe('useBalances', () => {
     (useTypink as ReturnType<typeof vi.fn>).mockReturnValue({ client: mockClient });
     mockClient.query.system.account.multi
       .mockImplementationOnce((addresses, callback) => {
-        callback(initialBalances);
+        return new Promise<void>((resolve) => {
+          callback(initialBalances);
+          resolve();
+        });
       })
       .mockImplementationOnce((addresses, callback) => {
-        callback(updatedBalances);
+        return new Promise<void>((resolve) => {
+          callback(updatedBalances);
+          resolve();
+        });
       });
 
     const { result, rerender } = renderHook((props) => useBalances(props), {
       initialProps: mockAddresses,
     });
 
-    // Wait for the initial update
-    await act(async () => {});
+    await waitFor(() => {
+      expect(Object.keys(result.current).length).toBe(2);
+    });
 
     expect(result.current).toEqual({
       address1: { free: 100n, reserved: 10n, frozen: 5n },
@@ -93,8 +103,9 @@ describe('useBalances', () => {
     // Update addresses
     rerender(['address1', 'address2', 'address3']);
 
-    // Wait for the next update
-    await act(async () => {});
+    await waitFor(() => {
+      expect(Object.keys(result.current).length).toBe(3);
+    });
 
     expect(result.current).toEqual({
       address1: { free: 300n, reserved: 30n, frozen: 15n },
