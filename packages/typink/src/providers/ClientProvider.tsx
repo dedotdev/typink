@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useInitializeClient } from '../hooks/internal/index.js';
-import { NetworkInfo, Props } from '../types.js';
+import { NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion } from 'dedot/types';
 import { assert } from 'dedot/utils';
-import { development, NetworkId } from '../networks/index.js';
+import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
 
 export interface ClientContextProps {
@@ -69,7 +69,7 @@ export function ClientProvider({
         client,
         ready,
         network,
-        networkId: networkId as NetworkId,
+        networkId,
         setNetworkId,
         cacheMetadata,
         supportedNetworks,

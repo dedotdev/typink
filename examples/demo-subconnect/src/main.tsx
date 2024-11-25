@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
-import { alephZeroTestnet, development, NetworkId, popTestnet, TypinkProvider } from 'typink';
+import { alephZeroTestnet, development, popTestnet, TypinkProvider } from 'typink';
 import { useConnectWallet, Web3OnboardProvider } from '@subwallet-connect/react';
 import { onboardWallets } from '@/onboard-wallets.ts';
 import { AppProvider, useApp } from '@/providers/AppProvider.tsx';
@@ -25,7 +25,7 @@ function TypinApp() {
       deployments={deployments}
       defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORK}
-      defaultNetworkId={NetworkId.POP_TESTNET}
+      defaultNetworkId={popTestnet.id}
       cacheMetadata={true}
       signer={wallet?.signer}
       connectedAccount={connectedAccount}>

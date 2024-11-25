@@ -26,8 +26,10 @@ export enum JsonRpcApi {
   NEW = 'new',
 }
 
+export type NetworkId = string;
+
 export interface NetworkInfo {
-  id: string;
+  id: NetworkId;
   name: string;
   logo: string;
   provider: string;

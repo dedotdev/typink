@@ -4,14 +4,14 @@ import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { NetworkId, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
+import { alephZeroTestnet, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { ConnectWalletButton } from '@/components/shared/ConnectWalletButton.tsx';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
   const { defaultCaller, connectedAccount, networkId } = useTypink();
-  const mintable = useMemo(() => networkId === NetworkId.ALEPHZERO_TESTNET, [networkId]);
+  const mintable = useMemo(() => networkId === alephZeroTestnet.id, [networkId]);
   const mintTx = useContractTx(contract, 'psp22MintableMint');
 
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
