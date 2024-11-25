@@ -49,8 +49,6 @@ describe('useBalances', () => {
     const addresses = [ALICE, BOB, CHARLIE];
     const { result } = renderHook(() => useBalances(addresses), { wrapper });
 
-    console.log('addresses', addresses, result.current);
-
     await waitFor(() => {
       expect(Object.keys(result.current).length).toBe(3);
     });
