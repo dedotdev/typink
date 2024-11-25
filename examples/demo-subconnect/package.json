@@ -27,7 +27,7 @@
     "framer-motion": "^10.12.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-toastify": "^9.1.1",
+    "react-toastify": "^10.0.6",
     "react-use": "^17.5.0",
     "svelte-qrcode": "^1.0.1",
     "typink": "workspace:*"
