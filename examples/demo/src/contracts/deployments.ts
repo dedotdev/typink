@@ -7,6 +7,8 @@ export enum ContractId {
   PSP22 = 'psp22',
 }
 
+export { greeterMetadata, psp22Metadata };
+
 export const greeterDeployments: ContractDeployment[] = [
   {
     id: ContractId.GREETER,

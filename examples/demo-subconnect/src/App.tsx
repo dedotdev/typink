@@ -20,7 +20,7 @@ function App() {
   return (
     <Flex direction='column' minHeight='100vh'>
       <MainHeader />
-      <Box maxWidth='container.md' mx='auto' my={4} px={4} flex={1} w='full'>
+      <Box maxWidth='760px' mx='auto' my={4} px={4} flex={1} w='full'>
         <BalanceInsufficientAlert />
         <Tabs index={index} onChange={handleTabsChange}>
           <TabList>
