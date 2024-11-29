@@ -22,7 +22,7 @@ type UseContractTxReturnType<
 > = {
   signAndSend(
     parameters: {
-      txOptions?: ContractTxOptions;
+      txOptions?: Partial<ContractTxOptions>;
       callback?: (result: ISubmittableResult) => void;
       // TODO status callback, signer option
     } & Args<Pop<Parameters<T['tx'][M]>>>,
