@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useAsync } from 'react-use';
+import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ContractMetadata, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
+import { useDeepDeps } from './internal/useDeepDeps';
 
 export function useRawContract<T extends GenericContractApi = GenericContractApi>(
   metadata?: string | ContractMetadata,
@@ -11,7 +11,9 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
   const { client, defaultCaller, connectedAccount } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
 
-  useAsync(async () => {
+  const deps = useDeepDeps([client, metadata, address, connectedAccount?.address, defaultCaller, options]);
+
+  useEffect(() => {
     if (!client || !metadata || !address) {
       if (contract) {
         setContract(undefined);
@@ -31,7 +33,7 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
         },
       ),
     );
-  }, [client, metadata, address, connectedAccount?.address, defaultCaller]);
+  }, deps);
 
   return {
     contract,

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRefresher } from './internal/index.js';
 import { Args, OmitNever, Pop } from '../types.js';
 import { Contract, ContractCallOptions, GenericContractApi } from 'dedot/contracts';
 import { useTypink } from './useTypink.js';
 import { Unsub } from 'dedot/types';
-import deepEqual from 'fast-deep-equal/react.js';
+import { useDeepDeps } from './internal/useDeepDeps';
 
 type ContractQuery<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['query']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -36,12 +36,7 @@ export function useContractQuery<
   const { refresh, counter } = useRefresher();
 
   const { contract, fn, args = [], options } = parameters;
-
-  const depsRef = useRef<any[] | undefined>(undefined);
-  const currentDeps = [contract, fn, args, options, counter];
-  if (!depsRef.current || !deepEqual(depsRef.current, currentDeps)) {
-    depsRef.current = currentDeps;
-  }
+  const deps = useDeepDeps([contract, fn, args, options, counter]);
 
   useEffect(() => {
     let mounted = true;
@@ -72,7 +67,7 @@ export function useContractQuery<
     return () => {
       mounted = false;
     };
-  }, depsRef.current);
+  }, deps);
 
   return {
     isLoading,

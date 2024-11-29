@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
 import { TypinkError } from '../utils/index.js';
+import { useDeepDeps } from './internal/useDeepDeps';
 
 export type UseContract<T extends GenericContractApi = GenericContractApi> = {
   contract?: Contract<T>;
@@ -13,6 +14,8 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
 ): UseContract<T> {
   const { deployments, client, networkId, connectedAccount, defaultCaller } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
+
+  const deps = useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]);
 
   useEffect(() => {
     if (!client || !networkId) {
@@ -36,7 +39,7 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
     );
 
     setContract(contract);
-  }, [client, networkId, connectedAccount?.address, defaultCaller]);
+  }, deps);
 
   return {
     contract,
