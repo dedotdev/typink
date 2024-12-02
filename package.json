@@ -39,7 +39,7 @@
   },
   "resolutions": {
     "@polkadot/keyring": "^13.2.3",
-    "@polkadot/types": "^13.2.3",
+    "@polkadot/types": "^15.0.1",
     "@polkadot/util-crypto": "^13.2.3"
   },
   "engines": {
