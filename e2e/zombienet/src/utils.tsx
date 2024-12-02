@@ -33,19 +33,15 @@ export const devPairs = () => {
 export const transferNativeBalance = async (from: KeyringPair, to: string, value: bigint): Promise<void> => {
   const defer = deferred<void>();
 
-  const tx = client.tx.balances.transferKeepAlive(to, value); // prettier-end-here
+  await client.tx.balances
+    .transferKeepAlive(to, value) // prettier-end-here
+    .signAndSend(from, async ({ status }) => {
+      console.log(`Transaction status:`, status.type);
 
-  await tx.sign(from);
-
-  console.log('Signature', tx.signature);
-
-  await tx.send(async ({ status }) => {
-    console.log(`Transaction status:`, status.type);
-
-    if (status.type === 'BestChainBlockIncluded') {
-      defer.resolve();
-    }
-  });
+      if (status.type === 'BestChainBlockIncluded') {
+        defer.resolve();
+      }
+    });
 
   return defer.promise;
 };
@@ -70,24 +66,20 @@ export const deployFlipperContract = async (salt?: string): Promise<string> => {
 
   const defer = deferred<string>();
 
-  const tx = deployer.tx.new(true, { gasLimit: gasRequired, salt }); // prettier-end-here;
+  await deployer.tx
+    .new(true, { gasLimit: gasRequired, salt }) // prettier-end-here;
+    .signAndSend(alice, async ({ status, events }) => {
+      console.log('Transaction status:', status.type);
 
-  await tx.sign(alice);
+      if (status.type === 'BestChainBlockIncluded') {
+        const instantiatedEvent = client.events.contracts.Instantiated.find(events);
 
-  console.log('Signature', tx.signature);
+        assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
 
-  await tx.send(async ({ status, events }) => {
-    console.log('Transaction status:', status.type);
-
-    if (status.type === 'BestChainBlockIncluded') {
-      const instantiatedEvent = client.events.contracts.Instantiated.find(events);
-
-      assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
-
-      const contractAddress = instantiatedEvent.palletEvent.data.contract.address();
-      defer.resolve(contractAddress);
-    }
-  });
+        const contractAddress = instantiatedEvent.palletEvent.data.contract.address();
+        defer.resolve(contractAddress);
+      }
+    });
 
   return defer.promise;
 };
