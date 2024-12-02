@@ -3,6 +3,7 @@ import { useTypink } from './useTypink.js';
 import { ContractDeployer, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
 import { ContractMetadata } from '@dedot/contracts/types';
 import { Hash } from '@dedot/codecs';
+import { useDeepDeps } from './internal/useDeepDeps.js';
 
 export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
   deployer?: ContractDeployer<T>;
@@ -16,6 +17,8 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 ): UseDeployer<T> {
   const { client, networkId, connectedAccount, defaultCaller } = useTypink();
   const [deployer, setDeployer] = useState<ContractDeployer<T>>();
+
+  const deps = useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]);
 
   useEffect(() => {
     if (!client || !networkId) {
@@ -34,7 +37,7 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
     );
 
     setDeployer(deployer);
-  }, [client, networkId, connectedAccount?.address, defaultCaller]);
+  }, deps);
 
   return {
     deployer,
