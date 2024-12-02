@@ -7,16 +7,14 @@ describe('useDeployer', () => {
   it('should load deployer properly', async () => {
     const { result } = renderHook(() => useDeployer(flipperV5Metadata, flipperV5Metadata.source.hash), { wrapper });
 
-    // Initially, the deployer should be undefined
-    expect(result.current).toBeUndefined();
+    // The deployer should be undefined
+    expect(result.current.deployer).toBeUndefined();
 
-    // Wait for the deployer to be fetched
     await waitFor(() => {
-      expect(result.current).toBeDefined();
+      expect(result.current.deployer).toBeDefined();
     });
 
-    // After fetching, the deployer should be a valid deployer
-    expect(result.current?.deployer).toBeDefined();
+    expect(result.current.deployer).toBeDefined();
   });
 
   it('should update deployer when defaultCaller changes', async () => {
@@ -28,26 +26,24 @@ describe('useDeployer', () => {
       },
     );
 
-    // Wait for ALICE's deployer to be fetched
+    // Wait for deployer to be fetched
     await waitFor(() => {
-      expect(result.current).toBeDefined();
+      expect(result.current.deployer).toBeDefined();
     });
 
-    const aliceDeployer = result.current;
+    const aliceDeployer = result.current.deployer;
 
     const address = '5DFdEZVVJyT7Bz1XMznaXxPeRUTfNn2mhbKmzMnKdMfFpECD';
     rerender({ address });
 
-    // Initially, the deployer should be undefined again
-    expect(result.current).toBeUndefined();
+    // The deployer should be undefined again
+    expect(result.current.deployer).toBeUndefined();
 
-    // Wait for BOB's deployer to be fetched
     await waitFor(() => {
-      expect(result.current).toBeDefined();
+      expect(result.current.deployer).toBeDefined();
     });
 
-    // BOB's deployer should be different from ALICE's
-    expect(result.current?.deployer).toBeDefined();
-    expect(result.current).not.toEqual(aliceDeployer);
+    expect(result.current.deployer).toBeDefined();
+    expect(result.current.deployer).not.toEqual(aliceDeployer);
   });
 });

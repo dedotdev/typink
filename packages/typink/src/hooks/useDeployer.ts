@@ -37,6 +37,10 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
     );
 
     setDeployer(deployer);
+
+    return () => {
+      setDeployer(undefined);
+    };
   }, deps);
 
   return {

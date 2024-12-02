@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer, useDeployerTx } from 'typink';
-import { ALICE, flipperV5Metadata, wrapper } from '../utils';
+import { flipperV5Metadata, wrapper } from '../utils';
 import { FlipperContractApi } from 'contracts/flipper';
 import { numberToHex } from 'dedot/utils';
-import { BytesLike } from 'dedot/codecs';
 
 describe('useDeployerTx', () => {
   it('should load deployerTx properly', async () => {
@@ -14,7 +13,7 @@ describe('useDeployerTx', () => {
     );
 
     await waitFor(() => {
-      expect(resultDeployer.current).toBeDefined();
+      expect(resultDeployer.current.deployer).toBeDefined();
     });
 
     const { deployer } = resultDeployer.current;
@@ -22,12 +21,11 @@ describe('useDeployerTx', () => {
     const { result: resultDeployerTx } = renderHook(() => useDeployerTx(deployer, 'new'), { wrapper });
 
     await waitFor(() => {
-      expect(resultDeployerTx.current).toBeDefined();
+      expect(resultDeployerTx.current.signAndSend).toBeDefined();
     });
 
-    expect(resultDeployerTx.current?.signAndSend).toBeDefined();
-    expect(resultDeployerTx.current?.inProgress).toEqual(false);
-    expect(resultDeployerTx.current?.inBestBlockProgress).toEqual(false);
+    expect(resultDeployerTx.current.inProgress).toEqual(false);
+    expect(resultDeployerTx.current.inBestBlockProgress).toEqual(false);
   });
 
   it('should sign and send tx', async () => {
@@ -37,7 +35,7 @@ describe('useDeployerTx', () => {
     );
 
     await waitFor(() => {
-      expect(resultDeployer.current).toBeDefined();
+      expect(resultDeployer.current.deployer).toBeDefined();
     });
 
     const { deployer } = resultDeployer.current;
@@ -45,12 +43,12 @@ describe('useDeployerTx', () => {
     const { result: resultDeployerTx } = renderHook(() => useDeployerTx(deployer, 'new'), { wrapper });
 
     await waitFor(() => {
-      expect(resultDeployerTx.current).toBeDefined();
+      expect(resultDeployerTx.current.signAndSend).toBeDefined();
     });
 
-    expect(resultDeployerTx.current?.signAndSend).toBeDefined();
-    expect(resultDeployerTx.current?.inProgress).toEqual(false);
-    expect(resultDeployerTx.current?.inBestBlockProgress).toEqual(false);
+    expect(resultDeployerTx.current.signAndSend).toBeDefined();
+    expect(resultDeployerTx.current.inProgress).toEqual(false);
+    expect(resultDeployerTx.current.inBestBlockProgress).toEqual(false);
 
     const salt = numberToHex(Date.now());
 
@@ -71,8 +69,8 @@ describe('useDeployerTx', () => {
         },
       });
 
-      expect(resultDeployerTx.current?.inProgress).toEqual(true);
-      expect(resultDeployerTx.current?.inBestBlockProgress).toEqual(true);
+      expect(resultDeployerTx.current.inProgress).toEqual(true);
+      expect(resultDeployerTx.current.inBestBlockProgress).toEqual(true);
     });
 
     expect(contractAddress).toBeDefined();
