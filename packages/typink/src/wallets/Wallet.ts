@@ -1,4 +1,4 @@
-import { InjectedWindow } from '../types';
+import { InjectedWindow } from '@polkadot/extension-inject/types';
 
 export interface WalletOptions {
   id: string;

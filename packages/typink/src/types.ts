@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { ContractMetadata } from 'dedot/contracts';
-import type { Signer as InjectedSigner } from '@polkadot/types/types';
 
 export type Pop<T extends any[]> = T extends [...infer U, any?] ? U : never;
 export type Args<T> = T extends [] ? { args?: [] | undefined } : { args: T };
@@ -50,33 +49,3 @@ export interface InjectedAccount {
   name?: string;
   type?: KeypairType;
 }
-
-type This = typeof globalThis;
-export type Unsubcall = () => void;
-
-export interface InjectedAccounts {
-  get: (anyType?: boolean) => Promise<InjectedAccount[]>;
-  subscribe: (cb: (accounts: InjectedAccount[]) => void | Promise<void>) => Unsubcall;
-}
-
-export interface InjectedExtensionInfo {
-  name: string;
-  version: string;
-}
-
-export interface Injected {
-  accounts: InjectedAccounts;
-  signer: InjectedSigner;
-}
-
-export interface InjectedWindowProvider {
-  connect?: (origin: string) => Promise<InjectedExtension>;
-  enable?: (origin: string) => Promise<Injected>;
-  version?: string;
-}
-
-export interface InjectedWindow extends This {
-  injectedWeb3: Record<string, InjectedWindowProvider>;
-}
-
-export type InjectedExtension = InjectedExtensionInfo & Injected;
