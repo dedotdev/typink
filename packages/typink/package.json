@@ -19,8 +19,8 @@
     "react-use": "^17.5.1"
   },
   "devDependencies": {
-    "@types/react": "^18.3.11",
-    "@polkadot/extension-inject": "^0.56.2"
+    "@polkadot/extension-inject": "^0.56.2",
+    "@types/react": "^18.3.11"
   },
   "publishConfig": {
     "access": "public",
