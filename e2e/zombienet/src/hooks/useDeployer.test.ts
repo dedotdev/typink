@@ -2,19 +2,22 @@ import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer } from 'typink';
 import { ALICE, BOB, flipperMetadata, wrapper } from '../utils';
+import { FlipperContractApi } from 'contracts/flipper';
 
 describe('useDeployer', () => {
   it('should load deployer properly', async () => {
-    const { result } = renderHook(() => useDeployer(flipperMetadata, flipperMetadata.source.hash), { wrapper });
-
-    // The deployer should be undefined
-    expect(result.current.deployer).toBeUndefined();
+    const { result } = renderHook(() => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!), { wrapper });
 
     await waitFor(() => {
       expect(result.current.deployer).toBeDefined();
     });
 
-    expect(result.current.deployer).toBeDefined();
+    // Try run to dry-run
+    const salt = '0xdeadbeef';
+    const dryRunResult = await result.current.deployer!.query.new(false, { salt });
+
+    expect(dryRunResult.address).toBeDefined();
+    expect(dryRunResult.raw.gasRequired).toBeDefined(); 
   });
 
   it('should update deployer when defaultCaller changes', async () => {
@@ -26,7 +29,6 @@ describe('useDeployer', () => {
       },
     );
 
-    // Wait for deployer to be fetched
     await waitFor(() => {
       expect(result.current.deployer).toBeDefined();
     });
@@ -35,14 +37,11 @@ describe('useDeployer', () => {
 
     rerender({ address: BOB });
 
-    // await waitFor(() => {
-    //   expect(result.current.deployer).toBeUndefined();
-    // });
-
     await waitFor(() => {
       expect(result.current.deployer).toBeDefined();
     });
 
-    expect(result.current.deployer).not.toEqual(aliceDeployer);
+    // Check if the deployer has been updated
+    expect(result.current.deployer?.options?.defaultCaller).not.toEqual(aliceDeployer?.options?.defaultCaller);
   });
 });

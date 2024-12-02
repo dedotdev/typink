@@ -7,14 +7,32 @@ import { ContractDeployer, parseRawMetadata } from 'dedot/contracts';
 import { assert, deferred } from 'dedot/utils';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { Signer, SignerPayloadJSON } from '@polkadot/types/types';
+import { TypeRegistry } from '@polkadot/types';
 
 await cryptoWaitReady();
 export const KEYRING = new Keyring({ type: 'sr25519' });
+export const ALICE_KEY = KEYRING.addFromUri('//Alice');
 export const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
 export const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
 export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
 
 export const flipperMetadata = parseRawMetadata(JSON.stringify(flipper));
+export const mockSigner = {
+  signPayload: async (payloadJSON: SignerPayloadJSON) => {
+    const registry = new TypeRegistry();
+    registry.setSignedExtensions(payloadJSON.signedExtensions);
+
+    // https://github.com/polkadot-js/extension/blob/master/packages/extension-base/src/background/RequestExtrinsicSign.ts#L18-L22
+    const payload = registry.createType('ExtrinsicPayload', payloadJSON, { version: payloadJSON.version });
+    const result = payload.sign(ALICE_KEY);
+
+    return {
+      id: Date.now(),
+      ...result,
+    };
+  },
+} as Signer;
 
 export const wrapper = ({ children }: Props) => (
   <TypinkProvider
@@ -22,7 +40,8 @@ export const wrapper = ({ children }: Props) => (
     defaultNetworkId={development.id}
     deployments={[]}
     defaultCaller={ALICE}
-    connectedAccount={{address: ALICE}}>
+    signer={mockSigner}
+    connectedAccount={{ address: ALICE }}>
     {children}
   </TypinkProvider>
 );

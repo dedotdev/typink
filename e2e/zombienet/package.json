@@ -11,10 +11,10 @@
     "@polkadot/util-crypto": "^13.2.3",
     "dedot": "^0.6.0",
     "happy-dom": "^15.11.7",
-    "typink": "workspace:*"
+    "typink": "workspace:*",
+    "@polkadot/types": "^15.0.1"
   },
   "devDependencies": {
-    "@polkadot/types": "^15.0.1"
   },
   "license": "MIT"
 }
