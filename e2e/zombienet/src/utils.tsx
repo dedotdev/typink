@@ -3,7 +3,7 @@ import Keyring from '@polkadot/keyring';
 import { FlipperContractApi } from './contracts/flipper';
 // @ts-ignore
 import * as flipper from './contracts/flipper_v5.json';
-import { ContractDeployer } from 'dedot/contracts';
+import { ContractDeployer, parseRawMetadata } from 'dedot/contracts';
 import { assert, deferred } from 'dedot/utils';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -14,12 +14,15 @@ export const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
 export const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
 export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
 
+export const flipperMetadata = parseRawMetadata(JSON.stringify(flipper));
+
 export const wrapper = ({ children }: Props) => (
   <TypinkProvider
     supportedNetworks={[development]}
     defaultNetworkId={development.id}
     deployments={[]}
-    defaultCaller={ALICE}>
+    defaultCaller={ALICE}
+    connectedAccount={{address: ALICE}}>
     {children}
   </TypinkProvider>
 );
