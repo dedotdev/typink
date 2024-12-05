@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { ContractDeployer, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
-import { ContractMetadata } from '@dedot/contracts/types';
+import { ContractMetadata } from '@dedot/contracts/types/index.js';
 import { Hash } from '@dedot/codecs';
 import { useDeepDeps } from './internal/useDeepDeps.js';
 

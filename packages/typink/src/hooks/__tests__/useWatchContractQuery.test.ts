@@ -1,9 +1,9 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { useWatchContractQuery } from '../useContractQuery';
+import { useWatchContractQuery } from '../useContractQuery.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contract } from 'dedot/contracts';
-import { waitForNextUpdate } from './test-utils';
-import { useTypink } from '../useTypink';
+import { waitForNextUpdate } from './test-utils.js';
+import { useTypink } from '../useTypink.js';
 
 // Mock the external dependencies
 vi.mock('react-use', () => ({

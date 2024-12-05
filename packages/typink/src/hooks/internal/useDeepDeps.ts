@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import deepEqual from 'fast-deep-equal/react';
+import deepEqual from 'fast-deep-equal/react.js';
 
 export function useDeepDeps(deps: any[]): any[] {
   const depsRef = useRef<any[] | undefined>(undefined);

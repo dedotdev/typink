@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { useDeepDeps } from '../useDeepDeps';
+import { useDeepDeps } from '../useDeepDeps.js';
 
 describe('useDeepDeps', () => {
   it('should return the same reference for identical primitive dependencies', () => {

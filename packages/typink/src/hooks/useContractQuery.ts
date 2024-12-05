@@ -4,7 +4,7 @@ import { Args, OmitNever, Pop } from '../types.js';
 import { Contract, ContractCallOptions, GenericContractApi } from 'dedot/contracts';
 import { useTypink } from './useTypink.js';
 import { Unsub } from 'dedot/types';
-import { useDeepDeps } from './internal/useDeepDeps';
+import { useDeepDeps } from './internal/useDeepDeps.js';
 
 type ContractQuery<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['query']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;

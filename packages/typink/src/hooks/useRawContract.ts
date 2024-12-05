@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ContractMetadata, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
-import { useDeepDeps } from './internal/useDeepDeps';
+import { useDeepDeps } from './internal/useDeepDeps.js';
 
 export function useRawContract<T extends GenericContractApi = GenericContractApi>(
   metadata?: string | ContractMetadata,

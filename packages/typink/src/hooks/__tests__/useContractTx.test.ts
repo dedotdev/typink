@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useContractTx } from '../useContractTx';
-import { useTypink } from '../useTypink';
+import { useContractTx } from '../useContractTx.js';
+import { useTypink } from '../useTypink.js';
 import { Contract } from 'dedot/contracts';
-import { waitForNextUpdate } from './test-utils';
+import { waitForNextUpdate } from './test-utils.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
