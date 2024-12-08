@@ -1,12 +1,11 @@
 import { SubstrateAddress } from 'src/types';
 import { useRawContract } from '../useRawContract.js';
-// @ts-ignore
-import * as psp22 from './contracts/psp22.json';
 import { Psp22ContractApi } from './contracts/psp22';
 import { useContractQuery } from '../useContractQuery.js';
 import { useTypink } from '../useTypink.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useAsync } from 'react-use';
 
 export function usePSP22Balance(parameters: {
   contractAddress: SubstrateAddress;
@@ -14,8 +13,22 @@ export function usePSP22Balance(parameters: {
   watch?: boolean;
 }) {
   const { defaultCaller, connectedAccount } = useTypink();
+  const [psp22Metadata, setPsp22Metadata] = useState<any>();
   const { contractAddress, address = connectedAccount?.address || defaultCaller, watch = false } = parameters;
-  const { contract } = useRawContract<Psp22ContractApi>(psp22 as any, contractAddress);
+  const { contract } = useRawContract<Psp22ContractApi>(psp22Metadata as any, contractAddress);
+
+  useAsync(async () => {
+    let mounted = true;
+    // @ts-ignore
+    const metadata = await import('./contracts/psp22.json');
+    if (mounted) {
+      setPsp22Metadata(metadata);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const result = useContractQuery({
     contract,
@@ -36,6 +49,7 @@ export function usePSP22Balance(parameters: {
       },
       [watch, address],
     ),
+    watch
   );
 
   return result;

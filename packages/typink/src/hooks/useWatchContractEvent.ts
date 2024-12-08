@@ -16,11 +16,12 @@ export function useWatchContractEvent<
   event: M,
   // remember to use `useCallback` for this callback :)
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
+  enabled: boolean = false
 ): void {
   const { client } = useTypink();
 
   useEffect(() => {
-    if (!client || !contract) return;
+    if (!client || !contract || !enabled) return;
 
     // handle unsubscribing when component unmounts
     let done = false;
@@ -45,5 +46,5 @@ export function useWatchContractEvent<
       unsub && unsub();
       done = true;
     };
-  }, [client, contract, onNewEvent]);
+  }, [client, contract, onNewEvent, enabled]);
 }
