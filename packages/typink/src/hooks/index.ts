@@ -1,4 +1,5 @@
 export * from './internal/index.js';
+export * from './psp22/index.js';
 export * from './useBalance.js';
 export * from './useBalances.js';
 export * from './useContract.js';

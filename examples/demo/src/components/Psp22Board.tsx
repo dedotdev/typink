@@ -1,18 +1,32 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Divider, Heading } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Heading,
+  Input,
+} from '@chakra-ui/react';
+import { useMemo, useRef, useState } from 'react';
 import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { alephZeroTestnet, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
+import { alephZeroTestnet, useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { defaultCaller, connectedAccount, networkId } = useTypink();
+  const { connectedAccount, networkId } = useTypink();
   const mintable = useMemo(() => networkId === alephZeroTestnet.id, [networkId]);
   const mintTx = useContractTx(contract, 'psp22MintableMint');
+  const inputAddressRef = useRef<HTMLInputElement>(null);
+  const [address, setAddress] = useState('');
+  const [watch, setWatch] = useState(false);
 
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
     contract,
@@ -42,11 +56,20 @@ export default function Psp22Board() {
     data: myBalance,
     isLoading: loadingBalance,
     refresh: refreshMyBalance,
-  } = useContractQuery({
-    contract,
-    fn: 'psp22BalanceOf',
-    args: [connectedAccount?.address || defaultCaller],
-  });
+  } = usePSP22Balance({ contractAddress: contract?.address?.address() });
+
+  const {
+    data: addressBalance,
+    isLoading: loadingAnotherBalance,
+    refresh: refreshAnotherBalance,
+  } = usePSP22Balance({ contractAddress: contract?.address?.address(), address, watch });
+
+  const doCheckBalance = () => {
+    if (!inputAddressRef.current) return;
+
+    setAddress(inputAddressRef.current.value);
+    refreshAnotherBalance();
+  };
 
   const mintNewToken = async () => {
     if (!tokenDecimal) return;
@@ -102,6 +125,24 @@ export default function Psp22Board() {
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
             {formatBalance(totalSupply, tokenDecimal)} {tokenSymbol}
           </PendingText>
+        </Box>
+        <Divider my={4} />
+        <Box>
+          Address: <Input ref={inputAddressRef} />
+          <Box mt={4}>
+            <Checkbox checked={watch} onChange={(e) => setWatch(e.target.checked)}>
+              Watch
+            </Checkbox>
+          </Box>
+          <Button mt={4} size='sm' onClick={doCheckBalance}>
+            Check Balance
+          </Button>
+          <Box mt={4}>
+            Balance:{' '}
+            <PendingText fontWeight='600' isLoading={loadingAnotherBalance}>
+              {formatBalance(addressBalance, tokenDecimal)} {tokenSymbol}
+            </PendingText>
+          </Box>
         </Box>
         <Divider my={4} />
         <Box>

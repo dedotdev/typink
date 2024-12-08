@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import NetworkSelection from '@/components/shared/NetworkSelection.tsx';
 import { Props } from 'typink';
 

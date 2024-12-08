@@ -27,13 +27,14 @@ export function useWatchContractEvent<
   contract: Contract<T> | undefined,
   event: M,
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
+  enabled: boolean = true,
 ): void {
   const { client } = useTypink();
 
-  const deps = useDeepDeps([client, contract, onNewEvent]);
+  const deps = useDeepDeps([client, contract, onNewEvent, enabled]);
 
   useEffect(() => {
-    if (!client || !contract) return;
+    if (!client || !contract || !enabled) return;
 
     // handle unsubscribing when component unmounts
     let done = false;
