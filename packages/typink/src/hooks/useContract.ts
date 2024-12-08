@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
 import { TypinkError } from '../utils/index.js';
-import { useDeepDeps } from './internal/useDeepDeps.js';
+import { useDeepDeps } from './internal/index.js';
 
 export type UseContract<T extends GenericContractApi = GenericContractApi> = {
   contract?: Contract<T>;
