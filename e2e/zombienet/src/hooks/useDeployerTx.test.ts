@@ -49,10 +49,9 @@ describe('useDeployerTx', () => {
     const salt = numberToHex(Date.now());
 
     // Wait for the contract to be deployed
-    const contractAddress: string = await new Promise(resolve => {
+    const contractAddress: string = await new Promise((resolve) => {
       resultDeployerTx.current.signAndSend({
         args: [true],
-        // @ts-ignore
         txOptions: { salt },
         callback: ({ status }, contractAddress) => {
           if (status.type === 'BestChainBlockIncluded') {

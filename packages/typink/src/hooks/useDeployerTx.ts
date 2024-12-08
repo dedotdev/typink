@@ -5,8 +5,9 @@ import { ContractDeployer, ContractTxOptions, GenericContractApi, isContractDisp
 import { IEventRecord, IRuntimeEvent, ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { TypinkError } from '../utils/index.js';
-import { ConstructorCallOptions, ConstructorTxOptions } from '@dedot/contracts/types';
+import { ConstructorCallOptions, ConstructorTxOptions } from '@dedot/contracts/types/index.js';
 import { Hash } from '@dedot/codecs';
+import { useDeepDeps } from './internal/index.js';
 
 type UseDeployerTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['constructorTx']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -18,7 +19,7 @@ type UseDeployerTxReturnType<
 > = {
   signAndSend(
     parameters: {
-      txOptions?: ConstructorTxOptions;
+      txOptions?: Partial<ConstructorTxOptions>;
       callback?: (
         result: ISubmittableResult,
         // deployed contract address, TODO we should have a more straight forward way to access this
@@ -31,6 +32,26 @@ type UseDeployerTxReturnType<
   inBestBlockProgress: boolean;
 };
 
+/**
+ * A hook for managing contract deployment transactions.
+ *
+ * This hook provides functionality to sign and send a contract deployment transaction,
+ * and tracks the progress of the transaction. It's similar to the useContractTx hook
+ * but specifically for contract deployment.
+ *
+ * @param {ContractDeployer<T> | undefined} deployer - The contract deployer instance
+ * @param {M} fn - The key of the constructor function to be called
+ *
+ * @returns {UseDeployerTxReturnType<T, M>} An object containing:
+ *   - signAndSend: A function to sign and send the deployment transaction
+ *   - inProgress: A boolean indicating if a transaction is in progress. It's set to true when
+ *     the transaction starts and turns back to false when the transaction status is finalized,
+ *     invalid, or dropped.
+ *   - inBestBlockProgress: A boolean indicating if the transaction is being processed but not
+ *     yet included in the best block. It's set to true when the transaction starts and turns
+ *     back to false when the transaction is included in the best block, which happens before
+ *     finalization.
+ */
 export function useDeployerTx<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof UseDeployerTx<T> = keyof UseDeployerTx<T>,
@@ -39,6 +60,8 @@ export function useDeployerTx<
   const [inBestBlockProgress, setInBestBlockProgress] = useState(false);
 
   const { connectedAccount } = useTypink();
+
+  const signAndSendDeps = useDeepDeps([deployer, connectedAccount, fn]);
 
   const signAndSend = useMemo(() => {
     return async (o: Parameters<UseDeployerTxReturnType<T>['signAndSend']>[0]) => {
@@ -86,7 +109,7 @@ export function useDeployerTx<
         setInBestBlockProgress(false);
       }
     };
-  }, [deployer, connectedAccount, fn]);
+  }, signAndSendDeps);
 
   return {
     signAndSend,

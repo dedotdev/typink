@@ -31,6 +31,25 @@ type UseContractTxReturnType<
   inBestBlockProgress: boolean;
 };
 
+/**
+ * A React hook for managing contract transactions.
+ *
+ * This hook provides functionality to sign and send transactions to a smart contract,
+ * and tracks the progress of the transaction.
+ *
+ * @param {Contract<T> | undefined} contract - The contract instance to interact with
+ * @param {M} fn - The name of the contract function to call
+ *
+ * @returns {UseContractTxReturnType<T, M>} An object containing:
+ *   - signAndSend: A function to sign and send the transaction
+ *   - inProgress: A boolean indicating if a transaction is in progress. It's set to true when 
+ *     the transaction starts and turns back to false when the transaction status is finalized, 
+ *     invalid, or dropped.
+ *   - inBestBlockProgress: A boolean indicating if the transaction is being processed but not 
+ *     yet included in the best block. It's set to true when the transaction starts and turns 
+ *     back to false when the transaction is included in the best block, which happens before 
+ *     finalization.
+ */
 export function useContractTx<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof UseContractTx<T> = keyof UseContractTx<T>,

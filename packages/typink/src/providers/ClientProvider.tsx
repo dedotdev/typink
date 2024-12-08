@@ -32,6 +32,15 @@ export interface ClientProviderProps extends Props {
 
 const DEFAULT_NETWORKS = [development];
 
+/**
+ * Manages the initialization and state of the Dedot client, network selection, and related configurations.
+ *
+ * @param {Object} props - The properties passed to the ClientProvider component.
+ * @param {React.ReactNode} props.children - The child components to be wrapped by the ClientProvider.
+ * @param {NetworkId} [props.defaultNetworkId] - The default network ID to use. If not provided, the first network in the supported networks list is used.
+ * @param {NetworkInfo[]} [props.supportedNetworks=DEFAULT_NETWORKS] - An array of supported network information objects.
+ * @param {boolean} [props.cacheMetadata=false] - Whether to cache metadata or not.
+ */
 export function ClientProvider({
   children,
   defaultNetworkId,
@@ -55,7 +64,6 @@ export function ClientProvider({
 
   assert(network, `NetworkId ${initialNetworkId} is not available`);
 
-  // TODO supports multi clients & lazy initialization
   const { ready, client } = useInitializeClient(network, { cacheMetadata });
 
   useEffect(() => {

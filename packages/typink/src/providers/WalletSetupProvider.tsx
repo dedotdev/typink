@@ -33,6 +33,15 @@ export const useWalletSetup = () => {
 
 export interface WalletSetupProviderProps extends WalletProviderProps {}
 
+/**
+ * WalletSetupProvider is a component that manages wallet setup and connection state.
+ * It provides context for wallet-related operations and wraps its children with necessary providers.
+ *
+ * @param props - The properties for the WalletSetupProvider component.
+ * @param props.children - The child components to be wrapped by this provider.
+ * @param props.signer - The initial signer object for the wallet.
+ * @param props.connectedAccount - The initial connected account information.
+ */
 export function WalletSetupProvider({
   children,
   signer: initialSigner,

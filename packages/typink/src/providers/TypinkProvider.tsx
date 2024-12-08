@@ -11,11 +11,7 @@ import {
 
 export interface TypinkContextProps extends ClientContextProps, WalletSetupContextProps, WalletContextProps {
   deployments: ContractDeployment[];
-  // TODO validate substrate address
-  defaultCaller: SubstrateAddress;
-
-  // TODO list of networks to connect
-  // TODO lazy options
+  defaultCaller: SubstrateAddress; // TODO validate substrate address
 }
 
 export const TypinkContext = createContext<TypinkContextProps>({} as any);
@@ -25,7 +21,7 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
   defaultCaller: SubstrateAddress;
 }
 
-function TypinkProviderWrapper({ children, deployments, defaultCaller }: TypinkProviderProps) {
+function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -38,6 +34,28 @@ function TypinkProviderWrapper({ children, deployments, defaultCaller }: TypinkP
   );
 }
 
+/**
+ * TypinkProvider is the main provider component for the Typink application.
+ * It wraps other providers (WalletSetupProvider, ClientProvider ...) to provide a complete context for the application.
+ *
+ * @param props - The properties for the TypinkProvider component
+ * @param props.children - The child components to be rendered within the provider
+ * @param props.deployments - An array of contract deployments
+ * @param props.defaultCaller - The default substrate address to be used as the caller
+ * @param props.defaultNetworkId - The default network ID to be used
+ * @param props.cacheMetadata - Whether to cache metadata or not (default: false)
+ * @param props.supportedNetworks - An array of supported networks
+ * @param props.signer - The signer to be used for signing transactions. If using an external wallet connector
+ *                       (e.g., SubConnect or Talisman Connect), pass this prop to override Typink's
+ *                       internal signer management.
+ * @param props.connectedAccount - The currently connected account. If using an external wallet connector,
+ *                                 pass this prop to inform Typink which account to interact with or
+ *                                 sign transactions.
+ *
+ * Note: By default, Typink manages signer and connectedAccount internally when using the built-in
+ * Typink Wallet Connector. For external wallet connectors, you must provide both signer and
+ * connectedAccount props to ensure proper functionality.
+ */
 export function TypinkProvider({
   children,
   deployments,
@@ -54,9 +72,9 @@ export function TypinkProvider({
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
-        <TypinkProviderWrapper deployments={deployments} defaultCaller={defaultCaller}>
+        <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
           {children}
-        </TypinkProviderWrapper>
+        </TypinkProviderInner>
       </ClientProvider>
     </WalletSetupProvider>
   );

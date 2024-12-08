@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
-import { useRawContract } from '../useRawContract';
-import { useTypink } from '../useTypink';
+import { useRawContract } from '../useRawContract.js';
+import { useTypink } from '../useTypink.js';
 import { Contract } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
