@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePSP22Balance } from '../psp22';
-import { useTypink } from '../useTypink';
-import { useRawContract } from '../useRawContract';
-import { useContractQuery } from '../useContractQuery';
-import { useWatchContractEvent } from '../useWatchContractEvent';
+import { useTypink } from '../useTypink.js';
+import { useRawContract } from '../useRawContract.js';
+import { useContractQuery } from '../useContractQuery.js';
+import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { renderHook, waitFor } from '@testing-library/react';
 import { waitForNextUpdate } from './test-utils.js';
 
