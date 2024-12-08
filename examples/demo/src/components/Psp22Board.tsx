@@ -10,7 +10,7 @@ import {
   Heading,
   Input,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance } from '@/utils/string.ts';
@@ -24,9 +24,8 @@ export default function Psp22Board() {
   const { connectedAccount, networkId } = useTypink();
   const mintable = useMemo(() => networkId === alephZeroTestnet.id, [networkId]);
   const mintTx = useContractTx(contract, 'psp22MintableMint');
-
+  const inputAddressRef = useRef<HTMLInputElement>(null);
   const [address, setAddress] = useState('');
-  const [another, setAnother] = useState('');
   const [watch, setWatch] = useState(false);
 
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
@@ -63,10 +62,12 @@ export default function Psp22Board() {
     data: addressBalance,
     isLoading: loadingAnotherBalance,
     refresh: refreshAnotherBalance,
-  } = usePSP22Balance({ contractAddress: contract?.address, address: another, watch });
+  } = usePSP22Balance({ contractAddress: contract?.address, address, watch });
 
-  const checkAnotherAddress = () => {
-    setAnother(address);
+  const doCheckBalance = () => {
+    if (!inputAddressRef.current) return;
+
+    setAddress(inputAddressRef.current.value);
     refreshAnotherBalance();
   };
 
@@ -127,13 +128,13 @@ export default function Psp22Board() {
         </Box>
         <Divider my={4} />
         <Box>
-          Address: <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+          Address: <Input ref={inputAddressRef} />
           <Box mt={4}>
             <Checkbox checked={watch} onChange={(e) => setWatch(e.target.checked)}>
               Watch
             </Checkbox>
           </Box>
-          <Button mt={4} size='sm' onClick={checkAnotherAddress}>
+          <Button mt={4} size='sm' onClick={doCheckBalance}>
             Check Balance
           </Button>
           <Box mt={4} hidden={!addressBalance}>
