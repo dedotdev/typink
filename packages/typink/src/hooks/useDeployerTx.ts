@@ -1,12 +1,18 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Args, OmitNever, Pop, SubstrateAddress } from '../types.js';
-import { ContractDeployer, ContractTxOptions, GenericContractApi, isContractDispatchError } from 'dedot/contracts';
+import {
+  ConstructorCallOptions,
+  ConstructorTxOptions,
+  ContractDeployer,
+  ContractTxOptions,
+  GenericContractApi,
+  isContractDispatchError,
+} from 'dedot/contracts';
 import { IEventRecord, IRuntimeEvent, ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { TypinkError } from '../utils/index.js';
-import { ConstructorCallOptions, ConstructorTxOptions } from '@dedot/contracts/types/index.js';
-import { Hash } from '@dedot/codecs';
+import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 
 type UseDeployerTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{

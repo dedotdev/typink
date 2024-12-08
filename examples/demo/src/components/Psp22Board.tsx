@@ -56,13 +56,13 @@ export default function Psp22Board() {
     data: myBalance,
     isLoading: loadingBalance,
     refresh: refreshMyBalance,
-  } = usePSP22Balance({ contractAddress: contract?.address });
+  } = usePSP22Balance({ contractAddress: contract?.address?.address() });
 
   const {
     data: addressBalance,
     isLoading: loadingAnotherBalance,
     refresh: refreshAnotherBalance,
-  } = usePSP22Balance({ contractAddress: contract?.address, address, watch });
+  } = usePSP22Balance({ contractAddress: contract?.address?.address(), address, watch });
 
   const doCheckBalance = () => {
     if (!inputAddressRef.current) return;
@@ -137,7 +137,7 @@ export default function Psp22Board() {
           <Button mt={4} size='sm' onClick={doCheckBalance}>
             Check Balance
           </Button>
-          <Box mt={4} hidden={!addressBalance}>
+          <Box mt={4}>
             Balance:{' '}
             <PendingText fontWeight='600' isLoading={loadingAnotherBalance}>
               {formatBalance(addressBalance, tokenDecimal)} {tokenSymbol}

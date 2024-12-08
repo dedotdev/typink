@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { usePSP22Balance } from '../psp22';
+import { usePSP22Balance } from '../psp22/index.js';
 import { useTypink } from '../useTypink.js';
 import { useRawContract } from '../useRawContract.js';
 import { useContractQuery } from '../useContractQuery.js';
@@ -145,11 +145,11 @@ describe('usePSP22Balance', () => {
   });
 
   it('should run system.events() when watch is true', async () => {
-    const useWatchContractEvent = await import('../useWatchContractEvent');
+    const useWatchContractEvent = await import('../useWatchContractEvent.js');
     useWatchContractEvent.useWatchContractEvent = (await vi.importActual('../useWatchContractEvent'))
       .useWatchContractEvent as any;
 
-    const useContractQuery = await import('../useContractQuery');
+    const useContractQuery = await import('../useContractQuery.js');
     useContractQuery.useContractQuery = (await vi.importActual('../useContractQuery')).useContractQuery as any;
 
     const { result } = renderHook(() => usePSP22Balance({ contractAddress: dummyDeployment.address, watch: true }));
@@ -163,11 +163,11 @@ describe('usePSP22Balance', () => {
   });
 
   it('should not call system.events() when watch is false', async () => {
-    const useWatchContractEvent = await import('../useWatchContractEvent');
+    const useWatchContractEvent = await import('../useWatchContractEvent.js');
     useWatchContractEvent.useWatchContractEvent = (await vi.importActual('../useWatchContractEvent'))
       .useWatchContractEvent as any;
 
-    const useContractQuery = await import('../useContractQuery');
+    const useContractQuery = await import('../useContractQuery.js');
     useContractQuery.useContractQuery = (await vi.importActual('../useContractQuery')).useContractQuery as any;
 
     const { result } = renderHook(() => usePSP22Balance({ contractAddress: dummyDeployment.address, watch: false }));

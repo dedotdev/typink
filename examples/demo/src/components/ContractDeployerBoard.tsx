@@ -29,7 +29,7 @@ interface DeployedContract {
 
 export function ContractDeployerBoard() {
   const wasmHash = greeterMetadata.source.hash;
-  const { deployer } = useDeployer<GreeterContractApi>(greeterMetadata, wasmHash);
+  const { deployer } = useDeployer<GreeterContractApi>(greeterMetadata as any, wasmHash);
   const newGreeterTx = useDeployerTx(deployer, 'new');
   const [initMessage, setInitMessage] = useState<string>('');
   const [deployedContracts, setDeployedContracts] = useLocalStorage<DeployedContract[]>('DEPLOYED_CONTRACTS', []);
