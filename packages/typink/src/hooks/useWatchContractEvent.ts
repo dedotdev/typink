@@ -3,7 +3,7 @@ import { useTypink } from './useTypink.js';
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { Unsub } from 'dedot/types';
-import { useDeepDeps } from 'src/hooks/internal';
+import { useDeepDeps } from './internal/index.js';
 
 type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;

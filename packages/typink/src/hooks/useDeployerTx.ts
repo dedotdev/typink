@@ -7,7 +7,7 @@ import { assert, deferred } from 'dedot/utils';
 import { TypinkError } from '../utils/index.js';
 import { ConstructorCallOptions, ConstructorTxOptions } from '@dedot/contracts/types/index.js';
 import { Hash } from '@dedot/codecs';
-import { useDeepDeps } from 'src/hooks/internal';
+import { useDeepDeps } from './internal/index.js';
 
 type UseDeployerTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['constructorTx']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;

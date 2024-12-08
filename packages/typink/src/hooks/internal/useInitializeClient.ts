@@ -4,7 +4,7 @@ import { JsonRpcApi, NetworkInfo } from '../../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion } from 'dedot/types';
-import { useDeepDeps } from 'src/hooks/internal/useDeepDeps';
+import { useDeepDeps } from './useDeepDeps.js';
 
 export type CompatibleSubstrateClient = ISubstrateClient<SubstrateApi[RpcVersion]>;
 
