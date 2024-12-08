@@ -37,9 +37,17 @@ pnpm add typink dedot
 
 Typink heavily uses Typescript to enable & ensure type-safety, so we recommend using Typescript for your Dapp project. Typink will also work with plain Javascript, but you don't get the auto-completion & suggestions when interacting with your ink! contracts.
 
-Try out the alpha-release now on a typink dapp template: https://github.com/dedotdev/typink-dapp-template. Clone the repo & have fun!
-
 ### Configure your project
+
+> [!NOTE]
+>
+> **Starting a new project from scratch?**
+>
+> Try out the prerelease of typink dapp template: https://github.com/dedotdev/typink-dapp-template.
+>
+> Clone the repo & have fun!
+
+
 
 #### 1. Deploy your contracts and setup contract deployments
 
@@ -150,7 +158,7 @@ if (process.env.NODE_ENV === 'development') {
 </TypinkProvider>
 ```
 
-If you're using an external wallet connector like [SubConnect](https://github.com/Koniverse/SubConnect-v2) or [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), you will need to pass into the `TypinkProvider` 2 more props `connectedAccount` ([InjectedAccouunt](https://github.com/dedotdev/typink/blob/d10fe8b7fccc9ef7cdfc1b74576705c6f261160d/packages/typink/src/types.ts#L46-L51)) & `signer` ([Signer](https://github.com/polkadot-js/api/blob/42b9735c32671e4fac2a5b78283a7fcdec9ef912/packages/types/src/types/extrinsic.ts#L168-L183)) so Typink knows which account & signer to interact with the ink! contracts.
+If you're using an external wallet connector like [SubConnect](https://github.com/Koniverse/SubConnect-v2) or [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), you will need to pass into the `TypinkProvider` 2 more props: `connectedAccount` ([InjectedAccouunt](https://github.com/dedotdev/typink/blob/d10fe8b7fccc9ef7cdfc1b74576705c6f261160d/packages/typink/src/types.ts#L46-L51)) & `signer` ([Signer](https://github.com/polkadot-js/api/blob/42b9735c32671e4fac2a5b78283a7fcdec9ef912/packages/types/src/types/extrinsic.ts#L168-L183)) so Typink knows which account & signer to interact with the ink! contracts.
 
 ```tsx
 
@@ -175,6 +183,8 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 
 - `TypinkProvider`
 
+⏳
+
 #### Hooks
 
 - `useTypink`
@@ -188,7 +198,9 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 - `useDeployerTx`
 - `useWallets`
 - `useWatchContractEvent`
-- `usePsp22Balance`
+- `usePSP22Balance`
+
+⏳
 
 #### Support networks
 
