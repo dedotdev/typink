@@ -16,7 +16,7 @@ export function useWatchContractEvent<
   event: M,
   // remember to use `useCallback` for this callback :)
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
-  enabled: boolean = false
+  enabled: boolean = true
 ): void {
   const { client } = useTypink();
 
