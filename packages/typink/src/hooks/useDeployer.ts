@@ -10,6 +10,18 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
   // TODO add list of exposed constructors from the metadata
 };
 
+/**
+ * A custom React hook for creating and managing a ContractDeployer.
+ *
+ * This hook initializes a ContractDeployer instance based on the provided metadata,
+ * code hash or WASM, and options. It automatically updates when relevant context
+ * (client, network, account) changes.
+ *
+ * @param {ContractMetadata | string} metadata - The contract metadata or its stringified version
+ * @param {Hash | Uint8Array | string} codeHashOrWasm - The code hash or WASM of the contract
+ * @param {ExecutionOptions} [options={}] - Additional execution options for the deployer
+ * @returns {UseDeployer<T>} An object containing the deployer instance
+ */
 export function useDeployer<T extends GenericContractApi = GenericContractApi>(
   metadata: ContractMetadata | string,
   codeHashOrWasm: Hash | Uint8Array | string,
@@ -38,9 +50,9 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 
     setDeployer(deployer);
 
-    return () => {
-      setDeployer(undefined);
-    };
+    // return () => {
+    //   setDeployer(undefined);
+    // };
   }, deps);
 
   return {

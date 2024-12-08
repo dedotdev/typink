@@ -3,21 +3,34 @@ import { useTypink } from './useTypink.js';
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { Unsub } from 'dedot/types';
+import { useDeepDeps } from 'src/hooks/internal';
 
 type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
 }>;
 
+/**
+ * A React hook that watches for specific events emitted by a smart contract.
+ *
+ * This hook sets up a subscription to system events and filters for the specified contract event.
+ * When new events are detected, it calls the provided callback function.
+ *
+ * @param contract - The contract instance to watch events for. Can be undefined.
+ * @param event - The name of the event to watch for.
+ * @param onNewEvent - Callback function to be called when new events are detected.
+ *                     It's recommended to wrap this in useCallback to prevent unnecessary re-renders.
+ */
 export function useWatchContractEvent<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof UseContractEvent<T> = keyof UseContractEvent<T>,
 >(
   contract: Contract<T> | undefined,
   event: M,
-  // remember to use `useCallback` for this callback :)
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
 ): void {
   const { client } = useTypink();
+
+  const deps = useDeepDeps([client, contract, onNewEvent]);
 
   useEffect(() => {
     if (!client || !contract) return;
@@ -27,6 +40,7 @@ export function useWatchContractEvent<
     let unsub: Unsub | undefined;
 
     (async () => {
+      // TODO reuse this subscription more efficiently
       unsub = await client.query.system.events((events) => {
         if (done) {
           unsub && unsub();
@@ -45,5 +59,5 @@ export function useWatchContractEvent<
       unsub && unsub();
       done = true;
     };
-  }, [client, contract, onNewEvent]);
+  }, deps);
 }

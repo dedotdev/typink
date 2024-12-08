@@ -18,6 +18,24 @@ type UseContractQueryReturnType<
   error?: Error;
 } & Partial<Awaited<ReturnType<T['query'][M]>>>;
 
+/**
+ * A React hook for querying a smart contract.
+ *
+ * This hook manages the state of a contract query, including loading state,
+ * query results, and error handling. It automatically fetches data when the
+ * contract, function, or arguments change.
+ *
+ * @param parameters - An object containing the query parameters
+ * @param parameters.contract - The contract instance to query
+ * @param parameters.fn - The name of the query function to call on the contract
+ * @param parameters.options - Optional contract call options
+ * @param parameters.args - The arguments to pass to the query function
+ *
+ * @returns An object containing the result of the query and:
+ *   - isLoading: A boolean indicating whether the query is in progress
+ *   - refresh: A function to manually trigger a refresh of the query
+ *   - error: Any error that occurred during the query
+ */
 export function useContractQuery<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof ContractQuery<T> = keyof ContractQuery<T>,
@@ -76,6 +94,31 @@ export function useContractQuery<
   } as any;
 }
 
+/**
+ * A React hook for watching and querying a smart contract.
+ *
+ * This hook extends the functionality of `useContractQuery` by automatically
+ * refreshing the query when new blocks are added to the chain. It manages
+ * the state of a contract query, including loading state, query results,
+ * and error handling. The hook periodically refreshes the query to check
+ * if the contract state has changed.
+ *
+ * @param parameters - An object containing the query parameters
+ * @param parameters.contract - The contract instance to query
+ * @param parameters.fn - The name of the query function to call on the contract
+ * @param parameters.options - Optional contract call options
+ * @param parameters.args - The arguments to pass to the query function
+ *
+ * @returns An object containing the result of the query and:
+ *   - isLoading: A boolean indicating whether the query is in progress
+ *   - refresh: A function to manually trigger a refresh of the query
+ *   - error: Any error that occurred during the query
+ *
+ * @remarks
+ * This hook will automatically refresh the query when new blocks are added
+ * to the chain, allowing it to detect and reflect any changes in the
+ * contract's state.
+ */
 export function useWatchContractQuery<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof ContractQuery<T> = keyof ContractQuery<T>,
