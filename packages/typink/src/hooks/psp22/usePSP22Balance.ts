@@ -4,8 +4,7 @@ import { Psp22ContractApi } from './contracts/psp22';
 import { useContractQuery } from '../useContractQuery.js';
 import { useTypink } from '../useTypink.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
-import { useCallback, useState } from 'react';
-import { useAsync } from 'react-use';
+import { useCallback, useEffect, useState } from 'react';
 
 export function usePSP22Balance(parameters: {
   contractAddress: SubstrateAddress;
@@ -17,13 +16,17 @@ export function usePSP22Balance(parameters: {
   const { contractAddress, address = connectedAccount?.address || defaultCaller, watch = false } = parameters;
   const { contract } = useRawContract<Psp22ContractApi>(psp22Metadata as any, contractAddress);
 
-  useAsync(async () => {
+  useEffect(() => {
     let mounted = true;
+
     // @ts-ignore
-    const metadata = await import('./contracts/psp22.json');
-    if (mounted) {
-      setPsp22Metadata(metadata);
-    }
+    import('./contracts/psp22.json')
+      .then((metadata) => {
+        if (mounted) {
+          setPsp22Metadata(metadata);
+        }
+      })
+      .catch(console.error);
 
     return () => {
       mounted = false;
@@ -49,7 +52,7 @@ export function usePSP22Balance(parameters: {
       },
       [watch, address],
     ),
-    watch
+    watch,
   );
 
   return result;
