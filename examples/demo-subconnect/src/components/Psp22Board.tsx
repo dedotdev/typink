@@ -1,17 +1,15 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Divider, Heading } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { Box, Button, Divider, Heading } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { alephZeroTestnet, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
+import { useContract, useContractQuery, useContractTx, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { ConnectWalletButton } from '@/components/shared/ConnectWalletButton.tsx';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { defaultCaller, connectedAccount, networkId } = useTypink();
-  const mintable = useMemo(() => networkId === alephZeroTestnet.id, [networkId]);
+  const { defaultCaller, connectedAccount } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
 
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
@@ -116,18 +114,9 @@ export default function Psp22Board() {
         </Box>
         {connectedAccount && (
           <Box mt={4}>
-            <Button size='sm' onClick={mintNewToken} isLoading={mintTx.inBestBlockProgress} isDisabled={!mintable}>
+            <Button size='sm' onClick={mintNewToken} isLoading={mintTx.inBestBlockProgress}>
               Mint 100 {tokenSymbol}
             </Button>
-            {!mintable && (
-              <Alert status='info' my={4}>
-                <AlertIcon />
-                <Box>
-                  <AlertTitle>Minting is currently not available on POP Network contract</AlertTitle>
-                  <AlertDescription>Please use Aleph Zero Testnet contract for minting tokens</AlertDescription>
-                </Box>
-              </Alert>
-            )}
           </Box>
         )}
       </Box>

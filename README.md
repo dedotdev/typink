@@ -87,7 +87,7 @@ export const deployments = [
   {
     id: ContractId.PSP22,
     metadata: psp22Metadata as any,
-    address: '5GSGWox1ZxUkHBAEbm6NPAHLKD28VoQefTRBYTQuydLrxaKJ',
+    address: '16119BccKAfWwbt4TCNvfLBDuRWHSeFozJELEcxFPVd11hnt',
     network: popTestnet.id,
   },
 ];

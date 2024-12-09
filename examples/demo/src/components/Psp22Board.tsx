@@ -1,28 +1,16 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  Heading,
-  Input,
-} from '@chakra-ui/react';
-import { useMemo, useRef, useState } from 'react';
+import { Box, Button, Checkbox, Divider, Heading, Input } from '@chakra-ui/react';
+import { useRef, useState } from 'react';
 import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { alephZeroTestnet, useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
+import { useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { connectedAccount, networkId } = useTypink();
-  const mintable = useMemo(() => networkId === alephZeroTestnet.id, [networkId]);
+  const { connectedAccount } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
   const inputAddressRef = useRef<HTMLInputElement>(null);
   const [address, setAddress] = useState('');
@@ -159,18 +147,9 @@ export default function Psp22Board() {
         </Box>
         {connectedAccount && (
           <Box mt={4}>
-            <Button size='sm' onClick={mintNewToken} isLoading={mintTx.inBestBlockProgress} isDisabled={!mintable}>
+            <Button size='sm' onClick={mintNewToken} isLoading={mintTx.inBestBlockProgress}>
               Mint 100 {tokenSymbol}
             </Button>
-            {!mintable && (
-              <Alert status='info' my={4}>
-                <AlertIcon />
-                <Box>
-                  <AlertTitle>Minting is currently not available on POP Network contract</AlertTitle>
-                  <AlertDescription>Please use Aleph Zero Testnet contract for minting tokens</AlertDescription>
-                </Box>
-              </Alert>
-            )}
           </Box>
         )}
       </Box>
