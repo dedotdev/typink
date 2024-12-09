@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { SubstrateAddress } from '../types.js';
 import { Unsub } from 'dedot/types';
+import { useDeepDeps } from 'src/hooks/internal';
 
 export interface Balance {
   free: bigint;
@@ -29,39 +30,42 @@ export function useBalances(addresses: SubstrateAddress[]) {
 
   // TODO filter out invalid addresses
 
-  useEffect(() => {
-    if (!client || addresses.length === 0) {
-      setBalances({});
+  useEffect(
+    () => {
+      if (!client || addresses.length === 0) {
+        setBalances({});
 
-      return;
-    }
+        return;
+      }
 
-    let done = false;
-    let unsub: Unsub;
+      let done = false;
+      let unsub: Unsub;
 
-    client.query.system.account
-      .multi(addresses, (balances) => {
-        setBalances(
-          balances.reduce((balances, accountInfo, currentIndex) => {
-            balances[addresses[currentIndex]] = accountInfo.data;
-            return balances;
-          }, {} as Balances),
-        );
-      })
-      .then((x) => {
-        if (done) {
-          x().catch(console.error);
-        } else {
-          unsub = x;
-        }
-      })
-      .catch(console.error); // TODO should show exception for the wrapper component to handle
+      client.query.system.account
+        .multi(addresses, (balances) => {
+          setBalances(
+            balances.reduce((balances, accountInfo, currentIndex) => {
+              balances[addresses[currentIndex]] = accountInfo.data;
+              return balances;
+            }, {} as Balances),
+          );
+        })
+        .then((x) => {
+          if (done) {
+            x().catch(console.error);
+          } else {
+            unsub = x;
+          }
+        })
+        .catch(console.error); // TODO should show exception for the wrapper component to handle
 
-    return () => {
-      done = true;
-      unsub && unsub();
-    };
-  }, [client, addresses]);
+      return () => {
+        done = true;
+        unsub && unsub();
+      };
+    },
+    useDeepDeps([client, addresses]),
+  );
 
   return balances;
 }

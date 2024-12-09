@@ -67,55 +67,58 @@ export function useDeployerTx<
 
   const { connectedAccount } = useTypink();
 
-  const signAndSendDeps = useDeepDeps([deployer, connectedAccount, fn]);
+  const signAndSend = useMemo(
+    () => {
+      return async (o: Parameters<UseDeployerTxReturnType<T>['signAndSend']>[0]) => {
+        assert(deployer, 'Contract Deployer Not Found');
+        assert(connectedAccount, 'Connected Account Not Found');
 
-  const signAndSend = useMemo(() => {
-    return async (o: Parameters<UseDeployerTxReturnType<T>['signAndSend']>[0]) => {
-      assert(deployer, 'Contract Deployer Not Found');
-      assert(connectedAccount, 'Connected Account Not Found');
+        setInProgress(true);
+        setInBestBlockProgress(true);
 
-      setInProgress(true);
-      setInBestBlockProgress(true);
+        try {
+          // @ts-ignore
+          const { args = [], txOptions, callback: optionalCallback } = o;
 
-      try {
-        // @ts-ignore
-        const { args = [], txOptions, callback: optionalCallback } = o;
+          const extractContractAddress = (
+            events: IEventRecord<IRuntimeEvent, Hash>[],
+          ): SubstrateAddress | undefined => {
+            if (!events || events.length === 0) return;
 
-        const extractContractAddress = (events: IEventRecord<IRuntimeEvent, Hash>[]): SubstrateAddress | undefined => {
-          if (!events || events.length === 0) return;
+            const instantiatedEvent = deployer.client.events.contracts.Instantiated.find(events);
+            assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
 
-          const instantiatedEvent = deployer.client.events.contracts.Instantiated.find(events);
-          assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
+            return instantiatedEvent.palletEvent.data.contract.address();
+          };
 
-          return instantiatedEvent.palletEvent.data.contract.address();
-        };
+          const callback = (result: ISubmittableResult) => {
+            const { status, events } = result;
+            if (status.type === 'BestChainBlockIncluded') {
+              setInBestBlockProgress(false);
+            }
 
-        const callback = (result: ISubmittableResult) => {
-          const { status, events } = result;
-          if (status.type === 'BestChainBlockIncluded') {
-            setInBestBlockProgress(false);
-          }
+            const contractAddress = extractContractAddress(events);
 
-          const contractAddress = extractContractAddress(events);
+            optionalCallback && optionalCallback(result, contractAddress);
+          };
 
-          optionalCallback && optionalCallback(result, contractAddress);
-        };
-
-        // @ts-ignore
-        await deployerTx({
-          deployer,
-          fn,
-          args,
-          caller: connectedAccount.address,
-          txOptions,
-          callback,
-        });
-      } finally {
-        setInProgress(false);
-        setInBestBlockProgress(false);
-      }
-    };
-  }, signAndSendDeps);
+          // @ts-ignore
+          await deployerTx({
+            deployer,
+            fn,
+            args,
+            caller: connectedAccount.address,
+            txOptions,
+            callback,
+          });
+        } finally {
+          setInProgress(false);
+          setInBestBlockProgress(false);
+        }
+      };
+    },
+    useDeepDeps([deployer, connectedAccount, fn]),
+  );
 
   return {
     signAndSend,

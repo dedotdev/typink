@@ -1,10 +1,10 @@
 import { useRawContract } from '../useRawContract.js';
 import { Psp22ContractApi } from './contracts/psp22';
 import { useContractQuery } from '../useContractQuery.js';
-import { useTypink } from '../useTypink.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { useCallback, useEffect, useState } from 'react';
 import { SubstrateAddress } from '../../types.js';
+import { useDeepDeps } from 'src/hooks/internal';
 
 /**
  * A custom React hook that retrieves and optionally watches the PSP22 token balance for a given address.
@@ -24,14 +24,11 @@ export function usePSP22Balance(parameters: {
   address?: SubstrateAddress;
   watch?: boolean;
 }) {
-  const { connectedAccount } = useTypink();
   const [psp22Metadata, setPsp22Metadata] = useState<any>();
-  const { contractAddress, address, watch = false } = parameters;
+  const { contractAddress, address = '', watch = false } = parameters;
 
-  const addressToCheck = address || connectedAccount?.address || '';
-
-  // make sure we only start loading balance if both contractAddress & addressToCheck is available
-  const contractAddressToCheck = contractAddress && addressToCheck ? contractAddress : undefined;
+  // make sure we only start loading balance if both contractAddress & address is available
+  const contractAddressToCheck = contractAddress && address ? contractAddress : undefined;
 
   const { contract } = useRawContract<Psp22ContractApi>(psp22Metadata as any, contractAddressToCheck);
 
@@ -55,7 +52,7 @@ export function usePSP22Balance(parameters: {
   const result = useContractQuery({
     contract,
     fn: 'psp22BalanceOf',
-    args: [addressToCheck],
+    args: [address],
   });
 
   useWatchContractEvent(
@@ -63,13 +60,13 @@ export function usePSP22Balance(parameters: {
     'Transfer',
     useCallback(
       (events) => {
-        if (!watch || events.length === 0 || !addressToCheck) return;
+        if (!watch || events.length === 0 || !address) return;
 
-        if (events.some(({ data: { from, to } }) => from?.eq(addressToCheck) || to?.eq(addressToCheck))) {
+        if (events.some(({ data: { from, to } }) => from?.eq(address) || to?.eq(address))) {
           result.refresh();
         }
       },
-      [watch, addressToCheck],
+      useDeepDeps([watch, address, result.refresh]),
     ),
     watch,
   );

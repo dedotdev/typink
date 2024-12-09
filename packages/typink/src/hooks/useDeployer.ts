@@ -29,26 +29,27 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
   const { client, networkId, connectedAccount, defaultCaller } = useTypink();
   const [deployer, setDeployer] = useState<ContractDeployer<T>>();
 
-  const deps = useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]);
+  useEffect(
+    () => {
+      if (!client || !networkId) {
+        setDeployer(undefined);
+        return;
+      }
 
-  useEffect(() => {
-    if (!client || !networkId) {
-      setDeployer(undefined);
-      return;
-    }
+      const deployer = new ContractDeployer<T>(
+        client,
+        metadata,
+        codeHashOrWasm, // prettier-end-here
+        {
+          defaultCaller: connectedAccount?.address || defaultCaller,
+          ...options,
+        },
+      );
 
-    const deployer = new ContractDeployer<T>(
-      client,
-      metadata,
-      codeHashOrWasm, // prettier-end-here
-      {
-        defaultCaller: connectedAccount?.address || defaultCaller,
-        ...options,
-      },
-    );
-
-    setDeployer(deployer);
-  }, deps);
+      setDeployer(deployer);
+    },
+    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+  );
 
   return {
     deployer,

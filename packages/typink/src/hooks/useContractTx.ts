@@ -11,6 +11,7 @@ import {
 import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { TypinkError } from '../utils/index.js';
+import { useDeepDeps } from 'src/hooks/internal';
 
 type UseContractTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['tx']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -42,12 +43,12 @@ type UseContractTxReturnType<
  *
  * @returns {UseContractTxReturnType<T, M>} An object containing:
  *   - signAndSend: A function to sign and send the transaction
- *   - inProgress: A boolean indicating if a transaction is in progress. It's set to true when 
- *     the transaction starts and turns back to false when the transaction status is finalized, 
+ *   - inProgress: A boolean indicating if a transaction is in progress. It's set to true when
+ *     the transaction starts and turns back to false when the transaction status is finalized,
  *     invalid, or dropped.
- *   - inBestBlockProgress: A boolean indicating if the transaction is being processed but not 
- *     yet included in the best block. It's set to true when the transaction starts and turns 
- *     back to false when the transaction is included in the best block, which happens before 
+ *   - inBestBlockProgress: A boolean indicating if the transaction is being processed but not
+ *     yet included in the best block. It's set to true when the transaction starts and turns
+ *     back to false when the transaction is included in the best block, which happens before
  *     finalization.
  */
 export function useContractTx<
@@ -59,42 +60,45 @@ export function useContractTx<
 
   const { connectedAccount } = useTypink();
 
-  const signAndSend = useMemo(() => {
-    return async (o: Parameters<UseContractTxReturnType<T>['signAndSend']>[0]) => {
-      assert(contract, 'Contract Not Found');
-      assert(connectedAccount, 'Connected Account Not Found');
+  const signAndSend = useMemo(
+    () => {
+      return async (o: Parameters<UseContractTxReturnType<T>['signAndSend']>[0]) => {
+        assert(contract, 'Contract Not Found');
+        assert(connectedAccount, 'Connected Account Not Found');
 
-      setInProgress(true);
-      setInBestBlockProgress(true);
+        setInProgress(true);
+        setInBestBlockProgress(true);
 
-      try {
-        // @ts-ignore
-        const { args = [], txOptions, callback: optionalCallback } = o;
+        try {
+          // @ts-ignore
+          const { args = [], txOptions, callback: optionalCallback } = o;
 
-        const callback = (result: ISubmittableResult) => {
-          const { status } = result;
-          if (status.type === 'BestChainBlockIncluded') {
-            setInBestBlockProgress(false);
-          }
+          const callback = (result: ISubmittableResult) => {
+            const { status } = result;
+            if (status.type === 'BestChainBlockIncluded') {
+              setInBestBlockProgress(false);
+            }
 
-          optionalCallback && optionalCallback(result);
-        };
+            optionalCallback && optionalCallback(result);
+          };
 
-        // @ts-ignore
-        await contractTx({
-          contract,
-          fn,
-          args,
-          caller: connectedAccount.address,
-          txOptions,
-          callback,
-        });
-      } finally {
-        setInProgress(false);
-        setInBestBlockProgress(false);
-      }
-    };
-  }, [contract, connectedAccount]);
+          // @ts-ignore
+          await contractTx({
+            contract,
+            fn,
+            args,
+            caller: connectedAccount.address,
+            txOptions,
+            callback,
+          });
+        } finally {
+          setInProgress(false);
+          setInBestBlockProgress(false);
+        }
+      };
+    },
+    useDeepDeps([contract, connectedAccount]),
+  );
 
   return {
     signAndSend,

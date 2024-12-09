@@ -26,29 +26,30 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
   const { client, defaultCaller, connectedAccount } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
 
-  const deps = useDeepDeps([client, metadata, address, connectedAccount?.address, defaultCaller, options]);
+  useEffect(
+    () => {
+      if (!client || !metadata || !address) {
+        if (contract) {
+          setContract(undefined);
+        }
 
-  useEffect(() => {
-    if (!client || !metadata || !address) {
-      if (contract) {
-        setContract(undefined);
+        return;
       }
 
-      return;
-    }
-
-    setContract(
-      new Contract<T>(
-        client,
-        metadata as any,
-        address, // prettier-end-here
-        {
-          defaultCaller: connectedAccount?.address || defaultCaller,
-          ...options,
-        },
-      ),
-    );
-  }, deps);
+      setContract(
+        new Contract<T>(
+          client,
+          metadata as any,
+          address, // prettier-end-here
+          {
+            defaultCaller: connectedAccount?.address || defaultCaller,
+            ...options,
+          },
+        ),
+      );
+    },
+    useDeepDeps([client, metadata, address, connectedAccount?.address, defaultCaller, options]),
+  );
 
   return {
     contract,

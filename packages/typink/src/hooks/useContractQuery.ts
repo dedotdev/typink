@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useRefresher, useDeepDeps } from './internal/index.js';
+import { useCallback, useEffect, useState } from 'react';
+import { useDeepDeps } from './internal/index.js';
 import { Args, OmitNever, Pop } from '../types.js';
 import { Contract, ContractCallOptions, GenericContractApi } from 'dedot/contracts';
 import { useTypink } from './useTypink.js';
@@ -15,6 +15,7 @@ type UseContractQueryReturnType<
 > = {
   isLoading: boolean;
   refresh: () => void;
+  isRefreshing: boolean;
   error?: Error;
 } & Partial<Awaited<ReturnType<T['query'][M]>>>;
 
@@ -48,12 +49,12 @@ export function useContractQuery<
 ): UseContractQueryReturnType<T, M> {
   // TODO replace loading tracking state with tanstack
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [result, setResult] = useState<any>();
   const [error, setError] = useState<Error>();
-  const { refresh, counter } = useRefresher();
 
   const { contract, fn, args = [], options } = parameters;
-  const deps = useDeepDeps([contract, fn, args, options, counter]);
+  const deps = useDeepDeps([contract, fn, args, options]);
 
   useEffect(() => {
     let mounted = true;
@@ -62,9 +63,12 @@ export function useContractQuery<
       if (!contract || !fn || !args) return;
 
       try {
-        const queryResult = await contract.query[fn](...args, options);
+        setIsLoading(true);
+
+        const result = await contract.query[fn](...args, options);
+
         if (mounted) {
-          setResult(queryResult);
+          setResult(result);
           setError(undefined);
           setIsLoading(false);
         }
@@ -86,9 +90,30 @@ export function useContractQuery<
     };
   }, deps);
 
+  const refresh = useCallback(async () => {
+    if (!contract || !fn || !args) return;
+
+    try {
+      setIsRefreshing(true);
+
+      const result = await contract.query[fn](...args, options);
+
+      setResult(result);
+      setError(undefined);
+      setIsRefreshing(false);
+    } catch (error: any) {
+      console.error('Error when refreshing the query:', error);
+
+      setResult(undefined);
+      setError(error);
+      setIsRefreshing(false);
+    }
+  }, deps);
+
   return {
     isLoading,
     refresh,
+    isRefreshing,
     ...(result || {}),
     error,
   } as any;
@@ -133,30 +158,33 @@ export function useWatchContractQuery<
   const { client } = useTypink();
   const result = useContractQuery(parameters);
 
-  useEffect(() => {
-    if (!client) return;
+  useEffect(
+    () => {
+      if (!client) return;
 
-    let unsub: Unsub;
-    let done = false;
+      let unsub: Unsub;
+      let done = false;
 
-    client.query.system
-      .number((_) => {
-        result.refresh();
-      })
-      .then((x) => {
-        if (done) {
-          x().catch(console.error);
-        } else {
-          unsub = x;
-        }
-      })
-      .catch(console.error);
+      client.query.system
+        .number((_) => {
+          result.refresh();
+        })
+        .then((x) => {
+          if (done) {
+            x().catch(console.error);
+          } else {
+            unsub = x;
+          }
+        })
+        .catch(console.error);
 
-    return () => {
-      done = true;
-      unsub && unsub();
-    };
-  }, [client]);
+      return () => {
+        done = true;
+        unsub && unsub();
+      };
+    },
+    useDeepDeps([client, result.refresh]),
+  );
 
   return result;
 }

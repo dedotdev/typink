@@ -44,6 +44,7 @@ export function useInitializeClient(network?: NetworkInfo, options?: UseClientOp
   useAsync(async () => {
     if (client) {
       try {
+        setClient(undefined);
         // TODO check this again if the network is not available
         await client.disconnect();
       } catch (e) {

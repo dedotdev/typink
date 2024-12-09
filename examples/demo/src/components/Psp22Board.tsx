@@ -40,23 +40,22 @@ export default function Psp22Board() {
     fn: 'psp22TotalSupply',
   });
 
-  const {
-    data: myBalance,
-    isLoading: loadingBalance,
-    refresh: refreshMyBalance,
-  } = usePSP22Balance({ contractAddress: contract?.address?.address() });
+  const { data: myBalance, isLoading: loadingBalance } = usePSP22Balance({
+    contractAddress: contract?.address?.address(),
+    address: connectedAccount?.address,
+    watch: true,
+  });
 
-  const {
-    data: addressBalance,
-    isLoading: loadingAnotherBalance,
-    refresh: refreshAnotherBalance,
-  } = usePSP22Balance({ contractAddress: contract?.address?.address(), address, watch });
+  const { data: addressBalance, isLoading: loadingAnotherBalance } = usePSP22Balance({
+    contractAddress: contract?.address?.address(),
+    address,
+    watch,
+  });
 
   const doCheckBalance = () => {
     if (!inputAddressRef.current) return;
 
     setAddress(inputAddressRef.current.value);
-    refreshAnotherBalance();
   };
 
   const mintNewToken = async () => {
@@ -70,7 +69,6 @@ export default function Psp22Board() {
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
-            refreshMyBalance();
             refreshTotalSupply();
           }
 
@@ -81,7 +79,6 @@ export default function Psp22Board() {
       console.error(e);
       toaster.onError(e);
     } finally {
-      refreshMyBalance();
       refreshTotalSupply();
     }
   };
@@ -122,7 +119,7 @@ export default function Psp22Board() {
               Watch
             </Checkbox>
           </Box>
-          <Button mt={4} size='sm' onClick={doCheckBalance}>
+          <Button mt={4} size='sm' onClick={doCheckBalance} isLoading={!!address && loadingAnotherBalance}>
             Check Balance
           </Button>
           {addressBalance !== undefined && !!address && (

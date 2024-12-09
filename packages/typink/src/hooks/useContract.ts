@@ -27,31 +27,36 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
   const { deployments, client, networkId, connectedAccount, defaultCaller } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
 
-  const deps = useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]);
+  useEffect(
+    () => {
+      if (!client || !networkId) {
+        setContract(undefined);
+        return;
+      }
 
-  useEffect(() => {
-    if (!client || !networkId) {
-      setContract(undefined);
-      return;
-    }
+      const deployment = deployments.find((d) => d.id === contractId && d.network === networkId);
+      if (!deployment) {
+        throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${networkId}`);
+      }
 
-    const deployment = deployments.find((d) => d.id === contractId && d.network === networkId);
-    if (!deployment) {
-      throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${networkId}`);
-    }
+      const contract = new Contract<T>(
+        client,
+        deployment.metadata,
+        deployment.address, // prettier-end-here
+        {
+          defaultCaller: connectedAccount?.address || defaultCaller,
+          ...options,
+        },
+      );
 
-    const contract = new Contract<T>(
-      client,
-      deployment.metadata,
-      deployment.address, // prettier-end-here
-      {
-        defaultCaller: connectedAccount?.address || defaultCaller,
-        ...options,
-      },
-    );
+      setContract(contract);
 
-    setContract(contract);
-  }, deps);
+      return () => {
+        setContract(undefined);
+      };
+    },
+    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+  );
 
   return {
     contract,

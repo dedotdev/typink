@@ -32,34 +32,35 @@ export function useWatchContractEvent<
 ): void {
   const { client } = useTypink();
 
-  const deps = useDeepDeps([client, contract, onNewEvent, enabled]);
+  useEffect(
+    () => {
+      if (!client || !contract || !enabled) return;
 
-  useEffect(() => {
-    if (!client || !contract || !enabled) return;
+      // handle unsubscribing when component unmounts
+      let done = false;
+      let unsub: Unsub | undefined;
 
-    // handle unsubscribing when component unmounts
-    let done = false;
-    let unsub: Unsub | undefined;
+      (async () => {
+        // TODO reuse this subscription more efficiently
+        unsub = await client.query.system.events((events) => {
+          if (done) {
+            unsub && unsub();
+            return;
+          }
 
-    (async () => {
-      // TODO reuse this subscription more efficiently
-      unsub = await client.query.system.events((events) => {
-        if (done) {
-          unsub && unsub();
-          return;
-        }
+          const contractEvents = contract.events[event].filter(events);
+          if (contractEvents.length === 0) return;
 
-        const contractEvents = contract.events[event].filter(events);
-        if (contractEvents.length === 0) return;
+          // @ts-ignore
+          onNewEvent(contractEvents);
+        });
+      })();
 
-        // @ts-ignore
-        onNewEvent(contractEvents);
-      });
-    })();
-
-    return () => {
-      unsub && unsub();
-      done = true;
-    };
-  }, deps);
+      return () => {
+        unsub && unsub();
+        done = true;
+      };
+    },
+    useDeepDeps([client, contract, onNewEvent, enabled]),
+  );
 }
