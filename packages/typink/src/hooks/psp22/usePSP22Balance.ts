@@ -24,12 +24,16 @@ export function usePSP22Balance(parameters: {
   address?: SubstrateAddress;
   watch?: boolean;
 }) {
-  const { defaultCaller, connectedAccount } = useTypink();
+  const { connectedAccount } = useTypink();
   const [psp22Metadata, setPsp22Metadata] = useState<any>();
-  const { contractAddress, address = connectedAccount?.address || defaultCaller, watch = false } = parameters;
-  const { contract } = useRawContract<Psp22ContractApi>(psp22Metadata as any, contractAddress);
+  const { contractAddress, address, watch = false } = parameters;
 
-  const addressToCheck = address || connectedAccount?.address || defaultCaller;
+  const addressToCheck = address || connectedAccount?.address || '';
+
+  // make sure we only start loading balance if both contractAddress & addressToCheck is available
+  const contractAddressToCheck = contractAddress && addressToCheck ? contractAddress : undefined;
+
+  const { contract } = useRawContract<Psp22ContractApi>(psp22Metadata as any, contractAddressToCheck);
 
   useEffect(() => {
     let mounted = true;

@@ -137,12 +137,14 @@ export default function Psp22Board() {
           <Button mt={4} size='sm' onClick={doCheckBalance}>
             Check Balance
           </Button>
-          <Box mt={4}>
-            Balance:{' '}
-            <PendingText fontWeight='600' isLoading={loadingAnotherBalance}>
-              {formatBalance(addressBalance, tokenDecimal)} {tokenSymbol}
-            </PendingText>
-          </Box>
+          {addressBalance !== undefined && !!address && (
+            <Box mt={4}>
+              Balance:{' '}
+              <PendingText fontWeight='600' isLoading={loadingAnotherBalance}>
+                {formatBalance(addressBalance, tokenDecimal)} {tokenSymbol}
+              </PendingText>
+            </Box>
+          )}
         </Box>
         <Divider my={4} />
         <Box>
