@@ -19,6 +19,7 @@ type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitN
  * @param event - The name of the event to watch for.
  * @param onNewEvent - Callback function to be called when new events are detected.
  *                     It's recommended to wrap this in useCallback to prevent unnecessary re-renders.
+ * @param enabled - Optional boolean to enable or disable the event watching. Defaults to true.
  */
 export function useWatchContractEvent<
   T extends GenericContractApi = GenericContractApi,
