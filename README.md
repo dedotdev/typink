@@ -181,34 +181,22 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 
 #### Providers
 
-- `TypinkProvider`
-
-⏳
+- `TypinkProvider`: A global provider for Typink DApps, it managed shared state internally so hooks and child components can access (accounts, signer, wallet connection, Dedot clients, contract deployments ...)
 
 #### Hooks
 
-- `useTypink`
-- `useBalance`, `useBalances`
-- `useRawContract`
-- `useContract`
-- `useContractTx`
-- `useContractQuery`
-- `useWatchContractQuery`
-- `useDeployer`
-- `useDeployerTx`
-- `useWallets`
-- `useWatchContractEvent`
-- `usePSP22Balance`
-
-⏳
-
-#### Support networks
-
-1. Development
-2. Testnet
-3. Mainnet
-
-⏳
+- `useTypink`: Give access to internal shared state managed by `TypinkProvider` giving access to connected account, signer, clients, contract deployments ... 
+- `useBalance`, `useBalances`: Fetch native Substrate balances of an address or list of addresses, helpful for checking if the account has enough fund to making transactions 
+- `useRawContract`: Create & manage `Contract` instance given its metadata, address
+- `useContract`: Create & manage `Contract` instance given its unique id from the registered contract deployments 
+- `useContractTx`: Provides functionality to sign and send transactions to a smart contract, and tracks the progress of the transaction.
+- `useContractQuery`: Help making a contract query
+- `useWatchContractQuery`: Similar to `useContractQuery` with ability to watch for changes
+- `useDeployer`: Create & manage `ContractDeployer` instance given its unique id from the registered contract deployments
+- `useDeployerTx`: Similar to `useDeployerTx`, this hook provides functionality to sign and send transactions to deploy a smart contract, and tracks the progress of the transaction.
+- `useWallets`: Access available/installed extension wallets, helpful when building a wallet connector
+- `useWatchContractEvent`: Help watch for a specific contract event and perform a specific action
+- `usePSP22Balance`: Fetch balance of an address from a PSP22 contract with ability to watch for balance changing
 
 ### Examples
 
