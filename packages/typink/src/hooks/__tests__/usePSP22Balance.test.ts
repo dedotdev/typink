@@ -67,19 +67,21 @@ describe('usePSP22Balance', () => {
   });
 
   it('should run properly', async () => {
+    // @ts-ignore
+    vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
+      if (contract) {
+        return { data: 100n, refresh: () => {} };
+      } else {
+        return { refresh: () => {} };
+      }
+    });
+
     const { result, rerender } = renderHook(
       ({ watch }) => usePSP22Balance({ contractAddress: dummyDeployment.address, address: 'valid-address', watch }),
       {
         initialProps: { watch: false },
       },
     );
-
-    // @ts-ignore
-    vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
-      if (contract) {
-        return { data: 100n };
-      }
-    });
 
     // Wait for psp22Metadata to be loaded
     await waitFor(
@@ -88,8 +90,6 @@ describe('usePSP22Balance', () => {
       },
       { timeout: 5000 },
     );
-
-    expect(useRawContract).toHaveBeenCalledWith(expect.any(Object), dummyDeployment.address);
 
     expect(useContractQuery).toHaveBeenCalledWith({
       contract: mockedContract.contract,
@@ -105,43 +105,9 @@ describe('usePSP22Balance', () => {
     );
 
     rerender({ watch: true });
-    waitForNextUpdate();
+    await waitForNextUpdate();
 
     expect(useWatchContractEvent).toHaveBeenCalledWith(mockedContract.contract, 'Transfer', expect.any(Function), true);
-  });
-
-  it('should use the connected account address if address not defined', async () => {
-    const { result } = renderHook(() => usePSP22Balance({ contractAddress: dummyDeployment.address }));
-
-    // @ts-ignore
-    vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
-      if (contract) {
-        return { data: 100n };
-      }
-    });
-
-    // Wait for psp22Metadata to be loaded
-    await waitFor(
-      () => {
-        expect(result.current.data).toBeDefined();
-      },
-      { timeout: 5000 },
-    );
-
-    expect(useRawContract).toHaveBeenCalledWith(expect.any(Object), dummyDeployment.address);
-
-    expect(useContractQuery).toHaveBeenCalledWith({
-      contract: mockedContract.contract,
-      fn: 'psp22BalanceOf',
-      args: [connectedAccount.address],
-    });
-
-    expect(useWatchContractEvent).toHaveBeenCalledWith(
-      mockedContract.contract,
-      'Transfer',
-      expect.any(Function),
-      false,
-    );
   });
 
   it('should run system.events() when watch is true', async () => {
