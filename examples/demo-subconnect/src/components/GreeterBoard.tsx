@@ -71,8 +71,6 @@ export default function GreetBoard() {
     contract,
     'Greeted',
     useCallback((events) => {
-      // re-fetch the greeting message
-
       events.forEach((greetedEvent) => {
         const {
           name,
