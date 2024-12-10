@@ -50,7 +50,7 @@ describe('usePSP22Balance', () => {
   beforeEach(() => {
     vi.mocked(useTypink).mockReturnValue(mockUseTypink as any);
     vi.mocked(useRawContract).mockImplementation((metadata, address) => {
-      if (address) {
+      if (metadata && address) {
         return mockContract as any;
       } else {
         return { contract: undefined };
@@ -108,6 +108,7 @@ describe('usePSP22Balance', () => {
       usePSP22Balance({ contractAddress: mockDeployment.address, address: 'valid-address', watch: false }),
     );
 
+    await waitForNextUpdate();
     expect(useWatchContractEvent).toHaveBeenCalledWith(mockContract.contract, 'Transfer', expect.any(Function), false);
     expect(mockClient.query.system.events).not.toHaveBeenCalled();
   });
