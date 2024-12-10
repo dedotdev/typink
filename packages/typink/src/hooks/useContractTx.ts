@@ -11,7 +11,7 @@ import {
 import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { TypinkError } from '../utils/index.js';
-import { useDeepDeps } from 'src/hooks/internal';
+import { useDeepDeps } from './internal/index.js';
 
 type UseContractTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['tx']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;

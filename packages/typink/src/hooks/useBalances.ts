@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { SubstrateAddress } from '../types.js';
 import { Unsub } from 'dedot/types';
-import { useDeepDeps } from 'src/hooks/internal';
+import { useDeepDeps } from './internal/index.js';
 
 export interface Balance {
   free: bigint;

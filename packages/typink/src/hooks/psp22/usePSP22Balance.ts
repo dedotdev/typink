@@ -4,7 +4,7 @@ import { useContractQuery } from '../useContractQuery.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { useCallback, useEffect, useState } from 'react';
 import { SubstrateAddress } from '../../types.js';
-import { useDeepDeps } from 'src/hooks/internal';
+import { useDeepDeps } from '../internal/index.js';
 
 /**
  * A custom React hook that retrieves and optionally watches the PSP22 token balance for a given address.
