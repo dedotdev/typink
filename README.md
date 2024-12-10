@@ -177,7 +177,7 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 </TypinkProvider>
 ```
 
-### Usage
+### Providers & Hooks
 
 #### Providers
 
@@ -198,10 +198,140 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 - `useWatchContractEvent`: Help watch for a specific contract event and perform a specific action
 - `usePSP22Balance`: Fetch balance of an address from a PSP22 contract with ability to watch for balance changing
 
+### Usage
+
+#### `useContract` & `useContractQuery`
+
+Instantiate a Greeter `Contract` instance using `useContract` and fetching the greet message using `useContractQuery`
+
+```tsx
+// ...
+import { GreeterContractApi } from '@/contracts/types/greeter';
+
+const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
+
+const {
+  data: greet,
+  isLoading,
+  refresh,
+} = useContractQuery({
+  contract,
+  fn: 'greet',
+});
+// ...
+```
+
+#### `useContractTx`
+
+Send a message to update the greeting message using `useContractTx`
+
+```tsx
+// ...
+import { GreeterContractApi } from '@/contracts/types/greeter';
+
+const [message, setMessage] = useState('');
+const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
+const setMessageTx = useContractTx(contract, 'setMessage');
+
+const doSetMessage = async () => {
+  if (!contract || !message) return;
+
+  try {
+    await setMessageTx.signAndSend({
+      args: [message],
+      callback: ({ status }) => {
+        console.log(status);
+
+        if (status.type === 'BestChainBlockIncluded') {
+          setMessage(''); // Reset the message if the transaction is in block
+        }
+
+        // TODO showing a toast notifying transaction status
+      },
+    });
+  } catch (e: any) {
+    console.error('Fail to make transaction:', e);
+    // TODO showing a toast message
+  }
+}
+// ...
+```
+
+#### `useDeployer` & `useDeployerTx`
+
+Instantiate a `ContractDeployer` instance to deploy Greeter contract using `useDeployer` and deploying the contract using `useDeployerTx`
+
+```tsx
+// ...
+
+import { greeterMetadata } from '@/contracts/deployments.ts';
+
+const wasm = greeterMetadata.source.wasm; // or greeterMetadata.source.hash (wasm hash code)
+const { deployer } = useDeployer<GreeterContractApi>(greeterMetadata as any, wasm);
+const newGreeterTx = useDeployerTx(deployer, 'new');
+const [initMessage, setInitMessage] = useState<string>('');
+
+const deployContraact = async () => {
+  if (!contract || !initMessage) return;
+
+  try {
+    // a random salt to make sure we don't get into duplicated contract deployments issue
+    const salt = numberToHex(Date.now()); 
+    await newGreeterTx.signAndSend({
+      args: [initMessage],
+      txOptions: { salt },
+      callback: ({ status }, deployedContractAddress) => {
+        console.log(status);
+
+        if (status.type === 'BestChainBlockIncluded') {
+          setInitMessage('');
+        }
+
+        if (deployedContractAddress) {
+          console.log('Contract is deployed at address', deployedContractAddress);
+        }
+
+        // TODO showing a toast notifying transaction status
+      },
+    });
+  } catch (e: any) {
+    console.error('Fail to make transaction:', e);
+    // TODO showing a toast message
+  }
+}
+
+// ...
+```
+
+#### `useWatchContractEvent`
+
+Watching for the `Greeted` event emitted
+
+```tsx
+// ...
+const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
+
+useWatchContractEvent(
+  contract,
+  'Greeted', // fully-typed event name with auto-completion
+  useCallback((events) => {
+    events.forEach((greetedEvent) => {
+      const {
+        name,
+        data: { from, message },
+      } = greetedEvent; // fully-typed events
+
+      console.log(`Found a ${name} event sent from: ${from?.address()}, message: ${message}`);
+    });
+  }, []),
+)
+// ...
+```
+
 ### Examples
 
-- [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo)
-- [Demo with SubConnect](https://github.com/dedotdev/typink/tree/main/examples/demo-subconnect)
+- [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo) (https://typink-demo.netlify.app/)
+- [Demo with SubConnect](https://github.com/dedotdev/typink/tree/main/examples/demo-subconnect) (https://typink-subconnect.netlify.app/)
 
 ### License
 
