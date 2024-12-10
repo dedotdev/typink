@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import { useWallets } from '../hooks/index.js';
+import { useIsFirstRender, useWallets } from '../hooks/index.js';
 import { InjectedAccount } from '../types.js';
 import { Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
@@ -61,6 +61,8 @@ export function WalletSetupProvider({
 
   const connectedWallet = useMemo(() => getWallet(connectedWalletId), [connectedWalletId]);
 
+  const isFirstRender = useIsFirstRender();
+
   useEffect(() => {
     setSigner(initialSigner);
   }, [initialSigner]);
@@ -68,7 +70,8 @@ export function WalletSetupProvider({
   useEffect(() => {
     if (initialConnectedAccount) {
       setConnectedAccount(initialConnectedAccount);
-    } else {
+    } else if (!isFirstRender) {
+      // make sure we don't accidentally remove connected account on first render
       removeConnectedAccount();
     }
   }, [initialConnectedAccount]);
@@ -90,10 +93,13 @@ export function WalletSetupProvider({
 
       const injected = await injectedProvider.enable('Sample Dapp');
 
-      // reset connected account on wallet changing
+      // reset accounts on wallet changing
       setAccounts([]);
-      removeConnectedAccount();
-      // TODO how should we pick the first/default account after wallet connected/switched
+
+      // only remove the connected account if we're switching to a different wallet
+      if (!isFirstRender) {
+        removeConnectedAccount();
+      }
 
       unsub = injected.accounts.subscribe(setAccounts);
 
@@ -109,8 +115,9 @@ export function WalletSetupProvider({
 
   const disconnect = () => {
     removeConnectedWalletId();
-    setSigner(undefined);
     removeConnectedAccount();
+    setSigner(undefined);
+    setAccounts([]);
   };
 
   return (

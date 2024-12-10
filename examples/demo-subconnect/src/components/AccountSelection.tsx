@@ -7,8 +7,8 @@ import { useApp } from '@/providers/AppProvider.tsx';
 import { useConnectWallet } from '@subwallet-connect/react';
 
 export default function AccountSelection() {
-  const [{ wallet }, _, disconnect] = useConnectWallet();
-  const { connectedAccount, setConnectedAccount } = useApp();
+  const [{ wallet }] = useConnectWallet();
+  const { connectedAccount, setConnectedAccount, signOut } = useApp();
   const { network } = useTypink();
 
   const accounts = useMemo(
@@ -66,7 +66,7 @@ export default function AccountSelection() {
             </MenuItem>
           ))}
           <MenuDivider />
-          <MenuItem onClick={() => disconnect(wallet!)} color='red.500'>
+          <MenuItem onClick={signOut} color='red.500'>
             Sign Out
           </MenuItem>
         </MenuList>
