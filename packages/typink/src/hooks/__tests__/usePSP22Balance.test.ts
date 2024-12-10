@@ -118,7 +118,9 @@ describe('usePSP22Balance', () => {
     const useContractQuery = await import('../useContractQuery.js');
     useContractQuery.useContractQuery = (await vi.importActual('../useContractQuery')).useContractQuery as any;
 
-    const { result } = renderHook(() => usePSP22Balance({ contractAddress: dummyDeployment.address, watch: true }));
+    const { result } = renderHook(() =>
+      usePSP22Balance({ contractAddress: dummyDeployment.address, address: 'valid-address', watch: true }),
+    );
 
     await waitFor(() => {
       expect(result.current).toBeDefined();
