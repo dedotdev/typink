@@ -7,6 +7,7 @@ import { RpcVersion } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
+import { useLocalStorage } from 'react-use';
 
 export interface ClientContextProps {
   client?: ISubstrateClient<SubstrateApi[RpcVersion]>;
@@ -55,7 +56,7 @@ export function ClientProvider({
     return (defaultNetworkId || supportedNetworks[0].id) as NetworkId;
   }, [defaultNetworkId, supportedNetworks]);
 
-  const [networkId, setNetworkId] = useState<NetworkId>(initialNetworkId);
+  const [networkId, setNetworkId] = useLocalStorage<NetworkId>('TYPINK::CONNECTED_NETWORK', initialNetworkId);
 
   const network = useMemo(
     () => supportedNetworks.find((network) => network.id === networkId),
@@ -72,12 +73,12 @@ export function ClientProvider({
 
   return (
     <ClientContext.Provider
-      key={networkId}
+      key={networkId!}
       value={{
         client,
         ready,
         network,
-        networkId,
+        networkId: networkId!,
         setNetworkId,
         cacheMetadata,
         supportedNetworks,
