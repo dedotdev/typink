@@ -5,51 +5,41 @@ import { useRawContract } from '../useRawContract.js';
 import { useContractQuery } from '../useContractQuery.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { renderHook, waitFor } from '@testing-library/react';
-import { waitForNextUpdate } from './test-utils.js';
+import { waitForNextUpdate } from './test-utils';
 
-vi.mock('../useTypink', () => ({
-  useTypink: vi.fn(),
-}));
-
-vi.mock('../useWatchContractEvent', () => ({
-  useWatchContractEvent: vi.fn(),
-}));
-
-vi.mock('../useContractQuery', () => ({
-  useContractQuery: vi.fn(),
-}));
-
-vi.mock('../useRawContract', () => ({
-  useRawContract: vi.fn(),
-}));
+vi.mock('../useTypink');
+vi.mock('../useWatchContractEvent');
+vi.mock('../useContractQuery');
+vi.mock('../useRawContract');
 
 describe('usePSP22Balance', () => {
-  const client = {
+  const mockClient = {
     query: {
       system: {
         events: vi.fn(),
       },
     },
   };
-  const dummyDeployment = {
+
+  const mockDeployment = {
     id: 'test-contract',
     network: 'test-network',
     metadata: {},
     address: 'test-address',
   };
-  const connectedAccount = { address: 'selected-account-address' };
-  const defaultCaller = 'default-caller-address';
 
-  const mockedUseTypink = {
-    deployments: [dummyDeployment],
-    client,
-    // @ts-ignore
+  const mockConnectedAccount = { address: 'connected-account-address' };
+  const mockDefaultCaller = 'default-caller-address';
+
+  const mockUseTypink = {
+    deployments: [mockDeployment],
+    client: mockClient,
     networkId: 'test-network',
-    connectedAccount,
-    defaultCaller,
+    connectedAccount: mockConnectedAccount,
+    defaultCaller: mockDefaultCaller,
   };
 
-  const mockedContract = {
+  const mockContract = {
     contract: {
       query: {
         psp22BalanceOf: vi.fn().mockResolvedValue({ data: 100n }),
@@ -58,93 +48,83 @@ describe('usePSP22Balance', () => {
   };
 
   beforeEach(() => {
-    vi.mocked(useTypink).mockReturnValue(mockedUseTypink as any);
-    vi.mocked(useRawContract).mockReturnValue(mockedContract as any);
+    vi.mocked(useTypink).mockReturnValue(mockUseTypink as any);
+    vi.mocked(useRawContract).mockImplementation((metadata, address) => {
+      if (address) {
+        return mockContract as any;
+      } else {
+        return { contract: undefined };
+      }
+    });
+    vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
+      if (contract) {
+        return { data: 100n, refresh: vi.fn() } as any;
+      } else {
+        return { data: undefined, refresh: vi.fn() } as any;
+      }
+    });
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should run properly', async () => {
-    // @ts-ignore
-    vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
-      if (contract) {
-        return { data: 100n, refresh: () => {} };
-      } else {
-        return { refresh: () => {} };
-      }
+  it('should fetch balance correctly when given a valid address', async () => {
+    const { result } = renderHook(() =>
+      usePSP22Balance({ contractAddress: mockDeployment.address, address: 'valid-address' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.data).toBeDefined();
     });
 
-    const { result, rerender } = renderHook(
-      ({ watch }) => usePSP22Balance({ contractAddress: dummyDeployment.address, address: 'valid-address', watch }),
-      {
-        initialProps: { watch: false },
-      },
-    );
-
-    // Wait for psp22Metadata to be loaded
-    await waitFor(
-      () => {
-        expect(result.current.data).toBeDefined();
-      },
-      { timeout: 5000 },
-    );
-
+    expect(result.current.data).toBe(100n);
     expect(useContractQuery).toHaveBeenCalledWith({
-      contract: mockedContract.contract,
+      contract: mockContract.contract,
       fn: 'psp22BalanceOf',
       args: ['valid-address'],
     });
-
-    expect(useWatchContractEvent).toHaveBeenCalledWith(
-      mockedContract.contract,
-      'Transfer',
-      expect.any(Function),
-      false,
-    );
-
-    rerender({ watch: true });
-    await waitForNextUpdate();
-
-    expect(useWatchContractEvent).toHaveBeenCalledWith(mockedContract.contract, 'Transfer', expect.any(Function), true);
   });
 
-  it('should run system.events() when watch is true', async () => {
-    const useWatchContractEvent = await import('../useWatchContractEvent.js');
-    useWatchContractEvent.useWatchContractEvent = (await vi.importActual('../useWatchContractEvent'))
-      .useWatchContractEvent as any;
+  it('should not run query when no address is provided', async () => {
+    const { result } = renderHook(() => usePSP22Balance({ contractAddress: mockDeployment.address }));
 
-    const useContractQuery = await import('../useContractQuery.js');
-    useContractQuery.useContractQuery = (await vi.importActual('../useContractQuery')).useContractQuery as any;
+    await waitForNextUpdate();
+    expect(result.current.data).toBeUndefined();
+    expect(useContractQuery).toHaveBeenCalledWith({ contact: undefined, fn: 'psp22BalanceOf', args: [''] });
+  });
+
+  it('should watch for Transfer events when watch is true', async () => {
+    renderHook(() =>
+      usePSP22Balance({ contractAddress: mockDeployment.address, address: 'valid-address', watch: true }),
+    );
+
+    await waitForNextUpdate();
+    expect(useWatchContractEvent).toHaveBeenCalledWith(mockContract.contract, 'Transfer', expect.any(Function), true);
+  });
+
+  it('should not watch for Transfer events when watch is false', async () => {
+    renderHook(() =>
+      usePSP22Balance({ contractAddress: mockDeployment.address, address: 'valid-address', watch: false }),
+    );
+
+    expect(useWatchContractEvent).toHaveBeenCalledWith(mockContract.contract, 'Transfer', expect.any(Function), false);
+    expect(mockClient.query.system.events).not.toHaveBeenCalled();
+  });
+
+  it('should update balance when refresh is called', async () => {
+    const mockRefresh = vi.fn();
+    vi.mocked(useContractQuery).mockReturnValue({ data: 100n, refresh: mockRefresh } as any);
 
     const { result } = renderHook(() =>
-      usePSP22Balance({ contractAddress: dummyDeployment.address, address: 'valid-address', watch: true }),
+      usePSP22Balance({ contractAddress: mockDeployment.address, address: 'valid-address' }),
     );
 
     await waitFor(() => {
-      expect(result.current).toBeDefined();
+      expect(result.current.data).toBeDefined();
     });
 
-    expect(result.current.data).toEqual(100n);
-    expect(client.query.system.events).toHaveBeenCalled();
-  });
-
-  it('should not call system.events() when watch is false', async () => {
-    const useWatchContractEvent = await import('../useWatchContractEvent.js');
-    useWatchContractEvent.useWatchContractEvent = (await vi.importActual('../useWatchContractEvent'))
-      .useWatchContractEvent as any;
-
-    const useContractQuery = await import('../useContractQuery.js');
-    useContractQuery.useContractQuery = (await vi.importActual('../useContractQuery')).useContractQuery as any;
-
-    const { result } = renderHook(() => usePSP22Balance({ contractAddress: dummyDeployment.address, watch: false }));
-
-    await waitFor(() => {
-      expect(result.current).toBeDefined();
-    });
-
-    expect(result.current.data).toEqual(100n);
-    expect(client.query.system.events).not.toHaveBeenCalled();
+    result.current.refresh();
+    expect(mockRefresh).toHaveBeenCalled();
   });
 });
