@@ -6,11 +6,11 @@
     "e2e:test": "npx vitest --watch=false --no-file-parallelism"
   },
   "dependencies": {
-    "@dedot/chaintypes": "*",
+    "@dedot/chaintypes": "^0.44.0",
     "@polkadot/keyring": "^13.2.3",
     "@polkadot/types": "^15.0.1",
     "@polkadot/util-crypto": "^13.2.3",
-    "dedot": "^0.6.0",
+    "dedot": "^0.6.1",
     "happy-dom": "^15.11.7",
     "typink": "workspace:*"
   },
