@@ -49,7 +49,7 @@ export interface InjectedSigner {
 
 export interface SignerPayloadJSON {
   address: string;
-  assetId?: number | object;
+  assetId?: HexString;
   blockHash: HexString;
   blockNumber: HexString;
   era: HexString;

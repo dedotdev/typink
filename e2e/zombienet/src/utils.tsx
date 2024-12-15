@@ -1,4 +1,4 @@
-import { development, Props, TypinkProvider } from 'typink';
+import { development, InjectedSigner, Props, SignerPayloadJSON, TypinkProvider } from 'typink';
 import Keyring from '@polkadot/keyring';
 import { FlipperContractApi } from './contracts/flipper';
 // @ts-ignore
@@ -7,7 +7,6 @@ import { ContractDeployer, parseRawMetadata } from 'dedot/contracts';
 import { assert, deferred } from 'dedot/utils';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { Signer, SignerPayloadJSON } from '@polkadot/types/types';
 import { TypeRegistry } from '@polkadot/types';
 
 await cryptoWaitReady();
@@ -33,7 +32,7 @@ export const mockSigner = {
       ...result,
     };
   },
-} as Signer;
+} as InjectedSigner;
 
 export const wrapper = ({ children }: Props) => (
   <TypinkProvider

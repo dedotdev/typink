@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useIsFirstRender, useWallets } from '../hooks/index.js';
-import { InjectedAccount } from '../types.js';
+import { InjectedAccount, InjectedSigner } from '../types.js';
 import { Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
-import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
 

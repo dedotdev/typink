@@ -1,6 +1,5 @@
 import { createContext, useContext } from 'react';
-import { InjectedAccount, Props } from '../types.js';
-import type { Signer as InjectedSigner } from '@polkadot/api/types';
+import { InjectedAccount, InjectedSigner, Props } from '../types.js';
 
 export interface WalletContextProps {
   signer?: InjectedSigner;
