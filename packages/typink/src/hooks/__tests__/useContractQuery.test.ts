@@ -1,8 +1,9 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useContractQuery } from '../useContractQuery.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contract } from 'dedot/contracts';
 import { waitForNextUpdate } from './test-utils.js';
+import { useTypink } from '../useTypink.js';
 
 // Mock the external dependencies
 vi.mock('react-use', () => ({
@@ -14,15 +15,32 @@ vi.mock('./internal/index.js', () => ({
   useRefresher: vi.fn(() => ({ refresh: vi.fn(), counter: 0 })),
 }));
 
+vi.mock('../useTypink', () => ({
+  useTypink: vi.fn(),
+}));
+
 describe('useContractQuery', () => {
   let contract: Contract<any>;
+
+  // Mock the client
+  const mockClient = {
+    query: {
+      system: {
+        number: vi.fn().mockResolvedValue(0),
+      },
+    },
+  };
 
   beforeEach(() => {
     contract = {
       query: {
+        message: vi.fn().mockResolvedValue({ data: 'initial result' }),
         testFunction: vi.fn(),
       },
+      client: mockClient,
     } as any;
+
+    vi.mocked(useTypink).mockReturnValue({ client: mockClient } as any);
   });
 
   afterEach(() => {
@@ -181,5 +199,41 @@ describe('useContractQuery', () => {
     expect(result.current.isLoading).toBe(true);
     expect(result.current.error).toBeUndefined();
     expect(result.current.data).toBeUndefined();
+  });
+
+  it('should refresh when client.query.system.number changes when watch is enabled', async () => {
+    // Simulate a block number change
+    mockClient.query.system.number.mockImplementation((callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback(2);
+          setTimeout(() => {
+            callback(3);
+          }, 50);
+        }, 100);
+
+        resolve(() => {});
+      });
+    });
+
+    const { result } = renderHook(() =>
+      useContractQuery({
+        contract,
+        // @ts-ignore
+        fn: 'message',
+        watch: true,
+      }),
+    );
+
+    await waitForNextUpdate();
+
+    expect(result.current.data).toEqual('initial result');
+
+    contract.query.message.mockResolvedValue({ data: 'updated result' });
+
+    await waitFor(() => {
+      expect(contract.query.message).toHaveBeenCalledTimes(3);
+      expect(result.current.data).toEqual('updated result');
+    });
   });
 });
