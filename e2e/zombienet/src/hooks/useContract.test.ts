@@ -1,9 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { ALICE, deployFlipperContract } from '../utils';
+import { ALICE, deployFlipperContract, flipperMetadata } from '../utils';
 import { numberToHex } from 'dedot/utils';
 import { Contract } from 'dedot/contracts';
-import { FlipperContractApi } from 'contracts/flipper';
-import * as flipper from '../contracts/flipper_v5.json';
+import { FlipperContractApi } from '../contracts/flipper';
 
 describe('useContract', () => {
   let contract: Contract<FlipperContractApi>;
@@ -11,7 +10,7 @@ describe('useContract', () => {
     const randomSalt = numberToHex(Date.now());
     const address = await deployFlipperContract(randomSalt);
     console.log('Deployed contract address', address);
-    contract = new Contract(client, flipper as any, address, { defaultCaller: ALICE });
+    contract = new Contract(client, flipperMetadata, address, { defaultCaller: ALICE });
   });
 
   it('get flipper value', async () => {

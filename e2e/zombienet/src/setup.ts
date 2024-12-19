@@ -16,7 +16,7 @@ beforeAll(async () => {
       }
     });
   });
-}, 120_000);
+}, 300_000);
 
 afterAll(async () => {
   await global.client.disconnect();

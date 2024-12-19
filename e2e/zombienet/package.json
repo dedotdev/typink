@@ -2,6 +2,7 @@
   "name": "zombienet",
   "author": "Thang Vu <thang@dedot.dev>",
   "private": true,
+  "type": "module",
   "scripts": {
     "e2e:test": "npx vitest --watch=false --no-file-parallelism"
   },
