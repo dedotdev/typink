@@ -6,7 +6,7 @@ import { Psp22ContractApi } from '../contracts/psp22';
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePSP22Balance } from 'typink';
 
-describe('usePSP22Balance_2', () => {
+describe('usePSP22Balance', () => {
   let contractAddress: string, contract: Contract<Psp22ContractApi>;
   beforeAll(async () => {
     const randomSalt = numberToHex(Date.now());

@@ -50,10 +50,6 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
       );
 
       setContract(contract);
-
-      return () => {
-        setContract(undefined);
-      };
     },
     useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
   );

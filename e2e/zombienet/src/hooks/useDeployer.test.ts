@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer } from 'typink';
 import { ALICE, BOB, flipperMetadata, wrapper } from '../utils';
-import { FlipperContractApi } from 'contracts/flipper';
+import { FlipperContractApi } from '../contracts/flipper';
 
 describe('useDeployer', () => {
   it('should load deployer properly', async () => {
-    const { result } = renderHook(() => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!), { wrapper });
+    const { result } = renderHook(
+      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
+      { wrapper },
+    );
 
     await waitFor(() => {
       expect(result.current.deployer).toBeDefined();
@@ -17,7 +20,7 @@ describe('useDeployer', () => {
     const dryRunResult = await result.current.deployer!.query.new(false, { salt });
 
     expect(dryRunResult.address).toBeDefined();
-    expect(dryRunResult.raw.gasRequired).toBeDefined(); 
+    expect(dryRunResult.raw.gasRequired).toBeDefined();
   });
 
   it('should update deployer when defaultCaller changes', async () => {

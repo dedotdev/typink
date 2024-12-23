@@ -1,4 +1,4 @@
-import { development, InjectedSigner, Props, SignerPayloadJSON, TypinkProvider } from 'typink';
+import { ContractDeployment, development, InjectedSigner, Props, SignerPayloadJSON, TypinkProvider } from 'typink';
 import Keyring from '@polkadot/keyring';
 import { FlipperContractApi } from './contracts/flipper';
 import { Psp22ContractApi } from './contracts/psp22';
@@ -39,17 +39,48 @@ export const mockSigner = {
   },
 } as InjectedSigner;
 
-export const wrapper = ({ children }: Props) => (
+export const Wrapper = ({ children, deployments = [] }: Props) => (
   <TypinkProvider
     supportedNetworks={[development]}
     defaultNetworkId={development.id}
-    deployments={[]}
+    deployments={deployments}
     defaultCaller={ALICE}
     signer={mockSigner}
     connectedAccount={{ address: ALICE }}>
     {children}
   </TypinkProvider>
 );
+
+export const wrapper = Wrapper;
+
+export enum ContractId {
+  FLIPPER = 'FLIPPER',
+  PSP22 = 'PSP22',
+}
+
+export const newDeployment = (id: string, address: string): ContractDeployment => {
+  if (id === ContractId.PSP22) {
+    return {
+      id,
+      address,
+      network: development.id,
+      metadata: psp22Metadata,
+    };
+  } else if (id === ContractId.FLIPPER) {
+    return {
+      id,
+      address,
+      network: development.id,
+      metadata: flipperMetadata,
+    };
+  }
+
+  throw new Error(`Invalid contract ID: ${id}`);
+};
+
+export const wrapperFn = (deployments: ContractDeployment[]) => {
+  return ({ children }: Props) => <Wrapper deployments={deployments}>{children}</Wrapper>;
+};
 
 export const transferNativeBalance = async (from: KeyringPair, to: string, value: bigint): Promise<void> => {
   const defer = deferred<void>();
