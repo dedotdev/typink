@@ -191,7 +191,6 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 - `useContract`: Create & manage `Contract` instance given its unique id from the registered contract deployments 
 - `useContractTx`: Provides functionality to sign and send transactions to a smart contract, and tracks the progress of the transaction.
 - `useContractQuery`: Help making a contract query
-- `useWatchContractQuery`: Similar to `useContractQuery` with ability to watch for changes
 - `useDeployer`: Create & manage `ContractDeployer` instance given its unique id from the registered contract deployments
 - `useDeployerTx`: Similar to `useContractTx`, this hook provides functionality to sign and send transactions to deploy a smart contract, and tracks the progress of the transaction.
 - `useWallets`: Access available/installed extension wallets, helpful when building a wallet connector

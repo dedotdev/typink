@@ -1,4 +1,4 @@
-import { InjectedWindow } from '../types';
+import { InjectedWindow } from '../types.js';
 
 export interface WalletOptions {
   id: string;
