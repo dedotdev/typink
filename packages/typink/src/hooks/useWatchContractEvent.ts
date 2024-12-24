@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useTypink } from './useTypink.js';
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
-import { Unsub } from 'dedot/types';
 import { useDeepDeps } from './internal/index.js';
+import { Unsub } from 'dedot/types/index.js';
 
-type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
+export type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
 }>;
 
@@ -30,7 +30,7 @@ export function useWatchContractEvent<
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
   enabled: boolean = true,
 ): void {
-  const { client } = useTypink();
+  const { client, sub } = useTypink();
 
   useEffect(
     () => {
@@ -40,21 +40,15 @@ export function useWatchContractEvent<
       let done = false;
       let unsub: Unsub | undefined;
 
-      (async () => {
-        // TODO reuse this subscription more efficiently
-        unsub = await client.query.system.events((events) => {
-          if (done) {
-            unsub && unsub();
-            return;
-          }
+      unsub = sub((events) => {
+        if (done) return;
 
-          const contractEvents = contract.events[event].filter(events);
-          if (contractEvents.length === 0) return;
+        const contractEvents = contract.events[event].filter(events);
+        if (contractEvents.length === 0) return;
 
-          // @ts-ignore
-          onNewEvent(contractEvents);
-        });
-      })();
+        // @ts-ignore
+        onNewEvent(contractEvents);
+      });
 
       return () => {
         unsub && unsub();

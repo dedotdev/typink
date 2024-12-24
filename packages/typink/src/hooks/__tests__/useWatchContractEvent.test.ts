@@ -1,17 +1,23 @@
-import { renderHook } from '@testing-library/react-hooks';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { useTypink } from '../useTypink.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contract } from 'dedot/contracts';
 import { Psp22ContractApi } from '../psp22/contracts/psp22';
-import { waitForNextUpdate } from './test-utils.js';
+import { useListeners, useClient } from '../../providers/index.js';
+import { listenerWrapper, waitForNextUpdate } from './test-utils.js';
+import type { ContractEvent } from 'dedot/contracts';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
 }));
 
+vi.mock('../../providers/ClientProvider.js', () => ({
+  useClient: vi.fn(),
+}));
+
 describe('useWatchContractEvent', () => {
-  const client = {
+  const mockClient = {
     query: {
       system: {
         events: vi.fn(),
@@ -19,77 +25,103 @@ describe('useWatchContractEvent', () => {
     },
   };
 
-  const contract: Contract<Psp22ContractApi> = {
+  const mockSub = vi.fn();
+
+  const mockContract = {
     events: {
       Transfer: {
-        filter: vi.fn(),
+        filter: (events: ContractEvent[]) => events.filter((event) => event.name === 'Transfer'),
       },
     },
-  } as unknown as Contract<any>;
-
-  const mockUseTypink = {
-    client,
-  };
+  } as any as Contract<Psp22ContractApi>;
 
   beforeEach(() => {
-    vi.mocked(useTypink).mockReturnValue(mockUseTypink as any);
+    vi.mocked(useClient).mockReturnValue({
+      client: mockClient,
+    } as any);
+
+    vi.mocked(useTypink).mockReturnValue({
+      client: mockClient,
+      sub: mockSub,
+    } as any);
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should not call system.events if client is not defined', () => {
-    vi.mocked(useTypink).mockReturnValue({ client: undefined } as any);
-
-    renderHook(() => useWatchContractEvent(contract, 'Transfer', vi.fn()));
-
-    expect(client.query.system.events).not.toHaveBeenCalled();
-  });
-
-  it('should not call system.events if contract is not defined', () => {
-    renderHook(() =>
-      // @ts-ignore
-      useWatchContractEvent(undefined, 'Transfer', vi.fn()),
+  it('should successfully subscribe to the system events when all parameters are valid', async () => {
+    const { rerender } = renderHook(
+      ({ enabled }) => useWatchContractEvent(mockContract, 'Transfer', vi.fn(), enabled),
+      { initialProps: { enabled: true } },
     );
 
-    expect(client.query.system.events).not.toHaveBeenCalled();
+    expect(mockSub).toHaveBeenCalledTimes(1);
+
+    rerender({ enabled: false });
+    expect(mockSub).toHaveBeenCalledTimes(1);
+
+    rerender({ enabled: true });
+    expect(mockSub).toHaveBeenCalledTimes(2);
   });
 
-  it('should not call system.events if enabled is false', () => {
-    renderHook(() => useWatchContractEvent(contract, 'Transfer', vi.fn(), false));
+  it('should call the callback function when new events are detected', async () => {
+    const mockApprovalEvent = {
+      name: 'Approval',
+      data: {},
+    };
 
-    expect(client.query.system.events).not.toHaveBeenCalled();
-  });
+    const mockTransferEvent = {
+      name: 'Transfer',
+      data: {},
+    };
 
-  it('should call system.events if all conditions are met', async () => {
-    const onNewEvent = vi.fn();
-    const events = [{ data: { from: 'address1', to: 'address2' } }];
+    mockClient.query.system.events.mockImplementation((callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback([mockTransferEvent]);
+          setTimeout(() => {
+            callback([mockTransferEvent]);
+            callback([mockApprovalEvent]);
+          }, 50);
+        }, 100);
 
-    // @ts-ignore
-    vi.mocked(contract.events.Transfer.filter).mockReturnValue(events);
-    vi.mocked(client.query.system.events).mockImplementation((callback) => {
-      callback(events);
+        resolve(() => {});
+      });
     });
 
-    renderHook(() => useWatchContractEvent(contract, 'Transfer', onNewEvent));
+    const { result } = renderHook(() => useListeners(), { wrapper: listenerWrapper });
 
-    expect(client.query.system.events).toHaveBeenCalled();
-    expect(contract.events.Transfer.filter).toHaveBeenCalledWith(events);
-    expect(onNewEvent).toHaveBeenCalledWith(events);
+    await waitFor(() => {
+      expect(result.current).toBeDefined();
+    });
+
+    mockSub.mockImplementation(result.current.sub);
+
+    const mockCallback = vi.fn();
+    renderHook(() => useWatchContractEvent(mockContract, 'Transfer', mockCallback));
+
+    await waitFor(() => {
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(mockCallback).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('should unsubscribe when component unmounts', async () => {
-    const unsub = vi.fn();
+    const mockUnsub = vi.fn();
 
-    vi.mocked(client.query.system.events).mockResolvedValue(unsub);
-    const { unmount } = renderHook(() => useWatchContractEvent(contract, 'Transfer', vi.fn()));
+    mockSub.mockReturnValue(mockUnsub);
+
+    const { unmount } = renderHook(() => useWatchContractEvent(mockContract, 'Transfer', vi.fn()));
 
     // Wait for unsub to be set
     await waitForNextUpdate();
 
     unmount();
 
-    expect(unsub).toHaveBeenCalled();
+    expect(mockUnsub).toHaveBeenCalled();
   });
 });
