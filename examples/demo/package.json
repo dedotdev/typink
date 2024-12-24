@@ -11,10 +11,10 @@
     "typink": "npx dedot typink -m ./src/contracts/artifacts/psp22/psp22.contract -o ./src/contracts/types && npx dedot typink -m ./src/contracts/artifacts/greeter/greeter.contract -o ./src/contracts/types"
   },
   "dependencies": {
-    "@chakra-ui/icons": "2.2.4",
+    "@chakra-ui/icons": "2.2.5",
     "@chakra-ui/react": "^2.10.4",
     "@chakra-ui/system": "^2.6.2",
-    "@dedot/chaintypes": "^0.44.0",
+    "@dedot/chaintypes": "^0.48.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "dedot": "^0.6.1",
@@ -26,8 +26,8 @@
     "typink": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.3.4",
@@ -35,7 +35,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.16",
     "typescript": "^5.5.2",
-    "vite": "^5.4.11",
-    "vite-tsconfig-paths": "^5.0.1"
+    "vite": "^6.0.5",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
