@@ -23,7 +23,7 @@
     "@subwallet-connect/subwallet-polkadot": "^1.0.8",
     "@subwallet-connect/talisman": "^1.0.8",
     "dedot": "^0.6.1",
-    "framer-motion": "^10.18.0",
+    "framer-motion": "^11.15.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-toastify": "^10.0.6",
