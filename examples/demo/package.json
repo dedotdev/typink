@@ -21,7 +21,7 @@
     "framer-motion": "^10.18.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-toastify": "^10.0.6",
+    "react-toastify": "^11.0.2",
     "react-use": "^17.6.0",
     "typink": "workspace:*"
   },

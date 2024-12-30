@@ -6152,7 +6152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.1.0":
+"clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: 10/cdfb57fa6c7649bbff98d9028c2f0de2f91c86f551179541cf784b1cfdc1562dcb951955f46d54d930a3879931a980e32a46b598acaea274728dbe068deca919
@@ -6703,7 +6703,7 @@ __metadata:
     framer-motion: "npm:^10.18.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-toastify: "npm:^10.0.6"
+    react-toastify: "npm:^11.0.2"
     react-use: "npm:^17.6.0"
     svelte-qrcode: "npm:^1.0.1"
     typescript: "npm:^5.5.2"
@@ -6735,7 +6735,7 @@ __metadata:
     framer-motion: "npm:^10.18.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-toastify: "npm:^10.0.6"
+    react-toastify: "npm:^11.0.2"
     react-use: "npm:^17.6.0"
     typescript: "npm:^5.5.2"
     typink: "workspace:*"
@@ -11861,15 +11861,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toastify@npm:^10.0.6":
-  version: 10.0.6
-  resolution: "react-toastify@npm:10.0.6"
+"react-toastify@npm:^11.0.2":
+  version: 11.0.2
+  resolution: "react-toastify@npm:11.0.2"
   dependencies:
-    clsx: "npm:^2.1.0"
+    clsx: "npm:^2.1.1"
   peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  checksum: 10/60ec092f6b6ab4c6dd0a42e6207ce0d72af1f41a010ae8aa1b3de080697a3cdaa4d2249eb9092f9331bc17f155b1b45c681bd4a29dc698e20a6ac6fe79f967e6
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10/41ad8aad518dca587d398fb39002db0bd034124c3fc12a6fb5ea959c84da8b655ed2afabbd34e5bbe3e96a4f24b46884ea8feeff0c8f828fbc9057c72992c3c5
   languageName: node
   linkType: hard
 
