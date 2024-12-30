@@ -42,7 +42,7 @@ describe('useWatchContractEvent', () => {
 
     vi.mocked(useTypink).mockReturnValue({
       client: mockClient,
-      sub: mockSub,
+      subscribeSystemEvents: mockSub,
     } as any);
   });
 
@@ -96,7 +96,7 @@ describe('useWatchContractEvent', () => {
       expect(result.current).toBeDefined();
     });
 
-    mockSub.mockImplementation(result.current.sub);
+    mockSub.mockImplementation(result.current.subscribeSystemEvents);
 
     const mockCallback = vi.fn();
     renderHook(() => useWatchContractEvent(mockContract, 'Transfer', mockCallback));
