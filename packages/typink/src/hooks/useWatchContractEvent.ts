@@ -3,7 +3,7 @@ import { useTypink } from './useTypink.js';
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { useDeepDeps } from './internal/index.js';
-import { Unsub } from 'dedot/types/index.js';
+import { Unsub } from '../utils/events.js';
 
 export type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -30,7 +30,7 @@ export function useWatchContractEvent<
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
   enabled: boolean = true,
 ): void {
-  const { client, sub } = useTypink();
+  const { client, subscribeSystemEvents } = useTypink();
 
   useEffect(
     () => {
@@ -40,7 +40,7 @@ export function useWatchContractEvent<
       let done = false;
       let unsub: Unsub | undefined;
 
-      unsub = sub((events) => {
+      unsub = subscribeSystemEvents((events) => {
         if (done) return;
 
         const contractEvents = contract.events[event].filter(events);

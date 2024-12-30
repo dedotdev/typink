@@ -1,14 +1,10 @@
-import { Unsub } from 'dedot/types';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Props } from '../types.js';
 import { useClient } from './ClientProvider.js';
-import type { FrameSystemEventRecord } from 'dedot/chaintypes';
-
-export type EventListener = (events: FrameSystemEventRecord[]) => void;
+import EE, { InternalEvent, SystemEventsListener, Unsub } from '../utils/events.js';
 
 export interface ListenersContextProps {
-  sub: (listener: EventListener) => Unsub | undefined;
-  listeners: EventListener[];
+  subscribeSystemEvents: (listener: SystemEventsListener) => Unsub | undefined;
 }
 
 export const ListenersContext = createContext<ListenersContextProps>({} as any);
@@ -26,23 +22,24 @@ export const useListeners = () => {
  */
 export function ListenersProvider({ children }: Props) {
   const { client } = useClient();
-  const [listeners, setListeners] = useState<EventListener[]>([]);
+  const [listenersCount, setListenersCount] = useState(0);
 
+  // TODO! Find a better way to cancel client.query.system.events when not needed
   useEffect(() => {
-    if (!client) return;
+    if (!client || !listenersCount) return;
 
     let unsub: Unsub | undefined;
 
     (async () => {
       unsub = await client.query.system.events((events) => {
-        listeners.forEach((callback) => callback(events));
+        EE.emit(InternalEvent.SystemEvents, events);
       });
     })();
 
     return () => {
       unsub && unsub();
     };
-  }, [client, listeners]);
+  }, [client, listenersCount]);
 
   /**
    * Subscribes a new event listener to the system events.
@@ -50,18 +47,20 @@ export function ListenersProvider({ children }: Props) {
    * @param {EventListener} listener - The event listener function to be added.
    * @returns {Unsub | undefined} A function to unsubscribe the listener, or undefined if there's no client.
    */
-  const sub = (listener: EventListener): Unsub | undefined => {
-    if (!client) {
+  const subscribeSystemEvents = (listener: SystemEventsListener): Unsub | undefined => {
+    if (!client || !EE) {
       return;
     }
 
-    setListeners((prev) => [...prev, listener]);
+    setListenersCount((count) => count + 1);
 
-    // TODO! Improve remove listener logic and async here just to avoid create another Unsub type
-    return async () => {
-      setListeners((prev) => prev.filter((l) => l !== listener));
+    const unsub = EE.on(InternalEvent.SystemEvents, listener);
+
+    return () => {
+      setListenersCount((count) => count - 1);
+      unsub();
     };
   };
 
-  return <ListenersContext.Provider value={{ sub, listeners }}>{children}</ListenersContext.Provider>;
+  return <ListenersContext.Provider value={{ subscribeSystemEvents }}>{children}</ListenersContext.Provider>;
 }
