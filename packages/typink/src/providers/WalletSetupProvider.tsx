@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import { useIsFirstRender, useWallets } from '../hooks/index.js';
+import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
 import { InjectedAccount, InjectedSigner } from '../types.js';
-import { Wallet } from '../wallets/index.js';
+import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
@@ -14,6 +14,7 @@ export interface WalletSetupContextProps {
   disconnect: () => void;
   connectedWalletId?: string;
   connectedWallet?: Wallet;
+  wallets: Wallet[]; // custom available wallets
 
   setConnectedAccount: (account: InjectedAccount) => void;
   accounts: InjectedAccount[];
@@ -24,13 +25,18 @@ export const WalletSetupContext = createContext<WalletSetupContextProps>({
   connectWallet: noop,
   disconnect: noop,
   setConnectedAccount: noop,
+  wallets: [],
 });
 
 export const useWalletSetup = () => {
   return useContext(WalletSetupContext);
 };
 
-export interface WalletSetupProviderProps extends WalletProviderProps {}
+export interface WalletSetupProviderProps extends WalletProviderProps {
+  wallets?: Wallet[];
+}
+
+const DEFAULT_WALLETS: Wallet[] = [subwallet, talisman, polkadotjs];
 
 /**
  * WalletSetupProvider is a component that manages wallet setup and connection state.
@@ -45,8 +51,9 @@ export function WalletSetupProvider({
   children,
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
+  wallets: initialWallets,
 }: WalletSetupProviderProps) {
-  const { wallets } = useWallets();
+  const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
   const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
 
   const [connectedWalletId, setConnectedWalletId, removeConnectedWalletId] =
@@ -128,6 +135,7 @@ export function WalletSetupProvider({
         connectedWalletId,
         connectedWallet,
         setConnectedAccount,
+        wallets,
       }}>
       <WalletProvider signer={signer} connectedAccount={connectedAccount}>
         {children}

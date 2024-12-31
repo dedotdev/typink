@@ -8,6 +8,5 @@ export * from './useContractTx.js';
 export * from './useDeployer.js';
 export * from './useDeployerTx.js';
 export * from './useRawContract.js';
-export * from './useWallets.js';
 export * from './useWatchContractEvent.js';
 export * from './useTypink.js';

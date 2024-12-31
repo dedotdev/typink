@@ -65,9 +65,10 @@ export function TypinkProvider({
   supportedNetworks,
   signer,
   connectedAccount,
+  wallets,
 }: TypinkProviderProps) {
   return (
-    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount}>
+    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets}>
       <ClientProvider
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}

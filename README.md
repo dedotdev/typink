@@ -194,7 +194,6 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 - `useWatchContractQuery`: Similar to `useContractQuery` with ability to watch for changes
 - `useDeployer`: Create & manage `ContractDeployer` instance given its unique id from the registered contract deployments
 - `useDeployerTx`: Similar to `useContractTx`, this hook provides functionality to sign and send transactions to deploy a smart contract, and tracks the progress of the transaction.
-- `useWallets`: Access available/installed extension wallets, helpful when building a wallet connector
 - `useWatchContractEvent`: Help watch for a specific contract event and perform a specific action
 - `usePSP22Balance`: Fetch balance of an address from a PSP22 contract with ability to watch for balance changing
 
@@ -215,6 +214,7 @@ const {
   connectedWallet, // connected wallet
   connectWallet, // func to connect to a wallet given its id
   disconnect, // func to sign out and disconnect from the wallet
+  wallets, // available wallets
   ...
 } = useTypink();
 // ...
