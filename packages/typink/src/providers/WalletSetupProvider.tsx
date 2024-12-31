@@ -88,28 +88,40 @@ export function WalletSetupProvider({
     let unsub: () => void;
 
     (async () => {
-      const targetWallet: Wallet = getWallet(connectedWalletId);
+      try {
+        const targetWallet: Wallet = getWallet(connectedWalletId);
 
-      assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
+        assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
 
-      await targetWallet.waitUntilReady();
-      const injectedProvider = targetWallet.injectedProvider;
+        await targetWallet.waitUntilReady();
+        const injectedProvider = targetWallet.injectedProvider;
 
-      assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
+        assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
 
-      const injected = await injectedProvider.enable('Sample Dapp');
+        // TODO customize dapp name?
+        const injected = await injectedProvider.enable('Sample Dapp');
+        const initialConnectedAccounts = await injected.accounts.get();
 
-      // reset accounts on wallet changing
-      setAccounts([]);
+        // TODO keep track of wallet decision?
+        if (initialConnectedAccounts.length === 0) {
+          removeConnectedWalletId();
+          return;
+        }
 
-      // only remove the connected account if we're switching to a different wallet
-      if (!isFirstRender) {
-        removeConnectedAccount();
+        // reset accounts on wallet changing
+        setAccounts([]);
+
+        // only remove the connected account if we're switching to a different wallet
+        if (!isFirstRender) {
+          removeConnectedAccount();
+        }
+
+        unsub = injected.accounts.subscribe(setAccounts);
+
+        setSigner(injected.signer as any);
+      } catch {
+        removeConnectedWalletId();
       }
-
-      unsub = injected.accounts.subscribe(setAccounts);
-
-      setSigner(injected.signer as any);
     })();
 
     return () => unsub && unsub();
