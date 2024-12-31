@@ -28,10 +28,20 @@ export function useWatchSystemEvents(parameters: {
     () => {
       if (!client || !watch) return;
 
-      const unsub = subscribeSystemEvents(callback);
+      let unmounted = false;
+
+      const unsub = subscribeSystemEvents((events) => {
+        if (unmounted) {
+          unsub && unsub();
+          return;
+        }
+
+        callback(events);
+      });
 
       return () => {
         unsub && unsub();
+        unmounted = true;
       };
     },
     useDeepDeps([client, callback, watch]),
