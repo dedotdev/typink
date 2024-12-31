@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Props } from '../types.js';
 import { useClient } from './ClientProvider.js';
-import EE, { InternalEvent, SystemEventsListener, Unsub } from '../utils/events.js';
+import { InternalEE, InternalEvent, SystemEventsListener, Unsub } from '../utils/events.js';
 
 export interface ListenersContextProps {
   subscribeSystemEvents: (listener: SystemEventsListener) => Unsub | undefined;
@@ -22,24 +22,27 @@ export const useListeners = () => {
  */
 export function ListenersProvider({ children }: Props) {
   const { client } = useClient();
-  const [listenersCount, setListenersCount] = useState(0);
+  const [status, setStatus] = useState<boolean>(false);
 
-  // TODO! Find a better way to cancel client.query.system.events when not needed
+  const checkStatus = () => {
+    setStatus(InternalEE.eventNames().includes(InternalEvent.SystemEvents));
+  };
+
   useEffect(() => {
-    if (!client || !listenersCount) return;
+    if (!client || !status) return;
 
     let unsub: Unsub | undefined;
 
     (async () => {
       unsub = await client.query.system.events((events) => {
-        EE.emit(InternalEvent.SystemEvents, events);
+        InternalEE.emit(InternalEvent.SystemEvents, events);
       });
     })();
 
     return () => {
       unsub && unsub();
     };
-  }, [client, listenersCount]);
+  }, [client, status]);
 
   /**
    * Subscribes a new event listener to the system events.
@@ -48,17 +51,16 @@ export function ListenersProvider({ children }: Props) {
    * @returns {Unsub | undefined} A function to unsubscribe the listener, or undefined if there's no client.
    */
   const subscribeSystemEvents = (listener: SystemEventsListener): Unsub | undefined => {
-    if (!client || !EE) {
+    if (!client || !InternalEE) {
       return;
     }
 
-    setListenersCount((count) => count + 1);
-
-    const unsub = EE.on(InternalEvent.SystemEvents, listener);
+    const unsub = InternalEE.on(InternalEvent.SystemEvents, listener);
+    setStatus(true);
 
     return () => {
-      setListenersCount((count) => count - 1);
       unsub();
+      checkStatus();
     };
   };
 
