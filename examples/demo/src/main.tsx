@@ -5,13 +5,30 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
-import { alephZeroTestnet, development, popTestnet, subwallet, talisman, TypinkProvider } from 'typink';
+import {
+  alephZeroTestnet,
+  development,
+  ExtensionWallet,
+  polkadotjs,
+  popTestnet,
+  subwallet,
+  talisman,
+  TypinkProvider,
+} from 'typink';
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 const SUPPORTED_NETWORK = [popTestnet, alephZeroTestnet];
 if (process.env.NODE_ENV === 'development') {
   SUPPORTED_NETWORK.push(development);
 }
+
+const enkrypt = new ExtensionWallet({
+  name: 'Enkrypt',
+  id: 'enkrypt',
+  logo: 'https://raw.githubusercontent.com/enkryptcom/enKrypt/refs/heads/main/packages/extension/public/assets/img/icons/icon192.png',
+  installUrl: 'https://www.enkrypt.com',
+  websiteUrl: 'https://www.enkrypt.com',
+});
 
 function Root() {
   return (
@@ -22,7 +39,7 @@ function Root() {
         supportedNetworks={SUPPORTED_NETWORK}
         defaultNetworkId={popTestnet.id}
         cacheMetadata={true}
-        wallets={[subwallet, talisman]}>
+        wallets={[subwallet, talisman, polkadotjs, enkrypt]}>
         <App />
         <ToastContainer
           position='top-right'
