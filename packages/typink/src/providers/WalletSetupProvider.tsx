@@ -9,6 +9,8 @@ import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
 export interface WalletSetupContextProps {
+  appName: string;
+
   // for setting up wallets
   connectWallet: (id: string) => void;
   disconnect: () => void;
@@ -21,6 +23,7 @@ export interface WalletSetupContextProps {
 }
 
 export const WalletSetupContext = createContext<WalletSetupContextProps>({
+  appName: 'Typink Dapp',
   accounts: [],
   connectWallet: noop,
   disconnect: noop,
@@ -33,6 +36,7 @@ export const useWalletSetup = () => {
 };
 
 export interface WalletSetupProviderProps extends WalletProviderProps {
+  appName: string;
   wallets?: Wallet[];
 }
 
@@ -52,6 +56,7 @@ export function WalletSetupProvider({
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
   wallets: initialWallets,
+  appName
 }: WalletSetupProviderProps) {
   const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
   const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
@@ -98,8 +103,7 @@ export function WalletSetupProvider({
 
         assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
 
-        // TODO customize dapp name?
-        const injected = await injectedProvider.enable('Sample Dapp');
+        const injected = await injectedProvider.enable(appName);
         const initialConnectedAccounts = await injected.accounts.get();
 
         // TODO keep track of wallet decision?
@@ -126,7 +130,7 @@ export function WalletSetupProvider({
     })();
 
     return () => unsub && unsub();
-  }, [connectedWalletId]);
+  }, [connectedWalletId, appName]);
 
   const connectWallet = async (walletId: string) => {
     setConnectedWalletId(walletId);
@@ -149,6 +153,7 @@ export function WalletSetupProvider({
         connectedWallet,
         setConnectedAccount,
         wallets,
+        appName
       }}>
       <WalletProvider signer={signer} connectedAccount={connectedAccount}>
         {children}

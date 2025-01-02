@@ -22,6 +22,7 @@ function TypinApp() {
 
   return (
     <TypinkProvider
+      appName='Demo Typink + SubConnect App'
       deployments={deployments}
       defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORK}

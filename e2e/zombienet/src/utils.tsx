@@ -46,7 +46,8 @@ export const Wrapper = ({ children, deployments = [] }: Props) => (
     deployments={deployments}
     defaultCaller={ALICE}
     signer={mockSigner}
-    connectedAccount={{ address: ALICE }}>
+    connectedAccount={{ address: ALICE }}
+    appName='Typink Test App'>
     {children}
   </TypinkProvider>
 );

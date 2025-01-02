@@ -21,7 +21,9 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
   defaultCaller: SubstrateAddress;
 }
 
-function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderProps) {
+export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>
+
+function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderInnerProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -66,9 +68,10 @@ export function TypinkProvider({
   signer,
   connectedAccount,
   wallets,
+  appName,
 }: TypinkProviderProps) {
   return (
-    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets}>
+    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
       <ClientProvider
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}

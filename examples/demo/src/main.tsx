@@ -34,6 +34,7 @@ function Root() {
   return (
     <ChakraProvider theme={theme}>
       <TypinkProvider
+        appName='Demo Typink App'
         deployments={deployments}
         defaultCaller={DEFAULT_CALLER}
         supportedNetworks={SUPPORTED_NETWORK}
