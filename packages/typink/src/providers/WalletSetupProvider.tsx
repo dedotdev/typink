@@ -119,7 +119,8 @@ export function WalletSetupProvider({
         unsub = injected.accounts.subscribe(setAccounts);
 
         setSigner(injected.signer as any);
-      } catch {
+      } catch (e) {
+        console.error('Error while connecting wallet:', e);
         removeConnectedWalletId();
       }
     })();
