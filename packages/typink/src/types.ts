@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { ContractMetadata } from 'dedot/contracts';
 
-export * from './pjs-types';
+export * from './pjs-types.js';
 
 export type Pop<T extends any[]> = T extends [...infer U, any?] ? U : never;
 export type Args<T> = T extends [] ? { args?: [] | undefined } : { args: T };

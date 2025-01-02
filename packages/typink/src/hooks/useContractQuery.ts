@@ -31,6 +31,7 @@ type UseContractQueryReturnType<
  * @param parameters.fn - The name of the query function to call on the contract
  * @param parameters.options - Optional contract call options
  * @param parameters.args - The arguments to pass to the query function
+ * @param parameters.watch - Whether to watch the chain for changes and refresh the query
  *
  * @returns An object containing the result of the query and:
  *   - isLoading: A boolean indicating whether the query is in progress
@@ -45,15 +46,19 @@ export function useContractQuery<
     contract: Contract<T> | undefined;
     fn: M;
     options?: ContractCallOptions;
+    watch?: boolean;
   } & Args<Pop<Parameters<T['query'][M]>>>,
 ): UseContractQueryReturnType<T, M> {
   // TODO replace loading tracking state with tanstack
+  
+  const { client } = useTypink(); 
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [result, setResult] = useState<any>();
   const [error, setError] = useState<Error>();
 
-  const { contract, fn, args = [], options } = parameters;
+  const { contract, fn, args = [], options, watch = false } = parameters;
   const deps = useDeepDeps([contract, fn, args, options]);
 
   useEffect(() => {
@@ -110,64 +115,16 @@ export function useContractQuery<
     }
   }, deps);
 
-  return {
-    isLoading,
-    refresh,
-    isRefreshing,
-    ...(result || {}),
-    error,
-  } as any;
-}
-
-/**
- * A React hook for watching and querying a smart contract.
- *
- * This hook extends the functionality of `useContractQuery` by automatically
- * refreshing the query when new blocks are added to the chain. It manages
- * the state of a contract query, including loading state, query results,
- * and error handling. The hook periodically refreshes the query to check
- * if the contract state has changed.
- *
- * @param parameters - An object containing the query parameters
- * @param parameters.contract - The contract instance to query
- * @param parameters.fn - The name of the query function to call on the contract
- * @param parameters.options - Optional contract call options
- * @param parameters.args - The arguments to pass to the query function
- *
- * @returns An object containing the result of the query and:
- *   - isLoading: A boolean indicating whether the query is in progress
- *   - refresh: A function to manually trigger a refresh of the query
- *   - error: Any error that occurred during the query
- *
- * @remarks
- * This hook will automatically refresh the query when new blocks are added
- * to the chain, allowing it to detect and reflect any changes in the
- * contract's state.
- */
-export function useWatchContractQuery<
-  T extends GenericContractApi = GenericContractApi,
-  M extends keyof ContractQuery<T> = keyof ContractQuery<T>,
->(
-  parameters: {
-    contract: Contract<T> | undefined;
-    fn: M;
-    options?: ContractCallOptions;
-  } & Args<Pop<Parameters<T['query'][M]>>>,
-): UseContractQueryReturnType<T, M> {
-  // TODO replace loading tracking state with tanstack
-  const { client } = useTypink();
-  const result = useContractQuery(parameters);
-
   useEffect(
     () => {
-      if (!client) return;
+      if (!client || !watch) return;
 
       let unsub: Unsub;
       let done = false;
 
       client.query.system
         .number((_) => {
-          result.refresh();
+          refresh();
         })
         .then((x) => {
           if (done) {
@@ -183,8 +140,15 @@ export function useWatchContractQuery<
         unsub && unsub();
       };
     },
-    useDeepDeps([client, result.refresh]),
+    useDeepDeps([client, refresh, watch]),
   );
 
-  return result;
+  return {
+    isLoading,
+    refresh,
+    isRefreshing,
+    ...(result || {}),
+    error,
+  } as any;
 }
+
