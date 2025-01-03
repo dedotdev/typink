@@ -1,6 +1,6 @@
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
-import { useWatchInternalEvent } from './useWatchSystemEvents.js';
+import { useWatchInternalEvent } from './useWatchInternalEvent.js';
 import { InternalEvent } from '../utils/events.js';
 import { useCallback } from 'react';
 import { useDeepDeps } from './internal/useDeepDeps.js';
