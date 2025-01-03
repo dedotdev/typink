@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect } from 'react';
 import { Props } from '../types.js';
 import { useClient } from './ClientProvider.js';
-import { Callback, InternalEE, InternalEvent, Unsub } from '../utils/events.js';
+import { InternalEE, InternalEvent, Unsub } from '../utils/events.js';
 import { useListenerCounter } from '../hooks/internal/useListenerCounter.js';
 
 export interface ListenersContextProps {
-  subscribeToEvent: (event: InternalEvent, callback: Callback) => Unsub | undefined;
+  subscribeToEvent: (event: InternalEvent, callback: (events: any[]) => void) => Unsub | undefined;
 }
 
 export const ListenersContext = createContext<ListenersContextProps>({} as any);
@@ -41,7 +41,7 @@ export function ListenersProvider({ children }: Props) {
     };
   }, [client, hasListener]);
 
-  const subscribeToEvent = (event: InternalEvent, callback: Callback): Unsub | undefined => {
+  const subscribeToEvent = (event: InternalEvent, callback: (events: any[]) => void): Unsub | undefined => {
     if (!client || !InternalEE) {
       return;
     }

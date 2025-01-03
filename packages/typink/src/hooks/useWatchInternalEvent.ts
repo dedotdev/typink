@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDeepDeps } from './internal/index.js';
 import { useTypink } from './useTypink.js';
-import { InternalEvent } from 'src/utils/events.js';
+import { InternalCallback, InternalEvent } from '../utils/events.js';
 
 /**
  * A React hook that watches for internal system events.
@@ -14,12 +14,11 @@ import { InternalEvent } from 'src/utils/events.js';
  * @param parameters.callback - Callback function to be called when new events are detected.
  * @param parameters.enabled - Optional boolean to enable or disable the event watching. Defaults to true.
  */
-export function useWatchInternalEvent(parameters: {
-  event: InternalEvent;
-  callback: (events: any[]) => void;
-  enabled?: boolean;
-}) {
-  const { event, callback, enabled = true } = parameters;
+export function useWatchInternalEvent<T extends InternalEvent>(
+  event: T,
+  callback: InternalCallback[T],
+  enabled: boolean = true,
+) {
   const { subscribeToEvent, client } = useTypink();
 
   useEffect(

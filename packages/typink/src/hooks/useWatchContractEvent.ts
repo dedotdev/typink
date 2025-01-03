@@ -4,7 +4,6 @@ import { useWatchInternalEvent } from './useWatchInternalEvent.js';
 import { InternalEvent } from '../utils/events.js';
 import { useCallback } from 'react';
 import { useDeepDeps } from './internal/useDeepDeps.js';
-import type { FrameSystemEventRecord } from 'dedot/chaintypes/index.js';
 
 export type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -31,10 +30,10 @@ export function useWatchContractEvent<
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
   enabled: boolean = true,
 ): void {
-  useWatchInternalEvent({
-    event: InternalEvent.SYSTEM_EVENTS,
-    callback: useCallback(
-      (events: FrameSystemEventRecord[]) => {
+  useWatchInternalEvent(
+    InternalEvent.SYSTEM_EVENTS,
+    useCallback(
+      (events) => {
         if (!contract || !enabled) return;
 
         const contractEvents = contract.events[event].filter(events);
@@ -47,5 +46,5 @@ export function useWatchContractEvent<
       useDeepDeps([contract, event, onNewEvent]),
     ),
     enabled,
-  });
+  );
 }
