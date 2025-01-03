@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { Props } from '../types.js';
 import { useClient } from './ClientProvider.js';
-import { InternalEE, InternalEvent, SystemEventsListener, Unsub } from '../utils/events.js';
+import { Callback, InternalEE, InternalEvent, Unsub } from '../utils/events.js';
+import { useListenerCounter } from '../hooks/internal/useListenerCounter.js';
 
 export interface ListenersContextProps {
-  subscribeSystemEvents: (listener: SystemEventsListener) => Unsub | undefined;
+  subscribeToEvent: (event: InternalEvent, callback: Callback) => Unsub | undefined;
 }
 
 export const ListenersContext = createContext<ListenersContextProps>({} as any);
@@ -22,47 +23,37 @@ export const useListeners = () => {
  */
 export function ListenersProvider({ children }: Props) {
   const { client } = useClient();
-  const [status, setStatus] = useState<boolean>(false);
-
-  const checkStatus = () => {
-    setStatus(InternalEE.eventNames().includes(InternalEvent.SystemEvents));
-  };
+  const { hasListener, increaseIfMatch, decreaseIfMatch } = useListenerCounter(InternalEvent.SYSTEM_EVENTS);
 
   useEffect(() => {
-    if (!client || !status) return;
+    if (!client || !hasListener) return;
 
     let unsub: Unsub | undefined;
 
     (async () => {
       unsub = await client.query.system.events((events) => {
-        InternalEE.emit(InternalEvent.SystemEvents, events);
+        InternalEE.emit(InternalEvent.SYSTEM_EVENTS, events);
       });
     })();
 
     return () => {
       unsub && unsub();
     };
-  }, [client, status]);
+  }, [client, hasListener]);
 
-  /**
-   * Subscribes a new event listener to the system events.
-   *
-   * @param {EventListener} listener - The event listener function to be added.
-   * @returns {Unsub | undefined} A function to unsubscribe the listener, or undefined if there's no client.
-   */
-  const subscribeSystemEvents = (listener: SystemEventsListener): Unsub | undefined => {
+  const subscribeToEvent = (event: InternalEvent, callback: Callback): Unsub | undefined => {
     if (!client || !InternalEE) {
       return;
     }
 
-    const unsub = InternalEE.on(InternalEvent.SystemEvents, listener);
-    setStatus(true);
+    const unsub = InternalEE.on(event, callback);
+    increaseIfMatch(event);
 
     return () => {
       unsub();
-      checkStatus();
+      decreaseIfMatch(event);
     };
   };
 
-  return <ListenersContext.Provider value={{ subscribeSystemEvents }}>{children}</ListenersContext.Provider>;
+  return <ListenersContext.Provider value={{ subscribeToEvent }}>{children}</ListenersContext.Provider>;
 }

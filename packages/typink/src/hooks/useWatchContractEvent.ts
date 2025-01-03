@@ -1,7 +1,10 @@
-import { useTypink } from './useTypink.js';
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
-import { useWatchSystemEvents } from './useWatchSystemEvents.js';
+import { useWatchInternalEvent } from './useWatchSystemEvents.js';
+import { InternalEvent } from '../utils/events.js';
+import { useCallback } from 'react';
+import { useDeepDeps } from './internal/useDeepDeps.js';
+import type { FrameSystemEventRecord } from 'dedot/chaintypes/index.js';
 
 export type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -28,19 +31,21 @@ export function useWatchContractEvent<
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
   enabled: boolean = true,
 ): void {
-  const { client } = useTypink();
+  useWatchInternalEvent({
+    event: InternalEvent.SYSTEM_EVENTS,
+    callback: useCallback(
+      (events: FrameSystemEventRecord[]) => {
+        if (!contract || !enabled) return;
 
-  useWatchSystemEvents({
-    client,
-    callback: (events) => {
-      if (!contract) return;
+        const contractEvents = contract.events[event].filter(events);
 
-      const contractEvents = contract.events[event].filter(events);
-      if (contractEvents.length === 0) return;
+        if (contractEvents.length <= 0) return;
 
-      // @ts-ignore
-      onNewEvent(contractEvents);
-    },
-    watch: enabled,
+        // @ts-ignore
+        onNewEvent(contractEvents);
+      },
+      useDeepDeps([contract, event, onNewEvent]),
+    ),
+    enabled,
   });
 }
