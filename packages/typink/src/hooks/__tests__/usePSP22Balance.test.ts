@@ -5,7 +5,7 @@ import { useRawContract } from '../useRawContract.js';
 import { useContractQuery } from '../useContractQuery.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { renderHook, waitFor } from '@testing-library/react';
-import { waitForNextUpdate } from './test-utils';
+import { waitForNextUpdate } from './test-utils.js';
 
 vi.mock('../useTypink');
 vi.mock('../useWatchContractEvent');

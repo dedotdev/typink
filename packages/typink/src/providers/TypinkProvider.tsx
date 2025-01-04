@@ -8,13 +8,13 @@ import {
   WalletSetupProvider,
   WalletSetupProviderProps,
 } from './WalletSetupProvider.js';
-import { ListenersContextProps, ListenersProvider, useListeners } from './ListenersProvider.js';
+import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
 
 export interface TypinkContextProps
   extends ClientContextProps,
     WalletSetupContextProps,
     WalletContextProps,
-    ListenersContextProps {
+    TypinkEventsContextProps {
   deployments: ContractDeployment[];
   defaultCaller: SubstrateAddress; // TODO validate substrate address
 }
@@ -30,12 +30,12 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
-  const listenersContext = useListeners();
+  const typinkEventsContext = useTypinkEvents();
 
   return (
     <TypinkContext.Provider
       value={{
-        ...listenersContext,
+        ...typinkEventsContext,
         ...clientContext,
         ...walletSetupContext,
         ...walletContext,
@@ -85,11 +85,11 @@ export function TypinkProvider({
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
-        <ListenersProvider>
+        <TypinkEventsProvider>
           <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
             {children}
           </TypinkProviderInner>
-        </ListenersProvider>
+        </TypinkEventsProvider>
       </ClientProvider>
     </WalletSetupProvider>
   );

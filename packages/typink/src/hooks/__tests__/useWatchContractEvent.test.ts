@@ -4,8 +4,8 @@ import { useTypink } from '../useTypink.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contract } from 'dedot/contracts';
 import { Psp22ContractApi } from '../psp22/contracts/psp22';
-import { useListeners, useClient } from '../../providers/index.js';
-import { listenerWrapper, waitForNextUpdate } from './test-utils.js';
+import { useTypinkEvents, useClient } from '../../providers/index.js';
+import { typinkEventsWrapper, waitForNextUpdate } from './test-utils.js';
 import type { ContractEvent } from 'dedot/contracts';
 
 vi.mock('../useTypink', () => ({
@@ -90,7 +90,7 @@ describe('useWatchContractEvent', () => {
       });
     });
 
-    const { result } = renderHook(() => useListeners(), { wrapper: listenerWrapper });
+    const { result } = renderHook(() => useTypinkEvents(), { wrapper: typinkEventsWrapper });
 
     await waitFor(() => {
       expect(result.current).toBeDefined();

@@ -1,20 +1,25 @@
 import { useState } from 'react';
-import { InternalEvent } from 'src/utils/events';
+import { TypinkEvent } from '../../providers/index.js';
 
-export const useListenerCounter = (counterEvent: InternalEvent) => {
+export const useListenerCounter = (event: TypinkEvent) => {
   const [counter, setCounter] = useState(0);
 
-  const increaseIfMatch = (event: InternalEvent) => {
-    if (event !== counterEvent) return;
+  const tryIncrease = (eventToCheck: TypinkEvent) => {
+    if (event !== eventToCheck) return;
 
     setCounter((counter) => counter + 1);
   };
 
-  const decreaseIfMatch = (event: InternalEvent) => {
-    if (event !== counterEvent) return;
+  const tryDecrease = (eventToCheck: TypinkEvent) => {
+    if (event !== eventToCheck) return;
 
     setCounter((counter) => counter - 1);
   };
 
-  return { counter, increaseIfMatch, decreaseIfMatch, hasListener: counter > 0 };
+  return {
+    tryIncrease,
+    tryDecrease,
+    counter,
+    hasAny: counter > 0,
+  };
 };

@@ -1,9 +1,9 @@
 import { OmitNever } from '../types.js';
 import { Contract, GenericContractApi } from 'dedot/contracts';
-import { useWatchInternalEvent } from './useWatchInternalEvent.js';
-import { InternalEvent } from '../utils/events.js';
+import { useWatchTypinkEvent } from './useWatchTypinkEvent.js';
 import { useCallback } from 'react';
 import { useDeepDeps } from './internal/useDeepDeps.js';
+import { TypinkEvent } from '../providers/index.js';
 
 export type UseContractEvent<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['events']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -30,8 +30,8 @@ export function useWatchContractEvent<
   onNewEvent: (events: ReturnType<T['events'][M]['filter']>) => void,
   enabled: boolean = true,
 ): void {
-  useWatchInternalEvent(
-    InternalEvent.SYSTEM_EVENTS,
+  useWatchTypinkEvent(
+    TypinkEvent.SYSTEM_EVENTS,
     useCallback(
       (events) => {
         if (!contract || !enabled) return;
