@@ -43,7 +43,7 @@ export function useWatchContractEvent<
         // @ts-ignore
         onNewEvent(contractEvents);
       },
-      useDeepDeps([contract, event, onNewEvent]),
+      useDeepDeps([contract, event, onNewEvent, enabled]),
     ),
     enabled,
   );
