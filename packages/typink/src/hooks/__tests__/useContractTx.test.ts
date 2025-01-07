@@ -3,11 +3,18 @@ import { renderHook, act } from '@testing-library/react';
 import { useContractTx } from '../useContractTx.js';
 import { useTypink } from '../useTypink.js';
 import { Contract } from 'dedot/contracts';
-import { waitForNextUpdate } from './test-utils.js';
+import { sleep, waitForNextUpdate } from './test-utils.js';
+import { checkBalanceSufficiency } from '../../helpers/index.js';
+import { BalanceInsufficientError } from '../../utils/index.js';
+import { useDeployerTx } from '../useDeployerTx.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../../helpers', () => ({
+  checkBalanceSufficiency: vi.fn(),
 }));
 
 describe('useContractTx', () => {
@@ -17,6 +24,7 @@ describe('useContractTx', () => {
 
   beforeEach(() => {
     mockContract = {
+      client: vi.fn(),
       tx: {
         message: vi.fn(),
       },
@@ -30,6 +38,8 @@ describe('useContractTx', () => {
     (useTypink as any).mockReturnValue({
       connectedAccount: mockConnectedAccount,
     });
+
+    (checkBalanceSufficiency as any).mockImplementation(() => Promise.resolve(true));
   });
 
   it('should return the correct structure', () => {
@@ -56,7 +66,7 @@ describe('useContractTx', () => {
       ),
     );
 
-    await expect(result.current.signAndSend({} as any)).rejects.toThrow('Contract Not Found');
+    await expect(result.current.signAndSend({} as any)).rejects.toThrow('Contract not found');
   });
 
   it('should throw an error if connectedAccount is undefined', async () => {
@@ -72,7 +82,9 @@ describe('useContractTx', () => {
       ),
     );
 
-    await expect(result.current.signAndSend({} as any)).rejects.toThrow('Connected Account Not Found');
+    await expect(result.current.signAndSend({} as any)).rejects.toThrow(
+      'No connected account. Please connect your wallet.',
+    );
   });
 
   it('should call the contract method with correct parameters', async () => {
@@ -165,6 +177,26 @@ describe('useContractTx', () => {
       ),
     );
 
-    await expect(result.current.signAndSend({ args: [] })).rejects.toThrow('Contract error');
+    await expect(result.current.signAndSend({ args: [] })).rejects.toThrow('Contract Message Error: Contract error');
+  });
+
+  it('should throw an error when balance is insufficient', async () => {
+    vi.mocked(checkBalanceSufficiency).mockRejectedValue(new BalanceInsufficientError(mockConnectedAccount.address));
+
+    const { result } = renderHook(() =>
+      useContractTx(
+        mockContract,
+        // @ts-ignore
+        'message',
+      ),
+    );
+
+    await expect(result.current.signAndSend({ args: [] })).rejects.toThrow(
+      new BalanceInsufficientError(mockConnectedAccount.address),
+    );
+
+    expect(checkBalanceSufficiency).toHaveBeenCalledWith(expect.anything(), 'mock-address');
+    expect(mockContract.query.message).not.toHaveBeenCalled();
+    expect(mockContract.tx.message).not.toHaveBeenCalled();
   });
 });

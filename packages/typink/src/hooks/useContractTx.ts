@@ -10,9 +10,9 @@ import {
 } from 'dedot/contracts';
 import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
-import { BalanceInsufficientError, ContractMessageError } from '../utils/index.js';
+import { ContractMessageError } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
-import { ISubstrateClient } from 'dedot';
+import { checkBalanceSufficiency } from '../helpers/index.js';
 
 type UseContractTx<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['tx']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -128,7 +128,7 @@ export async function contractTx<
   const signAndSend = async () => {
     const { contract, fn, args = [], caller, txOptions = {}, callback } = parameters;
 
-    await checkBalanceSufficient(contract.client, caller);
+    await checkBalanceSufficiency(contract.client, caller);
 
     try {
       const dryRunOptions: ContractCallOptions = { caller };
@@ -176,14 +176,3 @@ export async function contractTx<
 
   return defer.promise;
 }
-
-const checkBalanceSufficient = async <T extends GenericContractApi = GenericContractApi>(
-  client: ISubstrateClient<T['types']['ChainApi']>,
-  caller: string,
-): Promise<void> => {
-  const balance = await client.query.system.account(caller);
-  // TODO better calculate reducible balance
-  if (balance.data.free <= 0n) {
-    throw new BalanceInsufficientError(caller);
-  }
-};

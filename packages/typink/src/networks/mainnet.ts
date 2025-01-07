@@ -1,4 +1,4 @@
-import { JsonRpcApi, NetworkInfo } from '../types';
+import { JsonRpcApi, NetworkInfo } from '../types.js';
 
 export const alephZero: NetworkInfo = {
   id: 'alephzero',
