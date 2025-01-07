@@ -50,9 +50,7 @@ export function txToaster(initialMessage: string = 'Signing transaction...'): Tx
   const onError = (e: Error) => {
     toast.update(toastId, {
       render: (
-        <p>
-          Tx Error: <b>{e.message}</b>
-        </p>
+        <p>{e.message}</p>
       ),
       type: 'error',
       isLoading: false,

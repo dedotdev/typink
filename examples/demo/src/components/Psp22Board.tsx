@@ -11,7 +11,7 @@ import { txToaster } from '@/utils/txToaster.tsx';
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
   const { connectedAccount } = useTypink();
-  const mintTx = useContractTx(contract, 'psp22MintableMint');
+  const mintTx = useContractTx(contract, 'psp22Transfer');
   const inputAddressRef = useRef<HTMLInputElement>(null);
   const [address, setAddress] = useState('');
   const [watch, setWatch] = useState(false);
@@ -64,7 +64,7 @@ export default function Psp22Board() {
     const toaster = txToaster('Signing transaction...');
     try {
       await mintTx.signAndSend({
-        args: [BigInt(100 * Math.pow(10, tokenDecimal))],
+        args: ['5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', BigInt(10000000000000000 * Math.pow(10, tokenDecimal)), '0x'],
         callback: ({ status }) => {
           console.log(status);
 
