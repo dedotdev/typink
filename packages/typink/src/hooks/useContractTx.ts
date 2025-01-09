@@ -1,16 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Args, OmitNever, Pop } from '../types.js';
-import {
-  Contract,
-  ContractCallOptions,
-  ContractTxOptions,
-  GenericContractApi,
-  isContractDispatchError,
-} from 'dedot/contracts';
+import { Contract, ContractCallOptions, ContractTxOptions, GenericContractApi } from 'dedot/contracts';
 import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
-import { ContractMessageError } from '../utils/index.js';
+import { ContractMessageError, withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
 
@@ -161,14 +155,7 @@ export async function contractTx<
         }
       });
     } catch (e: any) {
-      if (isContractDispatchError(e) && e.dispatchError.type === 'Module') {
-        const moduleError = contract.client.registry.findErrorMeta(e.dispatchError);
-        if (moduleError) {
-          e.message = moduleError.docs.join('');
-        }
-      }
-
-      throw e;
+      throw withReadableErrorMessage(contract.client, e);
     }
   };
 

@@ -7,11 +7,10 @@ import {
   ContractDeployer,
   ContractTxOptions,
   GenericContractApi,
-  isContractDispatchError,
 } from 'dedot/contracts';
 import { IEventRecord, IRuntimeEvent, ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
-import { ContractMessageError } from '../utils/index.js';
+import { ContractMessageError, withReadableErrorMessage } from '../utils/index.js';
 import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
@@ -179,14 +178,7 @@ export async function deployerTx<
         }
       });
     } catch (e: any) {
-      if (isContractDispatchError(e) && e.dispatchError.type === 'Module') {
-        const moduleError = deployer.client.registry.findErrorMeta(e.dispatchError);
-        if (moduleError) {
-          e.message = moduleError.docs.join('');
-        }
-      }
-
-      throw e;
+      throw withReadableErrorMessage(deployer.client, e);
     }
   };
 
