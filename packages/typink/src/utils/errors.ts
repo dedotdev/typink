@@ -63,7 +63,7 @@ export const extractHumanReadableError = <T extends GenericContractApi = Generic
       case 'Module':
         const moduleError = client.registry.findErrorMeta(dispatchError);
         if (moduleError) {
-          const message = moduleError.docs.join('').trim();
+          const message = moduleError.docs.join(' ').trim();
           if (message) return message;
         }
 
