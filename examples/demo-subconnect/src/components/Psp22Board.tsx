@@ -1,9 +1,9 @@
 import { Box, Button, Divider, Heading } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
-import { formatBalance } from '@/utils/string.ts';
+import {} from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { useContract, useContractQuery, useContractTx, useTypink } from 'typink';
+import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { ConnectWalletButton } from '@/components/shared/ConnectWalletButton.tsx';
 
@@ -98,7 +98,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, tokenDecimal)} {tokenSymbol}
+            {formatBalance(totalSupply, { decimals: tokenDecimal, symbol: tokenSymbol })}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -106,7 +106,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, tokenDecimal)} {tokenSymbol}
+              {formatBalance(myBalance, { decimals: tokenDecimal, symbol: tokenSymbol })}
             </PendingText>
           ) : (
             <ConnectWalletButton buttonProps={{ size: 'xs' }} />

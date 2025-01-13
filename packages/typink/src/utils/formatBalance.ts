@@ -1,12 +1,16 @@
 import { TypinkError } from './errors.js';
 
 export interface FormatBalanceOptions {
-  decimals: number;
+  decimals?: number;
   symbol?: string;
 }
 
-export function formatBalance(value: number | bigint | string, options: FormatBalanceOptions): string {
-  const { decimals, symbol } = options;
+export function formatBalance(value: number | bigint | string | undefined, options: FormatBalanceOptions): string {
+  if (value === undefined) {
+    return '';
+  } 
+
+  const { decimals = 0, symbol } = options;
 
   let valueStr = value.toString();
 
