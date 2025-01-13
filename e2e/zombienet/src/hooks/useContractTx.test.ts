@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { BOB, deployPsp22Contract, psp22Metadata, wrapper } from '../utils';
+import { BOB, deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from '../utils';
 import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractTx, useRawContract } from 'typink';
@@ -87,7 +87,7 @@ describe('useContractTx', () => {
 
   it('should throw a lang error for invalid input', async () => {
     const { result: rawContract } = renderHook(
-      () => useRawContract<FlipperContractApi>(psp22Metadata, contractAddress),
+      () => useRawContract<FlipperContractApi>(flipperMetadata, contractAddress),
       {
         wrapper,
       },
