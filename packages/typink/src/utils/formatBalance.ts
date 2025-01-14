@@ -5,10 +5,20 @@ export interface FormatBalanceOptions {
   symbol?: string;
 }
 
+/**
+ * Format a balance value to a human-readable string.
+ *
+ * @param value - The balance value.
+ * @param options - The formatting options.
+ * @param options.decimals - The decimals of network.
+ * @param options.symbol - The currency symbol.
+ *
+ * @returns The formatted balance.
+ */
 export function formatBalance(value: number | bigint | string | undefined, options: FormatBalanceOptions): string {
   if (value === undefined) {
     return '';
-  } 
+  }
 
   const { decimals = 0, symbol } = options;
 
