@@ -1,8 +1,9 @@
 import { TypinkError } from './errors.js';
 
 export interface FormatBalanceOptions {
-  decimals?: number;
   symbol?: string;
+  decimals?: number;
+  withAll?: boolean;
 }
 
 /**
@@ -10,8 +11,9 @@ export interface FormatBalanceOptions {
  *
  * @param value - The balance value.
  * @param options - The formatting options.
- * @param options.decimals - The decimals of network.
  * @param options.symbol - The currency symbol.
+ * @param options.decimals - The decimals of network. (default: 0)
+ * @param options.withAll - Whether to show all decimals. (default: false, only show up to 4 decimals)
  *
  * @returns The formatted balance.
  */
@@ -20,7 +22,7 @@ export function formatBalance(value: number | bigint | string | undefined, optio
     return '';
   }
 
-  const { decimals = 0, symbol } = options;
+  const { decimals = 0, symbol, withAll = false } = options;
 
   let valueStr = value.toString();
 
@@ -38,11 +40,21 @@ export function formatBalance(value: number | bigint | string | undefined, optio
     throw new TypinkError(`Invalid value at position ${badChars.index ?? 0}, bigint was expected`);
   }
 
-  const tmpStr = valueStr.padStart(decimals, '0').padEnd(decimals, '0');
+  const tmpStr = valueStr.padStart(decimals, '0');
 
   // If wholePart is empty, pad it with 0
   const wholePart = tmpStr.slice(0, tmpStr.length - decimals).padStart(1, '0');
-  const decimalPart = tmpStr.slice(tmpStr.length - decimals).replace(/0+$/, '');
+  const decimalPart = tmpStr
+    .slice(tmpStr.length - decimals)
+    .substring(0, withAll ? decimals : Math.min(4, decimals))
+    .replace(/0+$/, '');
 
-  return `${isNegative ? '-' : ''}${wholePart}${decimalPart ? `.${decimalPart}` : ''}${symbol ? ` ${symbol}` : ''}`;
+  return [
+    isNegative && '-', // prettier-end-here
+    wholePart,
+    decimalPart && `.${decimalPart}`,
+    symbol && ` ${symbol}`,
+  ]
+    .filter(Boolean)
+    .join('');
 }
