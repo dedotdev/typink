@@ -37,11 +37,6 @@
     "typescript": "^5.2.2",
     "vitest": "^2.1.8"
   },
-  "resolutions": {
-    "@polkadot/keyring": "^13.2.3",
-    "@polkadot/types": "^15.0.1",
-    "@polkadot/util-crypto": "^13.2.3"
-  },
   "engines": {
     "node": ">=18"
   },
