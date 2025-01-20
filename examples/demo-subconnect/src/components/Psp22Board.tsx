@@ -9,7 +9,7 @@ import { ConnectWalletButton } from '@/components/shared/ConnectWalletButton.tsx
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { defaultCaller, connectedAccount } = useTypink();
+  const { defaultCaller, connectedAccount, network } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
 
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
@@ -98,7 +98,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, { decimals: tokenDecimal, symbol: tokenSymbol })}
+            {formatBalance(totalSupply, network)}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -106,7 +106,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, { decimals: tokenDecimal, symbol: tokenSymbol })}
+              {formatBalance(myBalance, network)}
             </PendingText>
           ) : (
             <ConnectWalletButton buttonProps={{ size: 'xs' }} />
