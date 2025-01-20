@@ -1,9 +1,12 @@
 import { TypinkError } from './errors.js';
 
+const SEPERATOR_SPOT_REGEX = /\B(?=(\d{3})+(?!\d))/g;
+
 export interface FormatBalanceOptions {
   symbol?: string;
   decimals?: number;
   withAll?: boolean;
+  locale?: string;
 }
 
 /**
@@ -14,6 +17,7 @@ export interface FormatBalanceOptions {
  * @param options.symbol - The currency symbol.
  * @param options.decimals - The decimals of network. (default: 0)
  * @param options.withAll - Whether to show all decimals. (default: false, only show up to 4 decimals)
+ * @param options.locale - The locale to use for formatting. (default: 'en')
  *
  * @returns The formatted balance.
  */
@@ -22,7 +26,7 @@ export function formatBalance(value: number | bigint | string | undefined, optio
     return '';
   }
 
-  const { decimals = 0, symbol, withAll = false } = options;
+  const { decimals = 0, symbol, withAll = false, locale = 'en' } = options;
 
   let valueStr = value.toString();
 
@@ -49,12 +53,28 @@ export function formatBalance(value: number | bigint | string | undefined, optio
     .substring(0, withAll ? decimals : Math.min(4, decimals))
     .replace(/0+$/, '');
 
+  const { thousand, decimal } = getSeparator(locale);
+
   return [
     isNegative && '-', // prettier-end-here
-    wholePart,
-    decimalPart && `.${decimalPart}`,
+    wholePart.replace(SEPERATOR_SPOT_REGEX, thousand),
+    decimalPart && `${decimal}${decimalPart}`,
     symbol && ` ${symbol}`,
   ]
     .filter(Boolean)
     .join('');
+}
+
+/**
+ * Ref: https://github.com/polkadot-js/common/blob/master/packages/util/src/format/getSeparator.ts
+ *
+ * Get the decimal and thousand separator of a locale
+ * @param locale
+ * @returns {decimal: string, thousand: string}
+ */
+export function getSeparator(locale?: string): { thousand: string; decimal: string } {
+  return {
+    decimal: (0.1).toLocaleString(locale, { useGrouping: false }).charAt(1),
+    thousand: (1000).toLocaleString(locale, { useGrouping: true }).replace(/\d/g, '').charAt(0),
+  };
 }
