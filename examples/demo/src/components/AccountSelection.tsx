@@ -51,10 +51,7 @@ export default function AccountSelection() {
                 <Text fontWeight='500'>{one.name}</Text>
 
                 <Text fontSize='xs'>Address: {shortenAddress(one.address)}</Text>
-                <Text fontSize='xs'>
-                  Balance:
-                  {formatBalance(balances[one.address]?.free, network)}
-                </Text>
+                <Text fontSize='xs'>Balance: {formatBalance(balances[one.address]?.free, network)}</Text>
               </Flex>
             </MenuItem>
           ))}
