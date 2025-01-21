@@ -56,7 +56,8 @@ export function formatBalance(value: number | bigint | string | undefined, optio
     isNegative && '-',
     Intl.NumberFormat(locale, {
       style: 'decimal',
-      maximumFractionDigits: withAll ? decimals : 4,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: withAll ? Math.max(2, decimals) : 4,
       // @ts-ignore
     }).format(`${wholePart}.${decimalPart}`),
     symbol && ` ${symbol}`,
