@@ -1,7 +1,5 @@
 import { TypinkError } from './errors.js';
 
-const SEPERATOR_SPOT_REGEX = /\B(?=(\d{3})+(?!\d))/g;
-
 export interface FormatBalanceOptions {
   symbol?: string;
   decimals?: number;
@@ -50,31 +48,19 @@ export function formatBalance(value: number | bigint | string | undefined, optio
   const wholePart = tmpStr.slice(0, tmpStr.length - decimals).padStart(1, '0');
   const decimalPart = tmpStr
     .slice(tmpStr.length - decimals)
+    // To avoid Intl.NumberFormat auto rounding
     .substring(0, withAll ? decimals : Math.min(4, decimals))
     .replace(/0+$/, '');
 
-  const { thousand, decimal } = getSeparator(locale);
-
   return [
-    isNegative && '-', // prettier-end-here
-    wholePart.replace(SEPERATOR_SPOT_REGEX, thousand),
-    decimalPart && `${decimal}${decimalPart}`,
+    isNegative && '-',
+    Intl.NumberFormat(locale, {
+      style: 'decimal',
+      maximumFractionDigits: withAll ? decimals : 4,
+      // @ts-ignore
+    }).format(`${wholePart}.${decimalPart}`),
     symbol && ` ${symbol}`,
   ]
     .filter(Boolean)
     .join('');
-}
-
-/**
- * Ref: https://github.com/polkadot-js/common/blob/master/packages/util/src/format/getSeparator.ts
- *
- * Get the decimal and thousand separator of a locale
- * @param locale
- * @returns {decimal: string, thousand: string}
- */
-export function getSeparator(locale?: string): { thousand: string; decimal: string } {
-  return {
-    decimal: (0.1).toLocaleString(locale, { useGrouping: false }).charAt(1),
-    thousand: (1000).toLocaleString(locale, { useGrouping: true }).replace(/\d/g, '').charAt(0),
-  };
 }

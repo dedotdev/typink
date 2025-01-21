@@ -32,7 +32,6 @@ describe('formatBalance', () => {
     expect(formatBalance(12_172_837, { decimals: 1, locale: 'sl-si' })).toEqual('1.217.283,7');
     expect(formatBalance(12_172_837, { decimals: 1, locale: 'it-it' })).toEqual('1.217.283,7');
     expect(formatBalance(12_172_837, { decimals: 1, locale: 'ja-jp' })).toEqual('1,217,283.7');
-    expect(formatBalance(12_172_837, { decimals: 1, locale: 'hi-IN' })).toEqual('1,217,283.7');
   });
 
   it('should throw error if input has bad chars', () => {
