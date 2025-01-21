@@ -36,15 +36,19 @@ describe('formatBalance', () => {
 
   it('should throw error if input has bad chars', () => {
     expect(() => formatBalance('1.000000000001', { decimals: 12 })).toThrow(
-      new TypinkError('Invalid value at position 1, bigint was expected'),
+      new TypinkError('Invalid value: 1.000000000001 at position 1, bigint was expected'),
     );
     expect(() => formatBalance('1,2', { decimals: 12, symbol: 'AZERO' })).toThrow(
-      new TypinkError('Invalid value at position 1, bigint was expected'),
+      new TypinkError('Invalid value: 1,2 at position 1, bigint was expected'),
     );
   });
 
   it('should throw error if decimals is invalid', () => {
-    expect(() => formatBalance('1', { decimals: 12.2, symbol: 'AZERO' })).toThrow(new TypinkError('Invalid decimals'));
-    expect(() => formatBalance('1', { decimals: -12, symbol: 'AZERO' })).toThrow(new TypinkError('Invalid decimals'));
+    expect(() => formatBalance('1', { decimals: 12.2, symbol: 'AZERO' })).toThrow(
+      new TypinkError('Invalid decimals: 12.2, an positive integer is expected'),
+    );
+    expect(() => formatBalance('1', { decimals: -12, symbol: 'AZERO' })).toThrow(
+      new TypinkError('Invalid decimals: -12, an positive integer is expected'),
+    );
   });
 });

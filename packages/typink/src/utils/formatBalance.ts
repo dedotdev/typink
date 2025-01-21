@@ -29,7 +29,7 @@ export function formatBalance(value: number | bigint | string | undefined, optio
   let valueStr = value.toString();
 
   if (!Number.isInteger(decimals) || decimals < 0) {
-    throw new TypinkError('Invalid decimals');
+    throw new TypinkError(`Invalid decimals: ${decimals}, an positive integer is expected`);
   }
 
   const isNegative = valueStr.at(0) === '-';
@@ -39,7 +39,7 @@ export function formatBalance(value: number | bigint | string | undefined, optio
 
   const badChars = valueStr.match(/[^0-9]/);
   if (badChars) {
-    throw new TypinkError(`Invalid value at position ${badChars.index ?? 0}, bigint was expected`);
+    throw new TypinkError(`Invalid value: ${valueStr} at position ${badChars.index ?? 0}, bigint was expected`);
   }
 
   const tmpStr = valueStr.padStart(decimals, '0');
