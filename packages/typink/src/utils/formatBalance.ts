@@ -20,7 +20,7 @@ export interface FormatBalanceOptions {
  * @returns The formatted balance.
  */
 export function formatBalance(value: number | bigint | string | undefined, options: FormatBalanceOptions): string {
-  if (value === undefined) {
+  if (value === undefined || value === null || value === '') {
     return '';
   }
 
@@ -58,8 +58,7 @@ export function formatBalance(value: number | bigint | string | undefined, optio
       style: 'decimal',
       minimumFractionDigits: 2,
       maximumFractionDigits: withAll ? Math.max(2, decimals) : 4,
-      // @ts-ignore
-    }).format(`${wholePart}.${decimalPart}`),
+    }).format(+`${wholePart}.${decimalPart}`),
     symbol && ` ${symbol}`,
   ]
     .filter(Boolean)
