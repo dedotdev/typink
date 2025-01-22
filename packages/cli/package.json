@@ -1,0 +1,24 @@
+{
+  "name": "cli",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
+    "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
+    "test": "npx vitest --watch=false"
+  },
+  "bin": {
+    "create-typink": "./bin/create-typink.mjs"
+  },
+  "dependencies": {
+    "inquirer": "^12.3.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "engines": {
+    "node": ">=^18.17.0"
+  },
+  "license": "MIT"
+}

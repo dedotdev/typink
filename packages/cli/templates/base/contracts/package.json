@@ -1,0 +1,13 @@
+{
+  "name": "contracts",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "typink": "dedot typink -m ../contracts/artifacts/psp22/psp22.contract -o ../contracts/types && dedot typink -m ../contracts/artifacts/greeter/greeter.contract -o ../contracts/types"
+  },
+  "type": "module",
+  "dependencies": {
+    "dedot": "^0.6.1",
+    "typink": "0.0.1-alpha.2"
+  }
+}
