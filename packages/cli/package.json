@@ -10,14 +10,14 @@
     "create-typink": "./bin/create-typink.mjs"
   },
   "dependencies": {
-    "inquirer": "^12.3.2"
+    "chalk": "^5.4.1",
+    "execa": "^9.5.2",
+    "inquirer": "^12.3.2",
+    "listr2": "^8.2.5"
   },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
-  },
-  "engines": {
-    "node": ">=^18.17.0"
   },
   "license": "MIT"
 }
