@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
-    "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
-    "test": "npx vitest --watch=false"
+    "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo"
   },
   "bin": {
     "create-typink": "./bin/create-typink.mjs"
