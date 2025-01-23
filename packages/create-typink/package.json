@@ -1,15 +1,14 @@
 {
-  "name": "cli",
+  "name": "create-typink",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
     "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo"
   },
-  "bin": {
-    "create-typink": "./bin/create-typink.mjs"
-  },
+  "bin": "./bin/create-typink.mjs",
   "dependencies": {
+    "arg": "^5.0.2",
     "chalk": "^5.4.1",
     "execa": "^9.5.2",
     "inquirer": "^12.3.2",
@@ -18,6 +17,9 @@
   "publishConfig": {
     "access": "public",
     "directory": "dist"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "license": "MIT"
 }

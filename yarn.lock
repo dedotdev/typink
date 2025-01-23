@@ -5928,6 +5928,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"arg@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "arg@npm:5.0.2"
+  checksum: 10/92fe7de222054a060fd2329e92e867410b3ea260328147ee3fb7855f78efae005f4087e698d4e688a856893c56bb09951588c40f2c901cf6996cd8cd7bcfef2c
+  languageName: node
+  linkType: hard
+
 "argparse@npm:^1.0.7":
   version: 1.0.10
   resolution: "argparse@npm:1.0.10"
@@ -6506,19 +6513,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli@workspace:packages/cli":
-  version: 0.0.0-use.local
-  resolution: "cli@workspace:packages/cli"
-  dependencies:
-    chalk: "npm:^5.4.1"
-    execa: "npm:^9.5.2"
-    inquirer: "npm:^12.3.2"
-    listr2: "npm:^8.2.5"
-  bin:
-    create-typink: ./bin/create-typink.mjs
-  languageName: unknown
-  linkType: soft
-
 "clipboardy@npm:^4.0.0":
   version: 4.0.0
   resolution: "clipboardy@npm:4.0.0"
@@ -6862,6 +6856,20 @@ __metadata:
   checksum: 10/91d082baca0f33b1c085bf010f9ded4af43cbedacba8821da0fb5667184d0a848addc52c31fadd080007f904a555319c238cf5f4c03e6d58ece2e4876b2e73d6
   languageName: node
   linkType: hard
+
+"create-typink@workspace:packages/create-typink":
+  version: 0.0.0-use.local
+  resolution: "create-typink@workspace:packages/create-typink"
+  dependencies:
+    arg: "npm:^5.0.2"
+    chalk: "npm:^5.4.1"
+    execa: "npm:^9.5.2"
+    inquirer: "npm:^12.3.2"
+    listr2: "npm:^8.2.5"
+  bin:
+    create-typink: ./bin/create-typink.mjs
+  languageName: unknown
+  linkType: soft
 
 "cross-fetch@npm:^3.1.4":
   version: 3.1.8

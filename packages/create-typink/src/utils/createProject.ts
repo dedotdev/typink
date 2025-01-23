@@ -1,27 +1,24 @@
-import { createProjectDirectory } from '../tasks/createProjectDirectory.js';
-import { BaseOptions } from '../types.js';
+import { Options } from '../types.js';
 import { Listr } from 'listr2';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
 import chalk from 'chalk';
-import { copyTemplateFiles } from '../tasks/copyTemplateFiles.js';
-import { installPackages } from '../tasks/installPackages.js';
-import { createFirstCommit } from '../tasks/createFirstCommit.js';
+import { createFirstCommit, installPackages, createProjectDirectory, copyTemplateFiles } from '../tasks/index.js';
 
-export async function createProject(options: BaseOptions) {
-  const { projectName } = options;
+export async function createProject(options: Options) {
+  const { projectName, skipInstall, noGit } = options;
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
   const templateDirectory = path.resolve(__dirname, '../../templates');
-  const targetDirectory = path.resolve(process.cwd(), projectName);
+  const targetDirectory = path.resolve(process.cwd(), projectName!);
 
   const tasks = new Listr(
     [
       {
         title: `📁 Create project directory ${targetDirectory}`,
-        task: () => createProjectDirectory(projectName),
+        task: () => createProjectDirectory(projectName!),
       },
       {
         title: `🚀 Creating a new Typink app in ${chalk.green.bold(projectName)}`,
@@ -34,13 +31,15 @@ export async function createProject(options: BaseOptions) {
           outputBar: 8,
           persistentOutput: false,
         },
+        skip: skipInstall,
       },
       {
-        title: `📡 Create the very first Git commit`,
+        title: `🚨 Create the very first Git commit`,
         task: () => createFirstCommit(targetDirectory),
+        skip: noGit,
       },
     ],
-    { rendererOptions: { collapseSkips: false, suffixSkips: true }, exitOnError: true },
+    { rendererOptions: { suffixSkips: true }, exitOnError: true },
   );
 
   await tasks.run();
