@@ -3,9 +3,8 @@ import { Options } from '../types.js';
 import * as fs from 'fs';
 
 export async function copyTemplateFiles(options: Options, templatesDir: string, targetDir: string) {
-  const { projectName, presetContract, noGit, template } = options;
+  const { projectName, noGit, template } = options;
 
-  // Currently, just support `base` preset
   const templateDir = `${templatesDir}/${template}`;
 
   if (!fs.existsSync(templateDir)) {
@@ -20,6 +19,8 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   packageJson.name = projectName;
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+  // TODO!: Add preset contracts, wallet connector, and networks
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
