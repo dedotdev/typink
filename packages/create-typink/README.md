@@ -1,3 +1,3 @@
-# create-typink-cli
+# create-typink
 
-A CLI tool to create a new project with the Typink stack.
+A CLI tool to create a new project using Typink
