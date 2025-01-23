@@ -3,7 +3,13 @@ import { Listr } from 'listr2';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
 import chalk from 'chalk';
-import { createFirstCommit, installPackages, createProjectDirectory, copyTemplateFiles } from '../tasks/index.js';
+import {
+  prettierFormat,
+  createFirstCommit,
+  installPackages,
+  createProjectDirectory,
+  copyTemplateFiles,
+} from '../tasks/index.js';
 
 export async function createProject(options: Options) {
   const { projectName, skipInstall, noGit } = options;
@@ -11,6 +17,7 @@ export async function createProject(options: Options) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
+  const rootDirectory = path.resolve(__dirname, '../../');
   const templateDirectory = path.resolve(__dirname, '../../templates');
   const targetDirectory = path.resolve(process.cwd(), projectName!);
 
@@ -27,11 +34,11 @@ export async function createProject(options: Options) {
       {
         title: '📦 Installing dependencies with yarn, this could take a while',
         task: () => installPackages(targetDirectory),
-        rendererOptions: {
-          outputBar: 8,
-          persistentOutput: false,
-        },
         skip: skipInstall,
+      },
+      {
+        title: '🧹 Formatting the code with Prettier',
+        task: () => prettierFormat(rootDirectory, targetDirectory, options),
       },
       {
         title: `🚨 Create the very first Git commit`,

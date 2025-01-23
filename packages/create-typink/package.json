@@ -12,7 +12,8 @@
     "chalk": "^5.4.1",
     "execa": "^9.5.2",
     "inquirer": "^12.3.2",
-    "listr2": "^8.2.5"
+    "listr2": "^8.2.5",
+    "prettier": "^3.4.2"
   },
   "publishConfig": {
     "access": "public",

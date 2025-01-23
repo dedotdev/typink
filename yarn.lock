@@ -6866,6 +6866,7 @@ __metadata:
     execa: "npm:^9.5.2"
     inquirer: "npm:^12.3.2"
     listr2: "npm:^8.2.5"
+    prettier: "npm:^3.4.2"
   bin:
     create-typink: ./bin/create-typink.mjs
   languageName: unknown

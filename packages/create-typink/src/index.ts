@@ -2,11 +2,11 @@ import chalk from 'chalk';
 import {
   parseArguments,
   renderIntroArt,
-  createProject,
   promptMissingOptions,
   renderHelpMessage,
   renderOutroMessage,
 } from './utils/index.js';
+import { createProject } from './tasks/index.js';
 
 export async function createTypink() {
   try {
