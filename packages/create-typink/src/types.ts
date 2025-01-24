@@ -21,7 +21,7 @@ export type BaseOptions = {
   projectName: string | null;
   skipInstall: boolean;
   presetContract: PresetContract | null;
-  network: Network | null;
+  networks: Network[] | null;
   walletConnector: WalletConnector | null;
   template: Template | null;
   noGit: boolean;

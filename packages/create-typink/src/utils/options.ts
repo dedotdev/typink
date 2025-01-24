@@ -8,7 +8,7 @@ const defaultOptions: BaseOptions = {
   template: 'base',
   presetContract: 'greeter',
   walletConnector: 'Default',
-  network: 'Pop Testnet',
+  networks: ['Pop Testnet'],
   skipInstall: false,
   noGit: false,
 };
@@ -53,10 +53,10 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     },
     {
       type: 'checkbox',
-      name: 'network',
-      message: 'What network do you want to connect?',
+      name: 'networks',
+      message: 'What networks do you want to connect?',
       choices: NETWORKS,
-      default: defaultOptions.network,
+      default: defaultOptions.networks,
     },
   ];
 
@@ -85,8 +85,8 @@ export function parseArguments(): Options {
       '--wallet': String,
       '-w': '--wallet',
 
-      '--network': [String],
-      '-N': '--network',
+      '--networks': [String],
+      '-N': '--networks',
 
       '--no-git': Boolean,
 
@@ -118,8 +118,8 @@ export function parseArguments(): Options {
     );
   }
 
-  if (args['--network']) {
-    args['--network'].forEach((network: string) => {
+  if (args['--networks']) {
+    args['--networks'].forEach((network: string) => {
       if (!NETWORKS.includes(network as any)) {
         throw new Error('Network ' + network + ' is not supported. Please use supported network.');
       }
@@ -130,7 +130,7 @@ export function parseArguments(): Options {
     projectName: args['--name'] || null,
     presetContract: args['--preset'] || null,
     walletConnector: args['--wallet'] || null,
-    network: args['--network'] || null,
+    networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     version: args['--version'] || false,
