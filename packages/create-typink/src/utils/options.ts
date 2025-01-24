@@ -57,6 +57,13 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
       message: 'What networks do you want to connect?',
       choices: NETWORKS,
       default: defaultOptions.networks,
+      validate: (networks: string[]) => {
+        if (networks.length === 0) {
+          return 'Please select at least one network.';
+        }
+
+        return true;
+      },
     },
   ];
 
