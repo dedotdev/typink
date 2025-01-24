@@ -15,16 +15,15 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
     throw new Error(`Preset directory not found: ${templateDir}`);
   }
 
-  fs.cpSync(templateDir, targetDir, { recursive: true });
+  await fs.promises.cp(templateDir, targetDir, { recursive: true });
 
   const packageJsonPath = `${targetDir}/package.json`;
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
   packageJson.name = projectName;
+  await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  processTemplate(options, targetDir);
+  processTemplateFiles(options, targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -32,16 +31,16 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   }
 }
 
-export async function processTemplate(rawOptions: Options, targetDir: string) {
+export async function processTemplateFiles(rawOptions: Options, targetDir: string) {
   const options = {
     ...rawOptions,
     networks: rawOptions.networks?.map(stringCamelCase),
   };
 
-  await _processTemplate(options, targetDir);
+  await processTemplateFilesRecursive(options, targetDir);
 }
 
-export async function _processTemplate(options: any, dir: string) {
+async function processTemplateFilesRecursive(options: any, dir: string) {
   if (IS_IGNORE_FILES.test(dir)) {
     return;
   }
@@ -52,7 +51,7 @@ export async function _processTemplate(options: any, dir: string) {
     const filePath = path.join(dir, file.name);
 
     if (file.isDirectory()) {
-      await _processTemplate(options, filePath);
+      await processTemplateFilesRecursive(options, filePath);
     } else {
       if (IS_TEMPLATE_FILE.test(filePath)) {
         const content = fs.readFileSync(filePath, 'utf-8');

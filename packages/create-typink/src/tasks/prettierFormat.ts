@@ -4,24 +4,24 @@ import { promises as fs } from 'fs';
 import { Options } from '../types.js';
 import { execa } from 'execa';
 
-export async function prettierFormat(rootDir: string, targetDir: string, options: Options) {
+export async function prettierFormat(targetDir: string, options: Options) {
   if (!options.skipInstall) {
     await execa('yarn', ['prettify'], { cwd: targetDir });
   } else {
-    const prettierConfig = await prettier.resolveConfig(path.resolve(rootDir, './.prettierrc.js'));
+    const prettierConfig = await prettier.resolveConfig(path.resolve(targetDir, './.prettierrc.js'));
 
-    await prettierFormatWithConfig(targetDir, prettierConfig);
+    await prettierFormatRecursive(targetDir, prettierConfig);
   }
 }
 
-export async function prettierFormatWithConfig(dir: string, config: prettier.Options | null) {
+async function prettierFormatRecursive(dir: string, config: prettier.Options | null) {
   const files = await fs.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
     const filePath = path.join(dir, file.name);
 
     if (file.isDirectory()) {
-      await prettierFormatWithConfig(filePath, config);
+      await prettierFormatRecursive(filePath, config);
     } else {
       const fileInfo = await prettier.getFileInfo(filePath);
 
