@@ -33,8 +33,7 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
 }
 
 export async function processPresetContract(options: Options, targetDir: string) {
-  const contractsDir = `${targetDir}/contracts`;
-  const dirs = [`${contractsDir}/artifacts`, `${contractsDir}/types`];
+  const dirs = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
 
   dirs.forEach(async (dir) => {
     for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {
