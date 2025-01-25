@@ -5,7 +5,7 @@ import { IS_VALID_PACKAGE_NAME } from './string.js';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
-  template: 'base',
+  template: 'default',
   presetContract: 'greeter',
   walletConnector: 'Default',
   networks: ['Pop Testnet'],

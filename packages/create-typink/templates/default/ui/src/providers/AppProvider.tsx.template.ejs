@@ -1,0 +1,44 @@
+import { createContext, useContext } from 'react';
+import { Props } from '@/types.ts';
+import { Contract } from 'dedot/contracts';
+import { useContract } from 'typink';
+import { ContractId } from 'contracts/deployments.ts';
+<% if (options.presetContract === 'greeter') { %>
+import { GreeterContractApi } from 'contracts/types/greeter';
+<% } else if (options.presetContract === 'psp22') { %>
+import { Psp22ContractApi } from 'contracts/types/psp22';
+<% } %>
+
+interface AppContextProps {
+<% if (options.presetContract === 'greeter') { %>
+  greeterContract?: Contract<GreeterContractApi>
+<% } else if (options.presetContract === 'psp22') { %>
+  psp22Contract?: Contract<Psp22ContractApi>
+<% } %>
+}
+
+const AppContext = createContext<AppContextProps>(null as any);
+
+export const useApp = () => {
+  return useContext(AppContext);
+};
+
+export function AppProvider({ children }: Props) {
+  <% if (options.presetContract === 'greeter') { %>
+  const { contract: greeterContract } = useContract<GreeterContractApi>(ContractId.GREETER)
+  <% } else if (options.presetContract === 'psp22') { %>
+  const { contract: psp22Contract } = useContract<Psp22ContractApi>(ContractId.PSP22)
+  <% } %>
+
+  return (
+    <AppContext.Provider value={{ 
+        <% if (options.presetContract === 'greeter') { %>
+        greeterContract, 
+        <% } else if (options.presetContract === 'psp22') { %>
+        psp22Contract 
+        <% } %>
+      }}>
+      {children}
+    </AppContext.Provider>
+  );
+}

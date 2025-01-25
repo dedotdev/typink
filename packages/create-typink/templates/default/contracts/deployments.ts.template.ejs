@@ -1,0 +1,95 @@
+import { ContractDeployment, <%= options.networks %> } from 'typink';
+
+<% if (options.presetContract === 'greeter') { %>
+    import greeterMetadata from './artifacts/greeter/greeter.json';
+<% } else if (options.presetContract === 'psp22') { %>
+    import psp22Metadata from './artifacts/psp22/psp22.json';
+<% } %>
+
+export enum ContractId {
+  <% if (options.presetContract === 'greeter') { %>
+  GREETER = 'greeter',
+  <% } else if (options.presetContract === 'psp22') { %>
+  PSP22 = 'psp22',
+  <% } %>
+}
+
+<% if (options.presetContract === 'greeter') { %>
+export const greeterDeployments: ContractDeployment[] = [
+<% if (options.networks.includes("popTestnet")) { %>
+  {
+    id: ContractId.GREETER,
+    metadata: greeterMetadata as any,
+    network: popTestnet.id,
+    address: '5HJ2XLhBuoLkoJT5G2MfMWVpsybUtcqRGWe29Fo26JVvDCZG',
+  },
+<% } %>
+<% if (options.networks.includes("alephZeroTestnet")) { %>
+  {
+    id: ContractId.GREETER,
+    metadata: greeterMetadata as any,
+    network: alephZeroTestnet.id,
+    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
+  },
+<% } %>
+<% if (options.networks.includes("alephZero")) { %>
+  {
+    id: ContractId.GREETER,
+    metadata: greeterMetadata as any,
+    network: alephZero.id,
+    address: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1',
+  },
+<% } %>
+<% if (options.networks.includes("astar")) { %>
+  {
+    id: ContractId.GREETER,
+    metadata: greeterMetadata as any,
+    network: astar.id,
+    address: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse',
+  },
+<% } %>
+];
+<% } else if (options.presetContract === 'psp22') { %>
+export const psp22Deployments: ContractDeployment[] = [
+<% if (options.networks.includes("popTestnet")) { %>
+  {
+    id: ContractId.PSP22,
+    metadata: psp22Metadata as any,
+    network: popTestnet.id,
+    address: '16119BccKAfWwbt4TCNvfLBDuRWHSeFozJELEcxFPVd11hnt',
+  },
+<% } %>
+<% if (options.networks.includes("alephZeroTestnet")) { %>
+  {
+    id: ContractId.PSP22,
+    metadata: psp22Metadata as any,
+    network: alephZeroTestnet.id,
+    address: '5G5moUCkx5E2TD3CcRWvweg7rpCLngRmwukuKdaohvfBBmXr',
+  },
+<% } %>
+<% if (options.networks.includes("alephZero")) { %>
+  {
+    id: ContractId.PSP22,
+    metadata: psp22Metadata as any,
+    network: alephZero.id,
+    address: '5EkDPuyLdubc4uUmEhzMFRtcNtmxSoUecfcc9wWLUR7ZFXbb',
+  },
+<% } %>
+<% if (options.networks.includes("astar")) { %>
+  {
+    id: ContractId.PSP22,
+    metadata: psp22Metadata as any,
+    network: astar.id,
+    address: 'YFhgALp2qPtPe1pTFereqqB4RUXKzVM7YtCYfqQX412GWHr',
+  },
+<% } %>
+];
+<% } %>
+
+export const deployments = [
+  <% if (options.presetContract === 'greeter') { %>
+    ...greeterDeployments, 
+  <% } else if (options.presetContract === 'psp22') { %>
+    ...psp22Deployments
+  <% } %>
+];

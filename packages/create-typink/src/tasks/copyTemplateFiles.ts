@@ -23,12 +23,28 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   packageJson.name = projectName;
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+  processPresetContract(options, targetDir);
   processTemplateFiles(options, targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
     await execa('git', ['checkout', '-b', 'main'], { cwd: targetDir });
   }
+}
+
+export async function processPresetContract(options: Options, targetDir: string) {
+  const contractsDir = `${targetDir}/contracts`;
+  const dirs = [`${contractsDir}/artifacts`, `${contractsDir}/types`];
+
+  dirs.forEach(async (dir) => {
+    for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {
+      if (file.name === options.presetContract) {
+        continue;
+      }
+
+      await fs.promises.rm(path.join(dir, file.name), { recursive: true });
+    }
+  });
 }
 
 export async function processTemplateFiles(rawOptions: Options, targetDir: string) {
