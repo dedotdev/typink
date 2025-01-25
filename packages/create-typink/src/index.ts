@@ -7,6 +7,7 @@ import {
   renderOutroMessage,
 } from './utils/index.js';
 import { createProject } from './tasks/index.js';
+import { fileURLToPath } from 'url';
 
 export async function createTypink() {
   try {
@@ -28,4 +29,10 @@ export async function createTypink() {
     console.error(chalk.red.bold('🚨 An error occurred:'), error);
     console.error(chalk.red.bold('🚨 Sorry, exiting...'));
   }
+}
+
+// run directly from root folder: tsx ./packages/create-typink/src/index.ts
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
+  createTypink().catch(console.error);
 }
