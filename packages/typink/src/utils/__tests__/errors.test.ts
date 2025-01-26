@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { extractHumanReadableError } from '../errors';
+import { extractHumanReadableError } from '../errors.js';
 import { DedotError } from 'dedot/utils';
 import {
   ContractDispatchError,
