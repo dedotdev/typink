@@ -2,15 +2,14 @@ import { Box, Button, Checkbox, Divider, Heading, Input } from '@chakra-ui/react
 import { useRef, useState } from 'react';
 import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
-import { formatBalance } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
+import { useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink, formatBalance } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { connectedAccount } = useTypink();
+  const { connectedAccount, network } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
   const inputAddressRef = useRef<HTMLInputElement>(null);
   const [address, setAddress] = useState('');
@@ -108,7 +107,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, tokenDecimal)} {tokenSymbol}
+            {formatBalance(totalSupply, network)}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -126,7 +125,7 @@ export default function Psp22Board() {
             <Box mt={4}>
               Balance:{' '}
               <PendingText fontWeight='600' isLoading={loadingAnotherBalance}>
-                {formatBalance(addressBalance, tokenDecimal)} {tokenSymbol}
+                {formatBalance(addressBalance, network)}
               </PendingText>
             </Box>
           )}
@@ -136,7 +135,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, tokenDecimal)} {tokenSymbol}
+              {formatBalance(myBalance, network)}
             </PendingText>
           ) : (
             <WalletSelection buttonProps={{ size: 'xs' }} />

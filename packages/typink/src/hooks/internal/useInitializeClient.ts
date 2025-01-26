@@ -61,7 +61,7 @@ export function useInitializeClient(network?: NetworkInfo, options?: UseClientOp
     setReady(false);
 
     // TODO support light-client
-    const provider: JsonRpcProvider = new WsProvider(network.provider);
+    const provider: JsonRpcProvider = new WsProvider(network.providers[0]);
 
     if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
       setClient(await LegacyClient.new({ provider, cacheMetadata }));

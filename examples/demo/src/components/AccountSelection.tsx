@@ -2,8 +2,8 @@ import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, T
 import { useEffect, useMemo } from 'react';
 import ConnectedWallet from '@/components/dialog/ConnectedWallet.tsx';
 import WalletSelection, { ButtonStyle } from '@/components/dialog/WalletSelection.tsx';
-import { formatBalance, shortenAddress } from '@/utils/string.ts';
-import { useBalances, useTypink } from 'typink';
+import { shortenAddress } from '@/utils/string.ts';
+import { formatBalance, useBalances, useTypink } from 'typink';
 
 export default function AccountSelection() {
   const { accounts, connectedAccount, setConnectedAccount, disconnect, network } = useTypink();
@@ -51,9 +51,7 @@ export default function AccountSelection() {
                 <Text fontWeight='500'>{one.name}</Text>
 
                 <Text fontSize='xs'>Address: {shortenAddress(one.address)}</Text>
-                <Text fontSize='xs'>
-                  Balance: {formatBalance(balances[one.address]?.free) || '0'} {network.symbol}
-                </Text>
+                <Text fontSize='xs'>Balance: {formatBalance(balances[one.address]?.free, network)}</Text>
               </Flex>
             </MenuItem>
           ))}

@@ -34,10 +34,11 @@ export interface NetworkInfo {
   id: NetworkId;
   name: string;
   logo: string;
-  provider: string;
+  providers: string[];
   symbol: string;
   decimals: number;
   subscanUrl?: string;
+  pjsUrl?: string;
   faucetUrl?: string;
   jsonRpcApi?: JsonRpcApi; // default to new
 }
