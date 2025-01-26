@@ -8,6 +8,7 @@ export const popTestnet: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://onboard.popnetwork.xyz',
+  pjsUrl: 'https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc1.paseo.popnetwork.xyz',
 };
 
 export const alephZeroTestnet: NetworkInfo = {

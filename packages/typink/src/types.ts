@@ -38,6 +38,7 @@ export interface NetworkInfo {
   symbol: string;
   decimals: number;
   subscanUrl?: string;
+  pjsUrl?: string;
   faucetUrl?: string;
   jsonRpcApi?: JsonRpcApi; // default to new
 }
