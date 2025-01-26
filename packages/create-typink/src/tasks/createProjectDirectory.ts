@@ -5,10 +5,9 @@ export async function createProjectDirectory(projectName: string) {
     const result = await execa('mkdir', [projectName]);
 
     if (result.failed) {
-      // TODO! Using TypinkError
       throw new Error(`There was an error when running mkdir command`);
     }
-  } catch (error) {
-    throw new Error(`Failed to create project directory: ${projectName}`);
+  } catch (error: any) {
+    throw new Error(`Failed to create project directory: ${projectName} with error: ${error.message}`);
   }
 }

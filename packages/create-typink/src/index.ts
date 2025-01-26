@@ -6,7 +6,7 @@ import {
   renderHelpMessage,
   renderOutroMessage,
 } from './utils/index.js';
-import { createProject } from './tasks/index.js';
+import { createProject } from './createProject.js';
 import { fileURLToPath } from 'url';
 
 export async function createTypink() {

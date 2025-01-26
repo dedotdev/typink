@@ -12,7 +12,7 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   const templateDir = `${templatesDir}/${template}`;
 
   if (!fs.existsSync(templateDir)) {
-    throw new Error(`Preset directory not found: ${templateDir}`);
+    throw new Error(`Template directory not found: ${templateDir}`);
   }
 
   await fs.promises.cp(templateDir, targetDir, { recursive: true });
@@ -33,9 +33,9 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
 }
 
 export async function processPresetContract(options: Options, targetDir: string) {
-  const dirs = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
+  const dirsToCheck = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
 
-  dirs.forEach(async (dir) => {
+  dirsToCheck.forEach(async (dir) => {
     for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {
       if (file.name === options.presetContract) {
         continue;

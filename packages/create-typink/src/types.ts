@@ -1,4 +1,4 @@
-export const WALLET_CONNECTORS = ['Default', 'Subconnect', 'Talisman Connect'] as const;
+export const WALLET_CONNECTORS = ['Default', 'SubConnect V2', 'Talisman Connect'] as const;
 export type WalletConnector = (typeof WALLET_CONNECTORS)[number];
 
 export const PRESET_CONTRACTS = ['greeter', 'psp22'] as const;
