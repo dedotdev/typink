@@ -13,13 +13,16 @@
     "@chakra-ui/react": "^2.10.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    <% if (options.walletConnector === 'SubConnect V2') { %>
     "@subwallet-connect/polkadot-js": "^1.0.8",
     "@subwallet-connect/react": "^1.0.8",
     "@subwallet-connect/subwallet-polkadot": "^1.0.8",
     "@subwallet-connect/talisman": "^1.0.8",
+    <% } else if (options.walletConnector === 'Talisman Connect') { %>
     "@talismn/connect-components": "^1.1.9",
     "@talismn/connect-ui": "^1.1.4",
     "@talismn/connect-wallets": "^1.2.8",
+    <% } %>
     "contracts": "workspace:*",
     "dedot": "^0.6.1",
     "framer-motion": "^10.18.0",
