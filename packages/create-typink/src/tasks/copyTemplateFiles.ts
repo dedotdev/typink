@@ -72,7 +72,10 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
         const content = fs.readFileSync(filePath, 'utf-8');
         const result = ejs.render(content, { options });
 
-        await fs.promises.writeFile(filePath.replace('.template.ejs', ''), result);
+        if (result.trim() !== '') {
+          await fs.promises.writeFile(filePath.replace('.template.ejs', ''), result);
+        }
+
         await fs.promises.rm(filePath);
       }
     }
