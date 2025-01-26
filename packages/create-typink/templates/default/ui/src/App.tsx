@@ -2,7 +2,7 @@ import { Box, Flex } from '@chakra-ui/react';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
-import MainBoards from '@/components/MainBoard.tsx';
+import MainBoard from '@/components/MainBoard.tsx';
 
 function App() {
   return (
