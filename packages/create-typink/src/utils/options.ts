@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import arg from 'arg';
 import { BaseOptions, Options, TEMPLATES, PRESET_CONTRACTS, WALLET_CONNECTORS, NETWORKS } from '../types.js';
-import { IS_VALID_PACKAGE_NAME } from './string.js';
+import validate from 'validate-npm-package-name';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
@@ -22,12 +22,12 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
       message: 'Your project name:',
       default: defaultOptions.projectName,
       validate: (name: string) => {
-        const isValid = IS_VALID_PACKAGE_NAME.test(name);
-        if (isValid) {
+        const result = validate(name);
+        if (result.validForNewPackages) {
           return true;
         }
 
-        return 'Project ' + name + ' is not a valid package name. Please use a valid package name.';
+        return `Project ${name} is not a valid package name with errors: ${result.errors?.join(', ')}.\nPlease use a valid package name.`;
       },
     },
     {
@@ -108,30 +108,34 @@ export function parseArguments(): Options {
     },
   );
 
-  if (args['--name'] && IS_VALID_PACKAGE_NAME.test(args['--name']) === false) {
-    throw new Error('Project ' + args['--name'] + ' is not a valid package name. Please use a valid package name.');
+  if (args['--name']) {
+    const result = validate(args['--name']);
+
+    if (!result.validForNewPackages) {
+      throw new Error(
+        `Project ${args['--name']} is not a valid package name with errors: ${result.errors?.join(', ')}.\nPlease use a valid package name.`,
+      );
+    }
   }
 
   if (args['--preset'] && !PRESET_CONTRACTS.includes(args['--preset'] as any)) {
-    throw new Error('Preset contract ' + args['--preset'] + ' is not supported. Please use a valid preset contract.');
+    throw new Error(`Preset contract ${args['--preset']} is not supported. Please use a valid preset contract.`);
   }
 
   if (args['--wallet'] && !WALLET_CONNECTORS.includes(args['--wallet'] as any)) {
-    throw new Error(
-      'Wallet connector ' + args['--wallet'] + ' is not supported. Please use a supported wallet connector.',
-    );
+    throw new Error(`Wallet connector ${args['--wallet']} is not supported. Please use a supported wallet connector.`);
   }
 
   if (args['--networks']) {
     args['--networks'].forEach((network: string) => {
       if (!NETWORKS.includes(network as any)) {
-        throw new Error('Network ' + network + ' is not supported. Please use supported network.');
+        throw new Error(`Network ${network} is not supported. Please use supported network.`);
       }
     });
   }
 
   if (args['--template'] && !TEMPLATES.includes(args['--template'] as any)) {
-    throw new Error('Template ' + args['--template'] + ' is not supported. Please use a valid template.');
+    throw new Error(`Template ${args['--template']} is not supported. Please use a valid template.`);
   }
 
   return {
