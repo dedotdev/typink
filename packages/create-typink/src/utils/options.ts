@@ -100,9 +100,6 @@ export function parseArguments(): Options {
       '--skip-install': Boolean,
       '--skip': '--skip-install',
 
-      '--version': Boolean,
-      '-v': '--version',
-
       '--help': Boolean,
       '-h': '--help',
     },
@@ -141,11 +138,11 @@ export function parseArguments(): Options {
     projectName: args['--name'] || null,
     presetContract: args['--preset'] || null,
     walletConnector: args['--wallet'] || null,
-    template: args['--template'] || null,
+    // Because there is only `default` tepmlate, we use `default` as default value
+    template: args['--template'] || 'default',
     networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
-    version: args['--version'] || false,
     help: args['--help'] || false,
   } as Options;
 }
