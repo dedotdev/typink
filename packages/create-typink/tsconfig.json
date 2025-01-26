@@ -8,4 +8,5 @@
     "jsx": "react-jsx"
   },
   "include": ["src/**/*"],
+  "exclude": ["src/templates/**/*"]
 }

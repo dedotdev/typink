@@ -17,7 +17,7 @@ export async function createProject(options: Options) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const templateDirectory = path.resolve(__dirname, '../templates');
+  const templateDirectory = path.resolve(__dirname, './templates');
   const targetDirectory = path.resolve(process.cwd(), projectName!);
 
   const tasks = new Listr(

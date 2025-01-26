@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
+    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist && cp -R ./src/templates ./dist",
     "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo"
   },
   "bin": "./bin/create-typink.mjs",
