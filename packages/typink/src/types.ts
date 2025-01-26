@@ -34,7 +34,7 @@ export interface NetworkInfo {
   id: NetworkId;
   name: string;
   logo: string;
-  provider: string;
+  providers: string[];
   symbol: string;
   decimals: number;
   subscanUrl?: string;
