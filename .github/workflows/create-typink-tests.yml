@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        wallet: ['Default', 'SubConnect V2', 'Talisman Connect']
 
     steps:
       - uses: actions/checkout@v3
@@ -23,14 +22,39 @@ jobs:
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn build
-      - name: Create and build app with create-typink (${{ matrix.wallet }})
+      - name: Create app with create-typink (Default)
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs \
-            --no-git -n typink-app-${{ matrix.wallet }} -t default -p greeter \
-            -N "Pop Testnet" -N "Aleph Zero Testnet" -w "${{ matrix.wallet }}"
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
           ls -la
-          cd ./typink-app-${{ matrix.wallet }}
+          cd ./typink-app-default
           ls -la
+      - name: Try to build (Default)
+        run: |
+          cd ../typink-app-default
+          yarn build
+      - name: Create app with create-typink (SubConnect V2)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2 -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "SubConnect V2"
+          ls -la
+          cd ./typink-app-subconnect-v2
+          ls -la
+      - name: Try to build (SubConnect V2)
+        run: |
+          cd ../typink-app-subconnect-v2
+          yarn build
+      - name: Create app with create-typink (Talisman Connect)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "Talisman Connect"
+          ls -la
+          cd ./typink-app-talisman-connect
+          ls -la
+      - name: Try to build (Talisman Connect)
+        run: |
+          cd ../typink-app-talisman-connect
           yarn build
