@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import { createTypink } from '../dist/index.js';
+import { createTypink } from '../index.js';
 
 createTypink();
