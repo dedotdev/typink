@@ -133,10 +133,15 @@ export function parseArguments(): Options {
     });
   }
 
+  if (args['--template'] && !TEMPLATES.includes(args['--template'] as any)) {
+    throw new Error('Template ' + args['--template'] + ' is not supported. Please use a valid template.');
+  }
+
   return {
     projectName: args['--name'] || null,
     presetContract: args['--preset'] || null,
     walletConnector: args['--wallet'] || null,
+    template: args['--template'] || null,
     networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
