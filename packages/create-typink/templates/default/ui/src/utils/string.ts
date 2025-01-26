@@ -8,5 +8,5 @@ export const shortenAddress = (address?: string): string => {
     return address;
   }
 
-  return `${address.substring(0, 6)}...${address.substring(length - 6, length)}`;
+  return `${address.substring(0, 4)}...${address.substring(length - 4, length)}`;
 };
