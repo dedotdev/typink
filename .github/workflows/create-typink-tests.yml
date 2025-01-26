@@ -1,0 +1,36 @@
+name: Create Typink Tests
+
+on:
+  push:
+  workflow_dispatch:
+  merge_group:
+
+jobs:
+  create-typink-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn build
+      - name: Create app with create-typink (Default)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-example -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
+          ls -la
+          cd ./typink-app-example
+          ls -la
+      - name: Try to build (Default)
+        run: |
+          cd ../typink-app-example
+          yarn build

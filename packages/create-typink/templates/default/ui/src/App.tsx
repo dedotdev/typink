@@ -2,7 +2,7 @@ import { Box, Flex } from '@chakra-ui/react';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
-import MainBoard from '@/components/MainBoard.tsx';
+import MainBoards from '@/components/MainBoard.tsx';
 
 function App() {
   return (
@@ -21,4 +21,3 @@ function App() {
 }
 
 export default App;
-
