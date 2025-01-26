@@ -1,5 +1,4 @@
 import { Box, Container, Flex, Image } from '@chakra-ui/react';
-import React from 'react';
 import AccountSelection from '@/components/shared/AccountSelection.tsx';
 import NetworkSelection from '@/components/shared/NetworkSelection.tsx';
 import WalletSelection from '@/components/shared/WalletSelection.tsx';

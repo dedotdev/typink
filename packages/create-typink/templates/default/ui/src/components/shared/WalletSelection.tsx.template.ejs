@@ -1,3 +1,4 @@
+<% if (options.walletConnector === 'Default') { %>
 import {
   Button,
   ChakraProps,
@@ -81,7 +82,7 @@ export default function WalletSelection({
       <Modal onClose={onClose} size='sm' isOpen={isOpen}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select Wallet to Connect</ModalHeader>
+          <ModalHeader>Connect to your wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody mb={4}>
             <Stack>
@@ -95,3 +96,56 @@ export default function WalletSelection({
     </>
   );
 }
+<% } %>
+
+<% if (options.walletConnector === 'Subconnect') { %>
+import { Button, ChakraProps, ThemingProps } from '@chakra-ui/react';
+import { useWalletConnector } from '@/providers/WalletConnectorProvider.tsx';
+import { Props } from 'typink';
+
+interface WalletSelectionButtonProps extends Props {
+  buttonProps?: ChakraProps & ThemingProps<'Button'>;
+}
+
+export default function WalletSelection({ buttonProps = {} }: WalletSelectionButtonProps) {
+  const { connectWallet } = useWalletConnector();
+
+  return (
+    <Button variant='outline' onClick={() => connectWallet()} {...buttonProps}>
+      Connect Wallet
+    </Button>
+  );
+}
+<% } %>
+
+<% if (options.walletConnector === 'Talisman Connect') { %>
+import { Button, ChakraProps, Text, ThemingProps, useDisclosure } from '@chakra-ui/react';
+import { useWalletConnector } from '@/providers/WalletConnectorProvider.tsx';
+import { WalletSelect } from '@talismn/connect-components';
+import { Props, useTypink } from 'typink';
+
+interface WalletSelectionButtonProps extends Props {
+  buttonProps?: ChakraProps & ThemingProps<'Button'>;
+}
+
+export default function WalletSelection({ buttonProps = {} }: WalletSelectionButtonProps) {
+  const { appName } = useTypink();
+  const { isOpen, onOpen } = useDisclosure();
+  const { connectWallet } = useWalletConnector();
+
+  return (
+    <WalletSelect
+      dappName={appName}
+      open={isOpen}
+      triggerComponent={
+        <Button variant='outline' onClick={onOpen} {...buttonProps}>
+          Connect Wallet
+        </Button>
+      }
+      header={<Text>Connect to your wallet</Text>}
+      showAccountsList={true}
+      onWalletSelected={connectWallet}
+    />
+  );
+}
+<% } %>

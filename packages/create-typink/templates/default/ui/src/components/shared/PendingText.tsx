@@ -9,7 +9,7 @@ export default function PendingText(props: PendingTextProps) {
 
   return (
     <Skeleton display='inline-block' isLoaded={!isLoading}>
-      {isLoading ? '---' : <Text {...rest}>{children}</Text>}
+      {isLoading ? '---------' : <Text {...rest}>{children}</Text>}
     </Skeleton>
   );
 }

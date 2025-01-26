@@ -18,7 +18,7 @@ export default function GreetBoard() {
   const { data: greet, isLoading } = useContractQuery({
     contract,
     fn: 'greet',
-    watch: true
+    watch: true,
   });
 
   const handleUpdateGreeting = async () => {
@@ -123,7 +123,9 @@ export default function GreetBoard() {
     </Box>
   );
 }
-<% } else if (options.presetContract === 'psp22') { %>
+<% } %>
+
+<% if (options.presetContract === 'psp22') { %>
 import { Box, Button, Divider, Heading } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
 import WalletSelection from '@/components/shared/WalletSelection.tsx';

@@ -16,6 +16,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+<% if (options.walletConnector === 'Default') { %>
 root.render(
   <ChakraProvider theme={theme}>
     <TypinkProvider
@@ -39,3 +41,45 @@ root.render(
     </TypinkProvider>
   </ChakraProvider>,
 );
+<% } %>
+
+<% if (options.walletConnector === 'Subconnect' || options.walletConnector === 'Talisman Connect') { %>
+import { WalletConnectorProvider, useWalletConnector } from '@/providers/WalletConnectorProvider.tsx';
+
+function TypinkApp() {
+  const { wallet, connectedAccount } = useWalletConnector();
+
+  return (
+   <ChakraProvider theme={theme}>
+     <TypinkProvider
+       appName='Typink Dapp'
+       deployments={deployments}
+       defaultCaller={DEFAULT_CALLER}
+       defaultNetworkId={<%= options.networks[0] %>.id}
+       supportedNetworks={SUPPORTED_NETWORKS}
+       signer={wallet?.signer}
+       connectedAccount={connectedAccount}>
+       <AppProvider>
+         <App />
+         <ToastContainer
+           position='top-right'
+           closeOnClick
+           pauseOnHover
+           theme='light'
+           autoClose={5_000}
+           hideProgressBar
+           limit={2}
+         />
+       </AppProvider>
+     </TypinkProvider>
+   </ChakraProvider>
+  );
+}
+
+root.render(
+  <WalletConnectorProvider>
+    <TypinkApp />
+  </WalletConnectorProvider>,
+);
+
+<% } %>
