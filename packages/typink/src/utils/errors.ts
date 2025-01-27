@@ -13,6 +13,12 @@ import { ISubstrateClient } from 'dedot';
  */
 export class TypinkError extends DedotError {}
 
+/**
+ * Represents an error that occurs during contract message execution.
+ *
+ * @typeparam T - The type of the error object, extends any.
+ * @extends TypinkError
+ */
 export class ContractMessageError<T extends any> extends TypinkError {
   constructor(
     public error: T,
@@ -22,6 +28,11 @@ export class ContractMessageError<T extends any> extends TypinkError {
   }
 }
 
+/**
+ * Represents an error that occurs when the caller has insufficient balance to perform a transaction.
+ *
+ * @extends TypinkError
+ */
 export class BalanceInsufficientError extends TypinkError {
   constructor(
     public caller: string,
@@ -41,6 +52,12 @@ const extractErrorType = (error: any): string => {
   return JSON.stringify(error);
 };
 
+/**
+ * Extract human-readable error message from an Error instance
+ *
+ * @param client
+ * @param error
+ */
 export const extractHumanReadableError = <T extends GenericContractApi = GenericContractApi, E extends Error = any>(
   client: ISubstrateClient<T['types']['ChainApi']>,
   error: E,
@@ -132,6 +149,12 @@ export const extractHumanReadableError = <T extends GenericContractApi = Generic
   return error.message;
 };
 
+/**
+ * Replace the message of an Error instance with a human-readable error message
+ *
+ * @param client
+ * @param error
+ */
 export const withReadableErrorMessage = <T extends GenericContractApi = GenericContractApi, E extends Error = any>(
   client: ISubstrateClient<T['types']['ChainApi']>,
   error: E,

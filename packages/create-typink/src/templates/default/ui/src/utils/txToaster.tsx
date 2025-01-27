@@ -4,10 +4,22 @@ import { ISubmittableResult, TxStatus } from 'dedot/types';
 import { useTypink } from 'typink';
 
 export type TxToaster = {
-  onTxProgress: (result: ISubmittableResult) => void;
+  onTxProgress: (progress: ISubmittableResult) => void;
   onTxError: (e: Error) => void;
 };
 
+/**
+ * Creates a toast notification for transaction progress and manages its updates.
+ *
+ * This function initializes a toast notification for a transaction and returns
+ * methods to update the toast based on the transaction's progress or errors.
+ *
+ * @param initialMessage - The initial message to display in the toast notification.
+ *                         Defaults to 'Signing Transaction...'.
+ * @returns An object containing two methods:
+ *          - onTxProgress: Updates the toast based on transaction progress.
+ *          - onTxError: Updates the toast when a transaction error occurs.
+ */
 export function txToaster(initialMessage: string = 'Signing Transaction...'): TxToaster {
   const toastId = toast.info(initialMessage, {
     autoClose: false, // prettier-end-here
@@ -15,12 +27,12 @@ export function txToaster(initialMessage: string = 'Signing Transaction...'): Tx
     closeOnClick: false,
   });
 
-  const onTxProgress = (result: ISubmittableResult) => {
+  const onTxProgress = (progress: ISubmittableResult) => {
     let toastType: TypeOptions = 'default';
     let autoClose: boolean | number = false;
     let toastMessage: string = 'Transaction In Progress...';
 
-    const { status, dispatchError } = result;
+    const { status, dispatchError } = progress;
     const succeeded = !dispatchError;
 
     if (status.type === 'Finalized') {
