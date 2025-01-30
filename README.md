@@ -1,4 +1,7 @@
-# Typink
+<br/>
+<p align="left">
+  <img src="https://github.com/user-attachments/assets/d96fec68-dfb9-41fd-a380-c97748403a91" height="60" alt="Typink">
+</p>
 
 Typesafe react hooks to interact with [ink!](https://use.ink/) smart contracts powered by [Dedot!](https://github.com/dedotdev/dedot)
 
@@ -15,6 +18,8 @@ Typesafe react hooks to interact with [ink!](https://use.ink/) smart contracts p
 [ico-license]: https://img.shields.io/github/license/dedotdev/typink?style=flat-square
 
 [link-telegram]: https://t.me/JoinDedot
+
+---
 
 ### Features
 - Fully typesafe react hooks at contract messages & events level
