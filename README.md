@@ -211,6 +211,10 @@ const { connectedAccount, signer } = ... // from subconnect or talisman-connect 
 - `useWatchContractEvent`: Help watch for a specific contract event and perform a specific action
 - `usePSP22Balance`: Fetch balance of an address from a PSP22 contract with ability to watch for balance changing
 
+#### Utilities
+
+- `formatBalance`: Format a balance value to a human-readable string
+
 ### Usage
 
 #### `useTypink`
@@ -360,6 +364,16 @@ useWatchContractEvent(
   }, []),
 )
 // ...
+```
+
+#### `formatBalance`
+
+Format a balance value to a human-readable string
+
+```typescript
+import { popTestnet } from 'typink';
+
+formatBalance(1e12, popTestnet); // 100 PAS
 ```
 
 ### Examples
