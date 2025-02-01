@@ -52,13 +52,13 @@ Typink comes with a cli to help you start a new project from scratch faster & ea
 npx create-typink@latest
 ```
 
-Following the instructions, the cli will help you generate a starter & working project ready for you can start integrate your own contracts and build your own logic:
-
-<img width="1919" alt="new-typink-project" src="https://github.com/user-attachments/assets/b10b1366-f97b-41a7-b3e9-97ceb1bd0748" />
-
 > [!IMPORTANT]
 > The `create-typink` cli requires NodeJS version >= `v20` to work properly, please make sure to check your NodeJS version.
 
+
+Following the instructions, the cli will help you generate a starter & working project ready for you can start integrate your own contracts and build your own logic:
+
+<img width="1919" alt="new-typink-project" src="https://github.com/user-attachments/assets/b10b1366-f97b-41a7-b3e9-97ceb1bd0748" />
 
 #### Project folder structure
 - `contracts`: ink! contract artifacts & generated types
