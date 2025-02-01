@@ -53,7 +53,7 @@ npx create-typink@latest
 ```
 
 > [!IMPORTANT]
-> The `create-typink` cli requires NodeJS version >= `v20` to work properly, please make sure to check your NodeJS version.
+> The `create-typink` cli requires NodeJS version >= `v20` to work properly, make sure to check your NodeJS version.
 
 
 Following the instructions, the cli will help you generate a starter & working project ready for you can start integrate your own contracts and build your own logic:
