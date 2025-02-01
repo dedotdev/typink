@@ -40,7 +40,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     {
       type: 'list',
       name: 'presetContract',
-      message: 'What preset contract do you want to use?',
+      message: 'What example contract do you want to use?',
       choices: PRESET_CONTRACTS,
       default: defaultOptions.presetContract,
     },
