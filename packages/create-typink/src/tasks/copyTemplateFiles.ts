@@ -23,8 +23,9 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   packageJson.name = projectName;
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-  processPresetContract(options, targetDir);
-  processTemplateFiles(options, targetDir);
+  await processPresetContract(options, targetDir);
+  await processTemplateFiles(options, targetDir);
+  await processGitignoreFile(targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -32,7 +33,7 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
   }
 }
 
-export async function processPresetContract(options: Options, targetDir: string) {
+async function processPresetContract(options: Options, targetDir: string) {
   const dirsToCheck = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
 
   dirsToCheck.forEach(async (dir) => {
@@ -46,7 +47,7 @@ export async function processPresetContract(options: Options, targetDir: string)
   });
 }
 
-export async function processTemplateFiles(rawOptions: Options, targetDir: string) {
+async function processTemplateFiles(rawOptions: Options, targetDir: string) {
   const options = {
     ...rawOptions,
     networks: rawOptions.networks?.map(stringCamelCase),
@@ -80,4 +81,11 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
       }
     }
   }
+}
+
+async function processGitignoreFile(targetDir: string) {
+  await fs.promises.rename(
+    path.join(targetDir, 'gitignore'), // prettier-end-here
+    path.join(targetDir, '.gitignore'),
+  );
 }
