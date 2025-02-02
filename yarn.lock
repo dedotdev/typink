@@ -663,7 +663,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/utils@npm:0.6.1":
+"@dedot/utils@npm:0.6.1, @dedot/utils@npm:^0.6.1":
   version: 0.6.1
   resolution: "@dedot/utils@npm:0.6.1"
   dependencies:
@@ -6808,6 +6808,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-typink@workspace:packages/create-typink"
   dependencies:
+    "@dedot/utils": "npm:^0.6.1"
     "@types/ejs": "npm:^3"
     "@types/validate-npm-package-name": "npm:^4.0.2"
     arg: "npm:^5.0.2"
