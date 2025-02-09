@@ -1,9 +1,8 @@
-<br/>
-<p align="left">
-  <img src="https://github.com/user-attachments/assets/d96fec68-dfb9-41fd-a380-c97748403a91" height="60" alt="Typink">
-</p>
+![Typink_Banner_FINAL](https://github.com/user-attachments/assets/a896cc3d-40fd-4fd7-b3db-8b1467143d9b)
 
-Typesafe react hooks to interact with [ink!](https://use.ink/) smart contracts powered by [Dedot!](https://github.com/dedotdev/dedot)
+# Typink
+
+Typesafe React hooks for seamless [ink!](https://use.ink/) smart contract interactions, powered by [Dedot!](https://github.com/dedotdev/dedot)
 
 ![Version][ico-version]
 ![Unit test][ico-unit-test]
