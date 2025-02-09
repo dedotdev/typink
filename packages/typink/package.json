@@ -1,6 +1,6 @@
 {
   "name": "typink",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Fully-typed react hooks to interact with ink! smart contract powered by Dedot!",
   "author": "Thang X. Vu <thang@dedot.dev>",
   "main": "src/index.ts",

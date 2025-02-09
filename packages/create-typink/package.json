@@ -1,6 +1,6 @@
 {
   "name": "create-typink",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Tung Vu <tung@dedot.dev>",
   "main": "src/index.ts",
   "type": "module",
