@@ -10,7 +10,7 @@
   },
   "bin": "./bin/create-typink.mjs",
   "dependencies": {
-    "@dedot/utils": "^0.6.1",
+    "@dedot/utils": "^0.7.0",
     "arg": "^5.0.2",
     "chalk": "^5.4.1",
     "ejs": "^3.1.10",
@@ -26,7 +26,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/ejs": "^3",
+    "@types/ejs": "^3.1.5",
     "@types/validate-npm-package-name": "^4.0.2"
   }
 }
