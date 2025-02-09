@@ -26,7 +26,7 @@ export default function MainFooter() {
           <a href='https://twitter.com/realsinzii' target='_blank'>
             <XSvgIcon />
           </a>
-          <a href='https://github.com/dedotdev/typink-dapp-template' target='_blank'>
+          <a href='https://github.com/dedotdev/typink' target='_blank'>
             <GithubSvgIcon />
           </a>
           <a href='https://dedot.dev' target='_blank'>

@@ -6,11 +6,11 @@ export default function TypinkIntroduction() {
     <Box mx={{ base: 0, md: 32 }}>
       <Image my={4} mx='auto' src='./typink-pink.svg' width='12rem' />
       <Text fontSize='lg' textAlign='center'>
-        Typesafe react hooks to interact with{' '}
+        Typesafe React hooks for seamless{' '}
         <Link color='primary.500' href='https://use.ink' target='_blank'>
-          ink! smart contracts
+          ink! smart contract
         </Link>{' '}
-        powered by{' '}
+        interactions, powered by{' '}
         <Link color='primary.500' href='https://dedot.dev' target='_blank'>
           Dedot!
         </Link>
