@@ -9,6 +9,7 @@ import {
   WalletSetupProviderProps,
 } from './WalletSetupProvider.js';
 import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export interface TypinkContextProps
   extends ClientContextProps,
@@ -26,7 +27,7 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
   defaultCaller: SubstrateAddress;
 }
 
-export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>
+export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
 function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderInnerProps) {
   const clientContext = useClient();
@@ -48,6 +49,8 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
     </TypinkContext.Provider>
   );
 }
+
+const queryClient = new QueryClient();
 
 /**
  * TypinkProvider is the main provider component for the Typink application.
@@ -90,9 +93,11 @@ export function TypinkProvider({
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
         <TypinkEventsProvider>
-          <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
-            {children}
-          </TypinkProviderInner>
+          <QueryClientProvider client={queryClient}>
+            <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
+              {children}
+            </TypinkProviderInner>
+          </QueryClientProvider>
         </TypinkEventsProvider>
       </ClientProvider>
     </WalletSetupProvider>
