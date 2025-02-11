@@ -52,7 +52,7 @@ Typink heavily uses Typescript to enable & ensure type-safety, so we recommend u
 
 Typink comes with a cli to help you start a new project from scratch faster & easier, to create a new project, run the below command:
 
-```ssh
+```shell
 npx create-typink@latest
 ```
 
@@ -67,8 +67,9 @@ Following the instructions, the cli will help you generate a starter & working p
 <br/>
 After initialize the project, you can now spin up the development server with the following command:
 
-```ssh
+```shell
 cd my-ink-dapp # project folder
+
 yarn start
 ```
 
