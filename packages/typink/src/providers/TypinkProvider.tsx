@@ -9,7 +9,6 @@ import {
   WalletSetupProviderProps,
 } from './WalletSetupProvider.js';
 import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export interface TypinkContextProps
   extends ClientContextProps,
