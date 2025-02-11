@@ -64,6 +64,18 @@ Following the instructions, the cli will help you generate a starter & working p
 
 <img width="1919" alt="new-typink-project" src="https://github.com/user-attachments/assets/b10b1366-f97b-41a7-b3e9-97ceb1bd0748" />
 
+<br/>
+After initialize the project, you can now spin up the development server with the following command:
+
+```ssh
+cd my-ink-dapp # project folder
+yarn start
+```
+
+> [!IMPORTANT]
+> Please note that `yarn` is the current default package manager for the start project, make sure to [install `yarn`](https://yarnpkg.com/getting-started/install) on your machine to streamline the development process.
+
+
 #### Project folder structure
 - `contracts`: ink! contract artifacts & generated types
   - `contracts/artifacts`: ink! contract artifacts (.wasm, .json or .contract file)
