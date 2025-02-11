@@ -50,8 +50,6 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
   );
 }
 
-const queryClient = new QueryClient();
-
 /**
  * TypinkProvider is the main provider component for the Typink application.
  * It wraps other providers (WalletSetupProvider, ClientProvider ...) to provide a complete context for the application.
@@ -93,11 +91,9 @@ export function TypinkProvider({
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
         <TypinkEventsProvider>
-          <QueryClientProvider client={queryClient}>
-            <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
-              {children}
-            </TypinkProviderInner>
-          </QueryClientProvider>
+          <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
+            {children}
+          </TypinkProviderInner>
         </TypinkEventsProvider>
       </ClientProvider>
     </WalletSetupProvider>

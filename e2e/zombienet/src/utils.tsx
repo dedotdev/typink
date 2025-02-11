@@ -11,6 +11,7 @@ import { assert, deferred } from 'dedot/utils';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { TypeRegistry } from '@polkadot/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 await cryptoWaitReady();
 export const KEYRING = new Keyring({ type: 'sr25519' });
@@ -39,6 +40,8 @@ export const mockSigner = {
   },
 } as InjectedSigner;
 
+export const QUERY_CLIENT = new QueryClient();
+
 export const Wrapper = ({ children, deployments = [] }: Props) => (
   <TypinkProvider
     supportedNetworks={[development]}
@@ -48,7 +51,7 @@ export const Wrapper = ({ children, deployments = [] }: Props) => (
     signer={mockSigner}
     connectedAccount={{ address: ALICE }}
     appName='Typink Test App'>
-    {children}
+    <QueryClientProvider client={QUERY_CLIENT}>{children}</QueryClientProvider>
   </TypinkProvider>
 );
 

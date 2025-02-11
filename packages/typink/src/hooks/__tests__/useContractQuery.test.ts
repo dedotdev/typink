@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { useContractQuery } from '../useContractQuery.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contract } from 'dedot/contracts';
-import { waitForNextUpdate } from './test-utils.js';
+import { queryClientWrapper, waitForNextUpdate } from './test-utils.js';
 import { useTypink } from '../useTypink.js';
 
 // Mock the external dependencies
@@ -48,12 +48,14 @@ describe('useContractQuery', () => {
   });
 
   it('should return loading state initially', () => {
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
 
     expect(result.current.isLoading).toBe(true);
@@ -63,14 +65,16 @@ describe('useContractQuery', () => {
     contract.query.testFunction.mockResolvedValue({ data: 'test result' });
 
     await act(async () => {
-      renderHook(() =>
-        useContractQuery({
-          contract,
-          // @ts-ignore
-          fn: 'testFunction',
-          args: ['arg1', 'arg2'],
-          options: { gasLimit: { refTime: 1000000n, proofSize: 1000000n } },
-        }),
+      renderHook(
+        () =>
+          useContractQuery({
+            contract,
+            // @ts-ignore
+            fn: 'testFunction',
+            args: ['arg1', 'arg2'],
+            options: { gasLimit: { refTime: 1000000n, proofSize: 1000000n } },
+          }),
+        { wrapper: queryClientWrapper },
       );
     });
 
@@ -82,12 +86,14 @@ describe('useContractQuery', () => {
   it('should update the result and loading state after query resolves', async () => {
     contract.query.testFunction.mockResolvedValue({ data: 'test result' });
 
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
 
     await act(async () => {
@@ -99,15 +105,15 @@ describe('useContractQuery', () => {
   });
 
   it('should not call query function if contract is undefined', async () => {
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract: undefined,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract: undefined,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
-
-    await waitForNextUpdate();
 
     expect(result.current.isLoading).toBe(true);
     expect(contract.query.testFunction).not.toHaveBeenCalled();
@@ -116,21 +122,21 @@ describe('useContractQuery', () => {
   it('should refresh when refresh function is called', async () => {
     contract.query.testFunction.mockResolvedValue({ data: 'test result' });
 
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
 
-    await waitForNextUpdate(async () => {
-      result.current.refresh();
-    });
+    await waitForNextUpdate();
+    result.current.refresh();
 
-    await waitForNextUpdate(async () => {
-      result.current.refresh();
-    });
+    await waitForNextUpdate();
+    result.current.refresh();
 
     expect(contract.query.testFunction).toHaveBeenCalledTimes(3);
   });
@@ -144,47 +150,54 @@ describe('useContractQuery', () => {
       });
     });
 
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
-    );
-
-    expect(result.current.isRefreshing).toBe(false);
-
-    await act(async () => {
-      result.current.refresh();
-    });
-
-    expect(result.current.isRefreshing).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.isRefreshing).toBe(false);
-      expect(result.current.data).toBe('test result');
-    });
-  }),
-    it('should handle errors from the contract query', async () => {
-      const testError = new Error('Test error');
-      contract.query.testFunction.mockRejectedValue(testError);
-
-      const { result } = renderHook(() =>
+    const { result } = renderHook(
+      () =>
         useContractQuery({
           contract,
           // @ts-ignore
           fn: 'testFunction',
         }),
-      );
+      { wrapper: queryClientWrapper },
+    );
 
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
+    result.current.refresh();
+
+    await waitFor(() => {
+      expect(result.current.isRefreshing).toBe(true);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isRefreshing).toBe(false);
+      expect(result.current.data).toBe('test result');
+    });
+  });
+
+  it('should handle errors from the contract query', async () => {
+    const testError = new Error('Test error');
+    contract.query.testFunction.mockRejectedValue(testError);
+
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
+    );
+
+    expect(result.current.isLoading).toBe(true);
+
+    await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(testError);
       expect(result.current.data).toBeUndefined();
     });
+  });
 
   it('should reset error state on successful query after an error', async () => {
     const testError = new Error('Test error');
@@ -192,42 +205,44 @@ describe('useContractQuery', () => {
       .mockRejectedValueOnce(testError)
       .mockResolvedValueOnce({ data: 'success after error' });
 
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
 
-    await waitForNextUpdate();
-
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBe(testError);
-    expect(result.current.data).toBeUndefined();
-
-    await waitForNextUpdate(async () => {
-      result.current.refresh();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBe(testError);
+      expect(result.current.data).toBeUndefined();
     });
 
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.data).toEqual('success after error');
+    result.current.refresh();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeNull();
+      expect(result.current.data).toEqual('success after error');
+    });
   });
 
   it('should maintain states if contract is undefined', async () => {
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract: undefined,
-        // @ts-ignore
-        fn: 'testFunction',
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract: undefined,
+          // @ts-ignore
+          fn: 'testFunction',
+        }),
+      { wrapper: queryClientWrapper },
     );
 
-    await waitForNextUpdate();
-
     expect(result.current.isLoading).toBe(true);
-    expect(result.current.error).toBeUndefined();
+    expect(result.current.error).toBeNull();
     expect(result.current.data).toBeUndefined();
   });
 
@@ -246,13 +261,15 @@ describe('useContractQuery', () => {
       });
     });
 
-    const { result } = renderHook(() =>
-      useContractQuery({
-        contract,
-        // @ts-ignore
-        fn: 'message',
-        watch: true,
-      }),
+    const { result } = renderHook(
+      () =>
+        useContractQuery({
+          contract,
+          // @ts-ignore
+          fn: 'message',
+          watch: true,
+        }),
+      { wrapper: queryClientWrapper },
     );
 
     await waitForNextUpdate();

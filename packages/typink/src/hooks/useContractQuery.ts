@@ -5,6 +5,7 @@ import { Contract, ContractCallOptions, GenericContractApi } from 'dedot/contrac
 import { useTypink } from './useTypink.js';
 import { Unsub } from 'dedot/types';
 import { useQuery } from '@tanstack/react-query';
+import { stringify } from '../utils/misc.js';
 
 type ContractQuery<A extends GenericContractApi = GenericContractApi> = OmitNever<{
   [K in keyof A['query']]: K extends string ? (K extends `${infer Literal}` ? Literal : never) : never;
@@ -54,11 +55,19 @@ export function useContractQuery<
   const { contract, fn, args = [], options, watch = false } = parameters;
 
   const { isLoading, error, isRefetching, data, refetch } = useQuery({
-    queryKey: [fn, contract?.address, args, options],
+    // TODO!: Stringify a contract is not efficient, pick important fields only
+    queryKey: [fn!, stringify(contract), stringify(args), stringify(options)],
     queryFn: async () => {
-      if (!contract || !fn || !args) return {};
-      return await contract.query[fn](...args, options);
+      if (!client || !contract) return {};
+
+      try {
+        return await contract.query[fn](...args, options);
+      } catch (error) {
+        throw error;
+      }
     },
+    // Temporary until we allow retry in the future, if enabled the error will not be updated immediately
+    retry: false,
   });
 
   useEffect(
