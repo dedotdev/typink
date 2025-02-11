@@ -56,7 +56,7 @@ export function useContractQuery<
 
   const { isLoading, error, isRefetching, data, refetch } = useQuery({
     // TODO!: Stringify a contract is not efficient, pick important fields only
-    queryKey: [fn!, contract?.address, stringify(args), stringify(options)],
+    queryKey: [fn!, !!client, contract?.address, stringify(args), stringify(options)],
     queryFn: async () => {
       if (!client || !contract) return {};
 

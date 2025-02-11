@@ -40,8 +40,6 @@ export const mockSigner = {
   },
 } as InjectedSigner;
 
-export const QUERY_CLIENT = new QueryClient();
-
 export const Wrapper = ({ children, deployments = [] }: Props) => (
   <TypinkProvider
     supportedNetworks={[development]}
@@ -51,7 +49,7 @@ export const Wrapper = ({ children, deployments = [] }: Props) => (
     signer={mockSigner}
     connectedAccount={{ address: ALICE }}
     appName='Typink Test App'>
-    <QueryClientProvider client={QUERY_CLIENT}>{children}</QueryClientProvider>
+    <QueryClientProvider client={new QueryClient()}>{children}</QueryClientProvider>
   </TypinkProvider>
 );
 
