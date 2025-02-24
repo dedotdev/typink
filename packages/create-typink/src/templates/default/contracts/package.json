@@ -8,6 +8,6 @@
   "type": "module",
   "dependencies": {
     "dedot": "^0.7.1",
-    "typink": "0.1.0"
+    "typink": "0.2.0"
   }
 }
