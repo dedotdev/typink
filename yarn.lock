@@ -14310,7 +14310,7 @@ __metadata:
     fast-deep-equal: "npm:^3.1.3"
     react-use: "npm:^17.6.0"
   peerDependencies:
-    "@dedot/utils": ^0.7.1
+    "@dedot/utils": ">=0.7.1"
     react: ">=18.3.1"
   languageName: unknown
   linkType: soft
