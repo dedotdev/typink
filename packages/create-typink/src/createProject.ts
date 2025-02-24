@@ -23,11 +23,11 @@ export async function createProject(options: Options) {
   const tasks = new Listr(
     [
       {
-        title: `📁 Create project directory ${targetDirectory}`,
+        title: `📁 Creating project directory ${targetDirectory}`,
         task: () => createProjectDirectory(projectName!),
       },
       {
-        title: `🚀 Creating a new Typink app in ${chalk.green.bold(projectName)}`,
+        title: `🚀 Initialize a new Typink project in ${chalk.green.bold(projectName)}`,
         task: () => copyTemplateFiles(options, templateDirectory, targetDirectory),
       },
       {
@@ -40,7 +40,7 @@ export async function createProject(options: Options) {
         task: () => prettierFormat(targetDirectory, options),
       },
       {
-        title: `🚨 Create the very first Git commit`,
+        title: `🚨 Creating the very first Git commit`,
         task: () => createFirstCommit(targetDirectory),
         skip: noGit,
       },
