@@ -571,6 +571,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dedot/chaintypes@npm:^0.59.0":
+  version: 0.59.0
+  resolution: "@dedot/chaintypes@npm:0.59.0"
+  peerDependencies:
+    dedot: ">=0.7.1"
+  checksum: 10/b7da78130da50e63b5f1b0e1b9594731f36aa0cde091b1e30bdfa5371cc397483a296b620a5a0738aa8ef3c6e1e97fdd93ac1c8c19cc496c84ae7fd07fe68fe3
+  languageName: node
+  linkType: hard
+
 "@dedot/cli@npm:0.7.0":
   version: 0.7.0
   resolution: "@dedot/cli@npm:0.7.0"
@@ -7231,7 +7240,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.55.0"
+    "@dedot/chaintypes": "npm:^0.59.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
@@ -7268,7 +7277,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.55.0"
+    "@dedot/chaintypes": "npm:^0.59.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
