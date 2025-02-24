@@ -18,7 +18,7 @@ export function renderHelpMessage() {
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
     ${chalk.gray('-t, --template')}                   Template <base>
-    ${chalk.gray('-p, --preset')}                     Preset contract <base|psp22|greeter|none>
+    ${chalk.gray('-p, --preset')}                     Example preset contract <base|psp22|greeter|none>
     ${chalk.gray('-w, --wallet')}                     Wallet connector <Default|Subconnect|Talisman Connect>
     ${chalk.gray('-N, --network')}                    Network <Pop Testnet|Aleph Zero Testnet|Aleph Zero Mainnet|Astar|Shiden|Shibuya>
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
