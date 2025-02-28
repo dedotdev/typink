@@ -1,6 +1,6 @@
 {
   "name": "typink",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fully-typed react hooks to interact with ink! smart contract powered by Dedot!",
   "author": "Thang X. Vu <thang@dedot.dev>",
   "main": "src/index.ts",
@@ -12,10 +12,12 @@
     "test": "npx vitest --watch=false"
   },
   "dependencies": {
-    "dedot": "^0.7.0",
     "fast-deep-equal": "^3.1.3",
-    "react": "^18.3.1",
     "react-use": "^17.6.0"
+  },
+  "peerDependencies": {
+    "dedot": ">=0.7.1",
+    "react": ">=18.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.18"
