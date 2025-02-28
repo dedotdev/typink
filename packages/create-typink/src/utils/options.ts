@@ -86,8 +86,8 @@ export function parseArguments(): Options {
       '--template': String,
       '-t': '--template',
 
-      '--preset': String,
-      '-p': '--preset',
+      '--example': String,
+      '-e': '--example',
 
       '--wallet': String,
       '-w': '--wallet',
@@ -118,8 +118,8 @@ export function parseArguments(): Options {
     }
   }
 
-  if (args['--preset'] && !PRESET_CONTRACTS.includes(args['--preset'] as any)) {
-    throw new Error(`Preset contract ${args['--preset']} is not supported. Please use a valid preset contract.`);
+  if (args['--example'] && !PRESET_CONTRACTS.includes(args['--example'] as any)) {
+    throw new Error(`Preset contract ${args['--example']} is not supported. Please use a valid example contract.`);
   }
 
   if (args['--wallet'] && !WALLET_CONNECTORS.includes(args['--wallet'] as any)) {
@@ -140,7 +140,7 @@ export function parseArguments(): Options {
 
   return {
     projectName: args['--name'] || null,
-    presetContract: args['--preset'] || null,
+    presetContract: args['--example'] || null,
     walletConnector: args['--wallet'] || null,
     // Because there is only `default` tepmlate, we use `default` as default value
     template: args['--template'] || 'default',

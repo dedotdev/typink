@@ -3,8 +3,15 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { Options } from '../types.js';
 import { execa } from 'execa';
+import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
 
-export async function prettierFormat(targetDir: string, options: Options) {
+export async function prettierFormat(
+  targetDir: string,
+  options: Options,
+  task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
+) {
+  task.title = '🎨 Prettifying the codebase';
+
   if (!options.skipInstall) {
     await execa('yarn', ['prettify'], { cwd: targetDir });
   } else {
@@ -12,6 +19,8 @@ export async function prettierFormat(targetDir: string, options: Options) {
 
     await prettierFormatRecursive(targetDir, prettierConfig);
   }
+
+  task.title = '🎨 Prettify the codebase';
 }
 
 async function prettierFormatRecursive(dir: string, config: prettier.Options | null) {

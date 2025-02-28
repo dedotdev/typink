@@ -24,24 +24,24 @@ export async function createProject(options: Options) {
     [
       {
         title: `📁 Create project directory ${targetDirectory}`,
-        task: () => createProjectDirectory(projectName!),
+        task: (_, task) => createProjectDirectory(projectName!, task),
       },
       {
-        title: `🚀 Creating a new Typink app in ${chalk.green.bold(projectName)}`,
-        task: () => copyTemplateFiles(options, templateDirectory, targetDirectory),
+        title: `🚀 Create a new Typink app in ${chalk.green.bold(projectName)}`,
+        task: (_, task) => copyTemplateFiles(options, templateDirectory, targetDirectory, task),
       },
       {
-        title: '📦 Installing dependencies with yarn, this could take a while',
-        task: () => installPackages(targetDirectory),
+        title: '📦 Install dependencies with yarn, this could take a while',
+        task: (_, task) => installPackages(targetDirectory, task),
         skip: skipInstall,
       },
       {
-        title: '🧹 Formatting the code with Prettier',
-        task: () => prettierFormat(targetDirectory, options),
+        title: '🎨 Prettify the codebase',
+        task: (_, task) => prettierFormat(targetDirectory, options, task),
       },
       {
         title: `🚨 Create the very first Git commit`,
-        task: () => createFirstCommit(targetDirectory),
+        task: (_, task) => createFirstCommit(targetDirectory, task),
         skip: noGit,
       },
     ],
