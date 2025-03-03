@@ -26,7 +26,7 @@ jobs:
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
           ls -la
           cd ./typink-app-default
           ls -la
@@ -38,7 +38,7 @@ jobs:
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2 -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "SubConnect V2"
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2 -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "SubConnect V2"
           ls -la
           cd ./typink-app-subconnect-v2
           ls -la
@@ -50,7 +50,7 @@ jobs:
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect -t default -p greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "Talisman Connect"
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "Talisman Connect"
           ls -la
           cd ./typink-app-talisman-connect
           ls -la

@@ -5,9 +5,17 @@ import * as ejs from 'ejs';
 import * as path from 'path';
 import { stringCamelCase } from '@dedot/utils';
 import { IS_IGNORE_FILES, IS_TEMPLATE_FILE } from '../utils/index.js';
+import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
 
-export async function copyTemplateFiles(options: Options, templatesDir: string, targetDir: string) {
+export async function copyTemplateFiles(
+  options: Options,
+  templatesDir: string,
+  targetDir: string,
+  task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
+) {
   const { projectName, noGit, template } = options;
+
+  task.title = `🚀 Initializing new Typink dApp`;
 
   const templateDir = `${templatesDir}/${template}`;
 
@@ -31,6 +39,8 @@ export async function copyTemplateFiles(options: Options, templatesDir: string, 
     await execa('git', ['init'], { cwd: targetDir });
     await execa('git', ['checkout', '-b', 'main'], { cwd: targetDir });
   }
+
+  task.title = `🚀 Initialized new Typink dApp`;
 }
 
 async function processPresetContract(options: Options, targetDir: string) {
