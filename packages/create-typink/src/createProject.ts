@@ -23,11 +23,11 @@ export async function createProject(options: Options) {
   const tasks = new Listr(
     [
       {
-        title: `📁 Create project directory ${targetDirectory}`,
+        title: `📁 Create project directory: ${chalk.green.bold(targetDirectory)}`,
         task: (_, task) => createProjectDirectory(projectName!, task),
       },
       {
-        title: `🚀 Create a new Typink app in ${chalk.green.bold(projectName)}`,
+        title: `🚀 Initialize new Typink dApp`,
         task: (_, task) => copyTemplateFiles(options, templateDirectory, targetDirectory, task),
       },
       {

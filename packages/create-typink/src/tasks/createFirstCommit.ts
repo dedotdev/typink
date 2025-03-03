@@ -12,5 +12,5 @@ export async function createFirstCommit(
     cwd: targetDirectory,
   });
 
-  task.title = `🚨 Create the very first Git commit`;
+  task.title = `🚨 Created the very first Git commit`;
 }

@@ -20,7 +20,7 @@ export async function prettierFormat(
     await prettierFormatRecursive(targetDir, prettierConfig);
   }
 
-  task.title = '🎨 Prettify the codebase';
+  task.title = '🎨 Prettified the codebase';
 }
 
 async function prettierFormatRecursive(dir: string, config: prettier.Options | null) {

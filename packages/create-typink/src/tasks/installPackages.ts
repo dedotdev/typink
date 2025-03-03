@@ -7,5 +7,5 @@ export async function installPackages(
 ) {
   task.title = '📦 Installing dependencies with yarn, this could take a while';
   await execa('yarn', ['install'], { cwd: targetDirectory });
-  task.title = '📦 Install dependencies with yarn';
+  task.title = '📦 Installed dependencies with yarn';
 }

@@ -15,7 +15,7 @@ export async function copyTemplateFiles(
 ) {
   const { projectName, noGit, template } = options;
 
-  task.title = `🚀 Creating a new Typink app in ${projectName}`;
+  task.title = `🚀 Initializing new Typink dApp`;
 
   const templateDir = `${templatesDir}/${template}`;
 
@@ -40,7 +40,7 @@ export async function copyTemplateFiles(
     await execa('git', ['checkout', '-b', 'main'], { cwd: targetDir });
   }
 
-  task.title = `🚀 Create a new Typink app in ${projectName}`;
+  task.title = `🚀 Initialized new Typink dApp`;
 }
 
 async function processPresetContract(options: Options, targetDir: string) {
