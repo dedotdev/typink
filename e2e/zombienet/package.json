@@ -12,7 +12,7 @@
     "@polkadot/types": "^15.5.2",
     "@polkadot/util-crypto": "^13.3.1",
     "dedot": "^0.7.1",
-    "happy-dom": "^15.11.7",
+    "happy-dom": "^17.1.9",
     "typink": "workspace:*"
   },
   "license": "MIT"
