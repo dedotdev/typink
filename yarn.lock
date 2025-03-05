@@ -8927,14 +8927,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happy-dom@npm:^15.11.7":
-  version: 15.11.7
-  resolution: "happy-dom@npm:15.11.7"
+"happy-dom@npm:^17.2.2":
+  version: 17.2.2
+  resolution: "happy-dom@npm:17.2.2"
   dependencies:
-    entities: "npm:^4.5.0"
     webidl-conversions: "npm:^7.0.0"
     whatwg-mimetype: "npm:^3.0.0"
-  checksum: 10/82fb8505a940ebc2b732d1c70ae4ba08128cc82f2d469702f73e541d3bf10fc69b726386f8aaf579ccd2697f85e86dee87aa9d4f229b781fb05628d733fc93d7
+  checksum: 10/8ad7e801e41ec4d61d535c60e476cd4e9989850f0240417d22613fcc56aa2dd26903754dcf6b70561b81d97dd07dfe7fc7b71feaa1f2003107c81dece3a32e14
   languageName: node
   linkType: hard
 
@@ -15151,7 +15150,7 @@ __metadata:
     "@polkadot/types": "npm:^15.5.2"
     "@polkadot/util-crypto": "npm:^13.3.1"
     dedot: "npm:^0.7.1"
-    happy-dom: "npm:^15.11.7"
+    happy-dom: "npm:^17.2.2"
     typink: "workspace:*"
   languageName: unknown
   linkType: soft
