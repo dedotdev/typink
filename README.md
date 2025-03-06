@@ -2,7 +2,7 @@
 
 # Typink
 
-Typesafe React hooks for seamless [ink!](https://use.ink/) smart contract interactions, powered by [Dedot!](https://github.com/dedotdev/dedot)
+A comprehensive toolkit for [ink!](https://use.ink/) dApps development, powered by [Dedot!](https://github.com/dedotdev/dedot)
 
 ![Version][ico-version]
 ![Unit test][ico-unit-test]
@@ -21,11 +21,11 @@ Typesafe React hooks for seamless [ink!](https://use.ink/) smart contract intera
 ---
 
 ### Features
-- Fully typesafe react hooks at contract messages & events level
-- Choose your favorite wallet connector (Built-in Typink Connector, [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), or build your own connector ...)
-- Start a new project from scratch easily with `create-typink` cli.
-- Support multiple networks, lazily initialize when in-use.
-- ... and more to come
+- ✅ Fully typesafe react hooks at contract messages & events level
+- ✅ Choose your favorite wallet connector (Built-in Typink Connector, [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), or build your own connector ...)
+- ✅ Start a new project from scratch in seconds with `create-typink` cli.
+- ✅ Multi-chain supports, lazily initialize when in-use.
+- ⏳ ... and more to come
 
 ### Quick look
 
@@ -34,22 +34,7 @@ Typesafe React hooks for seamless [ink!](https://use.ink/) smart contract intera
 
 ### Getting started
 
-```shell
-# via npm
-npm i typink dedot
-
-# via yarn
-yarn add typink dedot
-
-# via pnpm
-pnpm add typink dedot
-```
-
-Typink heavily uses Typescript to enable & ensure type-safety, so we recommend using Typescript for your Dapp project. Typink will also work with plain Javascript, but you don't get the auto-completion & suggestions when interacting with your ink! contracts.
-
-### Start a new project from scratch
-#### Generate new project via `create-typink` cli
-
+#### Start a new project from scratch via `create-typink` cli
 Typink comes with a cli to help you start a new project from scratch faster & easier, to create a new project, run the below command:
 
 ```shell
@@ -64,339 +49,38 @@ Following the instructions, the cli will help you generate a starter & working p
 
 <img width="1919" alt="new-typink-project" src="https://github.com/user-attachments/assets/b10b1366-f97b-41a7-b3e9-97ceb1bd0748" />
 
-<br/>
-After initialize the project, you can now spin up the development server with the following command:
-
-```shell
-cd my-ink-dapp # project folder
-
-yarn start
-```
-
 > [!IMPORTANT]
 > Please note that `yarn` is the current default package manager for the start project, make sure to [install `yarn`](https://yarnpkg.com/getting-started/install) on your machine to streamline the development process.
 
 
-#### Project folder structure
-- `contracts`: ink! contract artifacts & generated types
-  - `contracts/artifacts`: ink! contract artifacts (.wasm, .json or .contract file)
-  - `contracts/types`: Typescript bindings for each ink! contract, these can be generated through [`dedot` cli](#2-generate-typescript-bindings-types-for-your-ink-contracts-from-the-metadata)
-- `ui`: Main UI project, a React-based client
+#### Migrate from existing projects?
 
-### Configure your project
-#### 1. Deploy your contracts and setup contract deployments
-
-Typink needs to know your contract deployments information (address, metadata, ...) to help you do the magic under the hood.
-
-The `ContractDeployment` interface have the following structure:
-```typescript
-export interface ContractDeployment {
-  id: string; // A unique easy-to-remember contract id, recommened put them in an enum
-  metadata: ContractMetadata | string; // Metadata for the contract
-  address: SubstrateAddress; // Address of the contract
-  network: string; // The network id that the contract is deployed to, e.g: Pop Testnet (pop_testnet), Aleph Zero Testnet (alephzero_testnet) ...
-}
-```
-
-Put these information in a separate file (e.g: `deployments.ts`) so you can easily manage it.
-
-```typescript deployments.ts
-// deployments.ts
-
-import { ContractDeployment, popTestnet } from 'typink';
-import greeterMetadata from './greeter.json';
-import psp22Metadata from './psp22.json';
-
-export enum ContractId {
-  GREETER = 'greeter',
-  PSP22 = 'psp22',
-}
-
-export const deployments = [
-  {
-    id: ContractId.GREETER,
-    metadata: greeterMetadata,
-    address: '5HJ2XLhBuoLkoJT5G2MfMWVpsybUtcqRGWe29Fo26JVvDCZG',
-    network: popTestnet.id
-  },
-  {
-    id: ContractId.PSP22,
-    metadata: psp22Metadata as any,
-    address: '16119BccKAfWwbt4TCNvfLBDuRWHSeFozJELEcxFPVd11hnt',
-    network: popTestnet.id,
-  },
-];
-```
-
-#### 2. Generate Typescript bindings (types) for your ink! contracts from the metadata
-
-Now, you'll need to generate the Typescript bindings for your ink! contracts using `dedot` cli. The types generated at this step will help enable the auto-completion & suggestions for your react hooks when interact with the contracts.
-
-We recommend putting these types in a `./contracts/types` folder. Let's generate types for your `greeter` & `psp22` token contracts
+Install `typink` & `dedot` packages:
 
 ```shell
-npx dedot typink -m ./greeter.json -o ./contracts/types
+# via npm
+npm i typink dedot
 
-npx dedot typink -m ./psp22.json -o ./contracts/types
+# via yarn
+yarn add typink dedot
+
+# via pnpm
+pnpm add typink dedot
 ```
 
-After running the commands, the types will generated into the `./contracts/types` folder. You'll get the top-level type interface for `greeter` & `psp22` contracts as: `GreeterContractApi` and `Psp22ContractApi`.
+Typink heavily uses Typescript to enable & ensure type-safety, so we recommend using Typescript for your Dapp project. Typink will also work with plain Javascript, but you don't get the auto-completion & suggestions when interacting with your ink! contracts.
 
-> [!TIP]
-> It's a good practice to put these commands to a shortcut script in th `package.json` file so you can easily regenerate these types again whenver you update the metadata for your contracts
->
-> ```jsonc
-> {
->    // ...
->    "scripts": {
->       "typink": "npx dedot typink -m ./greeter.json -o ./contracts/types && npx dedot typink -m ./psp22.json -o ./contracts/types"
->    }
->    // ...
-> }
-> ```
->
-> To regenerate the types again:
-> ```shell
-> npm run typink
->
-> # or
-> yarn typink
->
-> # or
-> pnpm typink
-> ```
+### Documentation
+Check out Typink documentation on our website: https://typink.dev
+- [Introducing Typink](https://docs.dedot.dev/typink/introducing-typink)
+- [Getting started](https://docs.dedot.dev/typink/getting-started/start-a-new-dapp)
+- [Migrate from existing project](https://docs.dedot.dev/typink/getting-started/migrate-from-existing-dapp)
+- [Hooks & Providers](https://docs.dedot.dev/typink/hooks-and-providers)
+- [Utilities](https://docs.dedot.dev/typink/utilities)
+- [Tutorial: Build a PSP22 Transfer with Typink](https://docs.dedot.dev/help-and-faq/tutorials/develop-ink-dapp-using-typink)
 
 
-#### 3. Setup your React application
-
-Wrap your application component with `TypinkProvider`.
-
-```tsx
-import { popTestnet, development } from 'typink'
-import { deployments } from './deployments';
-
-// a default caller address when interact with ink! contract if there is no wallet is connected
-const DEFAULT_CALLER = '5xxx...' 
-
-const SUPPORTED_NETWORKS = [popTestnet]; // alephZeroTestnet, ...
-if (process.env.NODE_ENV === 'development') {
-  SUPPORTED_NETWORKS.push(development);
-}
-
-<TypinkProvider
-  deployments={deployments}
-  defaultCaller={DEFAULT_CALLER}
-  supportedNetworks={SUPPORTED_NETWORKS}
-  defaultNetworkId={popTestnet.id}
-  cacheMetadata={true}>
-  <MyAppComponent ... />
-</TypinkProvider>
-```
-
-If you're using an external wallet connector like [SubConnect](https://github.com/Koniverse/SubConnect-v2) or [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), you will need to pass into the `TypinkProvider` 2 more props: `connectedAccount` ([InjectedAccouunt](https://github.com/dedotdev/typink/blob/d10fe8b7fccc9ef7cdfc1b74576705c6f261160d/packages/typink/src/types.ts#L46-L51)) & `signer` ([Signer](https://github.com/polkadot-js/api/blob/42b9735c32671e4fac2a5b78283a7fcdec9ef912/packages/types/src/types/extrinsic.ts#L168-L183)) so Typink knows which account & signer to interact with the ink! contracts.
-
-```tsx
-
-const { connectedAccount, signer } = ... // from subconnect or talisman-connect ...
-
-<TypinkProvider
-  deployments={deployments}
-  defaultCaller={DEFAULT_CALLER}
-  supportedNetworks={SUPPORTED_NETWORKS}
-  defaultNetworkId={popTestnet.id}
-  cacheMetadata={true}
-  connectedAccount={connectedAccount}
-  signer={signer}
->
-  <MyAppComponent ... />
-</TypinkProvider>
-```
-
-### Providers & Hooks
-
-#### Providers
-
-- `TypinkProvider`: A global provider for Typink DApps, it managed shared state internally so hooks and child components can access (accounts, signer, wallet connection, Dedot clients, contract deployments ...)
-
-#### Hooks
-
-- `useTypink`: Give access to internal shared state managed by `TypinkProvider` giving access to connected account, signer, clients, contract deployments ... 
-- `useBalance`, `useBalances`: Fetch native Substrate balances of an address or list of addresses, helpful for checking if the account has enough fund to making transactions 
-- `useRawContract`: Create & manage `Contract` instance given its metadata & address
-- `useContract`: Create & manage `Contract` instance given its unique id from the registered contract deployments 
-- `useContractTx`: Provides functionality to sign and send transactions to a smart contract, and tracks the progress of the transaction.
-- `useContractQuery`: Help making a contract query
-- `useDeployer`: Create & manage `ContractDeployer` instance given its unique id from the registered contract deployments
-- `useDeployerTx`: Similar to `useContractTx`, this hook provides functionality to sign and send transactions to deploy a smart contract, and tracks the progress of the transaction.
-- `useWatchContractEvent`: Help watch for a specific contract event and perform a specific action
-- `usePSP22Balance`: Fetch balance of an address from a PSP22 contract with ability to watch for balance changing
-
-#### Utilities
-
-- `formatBalance`: Format a balance value to a human-readable string
-
-### Usage
-
-#### `useTypink`
-
-Access various shared states via `useTypink`
-
-```tsx
-// ...
-const { 
-  accounts, // list available accounts connected from the wallet
-  connectedAccount, // connected account to interact with contracts & networks
-  network, // current connected network info
-  client, // Dedot clients to interact with network
-  deployments, // contract deployments
-  connectedWallet, // connected wallet
-  connectWallet, // func to connect to a wallet given its id
-  disconnect, // func to sign out and disconnect from the wallet
-  wallets, // available wallets
-  ...
-} = useTypink();
-// ...
-```
-
-#### `useContract` & `useContractQuery`
-
-Instantiate a Greeter `Contract` instance using `useContract` and fetching the greet message using `useContractQuery`
-
-```tsx
-// ...
-import { GreeterContractApi } from '@/contracts/types/greeter';
-
-const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
-
-const {
-  data: greet,
-  isLoading,
-  refresh,
-} = useContractQuery({
-  contract,
-  fn: 'greet',
-});
-// ...
-```
-
-#### `useContractTx`
-
-Send a message to update the greeting message using `useContractTx`
-
-```tsx
-// ...
-import { GreeterContractApi } from '@/contracts/types/greeter';
-
-const [message, setMessage] = useState('');
-const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
-const setMessageTx = useContractTx(contract, 'setMessage');
-
-const doSetMessage = async () => {
-  if (!contract || !message) return;
-
-  try {
-    await setMessageTx.signAndSend({
-      args: [message],
-      callback: ({ status }) => {
-        console.log(status);
-
-        if (status.type === 'BestChainBlockIncluded') {
-          setMessage(''); // Reset the message if the transaction is in block
-        }
-
-        // TODO showing a toast notifying transaction status
-      },
-    });
-  } catch (e: any) {
-    console.error('Fail to make transaction:', e);
-    // TODO showing a toast message
-  }
-}
-// ...
-```
-
-#### `useDeployer` & `useDeployerTx`
-
-Instantiate a `ContractDeployer` instance to deploy Greeter contract using `useDeployer` and deploying the contract using `useDeployerTx`
-
-```tsx
-// ...
-
-import { greeterMetadata } from '@/contracts/deployments.ts';
-
-const wasm = greeterMetadata.source.wasm; // or greeterMetadata.source.hash (wasm hash code)
-const { deployer } = useDeployer<GreeterContractApi>(greeterMetadata as any, wasm);
-const newGreeterTx = useDeployerTx(deployer, 'new');
-const [initMessage, setInitMessage] = useState<string>('');
-
-const deployContraact = async () => {
-  if (!contract || !initMessage) return;
-
-  try {
-    // a random salt to make sure we don't get into duplicated contract deployments issue
-    const salt = numberToHex(Date.now()); 
-    await newGreeterTx.signAndSend({
-      args: [initMessage],
-      txOptions: { salt },
-      callback: ({ status }, deployedContractAddress) => {
-        console.log(status);
-
-        if (status.type === 'BestChainBlockIncluded') {
-          setInitMessage('');
-        }
-
-        if (deployedContractAddress) {
-          console.log('Contract is deployed at address', deployedContractAddress);
-        }
-
-        // TODO showing a toast notifying transaction status
-      },
-    });
-  } catch (e: any) {
-    console.error('Fail to make transaction:', e);
-    // TODO showing a toast message
-  }
-}
-
-// ...
-```
-
-#### `useWatchContractEvent`
-
-Watching for the `Greeted` event emitted
-
-```tsx
-// ...
-const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
-
-useWatchContractEvent(
-  contract,
-  'Greeted', // fully-typed event name with auto-completion
-  useCallback((events) => {
-    events.forEach((greetedEvent) => {
-      const {
-        name,
-        data: { from, message },
-      } = greetedEvent; // fully-typed events
-
-      console.log(`Found a ${name} event sent from: ${from?.address()}, message: ${message}`);
-    });
-  }, []),
-)
-// ...
-```
-
-#### `formatBalance`
-
-Format a balance value to a human-readable string
-
-```typescript
-import { popTestnet } from 'typink';
-
-formatBalance(1e12, popTestnet); // 100 PAS
-```
-
-### Examples
+### Example Dapps
 
 - [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo) (https://typink-demo.netlify.app/)
 - [Demo with SubConnect](https://github.com/dedotdev/typink/tree/main/examples/demo-subconnect) (https://typink-subconnect.netlify.app/)
