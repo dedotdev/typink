@@ -3,6 +3,12 @@
   "version": "0.2.0",
   "description": "Fully-typed react hooks to interact with ink! smart contract powered by Dedot!",
   "author": "Thang X. Vu <thang@dedot.dev>",
+  "homepage": "https://typink.dev",
+  "repository": {
+    "directory": "packages/typink",
+    "type": "git",
+    "url": "https://github.com/dedotdev/typink.git"
+  },
   "main": "src/index.ts",
   "sideEffects": false,
   "type": "module",
