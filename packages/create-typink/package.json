@@ -2,6 +2,12 @@
   "name": "create-typink",
   "version": "0.2.0",
   "author": "Tung Vu <tung@dedot.dev>",
+  "homepage": "https://typink.dev",
+  "repository": {
+    "directory": "packages/create-typink",
+    "type": "git",
+    "url": "https://github.com/dedotdev/typink.git"
+  },
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
