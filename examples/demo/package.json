@@ -16,7 +16,7 @@
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "dedot": "^0.7.1",
+    "dedot": "^0.9.1",
     "framer-motion": "^10.18.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -25,7 +25,7 @@
     "typink": "workspace:*"
   },
   "devDependencies": {
-    "@dedot/chaintypes": "^0.59.0",
+    "@dedot/chaintypes": "^0.74.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@typescript-eslint/eslint-plugin": "^6.21.0",

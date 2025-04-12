@@ -7,7 +7,7 @@
   },
   "type": "module",
   "dependencies": {
-    "dedot": "^0.7.1",
+    "dedot": "^0.9.1",
     "typink": "0.2.0"
   }
 }

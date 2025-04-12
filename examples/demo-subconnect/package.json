@@ -21,7 +21,7 @@
     "@subwallet-connect/react": "^1.0.8",
     "@subwallet-connect/subwallet-polkadot": "^1.0.8",
     "@subwallet-connect/talisman": "^1.0.8",
-    "dedot": "^0.7.1",
+    "dedot": "^0.9.1",
     "framer-motion": "^10.18.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -31,7 +31,7 @@
     "typink": "workspace:*"
   },
   "devDependencies": {
-    "@dedot/chaintypes": "^0.59.0",
+    "@dedot/chaintypes": "^0.74.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
