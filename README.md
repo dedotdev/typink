@@ -1,4 +1,4 @@
-![typink-bg 2](https://github.com/user-attachments/assets/eac7c826-202f-4407-88c1-c86bdb352b4f)
+![Typink banner (1991-491)](https://github.com/user-attachments/assets/63538317-f52b-4696-aeba-bef50473cdf6)
 
 # Typink
 
