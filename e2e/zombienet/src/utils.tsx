@@ -18,6 +18,8 @@ export const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
 export const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
 export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
 
+export { flipperMetadata, psp22Metadata };
+
 export const mockSigner = {
   signPayload: async (payloadJSON: SignerPayloadJSON) => {
     const { alice } = devPairs();
