@@ -80,24 +80,17 @@ export function useDeployerTx<
           // @ts-ignore
           const { args = [], txOptions, callback: optionalCallback } = o;
 
-          const extractContractAddress = (
-            events: IEventRecord<IRuntimeEvent, Hash>[],
-          ): SubstrateAddress | undefined => {
-            if (!events || events.length === 0) return;
-
-            const instantiatedEvent = deployer.client.events.contracts.Instantiated.find(events);
-            assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
-
-            return instantiatedEvent.palletEvent.data.contract.address();
-          };
-
-          const callback = (result: ISubmittableResult) => {
-            const { status, events } = result;
+          const callback = async (result: ISubmittableResult) => {
+            const { status } = result;
             if (status.type === 'BestChainBlockIncluded') {
               setInBestBlockProgress(false);
             }
 
-            const contractAddress = extractContractAddress(events);
+            let contractAddress = undefined;
+            if (status.type === 'Finalized' || status.type === 'BestChainBlockIncluded') {
+              // @ts-ignore
+              contractAddress = await result.contractAddress();
+            }
 
             optionalCallback && optionalCallback(result, contractAddress);
           };
