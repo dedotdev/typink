@@ -30,7 +30,7 @@ describe('useContract', () => {
     await waitFor(() => {
       console.log(result.current.contract);
       expect(result.current.contract).toBeDefined();
-      expect(result.current.contract?.address.address()).toEqual(contractAddress);
+      expect(result.current.contract?.address).toEqual(contractAddress);
     });
   });
 
