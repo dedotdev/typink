@@ -89,7 +89,10 @@ describe('useDeployerTx', () => {
   it('should call the contract method with correct parameters', async () => {
     const mockSignAndSend = vi.fn().mockImplementationOnce((_, callback) => {
       return new Promise<void>((resolve) => {
-        callback({ status: { type: 'Finalized' } });
+        callback({ 
+          status: { type: 'Finalized' },
+          contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+        });
         resolve();
       });
     });
@@ -115,7 +118,6 @@ describe('useDeployerTx', () => {
 
     expect(mockContractDeployer.query.message).toHaveBeenCalledWith('arg1', 'arg2', { caller: 'mock-address' });
     expect(mockContractDeployer.tx.message).toHaveBeenCalledWith('arg1', 'arg2', {
-      gasLimit: randomGasLimit,
       salt: '0xdeadbeef',
     });
     expect(mockSignAndSend).toHaveBeenCalledWith('mock-address', expect.any(Function));
@@ -125,9 +127,15 @@ describe('useDeployerTx', () => {
     const mockSignAndSend = vi.fn().mockImplementation((_, callback) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
-          callback({ status: { type: 'BestChainBlockIncluded' } });
+          callback({ 
+            status: { type: 'BestChainBlockIncluded' },
+            contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+          });
           setTimeout(() => {
-            callback({ status: { type: 'Finalized' } });
+            callback({ 
+              status: { type: 'Finalized' },
+              contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+            });
             resolve();
           }, 10);
         }, 10);
