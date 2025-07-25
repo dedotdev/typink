@@ -1,6 +1,5 @@
 import { Box, Button, Divider, Heading } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
-import {} from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
 import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';

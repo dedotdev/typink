@@ -40,13 +40,13 @@ export default function Psp22Board() {
   });
 
   const { data: myBalance, isLoading: loadingBalance } = usePSP22Balance({
-    contractAddress: contract?.address?.address(),
+    contractAddress: contract?.address,
     address: connectedAccount?.address,
     watch: true,
   });
 
   const { data: addressBalance, isLoading: loadingAnotherBalance } = usePSP22Balance({
-    contractAddress: contract?.address?.address(),
+    contractAddress: contract?.address,
     address,
     watch,
   });
