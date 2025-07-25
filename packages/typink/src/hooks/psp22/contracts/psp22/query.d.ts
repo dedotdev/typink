@@ -9,7 +9,7 @@ import type {
   GenericContractCallResult,
   ContractCallResult,
 } from 'dedot/contracts';
-import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types';
+import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types.js';
 
 export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends GenericContractQuery<ChainApi> {
   /**
