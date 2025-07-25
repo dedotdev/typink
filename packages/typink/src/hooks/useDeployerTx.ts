@@ -152,21 +152,13 @@ export async function deployerTx<
       const dryRun = await deployer.query[fn](...args, dryRunOptions);
       console.log('Dry run result:', dryRun);
 
-      const {
-        data,
-        raw: { gasRequired },
-      } = dryRun;
+      const { data } = dryRun;
 
       if (data && data['isErr'] && data['err']) {
         throw new ContractMessageError(data['err']);
       }
 
-      const actualTxOptions: ContractTxOptions = {
-        gasLimit: gasRequired,
-        ...txOptions,
-      };
-
-      await deployer.tx[fn](...args, actualTxOptions).signAndSend(caller, (result) => {
+      await deployer.tx[fn](...args, txOptions).signAndSend(caller, (result) => {
         callback && callback(result);
 
         const {
