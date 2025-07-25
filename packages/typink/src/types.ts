@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ContractMetadata } from 'dedot/contracts';
+import { LooseContractMetadata } from 'dedot/contracts';
 
 export * from './pjs-types.js';
 
@@ -18,7 +18,7 @@ export type SubstrateAddress = string;
 
 export interface ContractDeployment {
   id: string;
-  metadata: ContractMetadata | string;
+  metadata: LooseContractMetadata | string;
   address: SubstrateAddress;
   network: string;
 }
