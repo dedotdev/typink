@@ -9,7 +9,7 @@ import type {
   GenericContractCallResult,
   ContractCallResult,
 } from 'dedot/contracts';
-import type { InkPrimitivesLangError } from './types';
+import type { InkPrimitivesLangError } from './types.js';
 
 export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends GenericContractQuery<ChainApi> {
   /**
@@ -21,7 +21,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   greet: GenericContractQueryCall<
     ChainApi,
-    (options: ContractCallOptions) => Promise<GenericContractCallResult<string, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<string, ContractCallResult<ChainApi>>>
   >;
 
   /**
@@ -36,7 +36,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     ChainApi,
     (
       newValue: string,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<[], ContractCallResult<ChainApi>>>
   >;
 }

@@ -9,7 +9,7 @@ import type {
   GenericContractCallResult,
   ContractCallResult,
 } from 'dedot/contracts';
-import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types';
+import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types.js';
 
 export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends GenericContractQuery<ChainApi> {
   /**
@@ -20,7 +20,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22TotalSupply: GenericContractQueryCall<
     ChainApi,
-    (options: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
   >;
 
   /**
@@ -34,7 +34,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     ChainApi,
     (
       owner: AccountId32Like,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
   >;
 
@@ -51,7 +51,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     (
       owner: AccountId32Like,
       spender: AccountId32Like,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
   >;
 
@@ -70,7 +70,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       to: AccountId32Like,
       value: bigint,
       data: BytesLike,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 
@@ -91,7 +91,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       to: AccountId32Like,
       value: bigint,
       data: BytesLike,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 
@@ -108,7 +108,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     (
       spender: AccountId32Like,
       value: bigint,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 
@@ -125,7 +125,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     (
       spender: AccountId32Like,
       deltaValue: bigint,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 
@@ -142,7 +142,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     (
       spender: AccountId32Like,
       deltaValue: bigint,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 
@@ -155,7 +155,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
   psp22MetadataTokenName: GenericContractQueryCall<
     ChainApi,
     (
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<string | undefined, ContractCallResult<ChainApi>>>
   >;
 
@@ -168,7 +168,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
   psp22MetadataTokenSymbol: GenericContractQueryCall<
     ChainApi,
     (
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<string | undefined, ContractCallResult<ChainApi>>>
   >;
 
@@ -180,7 +180,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22MetadataTokenDecimals: GenericContractQueryCall<
     ChainApi,
-    (options: ContractCallOptions) => Promise<GenericContractCallResult<number, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<number, ContractCallResult<ChainApi>>>
   >;
 
   /**
@@ -194,7 +194,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     ChainApi,
     (
       value: bigint,
-      options: ContractCallOptions,
+      options?: ContractCallOptions,
     ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
   >;
 }
