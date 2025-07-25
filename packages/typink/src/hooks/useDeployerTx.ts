@@ -5,13 +5,11 @@ import {
   ConstructorCallOptions,
   ConstructorTxOptions,
   ContractDeployer,
-  ContractTxOptions,
   GenericContractApi,
 } from 'dedot/contracts';
-import { IEventRecord, IRuntimeEvent, ISubmittableResult } from 'dedot/types';
+import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { ContractMessageError, withReadableErrorMessage } from '../utils/index.js';
-import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
 
