@@ -48,7 +48,7 @@ describe('useRawContract', () => {
 
     await waitFor(() => {
       expect(result.current.contract).toBeDefined();
-      expect(result.current.contract?.address.address()).toEqual(contractAddress);
+      expect(result.current.contract?.address).toEqual(contractAddress);
     });
 
     const newAddress = '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM';
@@ -56,7 +56,7 @@ describe('useRawContract', () => {
 
     await waitFor(() => {
       expect(result.current.contract).toBeDefined();
-      expect(result.current.contract?.address.address()).toBe(newAddress);
+      expect(result.current.contract?.address).toEqual(newAddress);
     });
   });
 });

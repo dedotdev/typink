@@ -19,6 +19,6 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi> extends Generi
    **/
   setMessage: GenericContractTxCall<
     ChainApi,
-    (newValue: string, options: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
+    (newValue: string, options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
   >;
 }

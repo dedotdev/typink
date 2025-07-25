@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useTypink } from '../useTypink.js';
-import { ContractDeployer, ContractMetadata } from 'dedot/contracts';
+import { ContractDeployer, LooseContractMetadata } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForNextUpdate } from './test-utils.js';
 import { useDeployer } from '../useDeployer.js';
@@ -13,6 +13,7 @@ vi.mock('dedot/contracts', () => ({
   ContractDeployer: vi.fn(),
 }));
 
+// @ts-ignore
 describe('useDeployer', () => {
   const client = {} as any;
   const dummyDeployment = {
@@ -23,7 +24,7 @@ describe('useDeployer', () => {
   };
   const connectedAccount = { address: 'selected-account-address' };
   const defaultCaller = 'default-caller-address';
-  const metadata = { source: { wasm: 'test-wasm' } } as ContractMetadata;
+  const metadata = { source: { wasm: 'test-wasm' }, version: 5 } as LooseContractMetadata;
 
   const mockedUseTypink = {
     deployments: [dummyDeployment],

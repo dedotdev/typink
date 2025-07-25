@@ -113,7 +113,7 @@ describe('useContractTx', () => {
     });
 
     expect(mockContract.query.message).toHaveBeenCalledWith('arg1', 'arg2', { caller: 'mock-address' });
-    expect(mockContract.tx.message).toHaveBeenCalledWith('arg1', 'arg2', { gasLimit: randomGasLimit, value: 100n });
+    expect(mockContract.tx.message).toHaveBeenCalledWith('arg1', 'arg2', { value: 100n });
     expect(mockSignAndSend).toHaveBeenCalledWith('mock-address', expect.any(Function));
   });
 

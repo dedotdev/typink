@@ -9,7 +9,7 @@ import type {
   ConstructorCallOptions,
   ContractInstantiateResult,
 } from 'dedot/contracts';
-import type { InkPrimitivesLangError, FlipperFlipperError } from './types';
+import type { InkPrimitivesLangError, FlipperFlipperError } from './types.js';
 
 export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends GenericConstructorQuery<ChainApi> {
   /**

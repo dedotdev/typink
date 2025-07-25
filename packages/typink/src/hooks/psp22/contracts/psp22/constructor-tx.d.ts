@@ -5,10 +5,14 @@ import type {
   GenericConstructorTx,
   GenericConstructorTxCall,
   ConstructorTxOptions,
+  GenericContractApi,
   GenericInstantiateSubmittableExtrinsic,
 } from 'dedot/contracts';
 
-export interface ConstructorTx<ChainApi extends GenericSubstrateApi> extends GenericConstructorTx<ChainApi> {
+export interface ConstructorTx<
+  ChainApi extends GenericSubstrateApi,
+  ContractApi extends GenericContractApi = GenericContractApi,
+> extends GenericConstructorTx<ChainApi> {
   /**
    *
    * @param {bigint} supply
@@ -26,7 +30,7 @@ export interface ConstructorTx<ChainApi extends GenericSubstrateApi> extends Gen
       name: string | undefined,
       symbol: string | undefined,
       decimals: number,
-      options: ConstructorTxOptions,
-    ) => GenericInstantiateSubmittableExtrinsic<ChainApi>
+      options?: ConstructorTxOptions,
+    ) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>
   >;
 }

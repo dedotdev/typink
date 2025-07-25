@@ -5,13 +5,11 @@ import {
   ConstructorCallOptions,
   ConstructorTxOptions,
   ContractDeployer,
-  ContractTxOptions,
   GenericContractApi,
 } from 'dedot/contracts';
-import { IEventRecord, IRuntimeEvent, ISubmittableResult } from 'dedot/types';
+import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
 import { ContractMessageError, withReadableErrorMessage } from '../utils/index.js';
-import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
 
@@ -80,24 +78,17 @@ export function useDeployerTx<
           // @ts-ignore
           const { args = [], txOptions, callback: optionalCallback } = o;
 
-          const extractContractAddress = (
-            events: IEventRecord<IRuntimeEvent, Hash>[],
-          ): SubstrateAddress | undefined => {
-            if (!events || events.length === 0) return;
-
-            const instantiatedEvent = deployer.client.events.contracts.Instantiated.find(events);
-            assert(instantiatedEvent, 'Event Contracts.Instantiated should be available');
-
-            return instantiatedEvent.palletEvent.data.contract.address();
-          };
-
-          const callback = (result: ISubmittableResult) => {
-            const { status, events } = result;
+          const callback = async (result: ISubmittableResult) => {
+            const { status } = result;
             if (status.type === 'BestChainBlockIncluded') {
               setInBestBlockProgress(false);
             }
 
-            const contractAddress = extractContractAddress(events);
+            let contractAddress = undefined;
+            if (status.type === 'Finalized' || status.type === 'BestChainBlockIncluded') {
+              // @ts-ignore
+              contractAddress = await result.contractAddress();
+            }
 
             optionalCallback && optionalCallback(result, contractAddress);
           };
@@ -152,21 +143,13 @@ export async function deployerTx<
       const dryRun = await deployer.query[fn](...args, dryRunOptions);
       console.log('Dry run result:', dryRun);
 
-      const {
-        data,
-        raw: { gasRequired },
-      } = dryRun;
+      const { data } = dryRun;
 
       if (data && data['isErr'] && data['err']) {
         throw new ContractMessageError(data['err']);
       }
 
-      const actualTxOptions: ContractTxOptions = {
-        gasLimit: gasRequired,
-        ...txOptions,
-      };
-
-      await deployer.tx[fn](...args, actualTxOptions).signAndSend(caller, (result) => {
+      await deployer.tx[fn](...args, txOptions).signAndSend(caller, (result) => {
         callback && callback(result);
 
         const {
