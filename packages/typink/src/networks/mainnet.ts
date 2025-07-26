@@ -30,3 +30,5 @@ export const shiden: NetworkInfo = {
   decimals: 18,
   subscanUrl: 'https://shiden.subscan.io',
 };
+
+// TODO kusama asset hub

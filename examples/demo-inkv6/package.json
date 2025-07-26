@@ -1,0 +1,41 @@
+{
+  "name": "demo-inkv6",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "typink": "npx dedot typink -m ./src/contracts/artifacts/psp22/psp22.contract -o ./src/contracts/types && npx dedot typink -m ./src/contracts/artifacts/greeter/greeter.contract -o ./src/contracts/types"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "2.2.5",
+    "@chakra-ui/react": "^2.10.5",
+    "@chakra-ui/system": "^2.6.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "dedot": "^0.14.1",
+    "framer-motion": "^10.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-toastify": "^10.0.6",
+    "react-use": "^17.6.0",
+    "typink": "workspace:*"
+  },
+  "devDependencies": {
+    "@dedot/chaintypes": "^0.74.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "typescript": "^5.5.2",
+    "vite": "^6.0.5",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
