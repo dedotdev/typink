@@ -95,7 +95,7 @@ export function useContractTx<
         }
       };
     },
-    useDeepDeps([contract, connectedAccount]),
+    useDeepDeps([(contract as any)?._instanceId, connectedAccount]),
   );
 
   return {

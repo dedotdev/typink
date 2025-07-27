@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
-import { TypinkError } from '../utils/index.js';
+import { TypinkError, generateInstanceId } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 
 export type UseContract<T extends GenericContractApi = GenericContractApi> = {
@@ -48,6 +48,9 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
           ...options,
         },
       );
+
+      // Add unique instance ID to track contract instance changes
+      Object.assign(contract, { _instanceId: generateInstanceId() });
 
       setContract(contract);
     },

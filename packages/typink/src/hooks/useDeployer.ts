@@ -3,6 +3,7 @@ import { useTypink } from './useTypink.js';
 import { ContractDeployer, ExecutionOptions, GenericContractApi, LooseContractMetadata } from 'dedot/contracts';
 import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
+import { generateInstanceId } from '../utils/index.js';
 
 export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
   deployer?: ContractDeployer<T>;
@@ -45,6 +46,8 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
           ...options,
         },
       );
+
+      Object.assign(deployer, { _instanceId: generateInstanceId() });
 
       setDeployer(deployer);
     },

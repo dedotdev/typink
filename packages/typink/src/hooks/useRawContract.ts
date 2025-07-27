@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata } from 'dedot/contracts';
 import { useDeepDeps } from './internal/index.js';
+import { generateInstanceId } from '../utils/index.js';
 
 interface UseRawContract<T extends GenericContractApi = GenericContractApi> {
   contract: Contract<T> | undefined;
@@ -36,17 +37,19 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
         return;
       }
 
-      setContract(
-        new Contract<T>(
-          client,
-          metadata as any,
-          address, // prettier-end-here
-          {
-            defaultCaller: connectedAccount?.address || defaultCaller,
-            ...options,
-          },
-        ),
+      const newContract = new Contract<T>(
+        client,
+        metadata as any,
+        address, // prettier-end-here
+        {
+          defaultCaller: connectedAccount?.address || defaultCaller,
+          ...options,
+        },
       );
+
+      Object.assign(newContract, { _instanceId: generateInstanceId() });
+
+      setContract(newContract);
     },
     useDeepDeps([client, metadata, address, connectedAccount?.address, defaultCaller, options]),
   );
