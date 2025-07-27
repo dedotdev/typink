@@ -2,6 +2,7 @@ import { Box, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/r
 import { useState } from 'react';
 import { useSearchParam } from 'react-use';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
+import NonMappedAccountAlert from '@/components/shared/NonMappedAccountAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
 import FlipperBoard from '@/components/FlipperBoard.tsx';
@@ -22,6 +23,7 @@ function App() {
       <MainHeader />
       <Box maxWidth='760px' mx='auto' my={4} px={4} flex={1} w='full'>
         <BalanceInsufficientAlert />
+        <NonMappedAccountAlert />
         <Tabs index={index} onChange={handleTabsChange}>
           <TabList>
             <Tab>Flipper Contract</Tab>
