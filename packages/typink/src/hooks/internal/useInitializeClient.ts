@@ -44,12 +44,13 @@ export function useInitializeClient(network?: NetworkInfo, options?: UseClientOp
   useAsync(async () => {
     if (client) {
       try {
-        setClient(undefined);
         // TODO check this again if the network is not available
         await client.disconnect();
       } catch (e) {
         console.error(e);
       }
+
+      setClient(undefined);
     }
 
     if (!network) {
@@ -61,7 +62,7 @@ export function useInitializeClient(network?: NetworkInfo, options?: UseClientOp
     setReady(false);
 
     // TODO support light-client
-    const provider: JsonRpcProvider = new WsProvider(network.providers[0]);
+    const provider: JsonRpcProvider = new WsProvider(network.providers);
 
     if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
       setClient(await LegacyClient.new({ provider, cacheMetadata }));
