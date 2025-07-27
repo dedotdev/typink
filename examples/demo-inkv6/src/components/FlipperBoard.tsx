@@ -42,7 +42,7 @@ export default function FlipperBoard() {
       <Flex my={4} gap={2}>
         <Text>Flipper Value:</Text>
         <PendingText fontWeight='600' isLoading={isLoading} color='primary.500'>
-          {value ? 'TRUE' : 'FALSE'}
+          {value === undefined ? '---' : value ? 'TRUE' : 'FALSE'}
         </PendingText>
       </Flex>
       <Button mt={2} isLoading={setMessageTx.inBestBlockProgress} onClick={handleFlip}>

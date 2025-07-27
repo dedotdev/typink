@@ -59,7 +59,7 @@ export function useContractQuery<
   const [error, setError] = useState<Error>();
 
   const { contract, fn, args = [], options, watch = false } = parameters;
-  const deps = useDeepDeps([contract, fn, args, options]);
+  const deps = useDeepDeps([(contract as any)?._instanceId, fn, args, options]);
 
   useEffect(() => {
     let mounted = true;
