@@ -31,4 +31,16 @@ export const shiden: NetworkInfo = {
   subscanUrl: 'https://shiden.subscan.io',
 };
 
-// TODO kusama asset hub
+export const kusamaAssetHub: NetworkInfo = {
+  id: 'kusama_asset_hub',
+  name: 'Kusama AssetHub',
+  logo: 'https://assethub-kusama.subscan.io/_next/image?url=%2Fchains%2Fassethub-kusama%2Flogo-mini.png&w=256&q=75',
+  providers: [
+    'wss://rpc.ibp.network/kusama', // --
+    'wss://kusama-rpc.n.dwellir.com',
+    'wss://kusama.api.onfinality.io/public-ws',
+  ],
+  symbol: 'KSM',
+  decimals: 12,
+  subscanUrl: 'https://assethub-kusama.subscan.io',
+};
