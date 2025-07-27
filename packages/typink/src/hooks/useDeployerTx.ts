@@ -108,7 +108,7 @@ export function useDeployerTx<
         }
       };
     },
-    useDeepDeps([deployer, connectedAccount, fn]),
+    useDeepDeps([(deployer as any)?._instanceId, connectedAccount, fn]),
   );
 
   return {
