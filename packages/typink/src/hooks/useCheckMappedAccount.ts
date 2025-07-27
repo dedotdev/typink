@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { toEvmAddress } from 'dedot/contracts';
 import { SubstrateAddress } from '../types.js';
@@ -9,10 +9,12 @@ export interface UseCheckMappedAccountResult {
   isLoading: boolean;
   error: Error | undefined;
   evmAddress: string | undefined;
+  refresh: () => Promise<void>;
 }
 
 /**
  * Check if the revive pallet is available on the current network
+ * TODO move this to a generic util method
  */
 function isReviveAvailable(client: ISubstrateClient<any>): boolean {
   try {
@@ -27,13 +29,9 @@ function isReviveAvailable(client: ISubstrateClient<any>): boolean {
  * deployed on pallet revive.
  *
  * @param address - The Substrate address to check (defaults to connected account)
- * @param enabled - Whether to enable the check (defaults to true)
- * @returns Object containing mapping status, loading state, error, and EVM address
+ * @returns Object containing mapping status, loading state, error, EVM address, and refresh function
  */
-export function useCheckMappedAccount(
-  address?: SubstrateAddress,
-  enabled: boolean = true,
-): UseCheckMappedAccountResult {
+export function useCheckMappedAccount(address?: SubstrateAddress): UseCheckMappedAccountResult {
   const { client, connectedAccount } = useTypink();
   const [isMapped, setIsMapped] = useState<boolean>();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,8 +40,8 @@ export function useCheckMappedAccount(
 
   const accountToCheck = address || connectedAccount?.address;
 
-  useEffect(() => {
-    if (!client || !accountToCheck || !enabled || !isReviveAvailable(client)) {
+  const checkMapping = useCallback(async () => {
+    if (!client || !accountToCheck || !isReviveAvailable(client)) {
       setIsMapped(undefined);
       setEvmAddress(undefined);
       setError(undefined);
@@ -51,32 +49,37 @@ export function useCheckMappedAccount(
       return;
     }
 
-    const checkMapping = async () => {
-      try {
-        setIsLoading(true);
-        setError(undefined);
+    try {
+      setIsLoading(true);
+      setError(undefined);
 
-        const evmAddress = toEvmAddress(accountToCheck);
-        setEvmAddress(evmAddress);
+      const evmAddr = toEvmAddress(accountToCheck);
+      setEvmAddress(evmAddr);
 
-        const originalAccount = await client.query.revive.originalAccount(evmAddress);
-        setIsMapped(!!originalAccount);
-      } catch (err) {
-        console.error('Error checking account mapping:', err);
-        setError(err as Error);
-        setIsMapped(undefined);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const originalAccount = await client.query.revive.originalAccount(evmAddr);
+      setIsMapped(!!originalAccount);
+    } catch (err) {
+      console.error('Error checking account mapping:', err);
+      setError(err as Error);
+      setIsMapped(undefined);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [client, accountToCheck]);
 
+  const refresh = useCallback(async () => {
+    await checkMapping();
+  }, [checkMapping]);
+
+  useEffect(() => {
     checkMapping().catch(console.error);
-  }, [client, accountToCheck, enabled]);
+  }, [checkMapping]);
 
   return {
     isMapped,
     isLoading,
     error,
     evmAddress,
+    refresh,
   };
 }
