@@ -7,6 +7,7 @@ import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
 import FlipperBoard from '@/components/FlipperBoard.tsx';
 import { ContractDeployerBoard } from '@/components/ContractDeployerBoard.tsx';
+import Psp22Board from '@/components/Psp22Board.tsx';
 
 function App() {
   const tab = useSearchParam('tab');
@@ -27,12 +28,16 @@ function App() {
         <Tabs index={index} onChange={handleTabsChange}>
           <TabList>
             <Tab>Flipper Contract</Tab>
+            <Tab>PSP22 Contract</Tab>
             <Tab>Deploy Flipper Contracts</Tab>
           </TabList>
 
           <TabPanels>
             <TabPanel>
               <FlipperBoard />
+            </TabPanel>
+            <TabPanel>
+              <Psp22Board />
             </TabPanel>
             <TabPanel>
               <ContractDeployerBoard />
