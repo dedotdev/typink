@@ -42,12 +42,15 @@ export function useContractQuery<
   T extends GenericContractApi = GenericContractApi,
   M extends keyof ContractQuery<T> = keyof ContractQuery<T>,
 >(
-  parameters: {
-    contract: Contract<T> | undefined;
-    fn: M;
-    options?: ContractCallOptions;
-    watch?: boolean;
-  } & Args<Pop<Parameters<T['query'][M]>>>,
+  parameters:
+    | ({
+        contract: Contract<T> | undefined;
+        fn: M;
+        options?: ContractCallOptions;
+        watch?: boolean;
+      } & Args<Pop<Parameters<T['query'][M]>>>)
+    | undefined
+    | false,
 ): UseContractQueryReturnType<T, M> {
   // TODO replace loading tracking state with tanstack
 
@@ -58,7 +61,7 @@ export function useContractQuery<
   const [result, setResult] = useState<any>();
   const [error, setError] = useState<Error>();
 
-  const { contract, fn, args = [], options, watch = false } = parameters;
+  const { contract, fn, args = [], options, watch = false } = parameters || {};
   const deps = useDeepDeps([(contract as any)?._instanceId, fn, args, options]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
-import { ContractId } from 'contracts/deployments';
+import { ContractId } from '@/contracts/deployments';
 import { useContract, useContractQuery, useContractTx } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { Flipper6ContractApi } from '@/contracts/types/flipper6';
@@ -14,8 +14,6 @@ export default function FlipperBoard() {
     fn: 'get',
     watch: true,
   });
-
-  console.log('value', value);
 
   const handleFlip = async () => {
     if (!contract) return;
