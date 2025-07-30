@@ -18,9 +18,10 @@ export function renderHelpMessage() {
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
     ${chalk.gray('-t, --template')}                   Template <base>
-    ${chalk.gray('-e, --example')}                    Example contract <psp22|greeter>
     ${chalk.gray('-w, --wallet')}                     Wallet connector <Default|Subconnect|Talisman Connect>
-    ${chalk.gray('-N, --network')}                    Network <Pop Testnet|Aleph Zero Testnet|Aleph Zero Mainnet|Astar|Shiden|Shibuya>
+    ${chalk.gray('-i, --ink-version')}                Ink version <legacy|v6>
+    ${chalk.gray('-e, --example')}                    Example contract [legacy: <psp22|greeter>, v6: <psp22|flipper>]
+    ${chalk.gray('-N, --network')}                    Network [legacy: <Pop Testnet|Aleph Zero Testnet|Aleph Zero Mainnet|Astar|Shiden|Shibuya>, v6: <Pop Testnet|Passet Hub|Westend Asset Hub>]
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
     ${chalk.gray('--no-git')}                         Skip git initialization
     ${chalk.gray('-v, --version')}                    Show Typink version

@@ -1,13 +1,26 @@
-import inquirer from 'inquirer';
+import inquirer, { Answers } from 'inquirer';
 import arg from 'arg';
-import { BaseOptions, Options, TEMPLATES, PRESET_CONTRACTS, WALLET_CONNECTORS, NETWORKS } from '../types.js';
+import {
+  BaseOptions,
+  INK_VERSIONS,
+  INK_VERSIONS_CHOICES,
+  NETWORKS_FOR_PALLET_CONTRACTS,
+  NETWORKS_FOR_PALLET_REVIVE,
+  Options,
+  PRESET_CONTRACTS_FOR_PALLET_CONTRACTS,
+  PRESET_CONTRACTS_FOR_PALLET_REVIVE,
+  TEMPLATES,
+  WALLET_CONNECTORS,
+} from '../types.js';
 import validate from 'validate-npm-package-name';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
+  inkVersion: 'legacy',
   template: 'default',
-  presetContract: 'greeter',
+  presetContract: 'psp22',
   walletConnector: 'Default',
+  // Because `Pop Testnet` support both pallet-contracts and pallet-revive, we use it as default network
   networks: ['Pop Testnet'],
   skipInstall: false,
   noGit: false,
@@ -32,17 +45,17 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     },
     {
       type: 'list',
+      name: 'inkVersion',
+      message: 'What ink version do you want to use?',
+      choices: INK_VERSIONS_CHOICES,
+      default: defaultOptions.inkVersion,
+    },
+    {
+      type: 'list',
       name: 'template',
       message: 'Which template do you want to use?',
       choices: TEMPLATES,
       default: defaultOptions.template,
-    },
-    {
-      type: 'list',
-      name: 'presetContract',
-      message: 'What example contract do you want to use?',
-      choices: PRESET_CONTRACTS,
-      default: defaultOptions.presetContract,
     },
     {
       type: 'list',
@@ -52,10 +65,23 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
       default: defaultOptions.walletConnector,
     },
     {
+      type: 'list',
+      name: 'presetContract',
+      message: 'What example contract do you want to use?',
+      choices: (answers: Answers) =>
+        answers.inkVersion === 'v6'
+          ? PRESET_CONTRACTS_FOR_PALLET_REVIVE // prettier-ignore
+          : PRESET_CONTRACTS_FOR_PALLET_CONTRACTS,
+      default: defaultOptions.presetContract,
+    },
+    {
       type: 'checkbox',
       name: 'networks',
       message: 'What networks do you want to connect?',
-      choices: NETWORKS,
+      choices: (answers: Answers) =>
+        answers.inkVersion === 'v6'
+          ? NETWORKS_FOR_PALLET_REVIVE // prettier-ignore
+          : NETWORKS_FOR_PALLET_CONTRACTS,
       default: defaultOptions.networks,
       validate: (networks: string[]) => {
         if (networks.length === 0) {
@@ -95,6 +121,9 @@ export function parseArguments(): Options {
       '--networks': [String],
       '-N': '--networks',
 
+      '--ink-version': String,
+      '-i': '--ink-version',
+
       '--no-git': Boolean,
 
       '--skip-install': Boolean,
@@ -118,17 +147,34 @@ export function parseArguments(): Options {
     }
   }
 
-  if (args['--example'] && !PRESET_CONTRACTS.includes(args['--example'] as any)) {
-    throw new Error(`Preset contract ${args['--example']} is not supported. Please use a valid example contract.`);
-  }
-
   if (args['--wallet'] && !WALLET_CONNECTORS.includes(args['--wallet'] as any)) {
     throw new Error(`Wallet connector ${args['--wallet']} is not supported. Please use a supported wallet connector.`);
   }
 
+  if (args['--ink-version'] && !INK_VERSIONS.includes(args['--ink-version'] as any)) {
+    throw new Error(`Template ${args['--template']} is not supported. Please use a valid template.`);
+  }
+
+  const isInkPalletRevive = args['--ink-version'] === 'v6';
+
+  if (
+    args['--example'] &&
+    (isInkPalletRevive
+      ? !PRESET_CONTRACTS_FOR_PALLET_REVIVE.includes(args['--example'] as any)
+      : !PRESET_CONTRACTS_FOR_PALLET_CONTRACTS.includes(args['--example'] as any))
+  ) {
+    throw new Error(
+      `Preset contract ${args['--example']} is not supported for Ink! ${args['--ink-version']}. Please use a valid example contract.`,
+    );
+  }
+
   if (args['--networks']) {
     args['--networks'].forEach((network: string) => {
-      if (!NETWORKS.includes(network as any)) {
+      if (
+        isInkPalletRevive
+          ? !NETWORKS_FOR_PALLET_REVIVE.includes(network as any)
+          : !NETWORKS_FOR_PALLET_CONTRACTS.includes(network as any)
+      ) {
         throw new Error(`Network ${network} is not supported. Please use supported network.`);
       }
     });
@@ -145,6 +191,7 @@ export function parseArguments(): Options {
     // Because there is only `default` tepmlate, we use `default` as default value
     template: args['--template'] || 'default',
     networks: args['--networks'] || null,
+    inkVersion: args['--ink-version'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,

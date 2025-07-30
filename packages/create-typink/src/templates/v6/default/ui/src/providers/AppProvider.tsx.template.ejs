@@ -1,0 +1,45 @@
+import { createContext, useContext } from 'react';
+import { Props } from '@/types.ts';
+import { Contract } from 'dedot/contracts';
+import { useContract } from 'typink';
+import { ContractId } from 'contracts/deployments.ts';
+<% if (options.presetContract === 'flipper') { %>
+import { FlipperContractApi } from 'contracts/types/flipper';
+<% } else if (options.presetContract === 'psp22') { %>
+import { Psp22ContractApi } from 'contracts/types/psp22';
+<% } %>
+
+interface AppContextProps {
+<% if (options.presetContract === 'flipper') { %>
+  greeterContract?: Contract<FlipperContractApi>
+<% } else if (options.presetContract === 'psp22') { %>
+  psp22Contract?: Contract<Psp22ContractApi>
+<% } %>
+}
+
+const AppContext = createContext<AppContextProps>(null as any);
+
+export const useApp = () => {
+  return useContext(AppContext);
+};
+
+export function AppProvider({ children }: Props) {
+  <% if (options.presetContract === 'flipper') { %>
+  const { contract: flipperContract } = useContract<FlipperContractApi>(ContractId.FLIPPER)
+  <% } else if (options.presetContract === 'psp22') { %>
+  const { contract: psp22Contract } = useContract<Psp22ContractApi>(ContractId.PSP22)
+  <% } %>
+
+  return (
+    <AppContext.Provider value={{ 
+        <% if (options.presetContract === 'flipper') { %>
+        flipperContract, 
+        <% } else if (options.presetContract === 'psp22') { %>
+        psp22Contract 
+        <% } %>
+      }}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
