@@ -37,9 +37,10 @@ export default function MapAccountButton({
 
       await client.tx.revive
         .mapAccount() // --
-        .signAndSend(connectedAccount.address, ({ status }) => {
+        .signAndSend(connectedAccount.address, (result) => {
+          const { status } = result;
           console.log(status);
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(result);
 
           if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
             onSuccess?.();
@@ -48,7 +49,7 @@ export default function MapAccountButton({
         .untilFinalized();
     } catch (error: any) {
       console.error('Error mapping account:', error);
-      toaster.onError(error);
+      toaster.onTxError(error);
     } finally {
       setIsLoading(false);
     }
