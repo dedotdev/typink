@@ -115,18 +115,17 @@ export default function GreetBoard() {
 
 <% if (options.presetContract === 'psp22') { %>
 import { Box, Button, Divider, Heading } from '@chakra-ui/react';
-import WalletSelection from '@/components/shared/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
-import { ContractId } from '@/contracts/deployments';
-import { Psp22ContractApi } from '@/contracts/types/psp22';
-import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
+import WalletSelection from '@/components/shared/WalletSelection.tsx';
+import { useApp } from '@/providers/AppProvider.tsx';
 import { txToaster } from '@/utils/txToaster.tsx';
-import { toEvmAddress } from 'dedot/contracts';
+import { formatBalance, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
 
 export default function Psp22Board() {
-  const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { connectedAccount, network } = useTypink();
+  const { psp22Contract: contract } = useApp();
+  const { connectedAccount } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
+
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
     contract,
     fn: 'psp22MetadataTokenName',
@@ -151,42 +150,33 @@ export default function Psp22Board() {
     fn: 'psp22TotalSupply',
   });
 
-  const {
-    data: myBalance,
-    isLoading: loadingBalance,
-    refresh: refreshMyBalance,
-  } = useContractQuery(
-    !!connectedAccount?.address && {
-      contract,
-      fn: 'psp22BalanceOf',
-      args: [toEvmAddress(connectedAccount.address)],
-    },
-  );
+  const { data: myBalance, isLoading: loadingBalance } = usePSP22Balance({
+    contractAddress: contract?.address,
+    address: connectedAccount?.address,
+    watch: true,
+  });
 
   const mintNewToken = async () => {
     if (!tokenDecimal) return;
 
-    const toaster = txToaster('Signing transaction...');
+    const toaster = txToaster();
     try {
       await mintTx.signAndSend({
         args: [BigInt(100 * Math.pow(10, tokenDecimal))],
-        callback: ({ status }) => {
+        callback: (result) => {
+          const { status } = result;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
-            void refreshTotalSupply();
-            void refreshMyBalance();
+            refreshTotalSupply();
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(result);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
-    } finally {
-      void refreshTotalSupply();
-      void refreshMyBalance();
+      toaster.onTxError(e);
     }
   };
 
@@ -215,7 +205,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, network)}
+            {formatBalance(totalSupply, { decimals: tokenDecimal, symbol: tokenSymbol })}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -223,7 +213,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, network)}
+              {formatBalance(myBalance, { decimals: tokenDecimal, symbol: tokenSymbol })}
             </PendingText>
           ) : (
             <WalletSelection buttonProps={{ size: 'xs' }} />

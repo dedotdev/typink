@@ -24,14 +24,6 @@ export const flipperDeployments: ContractDeployment[] = [
     address: '0x8036a0ff5670f418FB382cA8a2367A35970C9cdc',
   },
 <% } %>
-<% if (options.networks.includes("westendAssetHub")) { %>
-  {
-    id: ContractId.FLIPPER,
-    metadata: flipperMetadata as any,
-    network: westendAssetHub.id,
-    address: '0x40288Cf68bB879830407b8ffd245CbAA89FF626E',
-  },
-<% } %>
 ];
 <% } else if (options.presetContract === 'psp22') { %>
 export const psp22Deployments: ContractDeployment[] = [

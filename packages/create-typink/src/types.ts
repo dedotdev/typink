@@ -1,14 +1,14 @@
 export const WALLET_CONNECTORS = ['Default', 'SubConnect V2', 'Talisman Connect'] as const;
 export type WalletConnector = (typeof WALLET_CONNECTORS)[number];
 
-export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['greeter', 'psp22'] as const;
-export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['flipper', 'psp22'] as const;
+export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['psp22', 'greeter'] as const;
+export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['psp22', 'flipper'] as const;
 export type PresetContract =
   | (typeof PRESET_CONTRACTS_FOR_PALLET_CONTRACTS)[number]
   | (typeof PRESET_CONTRACTS_FOR_PALLET_REVIVE)[number];
 
 export const NETWORKS_FOR_PALLET_CONTRACTS = ['Pop Testnet', 'Aleph Zero Testnet', 'Aleph Zero', 'Astar'] as const;
-export const NETWORKS_FOR_PALLET_REVIVE = ['Pop Testnet', 'Passet Hub', 'Westend Asset Hub'] as const;
+export const NETWORKS_FOR_PALLET_REVIVE = ['Pop Testnet'] as const;
 export type Network =
   | (typeof NETWORKS_FOR_PALLET_CONTRACTS)[number] // prettier-ignore
   | (typeof NETWORKS_FOR_PALLET_REVIVE)[number];
@@ -21,12 +21,12 @@ export type InkVersion = (typeof INK_VERSIONS)[number];
 
 export const INK_VERSIONS_CHOICES = [
   {
-    name: 'v5 & v4 (pallet-contracts)',
+    name: 'v5 & v4 (legacy, wasm, pallet-contracts)',
     value: 'legacy',
     short: 'v5 & v4',
   },
   {
-    name: 'v6 (pallet-revive)',
+    name: 'v6 (risv-v, pallet-revive)',
     value: 'v6',
     short: 'v6',
   },

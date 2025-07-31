@@ -23,15 +23,16 @@ export default function FlipperBoard() {
 
     try {
       await setMessageTx.signAndSend({
-        callback: ({ status }) => {
+        callback: (result) => {
+          const {status} = result;
           console.log(status);
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(status);
         },
       });
     } catch (e: any) {
       console.error(e, e.message);
-      toaster.onError(e);
+      toaster.onTxError(e);
     }
   };
 
@@ -54,17 +55,18 @@ export default function FlipperBoard() {
 
 <% if (options.presetContract === 'psp22') { %>
 import { Box, Button, Divider, Heading } from '@chakra-ui/react';
-import PendingText from '@/components/shared/PendingText.tsx';
 import WalletSelection from '@/components/shared/WalletSelection.tsx';
-import { useApp } from '@/providers/AppProvider.tsx';
+import PendingText from '@/components/shared/PendingText.tsx';
+import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
-import { formatBalance, useContractQuery, useContractTx, usePSP22Balance, useTypink } from 'typink';
+import { toEvmAddress } from 'dedot/contracts';
+import { ContractId } from 'contracts/deployments';
+import { Psp22ContractApi } from 'contracts/types/psp22';
 
 export default function Psp22Board() {
-  const { psp22Contract: contract } = useApp();
-  const { connectedAccount } = useTypink();
+  const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
+  const { connectedAccount, network } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
-
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
     contract,
     fn: 'psp22MetadataTokenName',
@@ -89,11 +91,18 @@ export default function Psp22Board() {
     fn: 'psp22TotalSupply',
   });
 
-  const { data: myBalance, isLoading: loadingBalance } = usePSP22Balance({
-    contractAddress: contract?.address,
-    address: connectedAccount?.address,
-    watch: true,
-  });
+  const {
+    data: myBalance,
+    isLoading: loadingBalance,
+    refresh: refreshMyBalance,
+  } = useContractQuery(
+    {
+      contract,
+      fn: 'psp22BalanceOf',
+      args: [toEvmAddress(connectedAccount?.address || '0x')],
+    },
+  );
+
 
   const mintNewToken = async () => {
     if (!tokenDecimal) return;
@@ -107,7 +116,7 @@ export default function Psp22Board() {
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
-            refreshTotalSupply();
+            void refreshTotalSupply();
           }
 
           toaster.onTxProgress(result);
@@ -116,6 +125,9 @@ export default function Psp22Board() {
     } catch (e: any) {
       console.error(e);
       toaster.onTxError(e);
+    } finally {
+      void refreshTotalSupply();
+      void refreshMyBalance();
     }
   };
 
@@ -144,7 +156,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, { decimals: tokenDecimal, symbol: tokenSymbol })}
+            {formatBalance(totalSupply, network)}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -152,7 +164,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, { decimals: tokenDecimal, symbol: tokenSymbol })}
+              {formatBalance(myBalance, network)}
             </PendingText>
           ) : (
             <WalletSelection buttonProps={{ size: 'xs' }} />
