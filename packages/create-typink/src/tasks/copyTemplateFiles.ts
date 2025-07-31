@@ -13,11 +13,11 @@ export async function copyTemplateFiles(
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, template } = options;
+  const { projectName, noGit, template, inkVersion } = options;
 
   task.title = `🚀 Initializing new Typink dApp`;
 
-  const templateDir = `${templatesDir}/${template}`;
+  const templateDir = `${templatesDir}/${inkVersion}/${template}`;
 
   if (!fs.existsSync(templateDir)) {
     throw new Error(`Template directory not found: ${templateDir}`);
