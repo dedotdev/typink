@@ -17,7 +17,6 @@ export async function copyTemplateFiles(
 
   task.title = `🚀 Initializing new Typink dApp`;
 
-  // TODO! Refactor this.
   const templateDir = `${templatesDir}/${inkVersion}/${template}`;
 
   if (!fs.existsSync(templateDir)) {

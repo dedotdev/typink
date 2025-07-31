@@ -16,18 +16,19 @@ export type Network =
 export const TEMPLATES = ['default'] as const;
 export type Template = (typeof TEMPLATES)[number];
 
-export const INK_VERSIONS = ['legacy', 'v6'] as const;
-export type InkVersion = (typeof INK_VERSIONS)[number];
-
+export enum InkVersion {
+  InkLegacy = 'legacy',
+  InkV6 = 'v6',
+}
 export const INK_VERSIONS_CHOICES = [
   {
     name: 'v5 & v4 (legacy, wasm, pallet-contracts)',
-    value: 'legacy',
+    value: InkVersion.InkLegacy,
     short: 'v5 & v4',
   },
   {
     name: 'v6 (risv-v, pallet-revive)',
-    value: 'v6',
+    value: InkVersion.InkV6,
     short: 'v6',
   },
 ] as const;
