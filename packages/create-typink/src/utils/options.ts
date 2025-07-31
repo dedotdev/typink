@@ -16,7 +16,7 @@ import validate from 'validate-npm-package-name';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
-  inkVersion: InkVersion.InkLegacy,
+  inkVersion: InkVersion.InkV6,
   template: 'default',
   presetContract: 'psp22',
   walletConnector: 'Default',
@@ -155,33 +155,36 @@ export function parseArguments(): Options {
     throw new Error(`Template ${args['--template']} is not supported. Please use a valid template.`);
   }
 
-  // Ink version is required to determine which preset contracts and networks are available
-  const inkVersion = args['--ink-version'] || InkVersion.InkLegacy;
-  const isInkPalletRevive = inkVersion === InkVersion.InkV6;
+  let inkVersion = args['--ink-version'];
 
-  if (
-    args['--example'] &&
-    (isInkPalletRevive
-      ? !PRESET_CONTRACTS_FOR_PALLET_REVIVE.includes(args['--example'] as any)
-      : !PRESET_CONTRACTS_FOR_PALLET_CONTRACTS.includes(args['--example'] as any))
-  ) {
-    throw new Error(
-      `Preset contract ${args['--example']} is not supported for ink! ${inkVersion}. Please use a valid example contract.`,
-    );
-  }
+  // If args['networks'] or args['example'] is provided, we need inkVersion to determine if it supports the networks or examples
+  // If inkVersion is not provided, we assume it is InkV6 (pallet-revive) by default
+  if (args['--networks'] || args['--example']) {
+    inkVersion = inkVersion || InkVersion.InkV6;
+    const isInkPalletRevive = inkVersion === InkVersion.InkV6;
 
-  if (args['--networks']) {
-    args['--networks'].forEach((network: string) => {
-      if (
-        isInkPalletRevive
-          ? !NETWORKS_FOR_PALLET_REVIVE.includes(network as any)
-          : !NETWORKS_FOR_PALLET_CONTRACTS.includes(network as any)
-      ) {
-        throw new Error(
-          `Network ${network} is not !ink ${inkVersion} supported. Please use supported network.`,
-        );
-      }
-    });
+    if (
+      args['--example'] &&
+      (isInkPalletRevive
+        ? !PRESET_CONTRACTS_FOR_PALLET_REVIVE.includes(args['--example'] as any)
+        : !PRESET_CONTRACTS_FOR_PALLET_CONTRACTS.includes(args['--example'] as any))
+    ) {
+      throw new Error(
+        `Preset contract ${args['--example']} is not supported for ink! ${inkVersion}. Please use a valid example contract.`,
+      );
+    }
+
+    if (args['--networks']) {
+      args['--networks'].forEach((network: string) => {
+        if (
+          isInkPalletRevive
+            ? !NETWORKS_FOR_PALLET_REVIVE.includes(network as any)
+            : !NETWORKS_FOR_PALLET_CONTRACTS.includes(network as any)
+        ) {
+          throw new Error(`Network ${network} is not !ink ${inkVersion} supported. Please use supported network.`);
+        }
+      });
+    }
   }
 
   if (args['--template'] && !TEMPLATES.includes(args['--template'] as any)) {

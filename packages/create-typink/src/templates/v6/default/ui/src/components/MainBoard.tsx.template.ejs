@@ -103,7 +103,6 @@ export default function Psp22Board() {
     },
   );
 
-
   const mintNewToken = async () => {
     if (!tokenDecimal) return;
 
@@ -117,6 +116,7 @@ export default function Psp22Board() {
 
           if (status.type === 'BestChainBlockIncluded') {
             void refreshTotalSupply();
+            void refreshMyBalance();
           }
 
           toaster.onTxProgress(result);
