@@ -11,7 +11,7 @@ import { Psp22ContractApi } from 'contracts/types/psp22';
 
 interface AppContextProps {
 <% if (options.presetContract === 'flipper') { %>
-  greeterContract?: Contract<FlipperContractApi>
+  flipperContract?: Contract<FlipperContractApi>
 <% } else if (options.presetContract === 'psp22') { %>
   psp22Contract?: Contract<Psp22ContractApi>
 <% } %>

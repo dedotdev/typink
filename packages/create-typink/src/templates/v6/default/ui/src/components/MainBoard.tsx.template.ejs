@@ -27,7 +27,7 @@ export default function FlipperBoard() {
           const {status} = result;
           console.log(status);
 
-          toaster.onTxProgress(status);
+          toaster.onTxProgress(result);
         },
       });
     } catch (e: any) {
