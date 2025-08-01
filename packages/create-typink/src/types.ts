@@ -33,6 +33,11 @@ export const INK_VERSIONS_CHOICES = [
   },
 ] as const;
 
+export interface PkgManagerInfo {
+  name: string;
+  version?: string;
+}
+
 export type BaseOptions = {
   projectName: string | null;
   skipInstall: boolean;
@@ -41,6 +46,8 @@ export type BaseOptions = {
   walletConnector: WalletConnector | null;
   template: Template | null;
   inkVersion: InkVersion | null;
+  // This option will be determined by the user agent instead of being set by the user
+  pkgManager: PkgManagerInfo;
   noGit: boolean;
 };
 

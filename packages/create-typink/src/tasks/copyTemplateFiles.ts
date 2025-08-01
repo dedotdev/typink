@@ -34,6 +34,7 @@ export async function copyTemplateFiles(
   await processPresetContract(options, targetDir);
   await processTemplateFiles(options, targetDir);
   await processGitignoreFile(targetDir);
+  await processPnpmWorkspaceFile(options, targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -90,6 +91,13 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
         await fs.promises.rm(filePath);
       }
     }
+  }
+}
+
+async function processPnpmWorkspaceFile(options: Options, targetDir: string) {
+  // Remove pnpm workspace file if the package manager is not pnpm
+  if (options.pkgManager.name !== 'pnpm') {
+    await fs.promises.rm(path.join(targetDir, 'pnpm-workspace.yaml'));
   }
 }
 

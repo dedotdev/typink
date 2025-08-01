@@ -1,0 +1,43 @@
+{
+  "name": "typink-dapp-template",
+  "private": true,
+  "version": "0.0.1",
+  "workspaces": [
+    "contracts",
+    "ui"
+  ],
+  "scripts": {
+    <% if (options.pkgManager === 'npm') { %>
+    "start": "npm run start --workspace=ui",
+    "build": "npm run build --workspace=ui",
+    "typink": "npm run typink --workspace=contracts",
+    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
+    "clean": "npm run clean --workspace=ui"
+    <% } else if (options.pkgManager === 'yarn') { %>
+    "start": "yarn workspace ui start",
+    "build": "yarn workspace ui build",
+    "typink": "yarn workspace contracts typink",
+    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
+    "clean": "yarn workspace ui clean"
+    <% } else if (options.pkgManager === 'bun') { %>
+    "start": "bun run --filter ui start",
+    "build": "bun run --filter ui build",
+    "typink": "bun run --filter contracts typink",
+    "prettify": "bunx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
+    "clean": "bun run --filter ui clean"
+    <% } else if (options.pkgManager === 'pnpm') { %>
+    "start": "pnpm --filter ui run start",
+    "build": "pnpm --filter ui run build",
+    "typink": "pnpm --filter contracts run typink",
+    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
+    "clean": "pnpm --filter ui run clean"
+    <% } %>
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "prettier": "^2.8.8",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "serve": "^14.2.4",
+    "typescript": "5.4.5"
+  }
+}

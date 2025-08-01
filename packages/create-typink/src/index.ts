@@ -5,6 +5,7 @@ import {
   promptMissingOptions,
   renderHelpMessage,
   renderOutroMessage,
+  pkgFromUserAgent,
 } from './utils/index.js';
 import { createProject } from './createProject.js';
 import { fileURLToPath } from 'url';
@@ -21,6 +22,10 @@ export async function createTypink() {
     }
 
     const options = await promptMissingOptions(args);
+    const pkgManager = pkgFromUserAgent(process.env.npm_config_user_agent);
+    if (pkgManager) {
+      options.pkgManager = pkgManager;
+    }
 
     await createProject(options);
 
