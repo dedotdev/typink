@@ -81,8 +81,6 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
       await processTemplateFilesRecursive(options, filePath);
     } else {
       if (IS_TEMPLATE_FILE.test(filePath)) {
-        console.log(filePath);
-
         const content = fs.readFileSync(filePath, 'utf-8');
         const result = ejs.render(content, { options });
 
