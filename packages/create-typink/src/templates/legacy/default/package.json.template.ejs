@@ -7,25 +7,25 @@
     "ui"
   ],
   "scripts": {
-    <% if (options.pkgManager === 'npm') { %>
+    <% if (options.pkgManager.name === 'npm') { %>
     "start": "npm run start --workspace=ui",
     "build": "npm run build --workspace=ui",
     "typink": "npm run typink --workspace=contracts",
     "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
     "clean": "npm run clean --workspace=ui"
-    <% } else if (options.pkgManager === 'yarn') { %>
+    <% } else if (options.pkgManager.name === 'yarn') { %>
     "start": "yarn workspace ui start",
     "build": "yarn workspace ui build",
     "typink": "yarn workspace contracts typink",
     "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
     "clean": "yarn workspace ui clean"
-    <% } else if (options.pkgManager === 'bun') { %>
+    <% } else if (options.pkgManager.name === 'bun') { %>
     "start": "bun run --filter ui start",
     "build": "bun run --filter ui build",
     "typink": "bun run --filter contracts typink",
     "prettify": "bunx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
     "clean": "bun run --filter ui clean"
-    <% } else if (options.pkgManager === 'pnpm') { %>
+    <% } else if (options.pkgManager.name === 'pnpm') { %>
     "start": "pnpm --filter ui run start",
     "build": "pnpm --filter ui run build",
     "typink": "pnpm --filter contracts run typink",

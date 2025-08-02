@@ -25,16 +25,16 @@ export async function copyTemplateFiles(
 
   await fs.promises.cp(templateDir, targetDir, { recursive: true });
 
+  await processPresetContract(options, targetDir);
+  await processTemplateFiles(options, targetDir);
+  await processGitignoreFile(targetDir);
+  await processPnpmWorkspaceFile(options, targetDir);
+
   const packageJsonPath = `${targetDir}/package.json`;
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
   packageJson.name = projectName;
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  await processPresetContract(options, targetDir);
-  await processTemplateFiles(options, targetDir);
-  await processGitignoreFile(targetDir);
-  await processPnpmWorkspaceFile(options, targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -81,6 +81,8 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
       await processTemplateFilesRecursive(options, filePath);
     } else {
       if (IS_TEMPLATE_FILE.test(filePath)) {
+        console.log(filePath);
+
         const content = fs.readFileSync(filePath, 'utf-8');
         const result = ejs.render(content, { options });
 
