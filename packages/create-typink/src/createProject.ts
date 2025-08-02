@@ -32,7 +32,7 @@ export async function createProject(options: Options) {
         task: (_, task) => copyTemplateFiles(options, templateDirectory, targetDirectory, task),
       },
       {
-        title: '📦 Install dependencies with yarn',
+        title: `📦 Install dependencies with ${chalk.green.bold(options.pkgManager.name)}`,
         task: (_, task) => installPackages(options, targetDirectory, task),
         skip: skipInstall,
       },
