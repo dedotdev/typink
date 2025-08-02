@@ -30,18 +30,20 @@ export function renderHelpMessage() {
 }
 
 export function renderOutroMessage(options: Options) {
+  const pkgManagerName = options.pkgManager.name;
+
   if (options.skipInstall) {
     console.log(`\n${chalk.bold.green('🎉 Your project is ready!')}
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
-    ${chalk.bold.blue('$ yarn install')}
-    ${chalk.bold.blue('$ yarn start')}
+    ${chalk.bold.blue(`$ ${pkgManagerName} install`)}
+    ${chalk.bold.blue(`$ ${pkgManagerName === 'yarn' ? 'yarn start' : `${pkgManagerName} run start`} `)}
 `);
   } else {
     console.log(`\n${chalk.bold.green('🎉 Your project is ready!')}
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
-    ${chalk.bold.blue('$ yarn start')}
+    ${chalk.bold.blue(`$ ${pkgManagerName === 'yarn' ? 'yarn start' : `${pkgManagerName} run start`} `)}
 `);
   }
 }

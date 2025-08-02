@@ -25,15 +25,16 @@ export async function copyTemplateFiles(
 
   await fs.promises.cp(templateDir, targetDir, { recursive: true });
 
+  await processPresetContract(options, targetDir);
+  await processTemplateFiles(options, targetDir);
+  await processGitignoreFile(targetDir);
+  await processPnpmWorkspaceFile(options, targetDir);
+
   const packageJsonPath = `${targetDir}/package.json`;
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
   packageJson.name = projectName;
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  await processPresetContract(options, targetDir);
-  await processTemplateFiles(options, targetDir);
-  await processGitignoreFile(targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -90,6 +91,13 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
         await fs.promises.rm(filePath);
       }
     }
+  }
+}
+
+async function processPnpmWorkspaceFile(options: Options, targetDir: string) {
+  // Remove pnpm workspace file if the package manager is not pnpm
+  if (options.pkgManager.name !== 'pnpm') {
+    await fs.promises.rm(path.join(targetDir, 'pnpm-workspace.yaml'));
   }
 }
 
