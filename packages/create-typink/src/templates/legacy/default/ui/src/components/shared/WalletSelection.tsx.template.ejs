@@ -18,7 +18,7 @@ import {
   ThemingProps,
   useDisclosure,
 } from '@chakra-ui/react';
-import { GithubSvgIcon } from '@/components/shared/icons.tsx';
+import { GithubSvgIcon, RESOURCE_BASE_URL } from '@/components/shared/icons.tsx';
 import { DownloadIcon } from '@chakra-ui/icons';
 import { ExtensionWallet, useTypink, Wallet } from 'typink';
 
@@ -136,7 +136,7 @@ export default function WalletSelection({
 function TypinkIntro() {
   return (
     <>
-      <Image my={4} mx='auto' src='./typink-pink.svg' width='6rem' />
+      <Image my={4} mx='auto' src={`${RESOURCE_BASE_URL}/typink-pink.svg`} width='6rem' />
       <Text fontSize='sm' textAlign='center'>
         Typesafe react hooks to interact with{' '}
         <Link color='primary.500' href='https://use.ink' target='_blank'>
