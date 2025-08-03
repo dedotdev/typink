@@ -1,8 +1,8 @@
 export const WALLET_CONNECTORS = ['Default', 'SubConnect V2', 'Talisman Connect'] as const;
 export type WalletConnector = (typeof WALLET_CONNECTORS)[number];
 
-export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['psp22', 'greeter'] as const;
-export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['psp22', 'flipper'] as const;
+export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['greeter', 'psp22'] as const;
+export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['flipper', 'psp22'] as const;
 export type PresetContract =
   | (typeof PRESET_CONTRACTS_FOR_PALLET_CONTRACTS)[number]
   | (typeof PRESET_CONTRACTS_FOR_PALLET_REVIVE)[number];
@@ -22,14 +22,14 @@ export enum InkVersion {
 }
 export const INK_VERSIONS_CHOICES = [
   {
-    name: 'v5 & v4 (legacy, wasm, pallet-contracts)',
-    value: InkVersion.InkLegacy,
-    short: 'v5 & v4',
-  },
-  {
-    name: 'v6 (risv-v, pallet-revive)',
+    name: 'v6 (RISC-V, pallet-revive)',
     value: InkVersion.InkV6,
     short: 'v6',
+  },
+  {
+    name: 'v5 & v4 (WASM, pallet-contracts)',
+    value: InkVersion.InkLegacy,
+    short: 'v5 & v4',
   },
 ] as const;
 
