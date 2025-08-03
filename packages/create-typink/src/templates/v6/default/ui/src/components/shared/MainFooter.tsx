@@ -1,6 +1,6 @@
 import { Box, Flex, Image, Link, Text } from '@chakra-ui/react';
 import React from 'react';
-import { GithubSvgIcon, XSvgIcon } from '@/components/shared/icons.tsx';
+import { GithubSvgIcon, RESOURCE_BASE_URL, XSvgIcon } from '@/components/shared/icons.tsx';
 
 export default function MainFooter() {
   return (
@@ -30,7 +30,7 @@ export default function MainFooter() {
             <GithubSvgIcon />
           </a>
           <a href='https://dedot.dev' target='_blank'>
-            <Image width={25} src='/dedot-dark-logo.png' />
+            <Image width={25} src={`${RESOURCE_BASE_URL}/dedot-dark-logo.png`} />
           </a>
         </Flex>
       </Flex>

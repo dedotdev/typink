@@ -4,6 +4,7 @@ import AccountSelection from '@/components/shared/AccountSelection.tsx';
 import NetworkSelection from '@/components/shared/NetworkSelection.tsx';
 import ThemeModeButton from '@/components/shared/ThemeModeButton.tsx';
 import WalletSelection from '@/components/shared/WalletSelection.tsx';
+import { RESOURCE_BASE_URL } from '@/components/shared/icons.tsx';
 import { useTypink } from 'typink';
 
 export default function MainHeader() {
@@ -25,12 +26,20 @@ export default function MainHeader() {
           <Box>
             <Image
               h={6}
-              src={colorMode === 'light' ? '/typink-text-dark-logo.png' : '/typink-text-light-logo.png'}
+              src={
+                colorMode === 'light'
+                  ? `${RESOURCE_BASE_URL}/typink-text-dark-logo.png`
+                  : `${RESOURCE_BASE_URL}/typink-text-light-logo.png`
+              }
               display={{ base: 'none', md: 'block' }}
             />
             <Image
               h={6}
-              src={colorMode === 'light' ? '/typink-dark-logo.png' : '/typink-light-logo.png'}
+              src={
+                colorMode === 'light'
+                  ? `${RESOURCE_BASE_URL}/typink-dark-logo.png`
+                  : `${RESOURCE_BASE_URL}/typink-light-logo.png`
+              }
               display={{ base: 'block', md: 'none' }}
             />
           </Box>
