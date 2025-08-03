@@ -22,39 +22,75 @@ jobs:
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn build
-      - name: Create app with create-typink (Default)
+      - name: Create app with create-typink (Default, legacy)
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default -i legacy -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w Default
           ls -la
           cd ./typink-app-default
           ls -la
-      - name: Try to build (Default)
+      - name: Try to build (Default, legacy)
         run: |
           cd ../typink-app-default
           yarn build
-      - name: Create app with create-typink (SubConnect V2)
+      - name: Create app with create-typink (SubConnect V2, legacy)
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2 -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "SubConnect V2"
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2 -i legacy -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "SubConnect V2"
           ls -la
           cd ./typink-app-subconnect-v2
           ls -la
-      - name: Try to build (SubConnect V2)
+      - name: Try to build (SubConnect V2, legacy)
         run: |
           cd ../typink-app-subconnect-v2
           yarn build
-      - name: Create app with create-typink (Talisman Connect)
+      - name: Create app with create-typink (Talisman Connect, legacy)
         run: |
           export YARN_ENABLE_IMMUTABLE_INSTALLS=false
           cd ..
-          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "Talisman Connect"
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect -i legacy -t default -e greeter -N "Pop Testnet" -N "Aleph Zero Testnet" -w "Talisman Connect"
           ls -la
           cd ./typink-app-talisman-connect
           ls -la
-      - name: Try to build (Talisman Connect)
+      - name: Try to build (Talisman Connect, legacy)
         run: |
           cd ../typink-app-talisman-connect
+          yarn build
+      - name: Create app with create-typink (Default, v6)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-default-v6 -i v6 -t default -e flipper -N "Pop Testnet" -w Default
+          ls -la
+          cd ./typink-app-default-v6
+          ls -la
+      - name: Try to build (Default, v6)
+        run: |
+          cd ../typink-app-default-v6
+          yarn build
+      - name: Create app with create-typink (SubConnect V2, v6)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-subconnect-v2-v6 -i v6 -t default -e flipper -N "Pop Testnet" -w "SubConnect V2"
+          ls -la
+          cd ./typink-app-subconnect-v2-v6
+          ls -la
+      - name: Try to build (SubConnect V2, v6)
+        run: |
+          cd ../typink-app-subconnect-v2-v6
+          yarn build
+      - name: Create app with create-typink (Talisman Connect, v6)
+        run: |
+          export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+          cd ..
+          node ./typink/packages/create-typink/dist/bin/create-typink.mjs --no-git -n typink-app-talisman-connect-v6 -i v6 -t default -e flipper -N "Pop Testnet" -w "Talisman Connect"
+          ls -la
+          cd ./typink-app-talisman-connect-v6
+          ls -la
+      - name: Try to build (Talisman Connect, v6)
+        run: |
+          cd ../typink-app-talisman-connect-v6
           yarn build
