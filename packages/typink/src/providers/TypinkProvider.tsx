@@ -2,6 +2,9 @@ import { createContext } from 'react';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
+
+const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+
 import {
   useWalletSetup,
   WalletSetupContextProps,
@@ -23,12 +26,12 @@ export const TypinkContext = createContext<TypinkContextProps>({} as any);
 
 export interface TypinkProviderProps extends ClientProviderProps, WalletSetupProviderProps {
   deployments?: ContractDeployment[];
-  defaultCaller: SubstrateAddress;
+  defaultCaller?: SubstrateAddress;
 }
 
-export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>
+export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
-function TypinkProviderInner({ children, deployments = [], defaultCaller }: TypinkProviderInnerProps) {
+function TypinkProviderInner({ children, deployments = [], defaultCaller = ALICE }: TypinkProviderInnerProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -56,7 +59,7 @@ function TypinkProviderInner({ children, deployments = [], defaultCaller }: Typi
  * @param props - The properties for the TypinkProvider component
  * @param props.children - The child components to be rendered within the provider
  * @param props.deployments - An array of contract deployments (optional, defaults to empty array)
- * @param props.defaultCaller - The default substrate address to be used as the caller
+ * @param props.defaultCaller - The default substrate address to be used as the caller (optional, defaults to ALICE address)
  * @param props.defaultNetworkId - The default network ID to be used
  * @param props.cacheMetadata - Whether to cache metadata or not (default: false)
  * @param props.supportedNetworks - An array of supported networks
@@ -74,7 +77,7 @@ function TypinkProviderInner({ children, deployments = [], defaultCaller }: Typi
 export function TypinkProvider({
   children,
   deployments = [],
-  defaultCaller,
+  defaultCaller = ALICE,
   defaultNetworkId,
   cacheMetadata = false,
   supportedNetworks,
