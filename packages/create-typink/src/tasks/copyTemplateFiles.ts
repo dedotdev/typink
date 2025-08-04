@@ -28,7 +28,6 @@ export async function copyTemplateFiles(
   await processPresetContract(options, targetDir);
   await processTemplateFiles(options, targetDir);
   await processGitignoreFile(targetDir);
-  await processPnpmWorkspaceFile(options, targetDir);
 
   const packageJsonPath = `${targetDir}/package.json`;
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
@@ -45,7 +44,7 @@ export async function copyTemplateFiles(
 }
 
 async function processPresetContract(options: Options, targetDir: string) {
-  const dirsToCheck = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
+  const dirsToCheck = [`${targetDir}/src/contracts/artifacts`, `${targetDir}/src/contracts/types`];
 
   dirsToCheck.forEach(async (dir) => {
     for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {
@@ -91,13 +90,6 @@ async function processTemplateFilesRecursive(options: any, dir: string) {
         await fs.promises.rm(filePath);
       }
     }
-  }
-}
-
-async function processPnpmWorkspaceFile(options: Options, targetDir: string) {
-  // Remove pnpm workspace file if the package manager is not pnpm
-  if (options.pkgManager.name !== 'pnpm') {
-    await fs.promises.rm(path.join(targetDir, 'pnpm-workspace.yaml'));
   }
 }
 
