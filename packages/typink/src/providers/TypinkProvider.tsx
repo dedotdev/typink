@@ -22,13 +22,13 @@ export interface TypinkContextProps
 export const TypinkContext = createContext<TypinkContextProps>({} as any);
 
 export interface TypinkProviderProps extends ClientProviderProps, WalletSetupProviderProps {
-  deployments: ContractDeployment[];
+  deployments?: ContractDeployment[];
   defaultCaller: SubstrateAddress;
 }
 
 export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>
 
-function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderInnerProps) {
+function TypinkProviderInner({ children, deployments = [], defaultCaller }: TypinkProviderInnerProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -55,7 +55,7 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
  *
  * @param props - The properties for the TypinkProvider component
  * @param props.children - The child components to be rendered within the provider
- * @param props.deployments - An array of contract deployments
+ * @param props.deployments - An array of contract deployments (optional, defaults to empty array)
  * @param props.defaultCaller - The default substrate address to be used as the caller
  * @param props.defaultNetworkId - The default network ID to be used
  * @param props.cacheMetadata - Whether to cache metadata or not (default: false)
@@ -73,7 +73,7 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
  */
 export function TypinkProvider({
   children,
-  deployments,
+  deployments = [],
   defaultCaller,
   defaultNetworkId,
   cacheMetadata = false,
