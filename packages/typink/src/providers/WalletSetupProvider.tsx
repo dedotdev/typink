@@ -36,7 +36,7 @@ export const useWalletSetup = () => {
 };
 
 export interface WalletSetupProviderProps extends WalletProviderProps {
-  appName: string;
+  appName?: string;
   wallets?: Wallet[];
 }
 
@@ -50,13 +50,14 @@ const DEFAULT_WALLETS: Wallet[] = [subwallet, talisman, polkadotjs];
  * @param props.children - The child components to be wrapped by this provider.
  * @param props.signer - The initial signer object for the wallet.
  * @param props.connectedAccount - The initial connected account information.
+ * @param props.appName - The application name to use when enabling wallets (optional, defaults to empty string).
  */
 export function WalletSetupProvider({
   children,
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
   wallets: initialWallets,
-  appName
+  appName = ''
 }: WalletSetupProviderProps) {
   const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
   const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
