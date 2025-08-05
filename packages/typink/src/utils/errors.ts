@@ -62,10 +62,6 @@ export const extractHumanReadableError = <T extends GenericContractApi = Generic
   client: ISubstrateClient<T['types']['ChainApi']>,
   error: E,
 ): string => {
-  if (!(error instanceof DedotError)) {
-    return error.message;
-  }
-
   // Ref: https://paritytech.github.io/polkadot-sdk/master/frame_support/pallet_prelude/enum.DispatchError.html#variants
   // DispatchError
   if (isContractDispatchError(error) || isContractInstantiateDispatchError(error)) {
