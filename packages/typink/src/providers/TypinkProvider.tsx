@@ -3,7 +3,7 @@ import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } fr
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
 
-const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
 
 import {
   useWalletSetup,
@@ -19,7 +19,7 @@ export interface TypinkContextProps
     WalletContextProps,
     TypinkEventsContextProps {
   deployments: ContractDeployment[];
-  defaultCaller: SubstrateAddress; // TODO validate substrate address
+  defaultCaller: SubstrateAddress;
 }
 
 export const TypinkContext = createContext<TypinkContextProps>({} as any);
@@ -31,7 +31,11 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
 
 export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
-function TypinkProviderInner({ children, deployments = [], defaultCaller = ALICE }: TypinkProviderInnerProps) {
+function TypinkProviderInner({
+  children,
+  deployments = [],
+  defaultCaller = DEFAULT_ADDRESS,
+}: TypinkProviderInnerProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -77,7 +81,7 @@ function TypinkProviderInner({ children, deployments = [], defaultCaller = ALICE
 export function TypinkProvider({
   children,
   deployments = [],
-  defaultCaller = ALICE,
+  defaultCaller = DEFAULT_ADDRESS,
   defaultNetworkId,
   cacheMetadata = false,
   supportedNetworks,
