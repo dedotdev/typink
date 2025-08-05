@@ -6,6 +6,7 @@ import {
   ConstructorTxOptions,
   ContractDeployer,
   GenericContractApi,
+  IContractInstantiateSubmittableResult,
 } from 'dedot/contracts';
 import { ISubmittableResult } from 'dedot/types';
 import { assert, deferred } from 'dedot/utils';
@@ -75,10 +76,9 @@ export function useDeployerTx<
         setInBestBlockProgress(true);
 
         try {
-          // @ts-ignore
           const { args = [], txOptions, callback: optionalCallback } = o;
 
-          const callback = async (result: ISubmittableResult) => {
+          const callback = async (result: IContractInstantiateSubmittableResult) => {
             const { status } = result;
             if (status.type === 'BestChainBlockIncluded') {
               setInBestBlockProgress(false);
@@ -86,7 +86,6 @@ export function useDeployerTx<
 
             let contractAddress = undefined;
             if (status.type === 'Finalized' || status.type === 'BestChainBlockIncluded') {
-              // @ts-ignore
               contractAddress = await result.contractAddress();
             }
 
