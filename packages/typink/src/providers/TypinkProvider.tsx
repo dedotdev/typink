@@ -2,6 +2,9 @@ import { createContext } from 'react';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
+
+const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
+
 import {
   useWalletSetup,
   WalletSetupContextProps,
@@ -16,19 +19,23 @@ export interface TypinkContextProps
     WalletContextProps,
     TypinkEventsContextProps {
   deployments: ContractDeployment[];
-  defaultCaller: SubstrateAddress; // TODO validate substrate address
+  defaultCaller: SubstrateAddress;
 }
 
 export const TypinkContext = createContext<TypinkContextProps>({} as any);
 
 export interface TypinkProviderProps extends ClientProviderProps, WalletSetupProviderProps {
-  deployments: ContractDeployment[];
-  defaultCaller: SubstrateAddress;
+  deployments?: ContractDeployment[];
+  defaultCaller?: SubstrateAddress;
 }
 
-export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>
+export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
-function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkProviderInnerProps) {
+function TypinkProviderInner({
+  children,
+  deployments = [],
+  defaultCaller = DEFAULT_ADDRESS,
+}: TypinkProviderInnerProps) {
   const clientContext = useClient();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
@@ -55,8 +62,8 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
  *
  * @param props - The properties for the TypinkProvider component
  * @param props.children - The child components to be rendered within the provider
- * @param props.deployments - An array of contract deployments
- * @param props.defaultCaller - The default substrate address to be used as the caller
+ * @param props.deployments - An array of contract deployments (optional, defaults to empty array)
+ * @param props.defaultCaller - The default substrate address to be used as the caller (optional, defaults to ALICE address)
  * @param props.defaultNetworkId - The default network ID to be used
  * @param props.cacheMetadata - Whether to cache metadata or not (default: false)
  * @param props.supportedNetworks - An array of supported networks
@@ -73,8 +80,8 @@ function TypinkProviderInner({ children, deployments, defaultCaller }: TypinkPro
  */
 export function TypinkProvider({
   children,
-  deployments,
-  defaultCaller,
+  deployments = [],
+  defaultCaller = DEFAULT_ADDRESS,
   defaultNetworkId,
   cacheMetadata = false,
   supportedNetworks,
