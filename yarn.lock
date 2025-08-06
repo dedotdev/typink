@@ -7171,7 +7171,7 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
-    typescript: "npm:^5.5.2"
+    typescript: "npm:^5.9.2"
     typink: "workspace:*"
     vite: "npm:^6.0.5"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -7208,7 +7208,7 @@ __metadata:
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     svelte-qrcode: "npm:^1.0.1"
-    typescript: "npm:^5.5.2"
+    typescript: "npm:^5.9.2"
     typink: "workspace:*"
     vite: "npm:^6.0.5"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -7239,7 +7239,7 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
-    typescript: "npm:^5.5.2"
+    typescript: "npm:^5.9.2"
     typink: "workspace:*"
     vite: "npm:^6.0.5"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -14234,7 +14234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:>=3 < 6, typescript@npm:^5.2.2, typescript@npm:^5.5.2":
+"typescript@npm:>=3 < 6":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
   bin:
@@ -14244,13 +14244,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A>=3 < 6#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.2.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.2#optional!builtin<compat/typescript>":
+"typescript@npm:^5.9.2":
+  version: 5.9.2
+  resolution: "typescript@npm:5.9.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/cc2fe6c822819de5d453fa25aa9f32096bf70dde215d481faa1ad84a283dfb264e33988ed8f6d36bc803dd0b16dbe943efa311a798ef76d5b3892a05dfbfd628
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A>=3 < 6#optional!builtin<compat/typescript>":
   version: 5.7.2
   resolution: "typescript@patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=379a07"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/ff27fc124bceb8969be722baa38af945b2505767cf794de3e2715e58f61b43780284060287d651fcbbdfb6f917f4653b20f4751991f17e0706db389b9bb3f75d
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.9.2#optional!builtin<compat/typescript>":
+  version: 5.9.2
+  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=379a07"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/a8606016982f2f46ed085e9b4b84d8a5251b42ff0560c995c20f3c3ab9543e37c1015d92ab2f1cc7b2af2b499d12bac57e11789da271fb3225af8ec0b24e5b64
   languageName: node
   linkType: hard
 
@@ -14269,7 +14289,7 @@ __metadata:
     prettier-plugin-organize-imports: "npm:^3.2.4"
     tsc-esm-fix: "npm:^2.20.27"
     tsx: "npm:^4.19.2"
-    typescript: "npm:^5.2.2"
+    typescript: "npm:^5.9.2"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
