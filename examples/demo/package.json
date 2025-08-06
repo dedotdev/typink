@@ -11,7 +11,7 @@
     "typink": "npx dedot typink -m ./src/contracts/artifacts/psp22/psp22.contract -o ./src/contracts/types && npx dedot typink -m ./src/contracts/artifacts/greeter/greeter.contract -o ./src/contracts/types"
   },
   "dependencies": {
-    "@chakra-ui/icons": "2.2.5",
+    "@chakra-ui/icons": "2.2.6",
     "@chakra-ui/react": "^2.10.5",
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.14.0",

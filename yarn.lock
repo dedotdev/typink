@@ -336,13 +336,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/icons@npm:2.2.5":
-  version: 2.2.5
-  resolution: "@chakra-ui/icons@npm:2.2.5"
+"@chakra-ui/icons@npm:2.2.6":
+  version: 2.2.6
+  resolution: "@chakra-ui/icons@npm:2.2.6"
   peerDependencies:
     "@chakra-ui/react": ">=2.0.0"
     react: ">=18"
-  checksum: 10/68afd6ba4b8f89a585c0624a13ccc39aa2851096ffacadbbaa49b54c1f584e8a78c2ef6c98b44e5eb0b769052d7004b83354403943cbfb21ea63dddd755fa8f7
+  checksum: 10/9e3f72f8ffb63483b34933baf567f044bba801915aa27ee525fd8c45b469f2faf7599df901aaa8b397ad87c72c76287ffbf37d6d7b05eb027c51fce969ab3a7e
   languageName: node
   linkType: hard
 
@@ -7151,7 +7151,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demo-inkv6@workspace:examples/demo-inkv6"
   dependencies:
-    "@chakra-ui/icons": "npm:2.2.5"
+    "@chakra-ui/icons": "npm:2.2.6"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
     "@dedot/chaintypes": "npm:^0.132.0"
@@ -7182,7 +7182,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demo-subconnect@workspace:examples/demo-subconnect"
   dependencies:
-    "@chakra-ui/icons": "npm:2.2.5"
+    "@chakra-ui/icons": "npm:2.2.6"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
     "@dedot/chaintypes": "npm:^0.132.0"
@@ -7219,7 +7219,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "demo@workspace:examples/demo"
   dependencies:
-    "@chakra-ui/icons": "npm:2.2.5"
+    "@chakra-ui/icons": "npm:2.2.6"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
     "@dedot/chaintypes": "npm:^0.132.0"
