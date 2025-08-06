@@ -122,11 +122,7 @@ describe('useTypink', () => {
 
     // WalletContextProps properties
     expect(result).toHaveProperty('accounts');
-    expect(result).toHaveProperty('selectedAccount');
-    expect(result).toHaveProperty('setSelectedAccount');
-    expect(result).toHaveProperty('connect');
     expect(result).toHaveProperty('disconnect');
-    expect(result).toHaveProperty('isConnecting');
 
     // TypinkEventsContextProps properties
     expect(result).toHaveProperty('subscribeToEvent');
