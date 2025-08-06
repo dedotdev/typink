@@ -35,7 +35,7 @@
     "tsc-esm-fix": "^2.20.27",
     "tsx": "^4.19.2",
     "typescript": "^5.2.2",
-    "vitest": "^2.1.8"
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=20"
