@@ -110,7 +110,7 @@ export function WalletSetupProvider({
         assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
 
         await targetWallet.waitUntilReady();
-        
+
         // Check if this is a Ledger hardware wallet
         if (targetWallet instanceof LedgerWallet) {
           // For Ledger wallet, load accounts from LedgerProvider
@@ -122,7 +122,7 @@ export function WalletSetupProvider({
 
           // Use ledger accounts from the provider
           const ledgerAccounts = ledgerContext.ledgerAccounts;
-          
+
           if (ledgerAccounts.length === 0) {
             // Don't disconnect immediately for Ledger, user might import accounts later
             setAccounts([]);
@@ -175,7 +175,7 @@ export function WalletSetupProvider({
 
           // Set initial accounts
           setAccounts(convertToTypinkAccount(initialConnectedAccounts));
-          
+
           unsub = injected.accounts.subscribe((injectedAccounts: InjectedAccount[]) => {
             setAccounts(convertToTypinkAccount(injectedAccounts));
           });
