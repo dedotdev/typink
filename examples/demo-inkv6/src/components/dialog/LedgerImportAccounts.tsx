@@ -25,7 +25,6 @@ import {
 import { useState, useRef, useEffect } from 'react';
 import { EditIcon, CheckIcon, DeleteIcon, CopyIcon } from '@chakra-ui/icons';
 import { useLedgerUI } from '@/providers';
-import { HardwareSource } from 'typink';
 
 interface LedgerImportAccountsProps {
   isOpen: boolean;
@@ -34,7 +33,7 @@ interface LedgerImportAccountsProps {
 
 export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAccountsProps) {
   const {
-    hardwareAccounts,
+    ledgerAccounts,
     connectionState,
     connectLedger,
     importNextAccount,
@@ -53,7 +52,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
 
-  const ledgerAccounts = hardwareAccounts.filter((acc) => acc.source === HardwareSource.Ledger);
+  // ledgerAccounts now comes directly from the provider, already filtered
 
   // Handle highlighting after successful import when provider state updates
   useEffect(() => {

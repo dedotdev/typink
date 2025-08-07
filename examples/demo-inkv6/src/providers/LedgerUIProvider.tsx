@@ -1,10 +1,10 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useToast } from '@chakra-ui/react';
-import { useLedger, type HardwareAccount, type LedgerConnectionState } from 'typink';
+import { useLedger, type TypinkAccount, type LedgerConnectionState } from 'typink';
 
 interface LedgerUIContextType {
   // State from core provider
-  hardwareAccounts: HardwareAccount[];
+  ledgerAccounts: TypinkAccount[];
   connectionState: LedgerConnectionState;
 
   // UI-enhanced methods with toasts and error handling
@@ -139,7 +139,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
   };
 
   const contextValue: LedgerUIContextType = {
-    hardwareAccounts: ledgerContext.hardwareAccounts,
+    ledgerAccounts: ledgerContext.ledgerAccounts,
     connectionState: ledgerContext.connectionState,
     connectLedger,
     importNextAccount,

@@ -1,18 +1,6 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import { LedgerConnect, type LedgerAccount } from '../signers';
-
-export enum HardwareSource {
-  Ledger = 'ledger',
-  Vault = 'vault',
-}
-
-export interface HardwareAccount {
-  source: HardwareSource;
-  address: string;
-  pubkey: string;
-  index: number;
-  name?: string;
-}
+import { TypinkAccount } from '../types.js';
 
 export interface LedgerConnectionState {
   isConnecting: boolean;
@@ -25,13 +13,13 @@ const STORAGE_KEY = 'TYPINK::LEDGER::ACCOUNTS';
 
 interface LedgerContextType {
   // State
-  hardwareAccounts: HardwareAccount[];
+  ledgerAccounts: TypinkAccount[];
   connectionState: LedgerConnectionState;
 
   // Core methods
   connectLedger: () => Promise<void>;
-  importAccountAtIndex: (index: number) => Promise<HardwareAccount>;
-  importNextAccount: () => Promise<HardwareAccount>;
+  importAccountAtIndex: (index: number) => Promise<TypinkAccount>;
+  importNextAccount: () => Promise<TypinkAccount>;
   removeAccount: (address: string) => void;
   updateAccountName: (address: string, name: string) => void;
   disconnectLedger: () => Promise<void>;
@@ -77,7 +65,7 @@ interface LedgerProviderProps {
 }
 
 export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
-  const [hardwareAccounts, setHardwareAccounts] = useState<HardwareAccount[]>([]);
+  const [ledgerAccounts, setLedgerAccounts] = useState<TypinkAccount[]>([]);
   const [connectionState, setConnectionState] = useState<LedgerConnectionState>({
     isConnecting: false,
     isConnected: false,
@@ -90,14 +78,14 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
   // Initialize accounts from localStorage
   React.useEffect(() => {
     const storedAccounts = getStoredAccounts();
-    setHardwareAccounts(storedAccounts);
+    setLedgerAccounts(storedAccounts);
 
     // Set current index to the next available index
-    const maxIndex = storedAccounts.length > 0 ? Math.max(...storedAccounts.map((acc) => acc.index)) : -1;
+    const maxIndex = storedAccounts.length > 0 ? Math.max(...storedAccounts.map((acc) => acc.index!)) : -1;
     setConnectionState((prev) => ({ ...prev, currentIndex: maxIndex + 1 }));
   }, []);
 
-  const getStoredAccounts = (): HardwareAccount[] => {
+  const getStoredAccounts = (): TypinkAccount[] => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
@@ -107,10 +95,10 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
     }
   };
 
-  const saveAccounts = (accounts: HardwareAccount[]) => {
+  const saveAccounts = (accounts: TypinkAccount[]) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-      setHardwareAccounts(accounts);
+      setLedgerAccounts(accounts);
     } catch (error) {
       console.warn('Failed to save hardware accounts to localStorage:', error);
     }
@@ -170,7 +158,7 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
     }
   };
 
-  const importAccountAtIndex = async (index: number): Promise<HardwareAccount> => {
+  const importAccountAtIndex = async (index: number): Promise<TypinkAccount> => {
     setConnectionState((prev) => ({ ...prev, error: null }));
 
     try {
@@ -178,8 +166,9 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
         return await connect.getSS58Address(index, 42);
       });
 
-      const hardwareAccount: HardwareAccount = {
-        source: HardwareSource.Ledger,
+      const typinkAccount: TypinkAccount = {
+        walletId: 'ledger',
+        source: 'hardware',
         address: ledgerAccount.address,
         pubkey: ledgerAccount.publicKey,
         index: ledgerAccount.index,
@@ -187,19 +176,19 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
       };
 
       // Check if account already exists
-      const existingIndex = hardwareAccounts.findIndex((acc) => acc.address === hardwareAccount.address);
+      const existingIndex = ledgerAccounts.findIndex((acc) => acc.address === typinkAccount.address);
       if (existingIndex !== -1) {
         throw new Error(`Account #${index} is already imported`);
       }
 
-      const updatedAccounts = [...hardwareAccounts, hardwareAccount];
+      const updatedAccounts = [...ledgerAccounts, typinkAccount];
       saveAccounts(updatedAccounts);
 
       // Update current index for next import
-      const maxIndex = Math.max(...updatedAccounts.map((acc) => acc.index));
+      const maxIndex = Math.max(...updatedAccounts.map((acc) => acc.index!));
       setConnectionState((prev) => ({ ...prev, currentIndex: maxIndex + 1 }));
 
-      return hardwareAccount;
+      return typinkAccount;
     } catch (err) {
       console.log(err);
       const errorMessage = handleLedgerError(err);
@@ -208,7 +197,7 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
     }
   };
 
-  const importNextAccount = async (): Promise<HardwareAccount> => {
+  const importNextAccount = async (): Promise<TypinkAccount> => {
     if (!connectionState.isConnected) {
       throw new Error('Ledger not connected');
     }
@@ -216,12 +205,12 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
   };
 
   const removeAccount = (address: string) => {
-    const updatedAccounts = hardwareAccounts.filter((acc) => acc.address !== address);
+    const updatedAccounts = ledgerAccounts.filter((acc) => acc.address !== address);
     saveAccounts(updatedAccounts);
   };
 
   const updateAccountName = (address: string, name: string) => {
-    const updatedAccounts = hardwareAccounts.map((acc) => (acc.address === address ? { ...acc, name } : acc));
+    const updatedAccounts = ledgerAccounts.map((acc) => (acc.address === address ? { ...acc, name } : acc));
     saveAccounts(updatedAccounts);
   };
 
@@ -255,12 +244,12 @@ export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
       console.warn('Failed to clear hardware accounts from localStorage:', error);
     }
 
-    setHardwareAccounts([]);
+    setLedgerAccounts([]);
     setConnectionState((prev) => ({ ...prev, currentIndex: 0 }));
   };
 
   const contextValue: LedgerContextType = {
-    hardwareAccounts,
+    ledgerAccounts,
     connectionState,
     connectLedger,
     importAccountAtIndex,

@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { LooseContractMetadata } from 'dedot/contracts';
+import { KeypairType } from './pjs-types.js';
 
 export * from './pjs-types.js';
 
@@ -15,6 +16,27 @@ export interface Props {
 }
 
 export type SubstrateAddress = string;
+
+/**
+ * Unified account interface for both extension wallets and hardware wallets
+ */
+export interface TypinkAccount {
+  // Core fields (required)
+  address: string;
+  walletId: string; // e.g., 'ledger', 'subwallet-js', 'talisman'
+  source: 'extension' | 'hardware';
+  
+  // Common optional fields
+  name?: string;
+  
+  // Extension-specific fields (optional)
+  genesisHash?: string | null;
+  type?: KeypairType; // 'ed25519' | 'sr25519' | 'ecdsa' | 'ethereum'
+  
+  // Hardware-specific fields (optional)
+  pubkey?: string;
+  index?: number;
+}
 
 export interface ContractDeployment {
   id: string;
