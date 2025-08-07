@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { ThemingProps } from '@chakra-ui/system';
 import { useTypink, Wallet } from 'typink';
+import LedgerImportAccounts from './LedgerImportAccounts';
 
 interface WalletButtonProps {
   walletInfo: Wallet;
@@ -63,7 +64,13 @@ export default function WalletSelection({
   buttonProps,
 }: WalletSelectionProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isLedgerOpen, onOpen: onLedgerOpen, onClose: onLedgerClose } = useDisclosure();
   const { wallets } = useTypink();
+
+  const connectLedger = async () => {
+    onClose();
+    onLedgerOpen();
+  };
 
   return (
     <>
@@ -88,10 +95,15 @@ export default function WalletSelection({
               {wallets.map((one) => (
                 <WalletButton key={one.id} walletInfo={one} afterSelectWallet={onClose} />
               ))}
+              <Button size='lg' width='full' justifyContent='flex-start' alignItems='center' gap={4} onClick={connectLedger}>
+                <span>Ledger</span>
+              </Button>
             </Stack>
           </ModalBody>
         </ModalContent>
       </Modal>
+      
+      <LedgerImportAccounts isOpen={isLedgerOpen} onClose={onLedgerClose} />
     </>
   );
 }

@@ -2,6 +2,7 @@ import { ExtensionWallet } from './ExtensionWallet.js';
 
 export * from './Wallet.js';
 export * from './ExtensionWallet.js';
+export * from './HardwareWallet.js';
 
 export const subwallet = new ExtensionWallet({
   name: 'SubWallet',
