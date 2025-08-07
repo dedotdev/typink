@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import { useToast } from '@chakra-ui/react';
-import { LedgerWallet } from 'typink';
+import { LedgerConnect } from 'typink';
 import { HardwareAccount, HardwareSource, LedgerConnectionState } from '@/types/hardware';
 
 const STORAGE_KEY = 'typink/ledger/accounts';
@@ -66,7 +66,7 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     currentIndex: 0
   });
   
-  const walletRef = useRef<LedgerWallet | null>(null);
+  const connectRef = useRef<LedgerConnect | null>(null);
   const toast = useToast();
 
   // Initialize accounts from localStorage
@@ -99,20 +99,20 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     }
   };
 
-  const withLedgerConnection = async <T,>(operation: (wallet: LedgerWallet) => Promise<T>): Promise<T> => {
-    if (!walletRef.current) {
-      throw new Error('Ledger wallet not initialized');
+  const withLedgerConnection = async <T,>(operation: (connect: LedgerConnect) => Promise<T>): Promise<T> => {
+    if (!connectRef.current) {
+      throw new Error('Ledger connect not initialized');
     }
     
-    const wallet = walletRef.current;
-    await wallet.ensureInitialized();
+    const connect = connectRef.current;
+    await connect.ensureInitialized();
     
     try {
-      const result = await operation(wallet);
-      await wallet.ensureClosed();
+      const result = await operation(connect);
+      await connect.ensureClosed();
       return result;
     } catch (error) {
-      await wallet.ensureClosed();
+      await connect.ensureClosed();
       throw error;
     }
   };
@@ -125,7 +125,7 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     }));
 
     try {
-      walletRef.current = new LedgerWallet({} as any);
+      connectRef.current = new LedgerConnect();
       
       // Test connection
       await withLedgerConnection(async () => {
@@ -164,8 +164,8 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     setConnectionState(prev => ({ ...prev, error: null }));
 
     try {
-      const ledgerAccount = await withLedgerConnection(async (wallet) => {
-        return await wallet.getSS58Address(index, 42);
+      const ledgerAccount = await withLedgerConnection(async (connect) => {
+        return await connect.getSS58Address(index, 42);
       });
 
       const hardwareAccount: HardwareAccount = {
@@ -248,13 +248,13 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
   };
 
   const disconnectLedger = async () => {
-    if (walletRef.current) {
+    if (connectRef.current) {
       try {
-        await walletRef.current.ensureClosed();
+        await connectRef.current.ensureClosed();
       } catch (error) {
         console.warn('Error closing Ledger connection:', error);
       }
-      walletRef.current = null;
+      connectRef.current = null;
     }
 
     setConnectionState({

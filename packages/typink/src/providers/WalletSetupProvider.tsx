@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
 import { InjectedAccount, InjectedSigner } from '../types.js';
-import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
+import { polkadotjs, subwallet, talisman, Wallet, ExtensionWallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
@@ -100,7 +100,7 @@ export function WalletSetupProvider({
         assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
 
         await targetWallet.waitUntilReady();
-        const injectedProvider = targetWallet.injectedProvider;
+        const injectedProvider = (targetWallet as ExtensionWallet).injectedProvider;
 
         assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
 
