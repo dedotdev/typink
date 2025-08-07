@@ -70,7 +70,7 @@ export class LedgerWallet extends HardwareWallet {
     const bip42Path = `m/44'/354'/${index}'/${0}'/${0}'`;
     console.log('bip42Path', bip42Path);
 
-    const result = await this.app!.getAddress(bip42Path, ss58Prefix, false);
+    const result = await this.app!.getAddressEd25519(bip42Path, ss58Prefix, false);
 
     await this.ensureClosed();
 

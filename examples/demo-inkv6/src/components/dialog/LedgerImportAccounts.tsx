@@ -19,9 +19,11 @@ import {
   InputGroup,
   InputRightElement,
   useDisclosure,
+  Badge,
+  useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
-import { EditIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
+import { useState, useRef, useEffect } from 'react';
+import { EditIcon, CheckIcon, DeleteIcon, CopyIcon } from '@chakra-ui/icons';
 import { useLedgerConnect } from '@/providers';
 import { HardwareSource } from '@/types/hardware';
 
@@ -44,16 +46,54 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [highlightedAccount, setHighlightedAccount] = useState<string | null>(null);
+  const [isImportingNewAccount, setIsImportingNewAccount] = useState(false);
+  const [accountCountBeforeImport, setAccountCountBeforeImport] = useState(0);
   const { isOpen: isResetOpen, onOpen: onResetOpen, onClose: onResetClose } = useDisclosure();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const toast = useToast();
 
   const ledgerAccounts = hardwareAccounts.filter((acc) => acc.source === HardwareSource.Ledger);
 
+  // Handle highlighting after successful import when provider state updates
+  useEffect(() => {
+    if (isImportingNewAccount && ledgerAccounts.length > accountCountBeforeImport) {
+      // Now we have the updated accounts from provider
+      const newAccount = ledgerAccounts[ledgerAccounts.length - 1];
+      
+      // Scroll to bottom
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: scrollContainerRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+      
+      // Highlight new account
+      setHighlightedAccount(newAccount.address);
+      
+      // Reset import tracking
+      setIsImportingNewAccount(false);
+      
+      // Remove highlight after 2 seconds
+      setTimeout(() => {
+        setHighlightedAccount(null);
+      }, 2000);
+    }
+  }, [ledgerAccounts.length, isImportingNewAccount, accountCountBeforeImport]);
+
   const handleImportNext = async () => {
     setIsImporting(true);
+    setAccountCountBeforeImport(ledgerAccounts.length);
+    setIsImportingNewAccount(true);
+
     try {
       await importNextAccount();
     } catch (error) {
       console.log('Import failed:', error);
+      setIsImportingNewAccount(false);
     } finally {
       setIsImporting(false);
     }
@@ -75,6 +115,36 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const handleCancelEdit = () => {
     setEditingAccount(null);
     setEditName('');
+  };
+
+  const handleCopyAddress = async (address: string) => {
+    try {
+      await navigator.clipboard.writeText(address);
+      toast({
+        title: 'Address Copied',
+        description: 'Account address copied to clipboard',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.warn('Failed to copy address:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = address;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      toast({
+        title: 'Address Copied',
+        description: 'Account address copied to clipboard',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
 
   const formatAddress = (address: string) => {
@@ -144,6 +214,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                       Imported Accounts ({ledgerAccounts.length})
                     </Text>
                     <Box
+                      ref={scrollContainerRef}
                       maxHeight='300px'
                       overflowY='auto'
                       border='1px solid'
@@ -158,13 +229,15 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                             borderWidth={1}
                             borderRadius='md'
                             borderColor='gray.200'
+                            bg={highlightedAccount === account.address ? 'green.50' : 'white'}
+                            transition='all 0.3s ease'
                             _hover={{ borderColor: 'blue.400' }}>
                             <HStack justify='space-between' align='flex-start'>
                               <Box flex={1}>
                                 <HStack mb={1}>
-                                  <Text fontSize='sm' color='gray.500'>
-                                    Account #{account.index}
-                                  </Text>
+                                  <Badge colorScheme='blue' size='sm'>
+                                    #{account.index}
+                                  </Badge>
                                 </HStack>
 
                                 {editingAccount === account.address ? (
@@ -208,9 +281,19 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                                   </HStack>
                                 )}
 
-                                <Text fontFamily='mono' fontSize='sm' color='gray.600'>
-                                  {formatAddress(account.address)}
-                                </Text>
+                                <HStack spacing={2} align='center'>
+                                  <Text fontFamily='mono' fontSize='sm' color='gray.600'>
+                                    {formatAddress(account.address)}
+                                  </Text>
+                                  <IconButton
+                                    icon={<CopyIcon />}
+                                    size='xs'
+                                    variant='ghost'
+                                    aria-label='Copy address'
+                                    onClick={() => handleCopyAddress(account.address)}
+                                    _hover={{ bg: 'gray.100' }}
+                                  />
+                                </HStack>
                               </Box>
 
                               <IconButton
