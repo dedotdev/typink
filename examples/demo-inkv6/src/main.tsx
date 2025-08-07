@@ -6,6 +6,7 @@ import App from '@/App';
 import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
 import { development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider, westendAssetHub } from 'typink';
+import { LedgerConnectProvider } from '@/providers';
 
 const SUPPORTED_NETWORK = [popTestnet, westendAssetHub];
 if (process.env.NODE_ENV === 'development') {
@@ -15,23 +16,25 @@ if (process.env.NODE_ENV === 'development') {
 function Root() {
   return (
     <ChakraProvider theme={theme}>
-      <TypinkProvider
-        deployments={deployments}
-        supportedNetworks={SUPPORTED_NETWORK}
-        defaultNetworkId={popTestnet.id}
-        cacheMetadata={true}
-        wallets={[subwallet, talisman, polkadotjs]}>
-        <App />
-        <ToastContainer
-          position='top-right'
-          closeOnClick
-          pauseOnHover
-          theme='light'
-          autoClose={5_000}
-          hideProgressBar
-          limit={10}
-        />
-      </TypinkProvider>
+      <LedgerConnectProvider>
+        <TypinkProvider
+          deployments={deployments}
+          supportedNetworks={SUPPORTED_NETWORK}
+          defaultNetworkId={popTestnet.id}
+          cacheMetadata={true}
+          wallets={[subwallet, talisman, polkadotjs]}>
+          <App />
+          <ToastContainer
+            position='top-right'
+            closeOnClick
+            pauseOnHover
+            theme='light'
+            autoClose={5_000}
+            hideProgressBar
+            limit={10}
+          />
+        </TypinkProvider>
+      </LedgerConnectProvider>
     </ChakraProvider>
   );
 }

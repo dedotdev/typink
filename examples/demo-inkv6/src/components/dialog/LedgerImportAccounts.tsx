@@ -14,183 +14,65 @@ import {
   HStack,
   Spinner,
   Divider,
-  useToast,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
 } from '@chakra-ui/react';
-import { useState, useEffect, useRef } from 'react';
-import { LedgerWallet } from 'typink';
-
-interface LedgerAccount {
-  index: number;
-  address: string;
-  publicKey: string;
-}
+import { useState } from 'react';
+import { EditIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
+import { useLedgerConnect } from '@/providers';
+import { HardwareSource } from '@/types/hardware';
 
 interface LedgerImportAccountsProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const handleLedgerError = (error: unknown): string => {
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-  
-  if (errorMessage.includes('No device selected') || errorMessage.includes('device not found')) {
-    return 'Please connect your Ledger device and try again';
-  } else if (errorMessage.includes('TransportOpenUserCancelled') || errorMessage.includes('cancelled')) {
-    return 'Connection cancelled. Please try again';
-  } else if (errorMessage.includes('TransportInterfaceNotAvailable')) {
-    return 'WebHID not available. Please use a supported browser (Chrome, Edge, Opera)';
-  } else if (errorMessage.includes('Locked device') || errorMessage.includes('locked')) {
-    return 'Please unlock your Ledger device and open the Polkadot app';
-  } else if (errorMessage.includes('App does not seem to be open') || errorMessage.includes('app not open')) {
-    return 'Please open the Polkadot app on your Ledger device';
-  } else if (errorMessage.includes('The device is already open')) {
-    return 'Device connection recovered';
-  } else if (errorMessage.includes('connection')) {
-    return 'Connection failed. Please check your device and try again';
-  }
-  
-  return errorMessage;
-};
-
 export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAccountsProps) {
-  const [accounts, setAccounts] = useState<LedgerAccount[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const {
+    hardwareAccounts,
+    connectionState,
+    connectLedger,
+    importNextAccount,
+    removeAccount,
+    updateAccountName,
+    retryConnection,
+  } = useLedgerConnect();
+
+  const [editingAccount, setEditingAccount] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
   const [isImporting, setIsImporting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const walletRef = useRef<LedgerWallet | null>(null);
-  const toast = useToast();
 
-  const withLedgerConnection = async <T,>(operation: (wallet: LedgerWallet) => Promise<T>): Promise<T> => {
-    if (!walletRef.current) {
-      throw new Error('Ledger wallet not initialized');
-    }
-    
-    const wallet = walletRef.current;
-    await wallet.ensureInitialized();
-    
-    try {
-      const result = await operation(wallet);
-      await wallet.ensureClosed();
-      return result;
-    } catch (error) {
-      await wallet.ensureClosed();
-      throw error;
-    }
-  };
+  const ledgerAccounts = hardwareAccounts.filter(acc => acc.source === HardwareSource.Ledger);
 
-  useEffect(() => {
-    if (isOpen) {
-      void initializeLedger();
-    } else {
-      void cleanup();
-    }
-  }, [isOpen]);
-
-  const cleanup = async () => {
-    if (walletRef.current) {
-      try {
-        await walletRef.current.ensureClosed();
-      } catch (error) {
-        console.warn('Error closing Ledger connection:', error);
-      }
-      walletRef.current = null;
-    }
-    setAccounts([]);
-    setCurrentIndex(0);
-    setIsConnecting(false);
-    setIsImporting(false);
-    setError(null);
-    setIsConnected(false);
-  };
-
-  const initializeLedger = async () => {
-    setIsConnecting(true);
-    setError(null);
-
-    try {
-      walletRef.current = new LedgerWallet({} as any);
-      
-      await withLedgerConnection(async () => {
-        return Promise.resolve();
-      });
-
-      setIsConnected(true);
-
-      toast({
-        title: 'Ledger Connected',
-        description: 'Successfully connected to your Ledger device',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-
-      await importFirstAccount();
-    } catch (err) {
-      console.log(err);
-      const errorMessage = handleLedgerError(err);
-      setError(errorMessage);
-      setIsConnected(false);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const importFirstAccount = async () => {
-    try {
-      const firstAccount = await withLedgerConnection(async (wallet) => {
-        return await wallet.getSS58Address(0, 42);
-      });
-      
-      setAccounts([firstAccount]);
-      setCurrentIndex(1);
-      
-      toast({
-        title: 'First Account Imported',
-        description: 'Successfully imported account #0',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-    } catch (err) {
-      console.log(err);
-      const errorMessage = handleLedgerError(err);
-      setError(errorMessage);
-    }
-  };
-
-  const importNextAccount = async () => {
+  const handleImportNext = async () => {
     setIsImporting(true);
-    setError(null);
-
     try {
-      const account = await withLedgerConnection(async (wallet) => {
-        return await wallet.getSS58Address(currentIndex, 42);
-      });
-      
-      setAccounts((prev) => [...prev, account]);
-      setCurrentIndex((prev) => prev + 1);
-
-      toast({
-        title: 'Account Imported',
-        description: `Successfully imported account #${currentIndex}`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-    } catch (err) {
-      console.log(err);
-      const errorMessage = handleLedgerError(err);
-      setError(errorMessage);
+      await importNextAccount();
+    } catch (error) {
+      console.log('Import failed:', error);
     } finally {
       setIsImporting(false);
     }
   };
 
-  const handleRetryConnection = async () => {
-    await cleanup();
-    void initializeLedger();
+  const handleEditAccountName = (address: string, currentName?: string) => {
+    setEditingAccount(address);
+    setEditName(currentName || '');
+  };
+
+  const handleSaveAccountName = (address: string) => {
+    if (editName.trim()) {
+      updateAccountName(address, editName.trim());
+    }
+    setEditingAccount(null);
+    setEditName('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAccount(null);
+    setEditName('');
   };
 
   const formatAddress = (address: string) => {
@@ -206,7 +88,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
         <ModalCloseButton />
         <ModalBody pb={6}>
           <VStack spacing={4} align='stretch'>
-            {isConnecting && (
+            {connectionState.isConnecting && (
               <Box textAlign='center' py={8}>
                 <Spinner size='xl' mb={4} />
                 <Text>Connecting to Ledger...</Text>
@@ -216,19 +98,28 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               </Box>
             )}
 
-            {error && !isConnecting && (
+            {connectionState.error && !connectionState.isConnecting && (
               <Alert status='error' borderRadius='md'>
                 <AlertIcon />
                 <Box>
-                  <Text>{error}</Text>
-                  <Button size='sm' mt={2} onClick={handleRetryConnection}>
+                  <Text>{connectionState.error}</Text>
+                  <Button size='sm' mt={2} onClick={retryConnection}>
                     Retry Connection
                   </Button>
                 </Box>
               </Alert>
             )}
 
-            {isConnected && !isConnecting && (
+            {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
+              <Box textAlign='center' py={4}>
+                <Text mb={4}>Connect your Ledger device to import accounts</Text>
+                <Button colorScheme='blue' onClick={connectLedger}>
+                  Connect Ledger
+                </Button>
+              </Box>
+            )}
+
+            {connectionState.isConnected && !connectionState.isConnecting && (
               <>
                 <Alert status='success' borderRadius='md'>
                   <AlertIcon />
@@ -239,26 +130,80 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
                 <Box>
                   <Text fontWeight='bold' mb={3}>
-                    Imported Accounts ({accounts.length})
+                    Imported Accounts ({ledgerAccounts.length})
                   </Text>
                   <VStack spacing={2} align='stretch'>
-                    {accounts.map((account) => (
+                    {ledgerAccounts.map((account) => (
                       <Box
-                        key={account.index}
+                        key={account.address}
                         p={3}
                         borderWidth={1}
                         borderRadius='md'
                         borderColor='gray.200'
-                        _hover={{ borderColor: 'blue.400' }}>
-                        <HStack justify='space-between'>
-                          <Box>
-                            <Text fontSize='sm' color='gray.500'>
-                              Account #{account.index}
-                            </Text>
-                            <Text fontFamily='mono' fontSize='sm'>
+                        _hover={{ borderColor: 'blue.400' }}
+                      >
+                        <HStack justify='space-between' align='flex-start'>
+                          <Box flex={1}>
+                            <HStack mb={1}>
+                              <Text fontSize='sm' color='gray.500'>
+                                Account #{account.index}
+                              </Text>
+                            </HStack>
+                            
+                            {editingAccount === account.address ? (
+                              <InputGroup size='sm' mb={2}>
+                                <Input
+                                  value={editName}
+                                  onChange={(e) => setEditName(e.target.value)}
+                                  placeholder='Enter account name'
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleSaveAccountName(account.address);
+                                    } else if (e.key === 'Escape') {
+                                      handleCancelEdit();
+                                    }
+                                  }}
+                                />
+                                <InputRightElement>
+                                  <HStack spacing={1}>
+                                    <IconButton
+                                      icon={<CheckIcon />}
+                                      size='xs'
+                                      colorScheme='green'
+                                      aria-label='Save name'
+                                      onClick={() => handleSaveAccountName(account.address)}
+                                    />
+                                  </HStack>
+                                </InputRightElement>
+                              </InputGroup>
+                            ) : (
+                              <HStack mb={2}>
+                                <Text fontWeight='medium' fontSize='sm'>
+                                  {account.name || `Account #${account.index}`}
+                                </Text>
+                                <IconButton
+                                  icon={<EditIcon />}
+                                  size='xs'
+                                  variant='ghost'
+                                  aria-label='Edit name'
+                                  onClick={() => handleEditAccountName(account.address, account.name)}
+                                />
+                              </HStack>
+                            )}
+                            
+                            <Text fontFamily='mono' fontSize='sm' color='gray.600'>
                               {formatAddress(account.address)}
                             </Text>
                           </Box>
+                          
+                          <IconButton
+                            icon={<DeleteIcon />}
+                            size='sm'
+                            variant='ghost'
+                            colorScheme='red'
+                            aria-label='Remove account'
+                            onClick={() => removeAccount(account.address)}
+                          />
                         </HStack>
                       </Box>
                     ))}
@@ -267,16 +212,17 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
                 <Button
                   colorScheme='blue'
-                  onClick={importNextAccount}
+                  onClick={handleImportNext}
                   isLoading={isImporting}
                   loadingText='Importing...'
-                  isDisabled={!isConnected}
-                  width='full'>
-                  Import Next Account (#{currentIndex})
+                  isDisabled={!connectionState.isConnected}
+                  width='full'
+                >
+                  Import Next Account (#{connectionState.currentIndex})
                 </Button>
 
                 <Text fontSize='xs' color='gray.500' textAlign='center'>
-                  Import accounts one by one from your Ledger device
+                  Accounts are automatically saved and will persist across sessions
                 </Text>
               </>
             )}
