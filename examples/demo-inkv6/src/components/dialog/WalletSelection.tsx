@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { ThemingProps } from '@chakra-ui/system';
-import { useTypink, Wallet } from 'typink';
+import { useTypink, Wallet, LedgerWallet } from 'typink';
 import LedgerImportAccounts from './LedgerImportAccounts';
 
 interface WalletButtonProps {
@@ -23,27 +23,40 @@ interface WalletButtonProps {
 const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
   const { connectWallet } = useTypink();
+  const { isOpen: isLedgerOpen, onOpen: onLedgerOpen, onClose: onLedgerClose } = useDisclosure();
 
   const doConnectWallet = () => {
     connectWallet(id);
+
+    // If this is a Ledger wallet, also open the Ledger import accounts dialog
+    if (walletInfo instanceof LedgerWallet) {
+      onLedgerOpen();
+    }
 
     afterSelectWallet && afterSelectWallet();
   };
 
   return (
-    <Button
-      onClick={doConnectWallet}
-      isLoading={installed && !ready}
-      isDisabled={!installed}
-      loadingText={name}
-      size='lg'
-      width='full'
-      justifyContent='flex-start'
-      alignItems='center'
-      gap={4}>
-      <img src={logo} alt={`${name}`} width={24} />
-      <span>{name}</span>
-    </Button>
+    <>
+      <Button
+        onClick={doConnectWallet}
+        isLoading={installed && !ready}
+        isDisabled={!installed}
+        loadingText={name}
+        size='lg'
+        width='full'
+        justifyContent='flex-start'
+        alignItems='center'
+        gap={4}>
+        <img src={logo} alt={`${name}`} width={24} />
+        <span>{name}</span>
+      </Button>
+      
+      {/* Show Ledger import dialog if this is a Ledger wallet */}
+      {walletInfo instanceof LedgerWallet && (
+        <LedgerImportAccounts isOpen={isLedgerOpen} onClose={onLedgerClose} />
+      )}
+    </>
   );
 };
 
@@ -64,13 +77,7 @@ export default function WalletSelection({
   buttonProps,
 }: WalletSelectionProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isLedgerOpen, onOpen: onLedgerOpen, onClose: onLedgerClose } = useDisclosure();
   const { wallets } = useTypink();
-
-  const connectLedger = async () => {
-    onClose();
-    onLedgerOpen();
-  };
 
   return (
     <>
@@ -95,15 +102,10 @@ export default function WalletSelection({
               {wallets.map((one) => (
                 <WalletButton key={one.id} walletInfo={one} afterSelectWallet={onClose} />
               ))}
-              <Button size='lg' width='full' justifyContent='flex-start' alignItems='center' gap={4} onClick={connectLedger}>
-                <span>Ledger</span>
-              </Button>
             </Stack>
           </ModalBody>
         </ModalContent>
       </Modal>
-      
-      <LedgerImportAccounts isOpen={isLedgerOpen} onClose={onLedgerClose} />
     </>
   );
 }

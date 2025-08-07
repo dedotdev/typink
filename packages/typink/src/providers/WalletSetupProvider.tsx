@@ -59,7 +59,7 @@ export function WalletSetupProvider({
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
   wallets: initialWallets,
-  appName = ''
+  appName = '',
 }: WalletSetupProviderProps) {
   const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
   const [accounts, setAccounts] = useState<TypinkAccount[]>([]);
@@ -76,7 +76,7 @@ export function WalletSetupProvider({
   const connectedWallet = useMemo(() => getWallet(connectedWalletId), [connectedWalletId]);
 
   const isFirstRender = useIsFirstRender();
-  
+
   // Try to get ledger context if LedgerProvider is available
   let ledgerContext: ReturnType<typeof useLedger> | null = null;
   try {
@@ -163,7 +163,7 @@ export function WalletSetupProvider({
 
           // Convert InjectedAccount to TypinkAccount
           const convertToTypinkAccount = (injectedAccounts: InjectedAccount[]): TypinkAccount[] => {
-            return injectedAccounts.map(account => ({
+            return injectedAccounts.map((account) => ({
               address: account.address,
               walletId: targetWallet.id,
               source: 'extension' as const,
@@ -222,7 +222,7 @@ export function WalletSetupProvider({
         connectedWallet,
         setConnectedAccount,
         wallets,
-        appName
+        appName,
       }}>
       <WalletProvider signer={signer} connectedAccount={connectedAccount}>
         {children}

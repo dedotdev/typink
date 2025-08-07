@@ -93,32 +93,26 @@ export function TypinkProvider({
   appName,
 }: TypinkProviderProps) {
   // Check if ledger wallet is in the wallets array
-  const hasLedgerWallet = wallets && wallets.some(wallet => wallet instanceof LedgerWallet);
+  const hasLedgerWallet = wallets && wallets.some((wallet) => wallet instanceof LedgerWallet);
 
-  let content = (
-    <TypinkEventsProvider>
-      <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
-        {children}
-      </TypinkProviderInner>
-    </TypinkEventsProvider>
-  );
-  
-  if (hasLedgerWallet) {
-    content = (
-      <LedgerProvider>
-        {content}
-      </LedgerProvider>
-    );
-  }
-
-  return (
+  const walletSetupContent = (
     <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
       <ClientProvider
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
-        {content}
+        <TypinkEventsProvider>
+          <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
+            {children}
+          </TypinkProviderInner>
+        </TypinkEventsProvider>
       </ClientProvider>
     </WalletSetupProvider>
   );
+
+  if (hasLedgerWallet) {
+    return <LedgerProvider>{walletSetupContent}</LedgerProvider>;
+  }
+
+  return walletSetupContent;
 }
