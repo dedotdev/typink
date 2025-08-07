@@ -222,7 +222,21 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                       borderRadius='md'
                       p={2}>
                       <VStack spacing={2} align='stretch'>
-                        {ledgerAccounts.map((account) => (
+                        {ledgerAccounts.length === 0 ? (
+                          <Box 
+                            p={8} 
+                            textAlign='center' 
+                            color='gray.500'
+                          >
+                            <Text fontSize='sm' mb={2}>
+                              No imported accounts yet
+                            </Text>
+                            <Text fontSize='xs'>
+                              Click "Import Next Account" to add accounts from your Ledger device
+                            </Text>
+                          </Box>
+                        ) : (
+                          ledgerAccounts.map((account) => (
                           <Box
                             key={account.address}
                             p={3}
@@ -306,7 +320,8 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                               />
                             </HStack>
                           </Box>
-                        ))}
+                          ))
+                        )}
                       </VStack>
                     </Box>
                   </Box>
