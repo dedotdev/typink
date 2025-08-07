@@ -2,6 +2,8 @@ import { createContext } from 'react';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
+import { VersionedGenericSubstrateApi } from 'dedot/types';
+import { SubstrateApi } from 'dedot/chaintypes';
 
 const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
 
@@ -13,8 +15,8 @@ import {
 } from './WalletSetupProvider.js';
 import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
 
-export interface TypinkContextProps
-  extends ClientContextProps,
+export interface TypinkContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>
+  extends ClientContextProps<ChainApi>,
     WalletSetupContextProps,
     WalletContextProps,
     TypinkEventsContextProps {
@@ -22,7 +24,7 @@ export interface TypinkContextProps
   defaultCaller: SubstrateAddress;
 }
 
-export const TypinkContext = createContext<TypinkContextProps>({} as any);
+export const TypinkContext = createContext<TypinkContextProps<any>>({} as any);
 
 export interface TypinkProviderProps extends ClientProviderProps, WalletSetupProviderProps {
   deployments?: ContractDeployment[];
@@ -31,12 +33,12 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
 
 export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
-function TypinkProviderInner({
+function TypinkProviderInner<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>({
   children,
   deployments = [],
   defaultCaller = DEFAULT_ADDRESS,
 }: TypinkProviderInnerProps) {
-  const clientContext = useClient();
+  const clientContext = useClient<ChainApi>();
   const walletSetupContext = useWalletSetup();
   const walletContext = useWallet();
   const typinkEventsContext = useTypinkEvents();
@@ -50,7 +52,7 @@ function TypinkProviderInner({
         ...walletContext,
         deployments,
         defaultCaller,
-      }}>
+      } as TypinkContextProps<ChainApi>}>
       {children}
     </TypinkContext.Provider>
   );

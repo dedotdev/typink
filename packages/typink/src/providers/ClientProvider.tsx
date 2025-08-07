@@ -3,14 +3,16 @@ import { useInitializeClient } from '../hooks/internal/index.js';
 import { NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
-import { RpcVersion } from 'dedot/types';
+import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
 import { useLocalStorage } from 'react-use';
 
-export interface ClientContextProps {
-  client?: ISubstrateClient<SubstrateApi[RpcVersion]>;
+export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ISubstrateClient<ChainApi[RpcVersion]>;
+
+export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
+  client?: CompatibleSubstrateApi<ChainApi>;
   ready: boolean;
   supportedNetworks: NetworkInfo[];
   network: NetworkInfo;
@@ -19,11 +21,11 @@ export interface ClientContextProps {
   cacheMetadata?: boolean;
 }
 
-export const ClientContext = createContext<ClientContextProps>({} as any);
+export const ClientContext = createContext<ClientContextProps<any>>({} as any);
 
-export const useClient = () => {
-  return useContext(ClientContext);
-};
+export function useClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(): ClientContextProps<ChainApi> {
+  return useContext(ClientContext) as ClientContextProps<ChainApi>;
+}
 
 export interface ClientProviderProps extends Props {
   supportedNetworks?: NetworkInfo[];
