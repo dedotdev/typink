@@ -38,7 +38,6 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     importNextAccount,
     removeAccount,
     updateAccountName,
-    retryConnection,
     clearAllAccounts,
   } = useLedgerConnect();
 
@@ -47,7 +46,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const [isImporting, setIsImporting] = useState(false);
   const { isOpen: isResetOpen, onOpen: onResetOpen, onClose: onResetClose } = useDisclosure();
 
-  const ledgerAccounts = hardwareAccounts.filter(acc => acc.source === HardwareSource.Ledger);
+  const ledgerAccounts = hardwareAccounts.filter((acc) => acc.source === HardwareSource.Ledger);
 
   const handleImportNext = async () => {
     setIsImporting(true);
@@ -105,12 +104,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               {connectionState.error && !connectionState.isConnecting && (
                 <Alert status='error' borderRadius='md'>
                   <AlertIcon />
-                  <Box>
-                    <Text>{connectionState.error}</Text>
-                    <Button size='sm' mt={2} onClick={retryConnection}>
-                      Retry Connection
-                    </Button>
-                  </Box>
+                  <Text>{connectionState.error}</Text>
                 </Alert>
               )}
 
@@ -125,94 +119,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
               {connectionState.isConnected && !connectionState.isConnecting && (
                 <>
-                  <Alert status='success' borderRadius='md'>
-                    <AlertIcon />
-                    <Text>Ledger connected successfully</Text>
-                  </Alert>
-
                   <Divider />
-
-                  <Box>
-                    <Text fontWeight='bold' mb={3}>
-                      Imported Accounts ({ledgerAccounts.length})
-                    </Text>
-                    <VStack spacing={2} align='stretch'>
-                      {ledgerAccounts.map((account) => (
-                        <Box
-                          key={account.address}
-                          p={3}
-                          borderWidth={1}
-                          borderRadius='md'
-                          borderColor='gray.200'
-                          _hover={{ borderColor: 'blue.400' }}
-                        >
-                          <HStack justify='space-between' align='flex-start'>
-                            <Box flex={1}>
-                              <HStack mb={1}>
-                                <Text fontSize='sm' color='gray.500'>
-                                  Account #{account.index}
-                                </Text>
-                              </HStack>
-                              
-                              {editingAccount === account.address ? (
-                                <InputGroup size='sm' mb={2}>
-                                  <Input
-                                    value={editName}
-                                    onChange={(e) => setEditName(e.target.value)}
-                                    placeholder='Enter account name'
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        handleSaveAccountName(account.address);
-                                      } else if (e.key === 'Escape') {
-                                        handleCancelEdit();
-                                      }
-                                    }}
-                                  />
-                                  <InputRightElement>
-                                    <HStack spacing={1}>
-                                      <IconButton
-                                        icon={<CheckIcon />}
-                                        size='xs'
-                                        colorScheme='green'
-                                        aria-label='Save name'
-                                        onClick={() => handleSaveAccountName(account.address)}
-                                      />
-                                    </HStack>
-                                  </InputRightElement>
-                                </InputGroup>
-                              ) : (
-                                <HStack mb={2}>
-                                  <Text fontWeight='medium' fontSize='sm'>
-                                    {account.name || `Account #${account.index}`}
-                                  </Text>
-                                  <IconButton
-                                    icon={<EditIcon />}
-                                    size='xs'
-                                    variant='ghost'
-                                    aria-label='Edit name'
-                                    onClick={() => handleEditAccountName(account.address, account.name)}
-                                  />
-                                </HStack>
-                              )}
-                              
-                              <Text fontFamily='mono' fontSize='sm' color='gray.600'>
-                                {formatAddress(account.address)}
-                              </Text>
-                            </Box>
-                            
-                            <IconButton
-                              icon={<DeleteIcon />}
-                              size='sm'
-                              variant='ghost'
-                              colorScheme='red'
-                              aria-label='Remove account'
-                              onClick={() => removeAccount(account.address)}
-                            />
-                          </HStack>
-                        </Box>
-                      ))}
-                    </VStack>
-                  </Box>
 
                   <HStack width='full' spacing={2}>
                     <Button
@@ -221,22 +128,105 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                       isLoading={isImporting}
                       loadingText='Importing...'
                       isDisabled={!connectionState.isConnected}
-                      flex={1}
-                    >
+                      flex={1}>
                       Import Next Account (#{connectionState.currentIndex})
                     </Button>
-                    
+
                     {ledgerAccounts.length > 0 && (
-                      <Button
-                        colorScheme='red'
-                        variant='outline'
-                        onClick={onResetOpen}
-                        size='md'
-                      >
+                      <Button colorScheme='red' variant='outline' onClick={onResetOpen} size='md'>
                         Reset
                       </Button>
                     )}
                   </HStack>
+
+                  <Box>
+                    <Text fontWeight='bold' mb={3}>
+                      Imported Accounts ({ledgerAccounts.length})
+                    </Text>
+                    <Box
+                      maxHeight='300px'
+                      overflowY='auto'
+                      border='1px solid'
+                      borderColor='gray.200'
+                      borderRadius='md'
+                      p={2}>
+                      <VStack spacing={2} align='stretch'>
+                        {ledgerAccounts.map((account) => (
+                          <Box
+                            key={account.address}
+                            p={3}
+                            borderWidth={1}
+                            borderRadius='md'
+                            borderColor='gray.200'
+                            _hover={{ borderColor: 'blue.400' }}>
+                            <HStack justify='space-between' align='flex-start'>
+                              <Box flex={1}>
+                                <HStack mb={1}>
+                                  <Text fontSize='sm' color='gray.500'>
+                                    Account #{account.index}
+                                  </Text>
+                                </HStack>
+
+                                {editingAccount === account.address ? (
+                                  <InputGroup size='sm' mb={2}>
+                                    <Input
+                                      value={editName}
+                                      onChange={(e) => setEditName(e.target.value)}
+                                      placeholder='Enter account name'
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          handleSaveAccountName(account.address);
+                                        } else if (e.key === 'Escape') {
+                                          handleCancelEdit();
+                                        }
+                                      }}
+                                    />
+                                    <InputRightElement>
+                                      <HStack spacing={1}>
+                                        <IconButton
+                                          icon={<CheckIcon />}
+                                          size='xs'
+                                          colorScheme='green'
+                                          aria-label='Save name'
+                                          onClick={() => handleSaveAccountName(account.address)}
+                                        />
+                                      </HStack>
+                                    </InputRightElement>
+                                  </InputGroup>
+                                ) : (
+                                  <HStack mb={2}>
+                                    <Text fontWeight='medium' fontSize='sm'>
+                                      {account.name || `Account #${account.index}`}
+                                    </Text>
+                                    <IconButton
+                                      icon={<EditIcon />}
+                                      size='xs'
+                                      variant='ghost'
+                                      aria-label='Edit name'
+                                      onClick={() => handleEditAccountName(account.address, account.name)}
+                                    />
+                                  </HStack>
+                                )}
+
+                                <Text fontFamily='mono' fontSize='sm' color='gray.600'>
+                                  {formatAddress(account.address)}
+                                </Text>
+                              </Box>
+
+                              <IconButton
+                                icon={<DeleteIcon />}
+                                size='sm'
+                                variant='ghost'
+                                colorScheme='red'
+                                aria-label='Remove account'
+                                onClick={() => removeAccount(account.address)}
+                              />
+                            </HStack>
+                          </Box>
+                        ))}
+                      </VStack>
+                    </Box>
+                  </Box>
 
                   <Text fontSize='xs' color='gray.500' textAlign='center'>
                     Accounts are automatically saved and will persist across sessions
@@ -247,7 +237,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
           </ModalBody>
         </ModalContent>
       </Modal>
-      
+
       <Modal isOpen={isResetOpen} onClose={onResetClose} size='sm'>
         <ModalOverlay />
         <ModalContent>
@@ -255,8 +245,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Text mb={4}>
-              Are you sure you want to clear all imported hardware accounts? 
-              This action cannot be undone.
+              Are you sure you want to clear all imported hardware accounts? This action cannot be undone.
             </Text>
             <HStack justify='flex-end' spacing={3}>
               <Button variant='ghost' onClick={onResetClose}>
@@ -267,8 +256,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                 onClick={() => {
                   clearAllAccounts();
                   onResetClose();
-                }}
-              >
+                }}>
                 Clear All
               </Button>
             </HStack>
