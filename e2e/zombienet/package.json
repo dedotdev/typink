@@ -10,7 +10,7 @@
     "@dedot/chaintypes": "^0.132.0",
     "@polkadot/keyring": "^13.3.1",
     "@polkadot/types": "^15.5.2",
-    "@polkadot/util-crypto": "^13.3.1",
+    "@polkadot/util-crypto": "^13.5.4",
     "dedot": "^0.15.0",
     "happy-dom": "^15.11.7",
     "typink": "workspace:*"

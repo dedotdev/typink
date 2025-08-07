@@ -3648,6 +3648,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/networks@npm:13.5.4":
+  version: 13.5.4
+  resolution: "@polkadot/networks@npm:13.5.4"
+  dependencies:
+    "@polkadot/util": "npm:13.5.4"
+    "@substrate/ss58-registry": "npm:^1.51.0"
+    tslib: "npm:^2.8.0"
+  checksum: 10/57903c161c48cdde652a61cc5948867d789200d948b46bfcb70953eae5b3b05b05f70173c5006ea0934e677c8b6281f9f6d086581334959607625ac0604384ab
+  languageName: node
+  linkType: hard
+
 "@polkadot/rpc-augment@npm:10.13.1":
   version: 10.13.1
   resolution: "@polkadot/rpc-augment@npm:10.13.1"
@@ -3873,6 +3884,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/util-crypto@npm:^13.5.4":
+  version: 13.5.4
+  resolution: "@polkadot/util-crypto@npm:13.5.4"
+  dependencies:
+    "@noble/curves": "npm:^1.3.0"
+    "@noble/hashes": "npm:^1.3.3"
+    "@polkadot/networks": "npm:13.5.4"
+    "@polkadot/util": "npm:13.5.4"
+    "@polkadot/wasm-crypto": "npm:^7.4.1"
+    "@polkadot/wasm-util": "npm:^7.4.1"
+    "@polkadot/x-bigint": "npm:13.5.4"
+    "@polkadot/x-randomvalues": "npm:13.5.4"
+    "@scure/base": "npm:^1.1.7"
+    tslib: "npm:^2.8.0"
+  peerDependencies:
+    "@polkadot/util": 13.5.4
+  checksum: 10/b06de343ccddb7d553997fe8e0055c17bdb67b13b06100f9f628a97aa5b1b0b0dc4a469101cc25db9bf9cad71b8c3ca171b48f4bd6d2147a08d14eacd0657867
+  languageName: node
+  linkType: hard
+
 "@polkadot/util@npm:12.6.2, @polkadot/util@npm:^12.6.2":
   version: 12.6.2
   resolution: "@polkadot/util@npm:12.6.2"
@@ -3903,7 +3934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util@npm:^13.5.4":
+"@polkadot/util@npm:13.5.4, @polkadot/util@npm:^13.5.4":
   version: 13.5.4
   resolution: "@polkadot/util@npm:13.5.4"
   dependencies:
@@ -4098,6 +4129,19 @@ __metadata:
     "@polkadot/util": 13.3.1
     "@polkadot/wasm-util": "*"
   checksum: 10/c5b2a17790a2e72c3fdba50d23bafda4a5641866ff53b5bae56ee07aaff25353231be58277c5b312d891457fc80d0ded7130868304e9926f525b263ca1e463aa
+  languageName: node
+  linkType: hard
+
+"@polkadot/x-randomvalues@npm:13.5.4":
+  version: 13.5.4
+  resolution: "@polkadot/x-randomvalues@npm:13.5.4"
+  dependencies:
+    "@polkadot/x-global": "npm:13.5.4"
+    tslib: "npm:^2.8.0"
+  peerDependencies:
+    "@polkadot/util": 13.5.4
+    "@polkadot/wasm-util": "*"
+  checksum: 10/1099465b71618752d2a5ce175b310d2a804e4d001c55754f5180eb6a784894c2f176266a0910bb380541a2abe9c052a52f4ef12b7b4d1879d328c30cda9cf81d
   languageName: node
   linkType: hard
 
@@ -15285,7 +15329,7 @@ __metadata:
     "@dedot/chaintypes": "npm:^0.132.0"
     "@polkadot/keyring": "npm:^13.3.1"
     "@polkadot/types": "npm:^15.5.2"
-    "@polkadot/util-crypto": "npm:^13.3.1"
+    "@polkadot/util-crypto": "npm:^13.5.4"
     dedot: "npm:^0.15.0"
     happy-dom: "npm:^15.11.7"
     typink: "workspace:*"
