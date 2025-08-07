@@ -36,11 +36,11 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const {
     hardwareAccounts,
     connectionState,
-    connectLedgerWithToast,
-    importNextAccountWithToast,
-    removeAccountWithToast,
-    updateAccountNameWithToast,
-    clearAllAccountsWithToast,
+    connectLedger,
+    importNextAccount,
+    removeAccount,
+    updateAccountName,
+    clearAllAccounts,
   } = useLedgerUI();
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     setIsImportingNewAccount(true);
 
     try {
-      await importNextAccountWithToast();
+      await importNextAccount();
     } catch (error) {
       console.log('Import failed:', error);
       setIsImportingNewAccount(false);
@@ -106,7 +106,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
   const handleSaveAccountName = (address: string) => {
     if (editName.trim()) {
-      updateAccountNameWithToast(address, editName.trim());
+      updateAccountName(address, editName.trim());
     }
     setEditingAccount(null);
     setEditName('');
@@ -181,7 +181,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
                 <Box textAlign='center' py={4}>
                   <Text mb={4}>Connect your Ledger device to import accounts</Text>
-                  <Button colorScheme='blue' onClick={connectLedgerWithToast}>
+                  <Button colorScheme='blue' onClick={connectLedger}>
                     Connect Ledger
                   </Button>
                 </Box>
@@ -316,7 +316,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                                 variant='ghost'
                                 colorScheme='red'
                                 aria-label='Remove account'
-                                onClick={() => removeAccountWithToast(account.address)}
+                                onClick={() => removeAccount(account.address)}
                               />
                             </HStack>
                           </Box>
@@ -352,7 +352,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               <Button
                 colorScheme='red'
                 onClick={() => {
-                  clearAllAccountsWithToast();
+                  clearAllAccounts();
                   onResetClose();
                 }}>
                 Clear All

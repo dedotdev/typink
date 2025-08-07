@@ -8,13 +8,13 @@ interface LedgerUIContextType {
   connectionState: LedgerConnectionState;
 
   // UI-enhanced methods with toasts and error handling
-  connectLedgerWithToast: () => Promise<void>;
-  importNextAccountWithToast: () => Promise<void>;
-  importAccountAtIndexWithToast: (index: number) => Promise<void>;
-  removeAccountWithToast: (address: string) => void;
-  updateAccountNameWithToast: (address: string, name: string) => void;
-  clearAllAccountsWithToast: () => void;
-  retryConnectionWithToast: () => Promise<void>;
+  connectLedger: () => Promise<void>;
+  importNextAccount: () => Promise<void>;
+  importAccountAtIndex: (index: number) => Promise<void>;
+  removeAccount: (address: string) => void;
+  updateAccountName: (address: string, name: string) => void;
+  clearAllAccounts: () => void;
+  retryConnection: () => Promise<void>;
 }
 
 const LedgerUIContext = createContext<LedgerUIContextType | null>(null);
@@ -35,7 +35,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
   const ledgerContext = useLedger();
   const toast = useToast();
 
-  const connectLedgerWithToast = async () => {
+  const connectLedger = async () => {
     try {
       await ledgerContext.connectLedger();
       toast({
@@ -51,7 +51,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     }
   };
 
-  const importNextAccountWithToast = async () => {
+  const importNextAccount = async () => {
     try {
       const account = await ledgerContext.importNextAccount();
       toast({
@@ -66,7 +66,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     }
   };
 
-  const importAccountAtIndexWithToast = async (index: number) => {
+  const importAccountAtIndex = async (index: number) => {
     try {
       const account = await ledgerContext.importAccountAtIndex(index);
       toast({
@@ -90,7 +90,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     }
   };
 
-  const removeAccountWithToast = (address: string) => {
+  const removeAccount = (address: string) => {
     ledgerContext.removeAccount(address);
     toast({
       title: 'Account Removed',
@@ -101,7 +101,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     });
   };
 
-  const updateAccountNameWithToast = (address: string, name: string) => {
+  const updateAccountName = (address: string, name: string) => {
     ledgerContext.updateAccountName(address, name);
     toast({
       title: 'Account Updated',
@@ -112,7 +112,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     });
   };
 
-  const clearAllAccountsWithToast = () => {
+  const clearAllAccounts = () => {
     ledgerContext.clearAllAccounts();
     toast({
       title: 'All Accounts Cleared',
@@ -123,7 +123,7 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
     });
   };
 
-  const retryConnectionWithToast = async () => {
+  const retryConnection = async () => {
     try {
       await ledgerContext.retryConnection();
       toast({
@@ -141,13 +141,13 @@ export const LedgerUIProvider: React.FC<LedgerUIProviderProps> = ({ children }) 
   const contextValue: LedgerUIContextType = {
     hardwareAccounts: ledgerContext.hardwareAccounts,
     connectionState: ledgerContext.connectionState,
-    connectLedgerWithToast,
-    importNextAccountWithToast,
-    importAccountAtIndexWithToast,
-    removeAccountWithToast,
-    updateAccountNameWithToast,
-    clearAllAccountsWithToast,
-    retryConnectionWithToast,
+    connectLedger,
+    importNextAccount,
+    importAccountAtIndex,
+    removeAccount,
+    updateAccountName,
+    clearAllAccounts,
+    retryConnection,
   };
 
   return <LedgerUIContext.Provider value={contextValue}>{children}</LedgerUIContext.Provider>;
