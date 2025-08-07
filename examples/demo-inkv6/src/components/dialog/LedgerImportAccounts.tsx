@@ -18,6 +18,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { EditIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
@@ -38,11 +39,13 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     removeAccount,
     updateAccountName,
     retryConnection,
+    clearAllAccounts,
   } = useLedgerConnect();
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const { isOpen: isResetOpen, onOpen: onResetOpen, onClose: onResetClose } = useDisclosure();
 
   const ledgerAccounts = hardwareAccounts.filter(acc => acc.source === HardwareSource.Ledger);
 
@@ -81,154 +84,197 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size='lg'>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Import Ledger Accounts</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody pb={6}>
-          <VStack spacing={4} align='stretch'>
-            {connectionState.isConnecting && (
-              <Box textAlign='center' py={8}>
-                <Spinner size='xl' mb={4} />
-                <Text>Connecting to Ledger...</Text>
-                <Text fontSize='sm' color='gray.500' mt={2}>
-                  Please connect your device and open the Polkadot app
-                </Text>
-              </Box>
-            )}
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} size='lg'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Import Ledger Accounts</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <VStack spacing={4} align='stretch'>
+              {connectionState.isConnecting && (
+                <Box textAlign='center' py={8}>
+                  <Spinner size='xl' mb={4} />
+                  <Text>Connecting to Ledger...</Text>
+                  <Text fontSize='sm' color='gray.500' mt={2}>
+                    Please connect your device and open the Polkadot app
+                  </Text>
+                </Box>
+              )}
 
-            {connectionState.error && !connectionState.isConnecting && (
-              <Alert status='error' borderRadius='md'>
-                <AlertIcon />
-                <Box>
-                  <Text>{connectionState.error}</Text>
-                  <Button size='sm' mt={2} onClick={retryConnection}>
-                    Retry Connection
+              {connectionState.error && !connectionState.isConnecting && (
+                <Alert status='error' borderRadius='md'>
+                  <AlertIcon />
+                  <Box>
+                    <Text>{connectionState.error}</Text>
+                    <Button size='sm' mt={2} onClick={retryConnection}>
+                      Retry Connection
+                    </Button>
+                  </Box>
+                </Alert>
+              )}
+
+              {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
+                <Box textAlign='center' py={4}>
+                  <Text mb={4}>Connect your Ledger device to import accounts</Text>
+                  <Button colorScheme='blue' onClick={connectLedger}>
+                    Connect Ledger
                   </Button>
                 </Box>
-              </Alert>
-            )}
+              )}
 
-            {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
-              <Box textAlign='center' py={4}>
-                <Text mb={4}>Connect your Ledger device to import accounts</Text>
-                <Button colorScheme='blue' onClick={connectLedger}>
-                  Connect Ledger
-                </Button>
-              </Box>
-            )}
+              {connectionState.isConnected && !connectionState.isConnecting && (
+                <>
+                  <Alert status='success' borderRadius='md'>
+                    <AlertIcon />
+                    <Text>Ledger connected successfully</Text>
+                  </Alert>
 
-            {connectionState.isConnected && !connectionState.isConnecting && (
-              <>
-                <Alert status='success' borderRadius='md'>
-                  <AlertIcon />
-                  <Text>Ledger connected successfully</Text>
-                </Alert>
+                  <Divider />
 
-                <Divider />
-
-                <Box>
-                  <Text fontWeight='bold' mb={3}>
-                    Imported Accounts ({ledgerAccounts.length})
-                  </Text>
-                  <VStack spacing={2} align='stretch'>
-                    {ledgerAccounts.map((account) => (
-                      <Box
-                        key={account.address}
-                        p={3}
-                        borderWidth={1}
-                        borderRadius='md'
-                        borderColor='gray.200'
-                        _hover={{ borderColor: 'blue.400' }}
-                      >
-                        <HStack justify='space-between' align='flex-start'>
-                          <Box flex={1}>
-                            <HStack mb={1}>
-                              <Text fontSize='sm' color='gray.500'>
-                                Account #{account.index}
-                              </Text>
-                            </HStack>
-                            
-                            {editingAccount === account.address ? (
-                              <InputGroup size='sm' mb={2}>
-                                <Input
-                                  value={editName}
-                                  onChange={(e) => setEditName(e.target.value)}
-                                  placeholder='Enter account name'
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleSaveAccountName(account.address);
-                                    } else if (e.key === 'Escape') {
-                                      handleCancelEdit();
-                                    }
-                                  }}
-                                />
-                                <InputRightElement>
-                                  <HStack spacing={1}>
-                                    <IconButton
-                                      icon={<CheckIcon />}
-                                      size='xs'
-                                      colorScheme='green'
-                                      aria-label='Save name'
-                                      onClick={() => handleSaveAccountName(account.address)}
-                                    />
-                                  </HStack>
-                                </InputRightElement>
-                              </InputGroup>
-                            ) : (
-                              <HStack mb={2}>
-                                <Text fontWeight='medium' fontSize='sm'>
-                                  {account.name || `Account #${account.index}`}
+                  <Box>
+                    <Text fontWeight='bold' mb={3}>
+                      Imported Accounts ({ledgerAccounts.length})
+                    </Text>
+                    <VStack spacing={2} align='stretch'>
+                      {ledgerAccounts.map((account) => (
+                        <Box
+                          key={account.address}
+                          p={3}
+                          borderWidth={1}
+                          borderRadius='md'
+                          borderColor='gray.200'
+                          _hover={{ borderColor: 'blue.400' }}
+                        >
+                          <HStack justify='space-between' align='flex-start'>
+                            <Box flex={1}>
+                              <HStack mb={1}>
+                                <Text fontSize='sm' color='gray.500'>
+                                  Account #{account.index}
                                 </Text>
-                                <IconButton
-                                  icon={<EditIcon />}
-                                  size='xs'
-                                  variant='ghost'
-                                  aria-label='Edit name'
-                                  onClick={() => handleEditAccountName(account.address, account.name)}
-                                />
                               </HStack>
-                            )}
+                              
+                              {editingAccount === account.address ? (
+                                <InputGroup size='sm' mb={2}>
+                                  <Input
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    placeholder='Enter account name'
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleSaveAccountName(account.address);
+                                      } else if (e.key === 'Escape') {
+                                        handleCancelEdit();
+                                      }
+                                    }}
+                                  />
+                                  <InputRightElement>
+                                    <HStack spacing={1}>
+                                      <IconButton
+                                        icon={<CheckIcon />}
+                                        size='xs'
+                                        colorScheme='green'
+                                        aria-label='Save name'
+                                        onClick={() => handleSaveAccountName(account.address)}
+                                      />
+                                    </HStack>
+                                  </InputRightElement>
+                                </InputGroup>
+                              ) : (
+                                <HStack mb={2}>
+                                  <Text fontWeight='medium' fontSize='sm'>
+                                    {account.name || `Account #${account.index}`}
+                                  </Text>
+                                  <IconButton
+                                    icon={<EditIcon />}
+                                    size='xs'
+                                    variant='ghost'
+                                    aria-label='Edit name'
+                                    onClick={() => handleEditAccountName(account.address, account.name)}
+                                  />
+                                </HStack>
+                              )}
+                              
+                              <Text fontFamily='mono' fontSize='sm' color='gray.600'>
+                                {formatAddress(account.address)}
+                              </Text>
+                            </Box>
                             
-                            <Text fontFamily='mono' fontSize='sm' color='gray.600'>
-                              {formatAddress(account.address)}
-                            </Text>
-                          </Box>
-                          
-                          <IconButton
-                            icon={<DeleteIcon />}
-                            size='sm'
-                            variant='ghost'
-                            colorScheme='red'
-                            aria-label='Remove account'
-                            onClick={() => removeAccount(account.address)}
-                          />
-                        </HStack>
-                      </Box>
-                    ))}
-                  </VStack>
-                </Box>
+                            <IconButton
+                              icon={<DeleteIcon />}
+                              size='sm'
+                              variant='ghost'
+                              colorScheme='red'
+                              aria-label='Remove account'
+                              onClick={() => removeAccount(account.address)}
+                            />
+                          </HStack>
+                        </Box>
+                      ))}
+                    </VStack>
+                  </Box>
 
-                <Button
-                  colorScheme='blue'
-                  onClick={handleImportNext}
-                  isLoading={isImporting}
-                  loadingText='Importing...'
-                  isDisabled={!connectionState.isConnected}
-                  width='full'
-                >
-                  Import Next Account (#{connectionState.currentIndex})
-                </Button>
+                  <HStack width='full' spacing={2}>
+                    <Button
+                      colorScheme='blue'
+                      onClick={handleImportNext}
+                      isLoading={isImporting}
+                      loadingText='Importing...'
+                      isDisabled={!connectionState.isConnected}
+                      flex={1}
+                    >
+                      Import Next Account (#{connectionState.currentIndex})
+                    </Button>
+                    
+                    {ledgerAccounts.length > 0 && (
+                      <Button
+                        colorScheme='red'
+                        variant='outline'
+                        onClick={onResetOpen}
+                        size='md'
+                      >
+                        Reset
+                      </Button>
+                    )}
+                  </HStack>
 
-                <Text fontSize='xs' color='gray.500' textAlign='center'>
-                  Accounts are automatically saved and will persist across sessions
-                </Text>
-              </>
-            )}
-          </VStack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+                  <Text fontSize='xs' color='gray.500' textAlign='center'>
+                    Accounts are automatically saved and will persist across sessions
+                  </Text>
+                </>
+              )}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      
+      <Modal isOpen={isResetOpen} onClose={onResetClose} size='sm'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Clear All Accounts</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Text mb={4}>
+              Are you sure you want to clear all imported hardware accounts? 
+              This action cannot be undone.
+            </Text>
+            <HStack justify='flex-end' spacing={3}>
+              <Button variant='ghost' onClick={onResetClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme='red'
+                onClick={() => {
+                  clearAllAccounts();
+                  onResetClose();
+                }}
+              >
+                Clear All
+              </Button>
+            </HStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

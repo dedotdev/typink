@@ -18,6 +18,7 @@ interface LedgerConnectContextType {
   updateAccountName: (address: string, name: string) => void;
   disconnectLedger: () => Promise<void>;
   retryConnection: () => Promise<void>;
+  clearAllAccounts: () => void;
 }
 
 const LedgerConnectContext = createContext<LedgerConnectContextType | null>(null);
@@ -143,12 +144,6 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
         duration: 3000,
         isClosable: true,
       });
-
-      // Auto-import first account if no accounts exist yet
-      const ledgerAccounts = hardwareAccounts.filter(acc => acc.source === HardwareSource.Ledger);
-      if (ledgerAccounts.length === 0) {
-        await importAccountAtIndex(0);
-      }
     } catch (err) {
       console.log(err);
       const errorMessage = handleLedgerError(err);
@@ -275,6 +270,25 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     await connectLedger();
   };
 
+  const clearAllAccounts = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to clear hardware accounts from localStorage:', error);
+    }
+    
+    setHardwareAccounts([]);
+    setConnectionState(prev => ({ ...prev, currentIndex: 0 }));
+    
+    toast({
+      title: 'All Accounts Cleared',
+      description: 'All hardware accounts have been removed',
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
   const contextValue: LedgerConnectContextType = {
     hardwareAccounts,
     connectionState,
@@ -284,7 +298,8 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     removeAccount,
     updateAccountName,
     disconnectLedger,
-    retryConnection
+    retryConnection,
+    clearAllAccounts
   };
 
   return (
