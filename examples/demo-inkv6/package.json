@@ -17,7 +17,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "dedot": "^0.15.0",
-    "framer-motion": "^10.18.0",
+    "framer-motion": "^12.23.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^10.0.6",
