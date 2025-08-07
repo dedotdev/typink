@@ -2,6 +2,8 @@ import { createContext } from 'react';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
+import { LedgerProvider } from './LedgerProvider.js';
+import { LedgerWallet } from '../wallets/index.js';
 
 const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
 
@@ -90,17 +92,33 @@ export function TypinkProvider({
   wallets,
   appName,
 }: TypinkProviderProps) {
+  // Check if ledger wallet is in the wallets array
+  const hasLedgerWallet = wallets && wallets.some(wallet => wallet instanceof LedgerWallet);
+
+  const ProviderWithLedger = ({ children }: { children: React.ReactNode }) => {
+    if (hasLedgerWallet) {
+      return (
+        <LedgerProvider>
+          {children}
+        </LedgerProvider>
+      );
+    }
+    return <>{children}</>;
+  };
+
   return (
     <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
       <ClientProvider
         defaultNetworkId={defaultNetworkId}
         cacheMetadata={cacheMetadata}
         supportedNetworks={supportedNetworks}>
-        <TypinkEventsProvider>
-          <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
-            {children}
-          </TypinkProviderInner>
-        </TypinkEventsProvider>
+        <ProviderWithLedger>
+          <TypinkEventsProvider>
+            <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
+              {children}
+            </TypinkProviderInner>
+          </TypinkEventsProvider>
+        </ProviderWithLedger>
       </ClientProvider>
     </WalletSetupProvider>
   );

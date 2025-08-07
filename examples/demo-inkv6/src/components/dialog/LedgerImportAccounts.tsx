@@ -24,8 +24,8 @@ import {
 } from '@chakra-ui/react';
 import { useState, useRef, useEffect } from 'react';
 import { EditIcon, CheckIcon, DeleteIcon, CopyIcon } from '@chakra-ui/icons';
-import { useLedgerConnect } from '@/providers';
-import { HardwareSource } from '@/types/hardware';
+import { useLedgerUI } from '@/providers';
+import { HardwareSource } from 'typink';
 
 interface LedgerImportAccountsProps {
   isOpen: boolean;
@@ -36,12 +36,12 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const {
     hardwareAccounts,
     connectionState,
-    connectLedger,
-    importNextAccount,
-    removeAccount,
-    updateAccountName,
-    clearAllAccounts,
-  } = useLedgerConnect();
+    connectLedgerWithToast,
+    importNextAccountWithToast,
+    removeAccountWithToast,
+    updateAccountNameWithToast,
+    clearAllAccountsWithToast,
+  } = useLedgerUI();
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -90,7 +90,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     setIsImportingNewAccount(true);
 
     try {
-      await importNextAccount();
+      await importNextAccountWithToast();
     } catch (error) {
       console.log('Import failed:', error);
       setIsImportingNewAccount(false);
@@ -106,7 +106,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
   const handleSaveAccountName = (address: string) => {
     if (editName.trim()) {
-      updateAccountName(address, editName.trim());
+      updateAccountNameWithToast(address, editName.trim());
     }
     setEditingAccount(null);
     setEditName('');
@@ -181,7 +181,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
                 <Box textAlign='center' py={4}>
                   <Text mb={4}>Connect your Ledger device to import accounts</Text>
-                  <Button colorScheme='blue' onClick={connectLedger}>
+                  <Button colorScheme='blue' onClick={connectLedgerWithToast}>
                     Connect Ledger
                   </Button>
                 </Box>
@@ -316,7 +316,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                                 variant='ghost'
                                 colorScheme='red'
                                 aria-label='Remove account'
-                                onClick={() => removeAccount(account.address)}
+                                onClick={() => removeAccountWithToast(account.address)}
                               />
                             </HStack>
                           </Box>
@@ -352,7 +352,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
               <Button
                 colorScheme='red'
                 onClick={() => {
-                  clearAllAccounts();
+                  clearAllAccountsWithToast();
                   onResetClose();
                 }}>
                 Clear All

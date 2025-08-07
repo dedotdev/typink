@@ -3,3 +3,4 @@ export * from './WalletSetupProvider.js';
 export * from './ClientProvider.js';
 export * from './TypinkProvider.js';
 export * from './TypinkEventsProvider.js';
+export * from './LedgerProvider.js';

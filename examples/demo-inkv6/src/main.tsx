@@ -15,7 +15,7 @@ import {
   TypinkProvider,
   westendAssetHub,
 } from 'typink';
-import { LedgerConnectProvider } from '@/providers';
+import { LedgerUIProvider } from '@/providers';
 
 const SUPPORTED_NETWORK = [popTestnet, westendAssetHub];
 if (process.env.NODE_ENV === 'development') {
@@ -25,13 +25,14 @@ if (process.env.NODE_ENV === 'development') {
 function Root() {
   return (
     <ChakraProvider theme={theme}>
-      <LedgerConnectProvider>
-        <TypinkProvider
-          deployments={deployments}
-          supportedNetworks={SUPPORTED_NETWORK}
-          defaultNetworkId={popTestnet.id}
-          cacheMetadata={true}
-          wallets={[subwallet, talisman, polkadotjs, ledger]}>
+      <TypinkProvider
+        deployments={deployments}
+        supportedNetworks={SUPPORTED_NETWORK}
+        defaultNetworkId={popTestnet.id}
+        cacheMetadata={true}
+        wallets={[subwallet, talisman, polkadotjs, ledger]}
+        appName="Demo App">
+        <LedgerUIProvider>
           <App />
           <ToastContainer
             position='top-right'
@@ -42,8 +43,8 @@ function Root() {
             hideProgressBar
             limit={10}
           />
-        </TypinkProvider>
-      </LedgerConnectProvider>
+        </LedgerUIProvider>
+      </TypinkProvider>
     </ChakraProvider>
   );
 }

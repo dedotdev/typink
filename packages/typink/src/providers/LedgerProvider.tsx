@@ -1,19 +1,37 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
-import { useToast } from '@chakra-ui/react';
-import { LedgerConnect } from 'typink';
-import { HardwareAccount, HardwareSource, LedgerConnectionState } from '@/types/hardware';
+import { LedgerConnect, type LedgerAccount } from '../signers';
 
-const STORAGE_KEY = 'typink/ledger/accounts';
+export enum HardwareSource {
+  Ledger = 'ledger',
+  Vault = 'vault',
+}
 
-interface LedgerConnectContextType {
+export interface HardwareAccount {
+  source: HardwareSource;
+  address: string;
+  pubkey: string;
+  index: number;
+  name?: string;
+}
+
+export interface LedgerConnectionState {
+  isConnecting: boolean;
+  isConnected: boolean;
+  error: string | null;
+  currentIndex: number;
+}
+
+const STORAGE_KEY = 'TYPINK::LEDGER::ACCOUNTS';
+
+interface LedgerContextType {
   // State
   hardwareAccounts: HardwareAccount[];
   connectionState: LedgerConnectionState;
-  
-  // Methods
+
+  // Core methods
   connectLedger: () => Promise<void>;
-  importNextAccount: () => Promise<void>;
-  importAccountAtIndex: (index: number) => Promise<void>;
+  importAccountAtIndex: (index: number) => Promise<HardwareAccount>;
+  importNextAccount: () => Promise<HardwareAccount>;
   removeAccount: (address: string) => void;
   updateAccountName: (address: string, name: string) => void;
   disconnectLedger: () => Promise<void>;
@@ -21,19 +39,20 @@ interface LedgerConnectContextType {
   clearAllAccounts: () => void;
 }
 
-const LedgerConnectContext = createContext<LedgerConnectContextType | null>(null);
+const LedgerContext = createContext<LedgerContextType | null>(null);
 
-export const useLedgerConnect = () => {
-  const context = useContext(LedgerConnectContext);
+export const useLedger = () => {
+  const context = useContext(LedgerContext);
   if (!context) {
-    throw new Error('useLedgerConnect must be used within a LedgerConnectProvider');
+    throw new Error('useLedger must be used within a LedgerProvider');
   }
+
   return context;
 };
 
 const handleLedgerError = (error: unknown): string => {
   const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-  
+
   if (errorMessage.includes('No device selected') || errorMessage.includes('device not found')) {
     return 'Please connect your Ledger device and try again';
   } else if (errorMessage.includes('TransportOpenUserCancelled') || errorMessage.includes('cancelled')) {
@@ -49,35 +68,33 @@ const handleLedgerError = (error: unknown): string => {
   } else if (errorMessage.includes('connection')) {
     return 'Connection failed. Please check your device and try again';
   }
-  
+
   return errorMessage;
 };
 
-interface LedgerConnectProviderProps {
+interface LedgerProviderProps {
   children: ReactNode;
 }
 
-export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ children }) => {
+export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
   const [hardwareAccounts, setHardwareAccounts] = useState<HardwareAccount[]>([]);
   const [connectionState, setConnectionState] = useState<LedgerConnectionState>({
     isConnecting: false,
     isConnected: false,
     error: null,
-    currentIndex: 0
+    currentIndex: 0,
   });
-  
+
   const connectRef = useRef<LedgerConnect | null>(null);
-  const toast = useToast();
 
   // Initialize accounts from localStorage
   React.useEffect(() => {
     const storedAccounts = getStoredAccounts();
     setHardwareAccounts(storedAccounts);
-    
+
     // Set current index to the next available index
-    const ledgerAccounts = storedAccounts.filter(acc => acc.source === HardwareSource.Ledger);
-    const maxIndex = ledgerAccounts.length > 0 ? Math.max(...ledgerAccounts.map(acc => acc.index)) : -1;
-    setConnectionState(prev => ({ ...prev, currentIndex: maxIndex + 1 }));
+    const maxIndex = storedAccounts.length > 0 ? Math.max(...storedAccounts.map((acc) => acc.index)) : -1;
+    setConnectionState((prev) => ({ ...prev, currentIndex: maxIndex + 1 }));
   }, []);
 
   const getStoredAccounts = (): HardwareAccount[] => {
@@ -103,10 +120,10 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     if (!connectRef.current) {
       throw new Error('Ledger connect not initialized');
     }
-    
+
     const connect = connectRef.current;
     await connect.ensureInitialized();
-    
+
     try {
       const result = await operation(connect);
       await connect.ensureClosed();
@@ -118,50 +135,43 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
   };
 
   const connectLedger = async () => {
-    setConnectionState(prev => ({
+    setConnectionState((prev) => ({
       ...prev,
       isConnecting: true,
-      error: null
+      error: null,
     }));
 
     try {
       connectRef.current = new LedgerConnect();
-      
+
       // Test connection
       await withLedgerConnection(async () => {
         return Promise.resolve();
       });
 
-      setConnectionState(prev => ({
+      setConnectionState((prev) => ({
         ...prev,
-        isConnected: true
+        isConnected: true,
       }));
-
-      toast({
-        title: 'Ledger Connected',
-        description: 'Successfully connected to your Ledger device',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
     } catch (err) {
       console.log(err);
       const errorMessage = handleLedgerError(err);
-      setConnectionState(prev => ({
+      setConnectionState((prev) => ({
         ...prev,
         error: errorMessage,
-        isConnected: false
+        isConnected: false,
       }));
+      throw err;
     } finally {
-      setConnectionState(prev => ({
+      setConnectionState((prev) => ({
         ...prev,
-        isConnecting: false
+        isConnecting: false,
       }));
     }
   };
 
-  const importAccountAtIndex = async (index: number) => {
-    setConnectionState(prev => ({ ...prev, error: null }));
+  const importAccountAtIndex = async (index: number): Promise<HardwareAccount> => {
+    setConnectionState((prev) => ({ ...prev, error: null }));
 
     try {
       const ledgerAccount = await withLedgerConnection(async (connect) => {
@@ -173,78 +183,46 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
         address: ledgerAccount.address,
         pubkey: ledgerAccount.publicKey,
         index: ledgerAccount.index,
-        name: `Ledger Account #${index}`
+        name: `Ledger Account #${index}`,
       };
 
       // Check if account already exists
-      const existingIndex = hardwareAccounts.findIndex(acc => acc.address === hardwareAccount.address);
+      const existingIndex = hardwareAccounts.findIndex((acc) => acc.address === hardwareAccount.address);
       if (existingIndex !== -1) {
-        toast({
-          title: 'Account Already Imported',
-          description: `Account #${index} is already in your list`,
-          status: 'info',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
+        throw new Error(`Account #${index} is already imported`);
       }
 
       const updatedAccounts = [...hardwareAccounts, hardwareAccount];
       saveAccounts(updatedAccounts);
 
       // Update current index for next import
-      const ledgerAccounts = updatedAccounts.filter(acc => acc.source === HardwareSource.Ledger);
-      const maxIndex = Math.max(...ledgerAccounts.map(acc => acc.index));
-      setConnectionState(prev => ({ ...prev, currentIndex: maxIndex + 1 }));
+      const maxIndex = Math.max(...updatedAccounts.map((acc) => acc.index));
+      setConnectionState((prev) => ({ ...prev, currentIndex: maxIndex + 1 }));
 
-      toast({
-        title: 'Account Imported',
-        description: `Successfully imported account #${index}`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
+      return hardwareAccount;
     } catch (err) {
       console.log(err);
       const errorMessage = handleLedgerError(err);
-      setConnectionState(prev => ({ ...prev, error: errorMessage }));
+      setConnectionState((prev) => ({ ...prev, error: errorMessage }));
       throw err;
     }
   };
 
-  const importNextAccount = async () => {
+  const importNextAccount = async (): Promise<HardwareAccount> => {
     if (!connectionState.isConnected) {
       throw new Error('Ledger not connected');
     }
-    await importAccountAtIndex(connectionState.currentIndex);
+    return await importAccountAtIndex(connectionState.currentIndex);
   };
 
   const removeAccount = (address: string) => {
-    const updatedAccounts = hardwareAccounts.filter(acc => acc.address !== address);
+    const updatedAccounts = hardwareAccounts.filter((acc) => acc.address !== address);
     saveAccounts(updatedAccounts);
-    
-    toast({
-      title: 'Account Removed',
-      description: 'Hardware account removed from your list',
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
   };
 
   const updateAccountName = (address: string, name: string) => {
-    const updatedAccounts = hardwareAccounts.map(acc => 
-      acc.address === address ? { ...acc, name } : acc
-    );
+    const updatedAccounts = hardwareAccounts.map((acc) => (acc.address === address ? { ...acc, name } : acc));
     saveAccounts(updatedAccounts);
-    
-    toast({
-      title: 'Account Updated',
-      description: 'Account name updated successfully',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
   };
 
   const disconnectLedger = async () => {
@@ -261,7 +239,7 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
       isConnecting: false,
       isConnected: false,
       error: null,
-      currentIndex: connectionState.currentIndex
+      currentIndex: connectionState.currentIndex,
     });
   };
 
@@ -276,35 +254,23 @@ export const LedgerConnectProvider: React.FC<LedgerConnectProviderProps> = ({ ch
     } catch (error) {
       console.warn('Failed to clear hardware accounts from localStorage:', error);
     }
-    
+
     setHardwareAccounts([]);
-    setConnectionState(prev => ({ ...prev, currentIndex: 0 }));
-    
-    toast({
-      title: 'All Accounts Cleared',
-      description: 'All hardware accounts have been removed',
-      status: 'info',
-      duration: 3000,
-      isClosable: true,
-    });
+    setConnectionState((prev) => ({ ...prev, currentIndex: 0 }));
   };
 
-  const contextValue: LedgerConnectContextType = {
+  const contextValue: LedgerContextType = {
     hardwareAccounts,
     connectionState,
     connectLedger,
-    importNextAccount,
     importAccountAtIndex,
+    importNextAccount,
     removeAccount,
     updateAccountName,
     disconnectLedger,
     retryConnection,
-    clearAllAccounts
+    clearAllAccounts,
   };
 
-  return (
-    <LedgerConnectContext.Provider value={contextValue}>
-      {children}
-    </LedgerConnectContext.Provider>
-  );
+  return <LedgerContext.Provider value={contextValue}>{children}</LedgerContext.Provider>;
 };
