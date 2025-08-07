@@ -1,6 +1,6 @@
 import { Wallet, WalletOptions } from './Wallet.js';
-import { LedgerConnect } from '../signers';
 
+// Ledger or Polkadot Vault
 abstract class HardwareWallet extends Wallet {}
 
 export interface HardwareWalletOptions extends WalletOptions {
@@ -8,18 +8,13 @@ export interface HardwareWalletOptions extends WalletOptions {
 }
 
 export class LedgerWallet extends HardwareWallet {
-  private _connect?: LedgerConnect;
-
-  getConnect(): LedgerConnect {
-    if (!this._connect) {
-      this._connect = new LedgerConnect();
-    }
-    return this._connect;
+  get version(): string | undefined {
+    return '';
   }
 
   get ready(): boolean {
-    // Hardware wallets are considered "ready" if they can be connected to
-    return typeof window !== 'undefined' && 'navigator' in window && 'usb' in navigator;
+    // @ts-ignore
+    return typeof window !== 'undefined' && !!(window.navigator && window.navigator.hid);
   }
 
   get installed(): boolean {

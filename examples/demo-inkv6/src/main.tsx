@@ -5,7 +5,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
-import { development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider, westendAssetHub } from 'typink';
+import {
+  development,
+  ledger,
+  polkadotjs,
+  popTestnet,
+  subwallet,
+  talisman,
+  TypinkProvider,
+  westendAssetHub,
+} from 'typink';
 import { LedgerConnectProvider } from '@/providers';
 
 const SUPPORTED_NETWORK = [popTestnet, westendAssetHub];
@@ -22,7 +31,7 @@ function Root() {
           supportedNetworks={SUPPORTED_NETWORK}
           defaultNetworkId={popTestnet.id}
           cacheMetadata={true}
-          wallets={[subwallet, talisman, polkadotjs]}>
+          wallets={[subwallet, talisman, polkadotjs, ledger]}>
           <App />
           <ToastContainer
             position='top-right'

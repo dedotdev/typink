@@ -1,4 +1,5 @@
 import { ExtensionWallet } from './ExtensionWallet.js';
+import { LedgerWallet } from 'src/wallets/HardwareWallet';
 
 export * from './Wallet.js';
 export * from './ExtensionWallet.js';
@@ -26,4 +27,10 @@ export const polkadotjs = new ExtensionWallet({
   logo: 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/wallets/polkadot-js-logo.svg',
   installUrl: 'https://polkadot.js.org/extension',
   websiteUrl: 'https://polkadot.js.org',
+});
+
+export const ledger = new LedgerWallet({
+  id: 'ledger',
+  name: 'Ledger',
+  logo: 'https://raw.githubusercontent.com/w3ux/w3ux-library/dfd28dd089ee78ddc17bcdddd85d46c7a0884870/library/extension-assets/src/Ledger/icon-square.svg',
 });
