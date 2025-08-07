@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
-import { LedgerConnect, type LedgerAccount } from '../signers';
+import { LedgerConnect } from '../signers';
 import { TypinkAccount } from '../types.js';
 
 export interface LedgerConnectionState {

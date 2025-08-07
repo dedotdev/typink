@@ -10,13 +10,16 @@ export interface LedgerAccount {
 }
 
 class LedgerInjectedSigner implements InjectedSigner {
+  // @ts-ignore - Will be used for signing implementation
   constructor(private ledgerConnect: LedgerConnect) {}
 
-  async signPayload(payload: SignerPayloadJSON): Promise<SignerResult> {
+  async signPayload(_payload: SignerPayloadJSON): Promise<SignerResult> {
+    // TODO: Implement Ledger transaction signing using this.ledgerConnect
     throw new TypinkError('Ledger transaction signing not yet implemented');
   }
 
-  async signRaw(raw: SignerPayloadRaw): Promise<SignerResult> {
+  async signRaw(_raw: SignerPayloadRaw): Promise<SignerResult> {
+    // TODO: Implement Ledger raw signing using this.ledgerConnect
     throw new TypinkError('Ledger raw signing not yet implemented');
   }
 }

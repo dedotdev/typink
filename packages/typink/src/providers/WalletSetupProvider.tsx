@@ -2,10 +2,12 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
 import { InjectedAccount, InjectedSigner, TypinkAccount } from '../types.js';
-import { polkadotjs, subwallet, talisman, Wallet, ExtensionWallet } from '../wallets/index.js';
+import { polkadotjs, subwallet, talisman, Wallet, ExtensionWallet, LedgerWallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
+import { useLedger } from './LedgerProvider.js';
+import { LedgerConnect } from '../signers/index.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
 export interface WalletSetupContextProps {
@@ -74,6 +76,14 @@ export function WalletSetupProvider({
   const connectedWallet = useMemo(() => getWallet(connectedWalletId), [connectedWalletId]);
 
   const isFirstRender = useIsFirstRender();
+  
+  // Try to get ledger context if LedgerProvider is available
+  let ledgerContext: ReturnType<typeof useLedger> | null = null;
+  try {
+    ledgerContext = useLedger();
+  } catch {
+    // LedgerProvider not available, that's ok
+  }
 
   useEffect(() => {
     setSigner(initialSigner);
@@ -100,47 +110,78 @@ export function WalletSetupProvider({
         assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
 
         await targetWallet.waitUntilReady();
-        const injectedProvider = (targetWallet as ExtensionWallet).injectedProvider;
-
-        assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
-
-        const injected = await injectedProvider.enable(appName);
-        const initialConnectedAccounts = await injected.accounts.get();
-
-        // TODO keep track of wallet decision?
-        if (initialConnectedAccounts.length === 0) {
-          removeConnectedWalletId();
-          return;
-        }
-
-        // reset accounts on wallet changing
-        setAccounts([]);
-
-        // only remove the connected account if we're switching to a different wallet
-        if (!isFirstRender) {
-          removeConnectedAccount();
-        }
-
-        // Convert InjectedAccount to TypinkAccount
-        const convertToTypinkAccount = (injectedAccounts: InjectedAccount[]): TypinkAccount[] => {
-          return injectedAccounts.map(account => ({
-            address: account.address,
-            walletId: targetWallet.id,
-            source: 'extension' as const,
-            name: account.name,
-            genesisHash: account.genesisHash,
-            type: account.type,
-          }));
-        };
-
-        // Set initial accounts
-        setAccounts(convertToTypinkAccount(initialConnectedAccounts));
         
-        unsub = injected.accounts.subscribe((injectedAccounts) => {
-          setAccounts(convertToTypinkAccount(injectedAccounts));
-        });
+        // Check if this is a Ledger hardware wallet
+        if (targetWallet instanceof LedgerWallet) {
+          // For Ledger wallet, load accounts from LedgerProvider
+          if (!ledgerContext) {
+            console.error('LedgerProvider not available for Ledger wallet');
+            removeConnectedWalletId();
+            return;
+          }
 
-        setSigner(injected.signer as any);
+          // Use ledger accounts from the provider
+          const ledgerAccounts = ledgerContext.ledgerAccounts;
+          
+          if (ledgerAccounts.length === 0) {
+            // Don't disconnect immediately for Ledger, user might import accounts later
+            setAccounts([]);
+          } else {
+            setAccounts(ledgerAccounts);
+          }
+
+          // Create LedgerConnect instance for signer
+          const ledgerConnect = new LedgerConnect();
+          setSigner(ledgerConnect.getSigner());
+
+          // Only remove the connected account if we're switching to a different wallet
+          if (!isFirstRender) {
+            removeConnectedAccount();
+          }
+        } else {
+          // For extension wallets, use the existing logic
+          const injectedProvider = (targetWallet as ExtensionWallet).injectedProvider;
+
+          assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
+
+          const injected = await injectedProvider.enable(appName);
+          const initialConnectedAccounts = await injected.accounts.get();
+
+          // TODO keep track of wallet decision?
+          if (initialConnectedAccounts.length === 0) {
+            removeConnectedWalletId();
+            return;
+          }
+
+          // reset accounts on wallet changing
+          setAccounts([]);
+
+          // only remove the connected account if we're switching to a different wallet
+          if (!isFirstRender) {
+            removeConnectedAccount();
+          }
+
+          // Convert InjectedAccount to TypinkAccount
+          const convertToTypinkAccount = (injectedAccounts: InjectedAccount[]): TypinkAccount[] => {
+            return injectedAccounts.map(account => ({
+              address: account.address,
+              walletId: targetWallet.id,
+              source: 'extension' as const,
+              name: account.name,
+              genesisHash: account.genesisHash,
+              type: account.type,
+            }));
+          };
+
+          // Set initial accounts
+          setAccounts(convertToTypinkAccount(initialConnectedAccounts));
+          
+          unsub = injected.accounts.subscribe((injectedAccounts: InjectedAccount[]) => {
+            setAccounts(convertToTypinkAccount(injectedAccounts));
+          });
+
+          setSigner(injected.signer as any);
+        }
       } catch (e) {
         console.error('Error while connecting wallet:', e);
         removeConnectedWalletId();
@@ -149,6 +190,16 @@ export function WalletSetupProvider({
 
     return () => unsub && unsub();
   }, [connectedWalletId, appName]);
+
+  // Watch for Ledger account changes when Ledger wallet is connected
+  useEffect(() => {
+    if (!connectedWallet || !(connectedWallet instanceof LedgerWallet) || !ledgerContext) {
+      return;
+    }
+
+    // Update accounts when ledger accounts change
+    setAccounts(ledgerContext.ledgerAccounts);
+  }, [ledgerContext?.ledgerAccounts, connectedWallet]);
 
   const connectWallet = async (walletId: string) => {
     setConnectedWalletId(walletId);

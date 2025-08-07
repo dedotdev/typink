@@ -1,5 +1,5 @@
 import { ExtensionWallet } from './ExtensionWallet.js';
-import { LedgerWallet } from 'src/wallets/HardwareWallet';
+import { LedgerWallet } from './HardwareWallet.js';
 
 export * from './Wallet.js';
 export * from './ExtensionWallet.js';

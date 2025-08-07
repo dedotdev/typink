@@ -1,5 +1,5 @@
 import { Wallet, WalletOptions } from './Wallet.js';
-import { InjectedWindow, InjectedWindowProvider } from 'src/pjs-types';
+import { InjectedWindow, InjectedWindowProvider } from '../pjs-types.js';
 
 export interface ExtensionWalletOptions extends WalletOptions {
   installUrl: string;

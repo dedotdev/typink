@@ -1,4 +1,4 @@
-import { TypinkError } from 'src/utils';
+import { TypinkError } from '../utils/index.js';
 
 export interface WalletOptions {
   id: string;
