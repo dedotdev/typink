@@ -26,13 +26,16 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { isOpen: isLedgerOpen, onOpen: onLedgerOpen, onClose: onLedgerClose } = useDisclosure();
 
   const doConnectWallet = () => {
-    connectWallet(id);
-
-    // If this is a Ledger wallet, also open the Ledger import accounts dialog
+    // If this is a Ledger wallet, only open the import accounts dialog
+    // Don't connect immediately - let user review/import accounts first
     if (walletInfo instanceof LedgerWallet) {
       onLedgerOpen();
+      // afterSelectWallet && afterSelectWallet(); // Close wallet selection modal
+      return;
     }
 
+    // For non-Ledger wallets, connect immediately as before
+    connectWallet(id);
     afterSelectWallet && afterSelectWallet();
   };
 
@@ -51,11 +54,9 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
         <img src={logo} alt={`${name}`} width={24} />
         <span>{name}</span>
       </Button>
-      
+
       {/* Show Ledger import dialog if this is a Ledger wallet */}
-      {walletInfo instanceof LedgerWallet && (
-        <LedgerImportAccounts isOpen={isLedgerOpen} onClose={onLedgerClose} />
-      )}
+      {walletInfo instanceof LedgerWallet && <LedgerImportAccounts isOpen={isLedgerOpen} onClose={onLedgerClose} />}
     </>
   );
 };

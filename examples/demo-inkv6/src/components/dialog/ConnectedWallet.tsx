@@ -4,11 +4,14 @@ import { useTypink } from 'typink';
 export default function ConnectedWallet() {
   const { connectedWallet } = useTypink();
 
+  if (!connectedWallet) return null;
+
   return (
     <Flex align='center' gap={3} flex={1} justify='center' pb={2}>
-      <img src={connectedWallet?.logo} alt={connectedWallet?.name} width={24} />
+      <img src={connectedWallet.logo} alt={connectedWallet.name} width={24} />
       <Text fontWeight='600' fontSize='14'>
-        {connectedWallet?.name} - v{connectedWallet?.version}
+        {connectedWallet.name}
+        {connectedWallet.version && `- v${connectedWallet.version}`}
       </Text>
     </Flex>
   );

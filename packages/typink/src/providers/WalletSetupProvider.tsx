@@ -6,7 +6,7 @@ import { polkadotjs, subwallet, talisman, Wallet, ExtensionWallet, LedgerWallet 
 import { assert } from 'dedot/utils';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
-import { useLedger } from './LedgerProvider.js';
+import { useLedger, getStoredLedgerAccounts } from './LedgerProvider.js';
 import { LedgerConnect } from '../signers/index.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
@@ -113,22 +113,11 @@ export function WalletSetupProvider({
 
         // Check if this is a Ledger hardware wallet
         if (targetWallet instanceof LedgerWallet) {
-          // For Ledger wallet, load accounts from LedgerProvider
-          if (!ledgerContext) {
-            console.error('LedgerProvider not available for Ledger wallet');
-            removeConnectedWalletId();
-            return;
-          }
-
-          // Use ledger accounts from the provider
-          const ledgerAccounts = ledgerContext.ledgerAccounts;
-
-          if (ledgerAccounts.length === 0) {
-            // Don't disconnect immediately for Ledger, user might import accounts later
-            setAccounts([]);
-          } else {
-            setAccounts(ledgerAccounts);
-          }
+          // For Ledger wallet, load accounts directly from localStorage
+          const ledgerAccounts = getStoredLedgerAccounts();
+          
+          // Set accounts immediately - no need to wait for provider effects
+          setAccounts(ledgerAccounts);
 
           // Create LedgerConnect instance for signer
           const ledgerConnect = new LedgerConnect();
@@ -197,9 +186,9 @@ export function WalletSetupProvider({
       return;
     }
 
-    // Update accounts when ledger accounts change
+    // Update accounts when ledger accounts change (e.g., when importing new accounts)
     setAccounts(ledgerContext.ledgerAccounts);
-  }, [ledgerContext?.ledgerAccounts, connectedWallet]);
+  }, [ledgerContext?.ledgerAccounts, connectedWallet, ledgerContext]);
 
   const connectWallet = async (walletId: string) => {
     setConnectedWalletId(walletId);

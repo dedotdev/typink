@@ -21,10 +21,13 @@ import {
   useDisclosure,
   Badge,
   useToast,
+  Radio,
+  RadioGroup,
 } from '@chakra-ui/react';
 import { useState, useRef, useEffect } from 'react';
 import { EditIcon, CheckIcon, DeleteIcon, CopyIcon } from '@chakra-ui/icons';
 import { useLedgerUI } from '@/providers';
+import { useTypink } from 'typink';
 
 interface LedgerImportAccountsProps {
   isOpen: boolean;
@@ -41,6 +44,8 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     updateAccountName,
     clearAllAccounts,
   } = useLedgerUI();
+  
+  const { connectWallet, setConnectedAccount } = useTypink();
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -48,11 +53,18 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const [highlightedAccount, setHighlightedAccount] = useState<string | null>(null);
   const [isImportingNewAccount, setIsImportingNewAccount] = useState(false);
   const [accountCountBeforeImport, setAccountCountBeforeImport] = useState(0);
+  const [selectedAccountAddress, setSelectedAccountAddress] = useState<string>('');
+  const [isConnecting, setIsConnecting] = useState(false);
   const { isOpen: isResetOpen, onOpen: onResetOpen, onClose: onResetClose } = useDisclosure();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
 
-  // ledgerAccounts now comes directly from the provider, already filtered
+  // Set default selected account when ledger accounts change
+  useEffect(() => {
+    if (ledgerAccounts.length > 0 && !selectedAccountAddress) {
+      setSelectedAccountAddress(ledgerAccounts[0].address);
+    }
+  }, [ledgerAccounts, selectedAccountAddress]);
 
   // Handle highlighting after successful import when provider state updates
   useEffect(() => {
@@ -151,6 +163,44 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     return `${address.slice(0, 8)}...${address.slice(-8)}`;
   };
 
+  const handleConnect = async () => {
+    if (!selectedAccountAddress) return;
+    
+    setIsConnecting(true);
+    try {
+      // Connect to the Ledger wallet
+      await connectWallet('ledger');
+      
+      // Set the selected account as the connected account
+      const selectedAccount = ledgerAccounts.find(acc => acc.address === selectedAccountAddress);
+      if (selectedAccount) {
+        setConnectedAccount(selectedAccount);
+        
+        toast({
+          title: 'Connected to Ledger',
+          description: `Successfully connected with ${selectedAccount.name || 'Ledger account'}`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        
+        // Close the modal
+        onClose();
+      }
+    } catch (error) {
+      console.error('Failed to connect to Ledger:', error);
+      toast({
+        title: 'Connection Failed',
+        description: 'Failed to connect to Ledger wallet',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size='lg'>
@@ -235,25 +285,28 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                             </Text>
                           </Box>
                         ) : (
-                          ledgerAccounts.map((account) => (
-                          <Box
-                            key={account.address}
-                            p={3}
-                            borderWidth={1}
-                            borderRadius='md'
-                            borderColor='gray.200'
-                            bg={highlightedAccount === account.address ? 'green.50' : 'white'}
-                            transition='all 0.3s ease'
-                            _hover={{ borderColor: 'blue.400' }}>
-                            <HStack justify='space-between' align='flex-start'>
-                              <Box flex={1}>
-                                <HStack mb={1}>
-                                  <Badge colorScheme='blue' size='sm'>
-                                    #{account.index}
-                                  </Badge>
-                                </HStack>
+                          <RadioGroup value={selectedAccountAddress} onChange={setSelectedAccountAddress}>
+                            {ledgerAccounts.map((account) => (
+                            <Box
+                              key={account.address}
+                              p={3}
+                              borderWidth={1}
+                              borderRadius='md'
+                              borderColor={selectedAccountAddress === account.address ? 'blue.400' : 'gray.200'}
+                              bg={highlightedAccount === account.address ? 'green.50' : selectedAccountAddress === account.address ? 'blue.50' : 'white'}
+                              transition='all 0.3s ease'
+                              _hover={{ borderColor: 'blue.400' }}>
+                              <HStack justify='space-between' align='flex-start'>
+                                <HStack flex={1} align='flex-start'>
+                                  <Radio value={account.address} mt={1} />
+                                  <Box flex={1}>
+                                    <HStack mb={1}>
+                                      <Badge colorScheme='blue' size='sm'>
+                                        #{account.index}
+                                      </Badge>
+                                    </HStack>
 
-                                {editingAccount === account.address ? (
+                                    {editingAccount === account.address ? (
                                   <InputGroup size='sm' mb={2}>
                                     <Input
                                       value={editName}
@@ -306,20 +359,22 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                                     onClick={() => handleCopyAddress(account.address)}
                                     _hover={{ bg: 'gray.100' }}
                                   />
+                                    </HStack>
+                                  </Box>
                                 </HStack>
-                              </Box>
 
-                              <IconButton
+                                <IconButton
                                 icon={<DeleteIcon />}
                                 size='sm'
                                 variant='ghost'
                                 colorScheme='red'
                                 aria-label='Remove account'
                                 onClick={() => removeAccount(account.address)}
-                              />
-                            </HStack>
-                          </Box>
-                          ))
+                                />
+                              </HStack>
+                            </Box>
+                            ))}
+                          </RadioGroup>
                         )}
                       </VStack>
                     </Box>
@@ -328,6 +383,22 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                   <Text fontSize='xs' color='gray.500' textAlign='center'>
                     Accounts are automatically saved and will persist across sessions
                   </Text>
+
+                  <Divider my={4} />
+
+                  <HStack justify='flex-end' spacing={3}>
+                    <Button variant='ghost' onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button
+                      colorScheme='blue'
+                      onClick={handleConnect}
+                      isLoading={isConnecting}
+                      loadingText='Connecting...'
+                      isDisabled={!selectedAccountAddress || ledgerAccounts.length === 0}>
+                      Connect with Selected Account
+                    </Button>
+                  </HStack>
                 </>
               )}
             </VStack>

@@ -11,6 +11,25 @@ export interface LedgerConnectionState {
 
 const STORAGE_KEY = 'TYPINK::LEDGER::ACCOUNTS';
 
+// Standalone utility functions for ledger account storage
+export const getStoredLedgerAccounts = (): TypinkAccount[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.warn('Failed to load hardware accounts from localStorage:', error);
+    return [];
+  }
+};
+
+export const saveLedgerAccounts = (accounts: TypinkAccount[]): void => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+  } catch (error) {
+    console.warn('Failed to save hardware accounts to localStorage:', error);
+  }
+};
+
 interface LedgerContextType {
   // State
   ledgerAccounts: TypinkAccount[];
@@ -65,43 +84,29 @@ interface LedgerProviderProps {
 }
 
 export const LedgerProvider: React.FC<LedgerProviderProps> = ({ children }) => {
-  const [ledgerAccounts, setLedgerAccounts] = useState<TypinkAccount[]>([]);
+  // Initialize with stored accounts immediately
+  const [ledgerAccounts, setLedgerAccounts] = useState<TypinkAccount[]>(() => getStoredLedgerAccounts());
+  
+  // Calculate initial current index based on stored accounts
+  const initialStoredAccounts = getStoredLedgerAccounts();
+  const initialCurrentIndex = initialStoredAccounts.length > 0 ? Math.max(...initialStoredAccounts.map((acc) => acc.index!)) + 1 : 0;
+  
   const [connectionState, setConnectionState] = useState<LedgerConnectionState>({
     isConnecting: false,
     isConnected: false,
     error: null,
-    currentIndex: 0,
+    currentIndex: initialCurrentIndex,
   });
 
   const connectRef = useRef<LedgerConnect | null>(null);
 
-  // Initialize accounts from localStorage
-  React.useEffect(() => {
-    const storedAccounts = getStoredAccounts();
-    setLedgerAccounts(storedAccounts);
-
-    // Set current index to the next available index
-    const maxIndex = storedAccounts.length > 0 ? Math.max(...storedAccounts.map((acc) => acc.index!)) : -1;
-    setConnectionState((prev) => ({ ...prev, currentIndex: maxIndex + 1 }));
-  }, []);
-
-  const getStoredAccounts = (): TypinkAccount[] => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.warn('Failed to load hardware accounts from localStorage:', error);
-      return [];
-    }
-  };
+  // No longer need useEffect to initialize - accounts are loaded immediately in state initializer
 
   const saveAccounts = (accounts: TypinkAccount[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-      setLedgerAccounts(accounts);
-    } catch (error) {
-      console.warn('Failed to save hardware accounts to localStorage:', error);
-    }
+    // Save to localStorage using external utility
+    saveLedgerAccounts(accounts);
+    // Update local state
+    setLedgerAccounts(accounts);
   };
 
   const withLedgerConnection = async <T,>(operation: (connect: LedgerConnect) => Promise<T>): Promise<T> => {
