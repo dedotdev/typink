@@ -12,8 +12,10 @@ export async function prettierFormat(
 ) {
   task.title = '🎨 Prettifying the codebase';
 
+  const { pkgManager } = options;
+
   if (!options.skipInstall) {
-    await execa('yarn', ['prettify'], { cwd: targetDir });
+    await execa(pkgManager.name, ['run', 'prettify'], { cwd: targetDir });
   } else {
     const prettierConfig = await prettier.resolveConfig(path.resolve(targetDir, './.prettierrc.js'));
 

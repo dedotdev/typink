@@ -1,6 +1,6 @@
 {
   "name": "create-typink",
-  "version": "0.2.1",
+  "version": "0.2.2-beta.0",
   "author": "Tung Vu <tung@dedot.dev>",
   "homepage": "https://typink.dev",
   "repository": {
@@ -12,7 +12,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist && cp -R ./src/templates ./dist",
-    "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo"
+    "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
+    "test": "npx vitest --watch=false"
   },
   "bin": "./bin/create-typink.mjs",
   "dependencies": {

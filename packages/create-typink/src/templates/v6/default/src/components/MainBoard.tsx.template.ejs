@@ -1,10 +1,10 @@
 <% if (options.presetContract === 'flipper') { %>
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
-import { ContractId } from 'contracts/deployments';
+import { ContractId } from '@/contracts/deployments';
 import { useContract, useContractQuery, useContractTx } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
-import { FlipperContractApi } from 'contracts/types/flipper';
+import { FlipperContractApi } from '@/contracts/types/flipper';
 
 export default function FlipperBoard() {
   const { contract } = useContract<FlipperContractApi>(ContractId.FLIPPER);
@@ -60,8 +60,8 @@ import PendingText from '@/components/shared/PendingText.tsx';
 import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { toEvmAddress } from 'dedot/contracts';
-import { ContractId } from 'contracts/deployments';
-import { Psp22ContractApi } from 'contracts/types/psp22';
+import { ContractId } from '@/contracts/deployments';
+import { Psp22ContractApi } from '@/contracts/types/psp22';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);

@@ -14,6 +14,7 @@ import {
 export async function createProject(options: Options) {
   const { projectName, skipInstall, noGit } = options;
 
+
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
@@ -31,8 +32,8 @@ export async function createProject(options: Options) {
         task: (_, task) => copyTemplateFiles(options, templateDirectory, targetDirectory, task),
       },
       {
-        title: '📦 Install dependencies with yarn',
-        task: (_, task) => installPackages(targetDirectory, task),
+        title: `📦 Install dependencies with ${chalk.green.bold(options.pkgManager.name)}`,
+        task: (_, task) => installPackages(options, targetDirectory, task),
         skip: skipInstall,
       },
       {

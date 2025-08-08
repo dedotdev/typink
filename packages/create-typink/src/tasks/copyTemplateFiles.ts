@@ -25,15 +25,15 @@ export async function copyTemplateFiles(
 
   await fs.promises.cp(templateDir, targetDir, { recursive: true });
 
+  await processPresetContract(options, targetDir);
+  await processTemplateFiles(options, targetDir);
+  await processGitignoreFile(targetDir);
+
   const packageJsonPath = `${targetDir}/package.json`;
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
   packageJson.name = projectName;
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  await processPresetContract(options, targetDir);
-  await processTemplateFiles(options, targetDir);
-  await processGitignoreFile(targetDir);
 
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -44,7 +44,7 @@ export async function copyTemplateFiles(
 }
 
 async function processPresetContract(options: Options, targetDir: string) {
-  const dirsToCheck = [`${targetDir}/contracts/artifacts`, `${targetDir}/contracts/types`];
+  const dirsToCheck = [`${targetDir}/src/contracts/artifacts`, `${targetDir}/src/contracts/types`];
 
   dirsToCheck.forEach(async (dir) => {
     for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {

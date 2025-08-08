@@ -23,6 +23,7 @@ const defaultOptions: BaseOptions = {
   // Because `Pop Testnet` support both pallet-contracts and pallet-revive, we use it as default network
   networks: ['Pop Testnet'],
   skipInstall: false,
+  pkgManager: { name: 'npm' },
   noGit: false,
 };
 

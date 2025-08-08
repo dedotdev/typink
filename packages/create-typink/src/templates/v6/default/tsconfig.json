@@ -1,6 +1,16 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "declaration": true,
+    "composite": true,
     "baseUrl": ".",
     "lib": [
       "DOM",
@@ -9,6 +19,7 @@
     ],
     "jsx": "react-jsx",
     "noEmit": true,
+
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
@@ -30,8 +41,6 @@
     {
       "path": "./tsconfig.node.json"
     },
-    {
-      "path": "../contracts/tsconfig.json"
-    }
   ]
 }
+
