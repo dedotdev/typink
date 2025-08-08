@@ -12164,20 +12164,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-organize-imports@npm:^3.2.4":
-  version: 3.2.4
-  resolution: "prettier-plugin-organize-imports@npm:3.2.4"
+"prettier-plugin-organize-imports@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "prettier-plugin-organize-imports@npm:4.2.0"
   peerDependencies:
-    "@volar/vue-language-plugin-pug": ^1.0.4
-    "@volar/vue-typescript": ^1.0.4
     prettier: ">=2.0"
     typescript: ">=2.9"
+    vue-tsc: ^2.1.0 || 3
   peerDependenciesMeta:
-    "@volar/vue-language-plugin-pug":
+    vue-tsc:
       optional: true
-    "@volar/vue-typescript":
-      optional: true
-  checksum: 10/93c98d365af500aa4c72f5330d82c20a20d0e7661a9692e6f26a76a2f4f88b99e0f85dcb8871e98b6d687d6e19ea5f1dcc937f9e29fd0778e888675ecafed233
+  checksum: 10/aa7a8280c79dc77a55f4be221ceb8543f5bd8d4a6090aea0e80194cc40edf37345c172357aca45588ebf82a88d2b8a42dd8c4af0bf98dbdd1c9b7d20837836b3
   languageName: node
   linkType: hard
 
@@ -14266,7 +14263,7 @@ __metadata:
     jsdom: "npm:^25.0.1"
     lerna: "npm:^7.4.2"
     prettier: "npm:^3.4.2"
-    prettier-plugin-organize-imports: "npm:^3.2.4"
+    prettier-plugin-organize-imports: "npm:^4.2.0"
     tsc-esm-fix: "npm:^2.20.27"
     tsx: "npm:^4.19.2"
     typescript: "npm:^5.2.2"
