@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Options, PkgManagerInfo } from '../types.js';
+import { Options } from '../types.js';
 
 export const INTRO_ART = `
 ░█▀▀░█▀▄░█▀▀░█▀█░▀█▀░█▀▀░░░░░▀█▀░█░█░█▀█░▀█▀░█▀█░█░█░
