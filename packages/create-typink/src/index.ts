@@ -21,8 +21,8 @@ export async function createTypink() {
       return;
     }
 
-    const options = await promptMissingOptions(args);
     const pkgManager = pkgFromUserAgent(process.env.npm_config_user_agent);
+    const options = await promptMissingOptions(args);
     if (pkgManager) {
       options.pkgManager = pkgManager;
     }
