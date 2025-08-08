@@ -21,8 +21,6 @@ import {
   useDisclosure,
   Badge,
   useToast,
-  Radio,
-  RadioGroup,
 } from '@chakra-ui/react';
 import { useState, useRef, useEffect } from 'react';
 import { EditIcon, CheckIcon, DeleteIcon, CopyIcon } from '@chakra-ui/icons';
@@ -44,7 +42,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
     updateAccountName,
     clearAllAccounts,
   } = useLedgerUI();
-  
+
   const { connectWallet, setConnectedAccount } = useTypink();
 
   const [editingAccount, setEditingAccount] = useState<string | null>(null);
@@ -53,25 +51,24 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   const [highlightedAccount, setHighlightedAccount] = useState<string | null>(null);
   const [isImportingNewAccount, setIsImportingNewAccount] = useState(false);
   const [accountCountBeforeImport, setAccountCountBeforeImport] = useState(0);
-  const [selectedAccountAddress, setSelectedAccountAddress] = useState<string>('');
   const [isConnecting, setIsConnecting] = useState(false);
   const { isOpen: isResetOpen, onOpen: onResetOpen, onClose: onResetClose } = useDisclosure();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
 
-  // Set default selected account when ledger accounts change
+  // Auto-connect to Ledger when modal opens
   useEffect(() => {
-    if (ledgerAccounts.length > 0 && !selectedAccountAddress) {
-      setSelectedAccountAddress(ledgerAccounts[0].address);
+    if (isOpen && !connectionState.isConnected && !connectionState.isConnecting) {
+      connectLedger();
     }
-  }, [ledgerAccounts, selectedAccountAddress]);
+  }, [isOpen]);
 
   // Handle highlighting after successful import when provider state updates
   useEffect(() => {
     if (isImportingNewAccount && ledgerAccounts.length > accountCountBeforeImport) {
       // Now we have the updated accounts from provider
       const newAccount = ledgerAccounts[ledgerAccounts.length - 1];
-      
+
       // Scroll to bottom
       setTimeout(() => {
         if (scrollContainerRef.current) {
@@ -81,13 +78,13 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
           });
         }
       }, 100);
-      
+
       // Highlight new account
       setHighlightedAccount(newAccount.address);
-      
+
       // Reset import tracking
       setIsImportingNewAccount(false);
-      
+
       // Remove highlight after 2 seconds
       setTimeout(() => {
         setHighlightedAccount(null);
@@ -97,6 +94,18 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
 
   const handleImportNext = async () => {
     setIsImporting(true);
+
+    // Connect to Ledger first if not connected
+    if (!connectionState.isConnected) {
+      try {
+        await connectLedger();
+      } catch (error) {
+        console.log('Connection failed:', error);
+        setIsImporting(false);
+        return;
+      }
+    }
+
     setAccountCountBeforeImport(ledgerAccounts.length);
     setIsImportingNewAccount(true);
 
@@ -164,29 +173,27 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
   };
 
   const handleConnect = async () => {
-    if (!selectedAccountAddress) return;
-    
+    if (ledgerAccounts.length === 0) return;
+
     setIsConnecting(true);
     try {
       // Connect to the Ledger wallet
       await connectWallet('ledger');
-      
-      // Set the selected account as the connected account
-      const selectedAccount = ledgerAccounts.find(acc => acc.address === selectedAccountAddress);
-      if (selectedAccount) {
-        setConnectedAccount(selectedAccount);
-        
-        toast({
-          title: 'Connected to Ledger',
-          description: `Successfully connected with ${selectedAccount.name || 'Ledger account'}`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
-        
-        // Close the modal
-        onClose();
-      }
+
+      // Use the first account as the connected account
+      const firstAccount = ledgerAccounts[0];
+      setConnectedAccount(firstAccount);
+
+      toast({
+        title: 'Connected to Ledger',
+        description: `Successfully connected with ${firstAccount.name || 'Ledger account'}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Close the modal
+      onClose();
     } catch (error) {
       console.error('Failed to connect to Ledger:', error);
       toast({
@@ -227,16 +234,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                 </Alert>
               )}
 
-              {!connectionState.isConnected && !connectionState.isConnecting && !connectionState.error && (
-                <Box textAlign='center' py={4}>
-                  <Text mb={4}>Connect your Ledger device to import accounts</Text>
-                  <Button colorScheme='blue' onClick={connectLedger}>
-                    Connect Ledger
-                  </Button>
-                </Box>
-              )}
-
-              {connectionState.isConnected && !connectionState.isConnecting && (
+              {!connectionState.isConnecting && (
                 <>
                   <Divider />
 
@@ -272,11 +270,7 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                       p={2}>
                       <VStack spacing={2} align='stretch'>
                         {ledgerAccounts.length === 0 ? (
-                          <Box 
-                            p={8} 
-                            textAlign='center' 
-                            color='gray.500'
-                          >
+                          <Box p={8} textAlign='center' color='gray.500'>
                             <Text fontSize='sm' mb={2}>
                               No imported accounts yet
                             </Text>
@@ -285,96 +279,91 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                             </Text>
                           </Box>
                         ) : (
-                          <RadioGroup value={selectedAccountAddress} onChange={setSelectedAccountAddress}>
-                            {ledgerAccounts.map((account) => (
+                          ledgerAccounts.map((account) => (
                             <Box
                               key={account.address}
                               p={3}
                               borderWidth={1}
                               borderRadius='md'
-                              borderColor={selectedAccountAddress === account.address ? 'blue.400' : 'gray.200'}
-                              bg={highlightedAccount === account.address ? 'green.50' : selectedAccountAddress === account.address ? 'blue.50' : 'white'}
+                              borderColor='gray.200'
+                              bg={highlightedAccount === account.address ? 'green.50' : 'white'}
                               transition='all 0.3s ease'
                               _hover={{ borderColor: 'blue.400' }}>
                               <HStack justify='space-between' align='flex-start'>
-                                <HStack flex={1} align='flex-start'>
-                                  <Radio value={account.address} mt={1} />
-                                  <Box flex={1}>
-                                    <HStack mb={1}>
-                                      <Badge colorScheme='blue' size='sm'>
-                                        #{account.index}
-                                      </Badge>
-                                    </HStack>
+                                <Box flex={1}>
+                                  <HStack mb={1}>
+                                    <Badge colorScheme='blue' size='sm'>
+                                      #{account.index}
+                                    </Badge>
+                                  </HStack>
 
-                                    {editingAccount === account.address ? (
-                                  <InputGroup size='sm' mb={2}>
-                                    <Input
-                                      value={editName}
-                                      onChange={(e) => setEditName(e.target.value)}
-                                      placeholder='Enter account name'
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          handleSaveAccountName(account.address);
-                                        } else if (e.key === 'Escape') {
-                                          handleCancelEdit();
-                                        }
-                                      }}
-                                    />
-                                    <InputRightElement>
-                                      <HStack spacing={1}>
-                                        <IconButton
-                                          icon={<CheckIcon />}
-                                          size='xs'
-                                          colorScheme='green'
-                                          aria-label='Save name'
-                                          onClick={() => handleSaveAccountName(account.address)}
-                                        />
-                                      </HStack>
-                                    </InputRightElement>
-                                  </InputGroup>
-                                ) : (
-                                  <HStack mb={2}>
-                                    <Text fontWeight='medium' fontSize='sm'>
-                                      {account.name || `Account #${account.index}`}
+                                  {editingAccount === account.address ? (
+                                    <InputGroup size='sm' mb={2}>
+                                      <Input
+                                        value={editName}
+                                        onChange={(e) => setEditName(e.target.value)}
+                                        placeholder='Enter account name'
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            handleSaveAccountName(account.address);
+                                          } else if (e.key === 'Escape') {
+                                            handleCancelEdit();
+                                          }
+                                        }}
+                                      />
+                                      <InputRightElement>
+                                        <HStack spacing={1}>
+                                          <IconButton
+                                            icon={<CheckIcon />}
+                                            size='xs'
+                                            colorScheme='green'
+                                            aria-label='Save name'
+                                            onClick={() => handleSaveAccountName(account.address)}
+                                          />
+                                        </HStack>
+                                      </InputRightElement>
+                                    </InputGroup>
+                                  ) : (
+                                    <HStack mb={2}>
+                                      <Text fontWeight='medium' fontSize='sm'>
+                                        {account.name || `Account #${account.index}`}
+                                      </Text>
+                                      <IconButton
+                                        icon={<EditIcon />}
+                                        size='xs'
+                                        variant='ghost'
+                                        aria-label='Edit name'
+                                        onClick={() => handleEditAccountName(account.address, account.name)}
+                                      />
+                                    </HStack>
+                                  )}
+
+                                  <HStack spacing={2} align='center'>
+                                    <Text fontFamily='mono' fontSize='sm' color='gray.600'>
+                                      {formatAddress(account.address)}
                                     </Text>
                                     <IconButton
-                                      icon={<EditIcon />}
+                                      icon={<CopyIcon />}
                                       size='xs'
                                       variant='ghost'
-                                      aria-label='Edit name'
-                                      onClick={() => handleEditAccountName(account.address, account.name)}
+                                      aria-label='Copy address'
+                                      onClick={() => handleCopyAddress(account.address)}
+                                      _hover={{ bg: 'gray.100' }}
                                     />
                                   </HStack>
-                                )}
-
-                                <HStack spacing={2} align='center'>
-                                  <Text fontFamily='mono' fontSize='sm' color='gray.600'>
-                                    {formatAddress(account.address)}
-                                  </Text>
-                                  <IconButton
-                                    icon={<CopyIcon />}
-                                    size='xs'
-                                    variant='ghost'
-                                    aria-label='Copy address'
-                                    onClick={() => handleCopyAddress(account.address)}
-                                    _hover={{ bg: 'gray.100' }}
-                                  />
-                                    </HStack>
-                                  </Box>
-                                </HStack>
+                                </Box>
 
                                 <IconButton
-                                icon={<DeleteIcon />}
-                                size='sm'
-                                variant='ghost'
-                                colorScheme='red'
-                                aria-label='Remove account'
-                                onClick={() => removeAccount(account.address)}
+                                  icon={<DeleteIcon />}
+                                  size='sm'
+                                  variant='ghost'
+                                  colorScheme='red'
+                                  aria-label='Remove account'
+                                  onClick={() => removeAccount(account.address)}
                                 />
                               </HStack>
                             </Box>
-                            ))}
-                          </RadioGroup>
+                          ))
                         )}
                       </VStack>
                     </Box>
@@ -395,8 +384,8 @@ export default function LedgerImportAccounts({ isOpen, onClose }: LedgerImportAc
                       onClick={handleConnect}
                       isLoading={isConnecting}
                       loadingText='Connecting...'
-                      isDisabled={!selectedAccountAddress || ledgerAccounts.length === 0}>
-                      Connect with Selected Account
+                      isDisabled={ledgerAccounts.length === 0}>
+                      Connect
                     </Button>
                   </HStack>
                 </>
