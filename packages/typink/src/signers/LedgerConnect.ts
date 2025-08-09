@@ -2,6 +2,11 @@ import type TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { type PolkadotGenericApp } from '@zondax/ledger-substrate';
 import { InjectedSigner, SignerPayloadJSON, SignerPayloadRaw, SignerResult } from '../pjs-types';
 import { TypinkError } from '../utils';
+import { MerkleizedMetadata } from 'dedot/merkleized-metadata';
+import { ExtraSignedExtension, ISubstrateClient } from 'dedot';
+import { assert, HexString, hexToU8a, u8aToHex } from 'dedot/utils';
+import { NetworkInfo, TypinkAccount } from 'src/types';
+import { AccountId32 } from 'dedot/codecs';
 
 export interface LedgerAccount {
   index: number;
@@ -10,12 +15,46 @@ export interface LedgerAccount {
 }
 
 class LedgerInjectedSigner implements InjectedSigner {
-  // @ts-ignore - Will be used for signing implementation
-  constructor(private ledgerConnect: LedgerConnect) {}
+  constructor(
+    private ledger: LedgerConnect,
+    private client: ISubstrateClient,
+    private network: NetworkInfo,
+    private importedAccounts: TypinkAccount[],
+  ) {}
 
-  async signPayload(_payload: SignerPayloadJSON): Promise<SignerResult> {
-    // TODO: Implement Ledger transaction signing using this.ledgerConnect
-    throw new TypinkError('Ledger transaction signing not yet implemented');
+  async signPayload(payload: SignerPayloadJSON): Promise<SignerResult> {
+    await this.ledger.ensureInitialized();
+
+    const merkleizer = new MerkleizedMetadata(this.client.metadata, {
+      decimals: this.network.decimals,
+      tokenSymbol: this.network.symbol,
+    });
+
+    const extra = new ExtraSignedExtension(
+      this.client, // --
+      { signerAddress: payload.address },
+    );
+
+    await extra.fromPayload(payload);
+
+    const toSign = extra.toRawPayload(payload.method).data;
+    const proof = merkleizer.proofForExtrinsicPayload(toSign as HexString);
+
+    const account = this.importedAccounts.find((a) => new AccountId32(a.address).eq(payload.address));
+    assert(account, 'Account Not Found');
+
+    const bip42Path = `m/44'/354'/${account.index}'/${0}'/${0}'`;
+
+    const toSignBuffer = Buffer.from(hexToU8a(toSign));
+    const buff = Buffer.from(proof);
+    const result = await this.ledger.app!.signWithMetadataEd25519(bip42Path, toSignBuffer, buff);
+
+    await this.ledger.ensureClosed();
+
+    return {
+      id: Date.now(), // --
+      signature: u8aToHex(result.signature),
+    };
   }
 
   async signRaw(_raw: SignerPayloadRaw): Promise<SignerResult> {
@@ -25,8 +64,8 @@ class LedgerInjectedSigner implements InjectedSigner {
 }
 
 export class LedgerConnect {
-  private transport?: TransportWebHID;
-  private app?: PolkadotGenericApp;
+  public transport?: TransportWebHID;
+  public app?: PolkadotGenericApp;
 
   async init() {
     await this.ensureClosed();
@@ -87,8 +126,12 @@ export class LedgerConnect {
     return { index, address: result.address, publicKey: result.pubKey };
   }
 
-  getSigner(): InjectedSigner {
-    return new LedgerInjectedSigner(this);
+  getSigner(
+    client: ISubstrateClient, // --
+    network: NetworkInfo,
+    importedAccounts: TypinkAccount[],
+  ): InjectedSigner {
+    return new LedgerInjectedSigner(this, client, network, importedAccounts);
   }
 
   get isConnected(): boolean {

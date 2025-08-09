@@ -8,6 +8,9 @@ import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
 import { useLocalStorage } from 'react-use';
+import { useWalletSetup } from 'src/providers/WalletSetupProvider';
+import { LedgerConnect } from 'src/signers';
+import { LedgerWallet } from 'src/wallets';
 
 export interface ClientContextProps {
   client?: ISubstrateClient<SubstrateApi[RpcVersion]>;
@@ -50,6 +53,7 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
+  const { connectedWallet, accounts } = useWalletSetup();
   const { signer } = useWallet();
 
   const initialNetworkId = useMemo<NetworkId>(() => {
@@ -68,8 +72,15 @@ export function ClientProvider({
   const { ready, client } = useInitializeClient(network, { cacheMetadata });
 
   useEffect(() => {
-    client?.setSigner(signer);
-  }, [signer, client]);
+    if (!client) return;
+
+    if (connectedWallet instanceof LedgerWallet) {
+      const ledgerConnect = new LedgerConnect();
+      client.setSigner(ledgerConnect.getSigner(client, network, accounts));
+    } else if (signer) {
+      client.setSigner(signer);
+    }
+  }, [connectedWallet, signer, client, accounts, network]);
 
   return (
     <ClientContext.Provider

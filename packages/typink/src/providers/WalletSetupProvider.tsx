@@ -115,13 +115,10 @@ export function WalletSetupProvider({
         if (targetWallet instanceof LedgerWallet) {
           // For Ledger wallet, load accounts directly from localStorage
           const ledgerAccounts = getStoredLedgerAccounts();
-          
+
           // Set accounts immediately - no need to wait for provider effects
           setAccounts(ledgerAccounts);
-
-          // Create LedgerConnect instance for signer
-          const ledgerConnect = new LedgerConnect();
-          setSigner(ledgerConnect.getSigner());
+          setSigner({} as any);
 
           // Only remove the connected account if we're switching to a different wallet
           if (!isFirstRender) {
