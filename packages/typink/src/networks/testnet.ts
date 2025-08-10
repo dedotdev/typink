@@ -1,6 +1,5 @@
 import { JsonRpcApi, NetworkInfo, NetworkType } from '../types.js';
 import { CHAIN_ASSETS_BASE_URL } from './constants.js';
-import { kusama } from 'src/networks/mainnet.js';
 
 export const popTestnet: NetworkInfo = {
   id: 'pop_testnet',
