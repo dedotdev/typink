@@ -1,34 +1,21 @@
 import { Button, VStack, Input, Heading, Text } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useTypink } from 'typink';
+import { useTypink, useTx } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
+import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
-  const { client, connectedAccount } = useTypink();
+  const { client, connectedAccount } = useTypink<PolkadotApi>();
   const [message, setMessage] = useState('Hello from Typink!');
-  const [isLoading, setIsLoading] = useState(false);
+  const remarkTx = useTx(client, 'system', 'remark');
 
   const handleSendRemark = async () => {
     const toaster = txToaster('Submitting remark transaction...');
 
     try {
-      setIsLoading(true);
-
-      // Validation checks
-      if (!client || !connectedAccount) {
-        throw new Error('No connected account or client available');
-      }
-
-      // Balance check
-      const balance = await client.query.system.account(connectedAccount.address);
-      if (balance.data.free <= 0n) {
-        throw new Error('Insufficient balance to send transaction');
-      }
-
-      // Submit transaction
-      await client.tx.system
-        .remark(message)
-        .signAndSend(connectedAccount.address, (result) => {
+      await remarkTx.signAndSend({
+        args: [message],
+        callback: (result) => {
           toaster.onTxProgress(result);
 
           const { status } = result;
@@ -36,13 +23,11 @@ export default function RemarkTransactionExample() {
           if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
             setMessage('Hello from Typink!');
           }
-        })
-        .untilFinalized();
+        },
+      });
     } catch (error: any) {
       console.error('Error sending remark:', error);
       toaster.onTxError(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -57,14 +42,14 @@ export default function RemarkTransactionExample() {
         placeholder='Enter your remark message...'
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        isDisabled={!connectedAccount || isLoading}
+        isDisabled={!connectedAccount || remarkTx.inProgress}
       />
 
       <Button
         colorScheme='blue'
         onClick={handleSendRemark}
-        isLoading={isLoading}
-        isDisabled={!connectedAccount || !message.trim() || isLoading}
+        isLoading={remarkTx.inProgress}
+        isDisabled={!client || !connectedAccount || !message.trim() || remarkTx.inProgress}
         loadingText='Sending...'>
         Send Remark Transaction
       </Button>
