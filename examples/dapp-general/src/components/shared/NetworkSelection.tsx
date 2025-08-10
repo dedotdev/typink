@@ -161,7 +161,7 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
             Select Endpoint
           </Text>
           <Badge colorScheme='gray' variant='outline'>
-            {network.providers.length} available
+            {network.providers.length + 1} options
           </Badge>
         </HStack>
 
@@ -188,6 +188,55 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
               background: '#a8a8a8',
             },
           }}>
+          {/* Random Selection Option */}
+          <Button
+            onClick={() => onEndpointChange('')}
+            variant='outline'
+            size='sm'
+            justifyContent='flex-start'
+            alignItems='center'
+            py={3}
+            px={3}
+            h='auto'
+            w='full'
+            bg={!selectedEndpoint ? 'purple.50' : 'white'}
+            borderColor={!selectedEndpoint ? 'purple.400' : 'gray.200'}
+            borderWidth={!selectedEndpoint ? 2 : 1}
+            _hover={{
+              bg: !selectedEndpoint ? 'purple.100' : 'gray.50',
+              borderColor: !selectedEndpoint ? 'purple.400' : 'gray.300',
+            }}
+            position='relative'>
+            <Box flex={1} minW={0} mr={2}>
+              <HStack spacing={2}>
+                <Text fontSize='sm'>🎲</Text>
+                <VStack spacing={0} align='flex-start' flex={1}>
+                  <Text
+                    fontSize='sm'
+                    fontWeight='semibold'
+                    color={!selectedEndpoint ? 'purple.700' : 'gray.700'}
+                    textAlign='left'>
+                    Random
+                  </Text>
+                  <Text fontSize='xs' color={!selectedEndpoint ? 'purple.600' : 'gray.500'} textAlign='left'>
+                    Auto-select endpoint randomly
+                  </Text>
+                </VStack>
+              </HStack>
+            </Box>
+            <HStack spacing={1}>
+              <Badge size='xs' colorScheme='purple' variant='subtle'>
+                Recommended
+              </Badge>
+              {!selectedEndpoint && (
+                <Box color='purple.500'>
+                  <Text fontSize='sm'>✓</Text>
+                </Box>
+              )}
+            </HStack>
+          </Button>
+
+          {/* Specific Provider Options */}
           {network.providers.map((provider) => (
             <Button
               key={provider}
@@ -290,14 +339,14 @@ export default function NetworkSelection() {
     const networkInfo = Object.values(supportedNetworks).find((n) => n.id === networkId);
     if (networkInfo && networkInfo.providers.length > 0) {
       // If selecting the same network as currently connected, use the current provider
-      // Otherwise, use the first provider of the new network
+      // Otherwise, default to random selection for new networks
       if (networkId === network.id && selectedProvider) {
         setSelectedEndpoint(selectedProvider);
       } else {
-        setSelectedEndpoint(networkInfo.providers[0]);
+        setSelectedEndpoint(''); // Default to random selection
       }
     }
-    
+
     // On mobile, move to endpoint selection step
     if (isMobile) {
       setMobileStep('endpoint');
@@ -305,13 +354,13 @@ export default function NetworkSelection() {
   };
 
   const handleConnect = async () => {
-    if (!selectedNetworkId || !selectedEndpoint) return;
+    if (!selectedNetworkId) return;
 
     setIsConnecting(true);
     try {
       setNetwork({
         networkId: selectedNetworkId,
-        provider: selectedEndpoint,
+        provider: selectedEndpoint || undefined, // Empty string becomes undefined for random selection
       });
       onClose();
       setSelectedNetworkId(null);
@@ -331,8 +380,8 @@ export default function NetworkSelection() {
     // Initialize with current network
     setSelectedNetworkId(network.id);
     if (network.providers.length > 0) {
-      // Use currently connected provider if available, otherwise use first provider
-      setSelectedEndpoint(selectedProvider || network.providers[0]);
+      // Use currently connected provider if available, otherwise default to random
+      setSelectedEndpoint(selectedProvider || '');
     }
     // Reset mobile step
     setMobileStep('network');
@@ -387,13 +436,12 @@ export default function NetworkSelection() {
               w='full'
               overflow='hidden'>
               {/* Network Selection Panel */}
-              <GridItem 
-                display='flex' 
-                flexDirection='column' 
-                overflow='hidden' 
+              <GridItem
+                display='flex'
+                flexDirection='column'
+                overflow='hidden'
                 minW={0}
-                style={{ display: isMobile && mobileStep === 'endpoint' ? 'none' : 'flex' }}
-              >
+                style={{ display: isMobile && mobileStep === 'endpoint' ? 'none' : 'flex' }}>
                 <Tabs
                   index={tabIndex}
                   onChange={setTabIndex}
@@ -403,21 +451,19 @@ export default function NetworkSelection() {
                   flexDirection='column'>
                   <TabList flexShrink={0} overflowX='auto' overflowY='hidden'>
                     {tabs.map((tab, index) => (
-                      <Tab 
-                        key={index} 
+                      <Tab
+                        key={index}
                         fontSize={isMobile ? 'xs' : 'sm'}
                         minW={isMobile ? '80px' : 'auto'}
-                        px={isMobile ? 2 : 4}
-                      >
+                        px={isMobile ? 2 : 4}>
                         <HStack spacing={isSmallMobile ? 1 : 2}>
                           <Text noOfLines={1}>{isSmallMobile ? tab.label.slice(0, 3) : tab.label}</Text>
-                          <Badge 
-                            size='sm' 
-                            colorScheme='gray' 
-                            variant='solid' 
+                          <Badge
+                            size='sm'
+                            colorScheme='gray'
+                            variant='solid'
                             borderRadius='full'
-                            fontSize={isMobile ? '10px' : '12px'}
-                          >
+                            fontSize={isMobile ? '10px' : '12px'}>
                             {tab.networks.length}
                           </Badge>
                         </HStack>
@@ -486,11 +532,10 @@ export default function NetworkSelection() {
               </GridItem>
 
               {/* Endpoint Selection Panel */}
-              <GridItem 
-                overflow='hidden' 
+              <GridItem
+                overflow='hidden'
                 minW={0}
-                style={{ display: isMobile && mobileStep === 'network' ? 'none' : 'block' }}
-              >
+                style={{ display: isMobile && mobileStep === 'network' ? 'none' : 'block' }}>
                 <Box
                   borderWidth={isMobile ? 0 : 1}
                   borderColor='gray.200'
@@ -524,7 +569,7 @@ export default function NetworkSelection() {
                     onClick={handleConnect}
                     isLoading={isConnecting}
                     loadingText='Connecting...'
-                    isDisabled={!selectedEndpoint}
+                    isDisabled={selectedEndpoint === null || selectedEndpoint === undefined}
                     size='lg'
                     w='full'>
                     Connect to {selectedNetwork.name}
@@ -540,7 +585,7 @@ export default function NetworkSelection() {
                     onClick={handleConnect}
                     isLoading={isConnecting}
                     loadingText='Connecting...'
-                    isDisabled={!selectedEndpoint}>
+                    isDisabled={selectedEndpoint === null || selectedEndpoint === undefined}>
                     Connect to {selectedNetwork.name}
                   </Button>
                 </HStack>
