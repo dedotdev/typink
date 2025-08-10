@@ -1,5 +1,5 @@
 import { useRawContract } from '../useRawContract.js';
-import { Psp22ContractApi } from './contracts/psp22';
+import { Psp22ContractApi } from './contracts/psp22/index.js';
 import { useContractQuery } from '../useContractQuery.js';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { useCallback, useEffect, useState } from 'react';
