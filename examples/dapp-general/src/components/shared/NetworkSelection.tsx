@@ -384,10 +384,8 @@ export default function NetworkSelection() {
       // Otherwise, default to random selection for new networks
       if (networkId === network.id && selectedProvider) {
         setSelectedEndpoint(selectedProvider);
-      } else if (networkInfo.chainSpec) {
-        setSelectedEndpoint('light-client'); // Default to light client if available
       } else {
-        setSelectedEndpoint(''); // Default to random selection
+        setSelectedEndpoint(''); // Always default to random RPC for new network selections
       }
     }
 
@@ -442,7 +440,8 @@ export default function NetworkSelection() {
       } else if (selectedProvider?.startsWith('wss://') || selectedProvider?.startsWith('ws://')) {
         setSelectedEndpoint(selectedProvider); // Specific RPC
       } else {
-        setSelectedEndpoint('random-rpc');
+        // Default to Random RPC for all networks (first-time users)
+        setSelectedEndpoint(''); // Empty string represents random in UI
       }
     }
 
