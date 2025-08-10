@@ -13,7 +13,7 @@ export function renderIntroArt() {
 
 export function renderHelpMessage() {
   console.log(` ${chalk.bold.blue('Usage:')}
-    ${chalk.bold.green('npx create-typink<@version>')} ${chalk.gray('[--skip | --skip-install] [-n <project-name> | --name <project-name>] [-w <wallet-connector> | --wallet <wallet-connector>] [-i <ink-version> | --ink-version <ink-version>] [-t <template-name> | --template <template-name>] [-e <example-contract> | --example <example-contract>] [-N <network-name> | --network <network-name>] [--no-git] [-v | --version] [-h | --help]')}
+    ${chalk.bold.green('create-typink')} ${chalk.gray('[options]...')}
 `);
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
@@ -30,18 +30,20 @@ export function renderHelpMessage() {
 }
 
 export function renderOutroMessage(options: Options) {
+  const pkgManagerName = options.pkgManager.name;
+
   if (options.skipInstall) {
     console.log(`\n${chalk.bold.green('🎉 Your project is ready!')}
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
-    ${chalk.bold.blue('$ yarn install')}
-    ${chalk.bold.blue('$ yarn start')}
+    ${chalk.bold.blue(`$ ${pkgManagerName} install`)}
+    ${chalk.bold.blue(`$ ${['bun', 'yarn', 'pnpm'].includes(pkgManagerName) ? `${pkgManagerName} dev` : `${pkgManagerName} run dev`}`)}
 `);
   } else {
     console.log(`\n${chalk.bold.green('🎉 Your project is ready!')}
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
-    ${chalk.bold.blue('$ yarn start')}
+    ${chalk.bold.blue(`$ ${['bun', 'yarn', 'pnpm'].includes(pkgManagerName) ? `${pkgManagerName} dev` : `${pkgManagerName} run dev`}`)}
 `);
   }
 }
