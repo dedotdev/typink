@@ -1,4 +1,4 @@
-import { NetworkInfo } from '../types.js';
+import { NetworkInfo, NetworkType } from '../types.js';
 
 export const development: NetworkInfo = {
   id: 'development',
@@ -7,4 +7,5 @@ export const development: NetworkInfo = {
   providers: ['ws://127.0.0.1:9944'],
   symbol: 'UNIT',
   decimals: 12,
+  type: NetworkType.DEVNET,
 };

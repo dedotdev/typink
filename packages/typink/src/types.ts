@@ -28,10 +28,17 @@ export enum JsonRpcApi {
   NEW = 'new',
 }
 
+export enum NetworkType {
+  DEVNET = 'devnet',
+  TESTNET = 'testnet',
+  MAINNET = 'mainnet',
+}
+
 export type NetworkId = string;
 
 export interface NetworkInfo {
   id: NetworkId;
+  type?: NetworkType; // default to mainnet
   name: string;
   logo: string;
   providers: string[];

@@ -1,8 +1,9 @@
 import { CHAIN_ASSETS_BASE_URL } from './constants.js';
-import { JsonRpcApi, NetworkInfo } from '../types.js';
+import { JsonRpcApi, NetworkInfo, NetworkType } from '../types.js';
 
 export const alephZero: NetworkInfo = {
   id: 'alephzero',
+  type: NetworkType.MAINNET,
   name: 'Aleph Zero',
   logo: 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/networks/alephzero.svg',
   providers: ['wss://ws.azero.dev'],
@@ -14,6 +15,7 @@ export const alephZero: NetworkInfo = {
 
 export const astar: NetworkInfo = {
   id: 'astar',
+  type: NetworkType.MAINNET,
   name: 'Astar',
   logo: 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/networks/astar.png',
   providers: ['wss://rpc.astar.network'],
@@ -24,6 +26,7 @@ export const astar: NetworkInfo = {
 
 export const shiden: NetworkInfo = {
   id: 'astar_shiden',
+  type: NetworkType.MAINNET,
   name: 'Shiden',
   logo: 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/networks/shiden.png',
   providers: ['wss://rpc.shiden.astar.network'],
@@ -34,6 +37,7 @@ export const shiden: NetworkInfo = {
 
 export const polkadot: NetworkInfo = {
   id: 'polkadot',
+  type: NetworkType.MAINNET,
   name: 'Polkadot',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/polkadot.png`,
   providers: [
@@ -58,6 +62,7 @@ export const polkadot: NetworkInfo = {
 
 export const polkadotAssetHub: NetworkInfo = {
   id: 'polkadot_asset_hub',
+  type: NetworkType.MAINNET,
   name: 'Polkadot Asset Hub',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/statemint.png`,
   providers: [
@@ -78,6 +83,7 @@ export const polkadotAssetHub: NetworkInfo = {
 
 export const polkadotPeople: NetworkInfo = {
   id: 'polkadot_people',
+  type: NetworkType.MAINNET,
   name: 'Polkadot People',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/polkadot_people.png`,
   providers: [
@@ -95,6 +101,7 @@ export const polkadotPeople: NetworkInfo = {
 
 export const kusama: NetworkInfo = {
   id: 'kusama',
+  type: NetworkType.MAINNET,
   name: 'Kusama',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/kusama.png`,
   providers: [
@@ -116,6 +123,7 @@ export const kusama: NetworkInfo = {
 
 export const kusamaAssetHub: NetworkInfo = {
   id: 'kusama_asset_hub',
+  type: NetworkType.MAINNET,
   name: 'Kusama Asset Hub',
   logo: 'https://assethub-kusama.subscan.io/_next/image?url=%2Fchains%2Fassethub-kusama%2Flogo-mini.png&w=256&q=75',
   providers: [
@@ -130,6 +138,7 @@ export const kusamaAssetHub: NetworkInfo = {
 
 export const kusamaPeople: NetworkInfo = {
   id: 'kusama_people',
+  type: NetworkType.MAINNET,
   name: 'Kusama People',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/peoplekusama.png`,
   providers: [
@@ -147,6 +156,7 @@ export const kusamaPeople: NetworkInfo = {
 
 export const hydration: NetworkInfo = {
   id: 'hydration',
+  type: NetworkType.MAINNET,
   name: 'Hydration',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/hydradx_main.png`,
   providers: [
@@ -163,6 +173,7 @@ export const hydration: NetworkInfo = {
 
 export const basilisk: NetworkInfo = {
   id: 'basilisk',
+  type: NetworkType.MAINNET,
   name: 'Basilisk',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/basilisk.png`,
   providers: ['wss://rpc.basilisk.cloud', 'wss://basilisk-rpc.n.dwellir.com'],
@@ -173,6 +184,7 @@ export const basilisk: NetworkInfo = {
 
 export const vara: NetworkInfo = {
   id: 'vara',
+  type: NetworkType.MAINNET,
   name: 'Vara Network',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/vara_network.png`,
   providers: ['wss://rpc.vara-network.io', 'wss://rpc.vara.network'],
