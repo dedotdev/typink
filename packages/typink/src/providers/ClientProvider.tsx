@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useInitializeClient } from '../hooks/internal/index.js';
-import { NetworkId, NetworkInfo, Props } from '../types.js';
+import { NetworkId, NetworkInfo, NetworkConnection, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
@@ -9,7 +9,8 @@ import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
 import { useLocalStorage } from 'react-use';
 
-export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ISubstrateClient<ChainApi[RpcVersion]>;
+export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
+  ISubstrateClient<ChainApi[RpcVersion]>;
 
 export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
   client?: CompatibleSubstrateApi<ChainApi>;
@@ -17,13 +18,17 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   supportedNetworks: NetworkInfo[];
   network: NetworkInfo;
   networkId: NetworkId;
-  setNetworkId: (one: NetworkId) => void;
+  selectedProvider?: string;
+  setNetworkId: (connection: NetworkId) => void;
+  setNetwork: (connection: NetworkId | NetworkConnection) => void;
   cacheMetadata?: boolean;
 }
 
 export const ClientContext = createContext<ClientContextProps<any>>({} as any);
 
-export function useClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(): ClientContextProps<ChainApi> {
+export function useClient<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+>(): ClientContextProps<ChainApi> {
   return useContext(ClientContext) as ClientContextProps<ChainApi>;
 }
 
@@ -58,30 +63,51 @@ export function ClientProvider({
     return (defaultNetworkId || supportedNetworks[0].id) as NetworkId;
   }, [defaultNetworkId, supportedNetworks]);
 
-  const [networkId, setNetworkId] = useLocalStorage<NetworkId>('TYPINK::CONNECTED_NETWORK', initialNetworkId);
+  const [connectionState, setConnectionState] = useLocalStorage<NetworkConnection>('TYPINK::NETWORK_CONNECTION', {
+    networkId: initialNetworkId,
+  });
+
+  const networkId = connectionState?.networkId || initialNetworkId;
+  const selectedProvider = connectionState?.provider;
 
   const network = useMemo(
     () => supportedNetworks.find((network) => network.id === networkId),
     [networkId, supportedNetworks],
   );
 
-  assert(network, `NetworkId ${initialNetworkId} is not available`);
+  assert(network, `NetworkId ${networkId} is not available`);
 
-  const { ready, client } = useInitializeClient(network, { cacheMetadata });
+  const { ready, client } = useInitializeClient(network, { cacheMetadata, selectedProvider });
 
   useEffect(() => {
     client?.setSigner(signer);
   }, [signer, client]);
 
+  const setNetwork = (connection: NetworkId | NetworkConnection) => {
+    if (typeof connection === 'string') {
+      // Backward compatibility: if just networkId is passed
+      setConnectionState({ networkId: connection });
+    } else {
+      // New format with endpoint selection
+      setConnectionState(connection);
+    }
+  };
+
+  const setNetworkId = (networkId: NetworkId) => {
+    setNetwork(networkId);
+  };
+
   return (
     <ClientContext.Provider
-      key={networkId!}
+      key={`${networkId}-${selectedProvider || 'default'}`}
       value={{
         client,
         ready,
         network,
-        networkId: networkId!,
+        networkId,
+        selectedProvider,
         setNetworkId,
+        setNetwork,
         cacheMetadata,
         supportedNetworks,
       }}>
