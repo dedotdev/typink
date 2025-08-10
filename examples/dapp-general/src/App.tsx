@@ -1,7 +1,8 @@
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
+import RemarkTransactionExample from '@/components/RemarkTransactionExample';
 
 function App() {
   return (
@@ -9,7 +10,7 @@ function App() {
       <MainHeader />
       <Box maxWidth='760px' mx='auto' my={4} px={4} flex={1} w='full'>
         <BalanceInsufficientAlert />
-        <Heading>Hello World</Heading>
+        <RemarkTransactionExample />
       </Box>
       <MainFooter />
     </Flex>
