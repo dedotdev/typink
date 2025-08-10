@@ -52,6 +52,7 @@ interface NetworkItemProps {
 function NetworkItem({ network, currentNetworkId, selectedNetworkId, onSelect }: NetworkItemProps) {
   const isConnected = network.id === currentNetworkId;
   const isSelected = network.id === selectedNetworkId;
+  const [isMobile] = useMediaQuery('(max-width: 768px)');
 
   return (
     <Button
@@ -59,9 +60,10 @@ function NetworkItem({ network, currentNetworkId, selectedNetworkId, onSelect }:
       variant='ghost'
       justifyContent='flex-start'
       height='auto'
-      py={3}
-      px={4}
+      py={isMobile ? 4 : 3}
+      px={isMobile ? 4 : 4}
       width='full'
+      minH={isMobile ? '60px' : 'auto'}
       bg={isConnected ? 'green.50' : isSelected ? 'blue.50' : 'transparent'}
       borderColor={isConnected ? 'green.200' : isSelected ? 'blue.200' : 'transparent'}
       borderWidth={1}
@@ -235,11 +237,13 @@ export default function NetworkSelection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [smallest] = useMediaQuery('(max-width: 325px)');
   const [isMobile] = useMediaQuery('(max-width: 768px)');
+  const [isSmallMobile] = useMediaQuery('(max-width: 480px)');
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedNetworkId, setSelectedNetworkId] = useState<string | null>(null);
   const [selectedEndpoint, setSelectedEndpoint] = useState<string>('');
   const [searchQueries, setSearchQueries] = useState<Record<number, string>>({});
   const [isConnecting, setIsConnecting] = useState(false);
+  const [mobileStep, setMobileStep] = useState<'network' | 'endpoint'>('network');
 
   const networksByType = useMemo(() => {
     const networks = Object.values(supportedNetworks);
@@ -293,6 +297,11 @@ export default function NetworkSelection() {
         setSelectedEndpoint(networkInfo.providers[0]);
       }
     }
+    
+    // On mobile, move to endpoint selection step
+    if (isMobile) {
+      setMobileStep('endpoint');
+    }
   };
 
   const handleConnect = async () => {
@@ -325,6 +334,8 @@ export default function NetworkSelection() {
       // Use currently connected provider if available, otherwise use first provider
       setSelectedEndpoint(selectedProvider || network.providers[0]);
     }
+    // Reset mobile step
+    setMobileStep('network');
     onOpen();
   };
 
@@ -333,6 +344,11 @@ export default function NetworkSelection() {
     setSelectedNetworkId(null);
     setSelectedEndpoint('');
     setSearchQueries({});
+    setMobileStep('network');
+  };
+
+  const handleMobileBack = () => {
+    setMobileStep('network');
   };
 
   return (
@@ -350,7 +366,18 @@ export default function NetworkSelection() {
       <Modal isOpen={isOpen} onClose={handleClose} size={isMobile ? 'full' : '4xl'}>
         <ModalOverlay />
         <ModalContent maxH={isMobile ? '100vh' : '85vh'}>
-          <ModalHeader>Select Network</ModalHeader>
+          <ModalHeader>
+            {isMobile && mobileStep === 'endpoint' ? (
+              <HStack>
+                <Button variant='ghost' size='sm' onClick={handleMobileBack} mr={2}>
+                  ← Back
+                </Button>
+                <Text>Select Endpoint</Text>
+              </HStack>
+            ) : (
+              'Select Network'
+            )}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={0} overflow='hidden'>
             <Grid
@@ -359,7 +386,14 @@ export default function NetworkSelection() {
               h={isMobile ? 'auto' : 'auto'}
               w='full'
               overflow='hidden'>
-              <GridItem display='flex' flexDirection='column' overflow='hidden' minW={0}>
+              {/* Network Selection Panel */}
+              <GridItem 
+                display='flex' 
+                flexDirection='column' 
+                overflow='hidden' 
+                minW={0}
+                style={{ display: isMobile && mobileStep === 'endpoint' ? 'none' : 'flex' }}
+              >
                 <Tabs
                   index={tabIndex}
                   onChange={setTabIndex}
@@ -367,12 +401,23 @@ export default function NetworkSelection() {
                   colorScheme='blue'
                   display='flex'
                   flexDirection='column'>
-                  <TabList flexShrink={0}>
+                  <TabList flexShrink={0} overflowX='auto' overflowY='hidden'>
                     {tabs.map((tab, index) => (
-                      <Tab key={index} fontSize='sm'>
-                        <HStack spacing={2}>
-                          <Text>{tab.label}</Text>
-                          <Badge size='sm' colorScheme='gray' variant='solid' borderRadius='full'>
+                      <Tab 
+                        key={index} 
+                        fontSize={isMobile ? 'xs' : 'sm'}
+                        minW={isMobile ? '80px' : 'auto'}
+                        px={isMobile ? 2 : 4}
+                      >
+                        <HStack spacing={isSmallMobile ? 1 : 2}>
+                          <Text noOfLines={1}>{isSmallMobile ? tab.label.slice(0, 3) : tab.label}</Text>
+                          <Badge 
+                            size='sm' 
+                            colorScheme='gray' 
+                            variant='solid' 
+                            borderRadius='full'
+                            fontSize={isMobile ? '10px' : '12px'}
+                          >
                             {tab.networks.length}
                           </Badge>
                         </HStack>
@@ -396,9 +441,9 @@ export default function NetworkSelection() {
                         </InputGroup>
 
                         <VStack
-                          spacing={2}
+                          spacing={isMobile ? 3 : 2}
                           align='stretch'
-                          h={isMobile ? '50vh' : '400px'}
+                          h={isMobile ? `calc(100vh - 280px)` : '400px'}
                           overflowY='auto'
                           overflowX='hidden'
                           css={{
@@ -440,15 +485,20 @@ export default function NetworkSelection() {
                 </Tabs>
               </GridItem>
 
-              <GridItem overflow='hidden' minW={0}>
+              {/* Endpoint Selection Panel */}
+              <GridItem 
+                overflow='hidden' 
+                minW={0}
+                style={{ display: isMobile && mobileStep === 'network' ? 'none' : 'block' }}
+              >
                 <Box
-                  borderWidth={1}
+                  borderWidth={isMobile ? 0 : 1}
                   borderColor='gray.200'
-                  borderRadius='lg'
-                  p={4}
-                  h={isMobile ? '50vh' : '470px'}
+                  borderRadius={isMobile ? '0' : 'lg'}
+                  p={isMobile ? 0 : 4}
+                  h={isMobile ? `calc(100vh - 200px)` : '470px'}
                   w='full'
-                  bg='gray.50'
+                  bg={isMobile ? 'transparent' : 'gray.50'}
                   overflow='hidden'>
                   {selectedNetwork && (
                     <NetworkDetails
@@ -462,21 +512,39 @@ export default function NetworkSelection() {
             </Grid>
           </ModalBody>
 
-          {selectedNetwork && (
-            <ModalFooter>
-              <HStack spacing={3} w='full' justify='space-between'>
-                <Text fontSize='sm' color='gray.600'>
-                  Ready to connect to {selectedNetwork.name}
-                </Text>
-                <Button
-                  colorScheme='blue'
-                  onClick={handleConnect}
-                  isLoading={isConnecting}
-                  loadingText='Connecting...'
-                  isDisabled={!selectedEndpoint}>
-                  Connect to {selectedNetwork.name}
-                </Button>
-              </HStack>
+          {selectedNetwork && (!isMobile || mobileStep === 'endpoint') && (
+            <ModalFooter py={isMobile ? 6 : 4}>
+              {isMobile ? (
+                <VStack spacing={3} w='full'>
+                  <Text fontSize='sm' color='gray.600' textAlign='center'>
+                    Ready to connect to {selectedNetwork.name}
+                  </Text>
+                  <Button
+                    colorScheme='blue'
+                    onClick={handleConnect}
+                    isLoading={isConnecting}
+                    loadingText='Connecting...'
+                    isDisabled={!selectedEndpoint}
+                    size='lg'
+                    w='full'>
+                    Connect to {selectedNetwork.name}
+                  </Button>
+                </VStack>
+              ) : (
+                <HStack spacing={3} w='full' justify='space-between'>
+                  <Text fontSize='sm' color='gray.600'>
+                    Ready to connect to {selectedNetwork.name}
+                  </Text>
+                  <Button
+                    colorScheme='blue'
+                    onClick={handleConnect}
+                    isLoading={isConnecting}
+                    loadingText='Connecting...'
+                    isDisabled={!selectedEndpoint}>
+                    Connect to {selectedNetwork.name}
+                  </Button>
+                </HStack>
+              )}
             </ModalFooter>
           )}
         </ModalContent>
