@@ -116,12 +116,12 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
       {/* Fixed Header Section */}
       <VStack spacing={3} align='center' pb={4} flexShrink={0}>
         <Box w='60px' h='60px' flexShrink={0}>
-          <img 
-            src={network.logo} 
-            alt={network.name} 
-            width={60} 
-            height={60} 
-            style={{ borderRadius: 8, objectFit: 'contain' }} 
+          <img
+            src={network.logo}
+            alt={network.name}
+            width={60}
+            height={60}
+            style={{ borderRadius: 8, objectFit: 'contain' }}
           />
         </Box>
         <VStack spacing={1}>
@@ -162,9 +162,9 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
             {network.providers.length} available
           </Badge>
         </HStack>
-        
-        <VStack 
-          spacing={2} 
+
+        <VStack
+          spacing={2}
           align='stretch'
           flex={1}
           overflowY='auto'
@@ -185,8 +185,7 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
             '&::-webkit-scrollbar-thumb:hover': {
               background: '#a8a8a8',
             },
-          }}
-        >
+          }}>
           {network.providers.map((provider) => (
             <Button
               key={provider}
@@ -206,26 +205,20 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
                 bg: selectedEndpoint === provider ? 'blue.100' : 'gray.50',
                 borderColor: selectedEndpoint === provider ? 'blue.400' : 'gray.300',
               }}
-              position='relative'
-            >
+              position='relative'>
               <Box flex={1} minW={0} mr={2}>
-                <Text 
-                  fontSize='xs' 
-                  fontFamily='mono' 
+                <Text
+                  fontSize='xs'
+                  fontFamily='mono'
                   color={selectedEndpoint === provider ? 'blue.700' : 'gray.700'}
                   textAlign='left'
                   noOfLines={1}
-                  title={provider}
-                >
+                  title={provider}>
                   {provider}
                 </Text>
               </Box>
               {selectedEndpoint === provider && (
-                <Box 
-                  position='absolute' 
-                  right={2} 
-                  color='blue.500'
-                >
+                <Box position='absolute' right={2} color='blue.500'>
                   <Text fontSize='sm'>✓</Text>
                 </Box>
               )}
@@ -238,7 +231,7 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
 }
 
 export default function NetworkSelection() {
-  const { network, setNetworkId, supportedNetworks } = useTypink();
+  const { network, setNetwork, supportedNetworks, selectedProvider } = useTypink();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [smallest] = useMediaQuery('(max-width: 325px)');
   const [isMobile] = useMediaQuery('(max-width: 768px)');
@@ -292,7 +285,13 @@ export default function NetworkSelection() {
     setSelectedNetworkId(networkId);
     const networkInfo = Object.values(supportedNetworks).find((n) => n.id === networkId);
     if (networkInfo && networkInfo.providers.length > 0) {
-      setSelectedEndpoint(networkInfo.providers[0]);
+      // If selecting the same network as currently connected, use the current provider
+      // Otherwise, use the first provider of the new network
+      if (networkId === network.id && selectedProvider) {
+        setSelectedEndpoint(selectedProvider);
+      } else {
+        setSelectedEndpoint(networkInfo.providers[0]);
+      }
     }
   };
 
@@ -301,8 +300,10 @@ export default function NetworkSelection() {
 
     setIsConnecting(true);
     try {
-      // TODO: Add endpoint selection support to typink
-      setNetworkId(selectedNetworkId);
+      setNetwork({
+        networkId: selectedNetworkId,
+        provider: selectedEndpoint,
+      });
       onClose();
       setSelectedNetworkId(null);
       setSelectedEndpoint('');
@@ -321,7 +322,8 @@ export default function NetworkSelection() {
     // Initialize with current network
     setSelectedNetworkId(network.id);
     if (network.providers.length > 0) {
-      setSelectedEndpoint(network.providers[0]);
+      // Use currently connected provider if available, otherwise use first provider
+      setSelectedEndpoint(selectedProvider || network.providers[0]);
     }
     onOpen();
   };
@@ -351,9 +353,9 @@ export default function NetworkSelection() {
           <ModalHeader>Select Network</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={0} overflow='hidden'>
-            <Grid 
-              templateColumns={isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)'} 
-              gap={6} 
+            <Grid
+              templateColumns={isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)'}
+              gap={6}
               h={isMobile ? 'auto' : 'auto'}
               w='full'
               overflow='hidden'>
@@ -380,12 +382,7 @@ export default function NetworkSelection() {
 
                   <TabPanels flex={1} display='flex' flexDirection='column'>
                     {tabs.map((tab, index) => (
-                      <TabPanel
-                        key={index}
-                        px={0}
-                        py={4}
-                        display='flex'
-                        flexDirection='column'>
+                      <TabPanel key={index} px={0} py={4} display='flex' flexDirection='column'>
                         <InputGroup mb={4} flexShrink={0}>
                           <InputLeftElement pointerEvents='none'>
                             <SearchIcon color='gray.400' />

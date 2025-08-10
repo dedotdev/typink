@@ -15,6 +15,7 @@ export type UseClient = {
 
 export type UseClientOptions = {
   cacheMetadata: boolean;
+  selectedProvider?: string;
 };
 
 /**
@@ -34,7 +35,7 @@ export type UseClientOptions = {
  *          - client: The initialized Substrate client, or undefined if not ready.
  */
 export function useInitializeClient(network?: NetworkInfo, options?: UseClientOptions): UseClient {
-  const { cacheMetadata = false } = options || {};
+  const { cacheMetadata = false, selectedProvider } = options || {};
 
   const [ready, setReady] = useToggle(false);
   const [client, setClient] = useState<CompatibleSubstrateClient>();
@@ -61,8 +62,20 @@ export function useInitializeClient(network?: NetworkInfo, options?: UseClientOp
 
     setReady(false);
 
-    // TODO support light-client
-    const provider: JsonRpcProvider = new WsProvider(network.providers);
+    // Determine which provider(s) to use
+    let provider: JsonRpcProvider;
+    
+    if (selectedProvider === 'light') {
+      // TODO: Implement light client support
+      // For now, fallback to WebSocket providers
+      provider = new WsProvider(network.providers);
+    } else if (selectedProvider) {
+      // Use the specifically selected endpoint
+      provider = new WsProvider(selectedProvider);
+    } else {
+      // Use all providers (round-robin)
+      provider = new WsProvider(network.providers);
+    }
 
     if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
       setClient(await LegacyClient.new({ provider, cacheMetadata }));

@@ -36,6 +36,11 @@ export enum NetworkType {
 
 export type NetworkId = string;
 
+export interface NetworkConnection {
+  networkId: NetworkId;
+  provider?: string; // specific endpoint URL or 'light' for light client
+}
+
 export interface NetworkInfo {
   id: NetworkId;
   type?: NetworkType; // default to mainnet
