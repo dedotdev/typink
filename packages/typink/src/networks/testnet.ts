@@ -48,6 +48,9 @@ export const westend: NetworkInfo = {
   decimals: 12,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://westend.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/westend2')).chainSpec;
+  },
 };
 
 export const westendAssetHub: NetworkInfo = {
@@ -60,6 +63,10 @@ export const westendAssetHub: NetworkInfo = {
   decimals: 12,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://assethub-westend.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/westend2_asset_hub')).chainSpec;
+  },
+  relayChain: westend,
 };
 
 export const westendPeople: NetworkInfo = {
@@ -72,6 +79,10 @@ export const westendPeople: NetworkInfo = {
   decimals: 12,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://people-westend.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/westend_people')).chainSpec;
+  },
+  relayChain: westend,
 };
 
 export const paseo: NetworkInfo = {
@@ -89,6 +100,9 @@ export const paseo: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://paseo.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/paseo')).chainSpec;
+  },
 };
 
 export const paseoPeople: NetworkInfo = {

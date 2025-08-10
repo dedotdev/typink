@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useInitializeClient } from '../hooks/internal/index.js';
-import { NetworkId, NetworkInfo, NetworkConnection, Props } from '../types.js';
+import { NetworkId, NetworkInfo, NetworkConnection, Props, validateProvider } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
@@ -68,7 +68,7 @@ export function ClientProvider({
   });
 
   const networkId = connectionState?.networkId || initialNetworkId;
-  const selectedProvider = connectionState?.provider;
+  const selectedProvider = validateProvider(connectionState?.provider);
 
   const network = useMemo(
     () => supportedNetworks.find((network) => network.id === networkId),

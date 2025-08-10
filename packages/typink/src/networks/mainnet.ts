@@ -58,6 +58,9 @@ export const polkadot: NetworkInfo = {
   symbol: 'DOT',
   decimals: 10,
   subscanUrl: 'https://polkadot.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/polkadot')).chainSpec;
+  },
 };
 
 export const polkadotAssetHub: NetworkInfo = {
@@ -79,6 +82,10 @@ export const polkadotAssetHub: NetworkInfo = {
   symbol: 'DOT',
   decimals: 10,
   subscanUrl: 'https://assethub-polkadot.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/polkadot_asset_hub')).chainSpec;
+  },
+  relayChain: polkadot,
 };
 
 export const polkadotPeople: NetworkInfo = {
@@ -97,6 +104,10 @@ export const polkadotPeople: NetworkInfo = {
   symbol: 'DOT',
   decimals: 10,
   subscanUrl: 'https://people-polkadot.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/polkadot_people')).chainSpec;
+  },
+  relayChain: polkadot,
 };
 
 export const kusama: NetworkInfo = {
@@ -119,6 +130,9 @@ export const kusama: NetworkInfo = {
   symbol: 'KSM',
   decimals: 12,
   subscanUrl: 'https://kusama.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/ksmcc3')).chainSpec;
+  },
 };
 
 export const kusamaAssetHub: NetworkInfo = {
@@ -134,6 +148,10 @@ export const kusamaAssetHub: NetworkInfo = {
   symbol: 'KSM',
   decimals: 12,
   subscanUrl: 'https://assethub-kusama.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/ksmcc3_asset_hub')).chainSpec;
+  },
+  relayChain: kusama,
 };
 
 export const kusamaPeople: NetworkInfo = {
@@ -152,6 +170,10 @@ export const kusamaPeople: NetworkInfo = {
   symbol: 'KSM',
   decimals: 12,
   subscanUrl: 'https://people-kusama.subscan.io',
+  chainSpec: async () => {
+    return (await import('@substrate/connect-known-chains/ksmcc3_people')).chainSpec;
+  },
+  relayChain: kusama,
 };
 
 export const hydration: NetworkInfo = {
