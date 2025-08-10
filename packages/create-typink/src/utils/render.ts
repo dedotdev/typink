@@ -37,13 +37,13 @@ export function renderOutroMessage(options: Options) {
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
     ${chalk.bold.blue(`$ ${pkgManagerName} install`)}
-    ${chalk.bold.blue(`$ ${['bun', 'yarn'].includes(pkgManagerName) ? `${pkgManagerName} start` : `${pkgManagerName} run start`}`)}
+    ${chalk.bold.blue(`$ ${['bun', 'yarn', 'pnpm'].includes(pkgManagerName) ? `${pkgManagerName} dev` : `${pkgManagerName} run dev`}`)}
 `);
   } else {
     console.log(`\n${chalk.bold.green('🎉 Your project is ready!')}
 ${chalk.bold.blue('➡️ To get started:')}
     ${chalk.bold.blue(`$ cd ${options.projectName}`)}
-    ${chalk.bold.blue(`$ ${['bun', 'yarn'].includes(pkgManagerName) ? `${pkgManagerName} start` : `${pkgManagerName} run start`}`)}
+    ${chalk.bold.blue(`$ ${['bun', 'yarn', 'pnpm'].includes(pkgManagerName) ? `${pkgManagerName} dev` : `${pkgManagerName} run dev`}`)}
 `);
   }
 }
