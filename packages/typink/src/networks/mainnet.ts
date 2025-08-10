@@ -1,3 +1,4 @@
+import { CHAIN_ASSETS_BASE_URL } from './constants.js';
 import { JsonRpcApi, NetworkInfo } from '../types.js';
 
 export const alephZero: NetworkInfo = {

@@ -1,4 +1,5 @@
 import { JsonRpcApi, NetworkInfo } from '../types.js';
+import { CHAIN_ASSETS_BASE_URL } from './constants.js';
 
 export const popTestnet: NetworkInfo = {
   id: 'pop_testnet',
@@ -69,7 +70,7 @@ export const westendPeople: NetworkInfo = {
 
 export const paseo: NetworkInfo = {
   id: 'paseo_testnet',
-  name: 'Paseo Testnet',
+  name: 'Paseo',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/paseotest.png`,
   providers: [
     'wss://paseo.rpc.amforc.com',
@@ -127,7 +128,7 @@ export const passetHub: NetworkInfo = {
 
 export const paseoHydration: NetworkInfo = {
   id: 'paseo_hydration',
-  name: 'Paseo Hydration Testnet',
+  name: 'Paseo Hydration',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/hydrationpaseo.png`,
   providers: ['wss://paseo-rpc.play.hydration.cloud'],
   symbol: 'HDX',
