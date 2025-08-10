@@ -36,9 +36,29 @@ export enum NetworkType {
 
 export type NetworkId = string;
 
+export type ProviderType = 'light-client' | 'random-rpc' | `wss://${string}` | `ws://${string}`;
+
+export function validateProvider(provider: string | undefined): ProviderType {
+  if (!provider) {
+    return 'random-rpc'; // Default for undefined
+  }
+  
+  if (provider === 'light-client' || provider === 'random-rpc') {
+    return provider;
+  }
+  
+  if (provider.startsWith('wss://') || provider.startsWith('ws://')) {
+    return provider as `wss://${string}` | `ws://${string}`;
+  }
+  
+  // Invalid provider - fallback to random
+  console.warn(`Invalid provider "${provider}", falling back to random-rpc`);
+  return 'random-rpc';
+}
+
 export interface NetworkConnection {
   networkId: NetworkId;
-  provider?: string; // specific endpoint URL or 'light' for light client
+  provider?: ProviderType;
 }
 
 export interface NetworkInfo {
@@ -53,4 +73,6 @@ export interface NetworkInfo {
   pjsUrl?: string;
   faucetUrl?: string;
   jsonRpcApi?: JsonRpcApi; // default to new
+  chainSpec?: () => Promise<string>;
+  relayChain?: NetworkInfo;
 }

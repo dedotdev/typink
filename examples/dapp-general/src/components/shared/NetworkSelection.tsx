@@ -29,7 +29,7 @@ import {
   ModalFooter,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
-import { useTypink, NetworkInfo, NetworkType } from 'typink';
+import { useTypink, NetworkInfo, NetworkType, ProviderType } from 'typink';
 import { useMemo, useState } from 'react';
 
 function NetworkStatusIndicator() {
@@ -154,11 +154,56 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
 
       <Divider mb={4} />
 
-      {/* Scrollable Endpoints Section */}
+      {/* Light Client Section - Only show if chainSpec is available */}
+      {network.chainSpec && (
+        <>
+          <Button
+            onClick={() => onEndpointChange('light-client')}
+            variant='outline'
+            size='md'
+            justifyContent='space-between'
+            alignItems='center'
+            py={4}
+            px={4}
+            h='auto'
+            w='full'
+            bg={selectedEndpoint === 'light-client' ? 'teal.50' : 'white'}
+            borderColor={selectedEndpoint === 'light-client' ? 'teal.400' : 'gray.200'}
+            borderWidth={selectedEndpoint === 'light-client' ? 2 : 1}
+            _hover={{
+              bg: selectedEndpoint === 'light-client' ? 'teal.100' : 'gray.50',
+              borderColor: selectedEndpoint === 'light-client' ? 'teal.400' : 'gray.300',
+            }}
+            mb={4}>
+            <HStack spacing={3} flex={1}>
+              <Text fontSize='lg'>⚡</Text>
+              <VStack spacing={0} align='flex-start' flex={1}>
+                <Text
+                  fontSize='sm'
+                  fontWeight='bold'
+                  color={selectedEndpoint === 'light-client' ? 'teal.700' : 'gray.900'}>
+                  Light Client
+                </Text>
+                <Text fontSize='xs' color={selectedEndpoint === 'light-client' ? 'teal.600' : 'gray.500'}>
+                  Direct P2P connection
+                </Text>
+              </VStack>
+            </HStack>
+            {selectedEndpoint === 'light-client' && (
+              <Box color='teal.500'>
+                <Text fontSize='md'>✓</Text>
+              </Box>
+            )}
+          </Button>
+          <Divider mb={4} />
+        </>
+      )}
+
+      {/* RPC Endpoints Section */}
       <VStack spacing={3} align='stretch' flex={1} overflow='hidden'>
         <HStack justify='space-between' flexShrink={0}>
           <Text fontSize='sm' fontWeight='semibold' color='gray.700'>
-            Select Endpoint
+            Select RPC Endpoint
           </Text>
           <Badge colorScheme='gray' variant='outline'>
             {network.providers.length + 1} options
@@ -225,9 +270,6 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
               </HStack>
             </Box>
             <HStack spacing={1}>
-              <Badge size='xs' colorScheme='purple' variant='subtle'>
-                Recommended
-              </Badge>
               {!selectedEndpoint && (
                 <Box color='purple.500'>
                   <Text fontSize='sm'>✓</Text>
@@ -342,6 +384,8 @@ export default function NetworkSelection() {
       // Otherwise, default to random selection for new networks
       if (networkId === network.id && selectedProvider) {
         setSelectedEndpoint(selectedProvider);
+      } else if (networkInfo.chainSpec) {
+        setSelectedEndpoint('light-client'); // Default to light client if available
       } else {
         setSelectedEndpoint(''); // Default to random selection
       }
@@ -358,9 +402,19 @@ export default function NetworkSelection() {
 
     setIsConnecting(true);
     try {
+      // Handle light-client, random (empty string), or specific endpoint
+      let provider: ProviderType | undefined;
+      if (selectedEndpoint === 'light-client') {
+        provider = 'light-client';
+      } else if (selectedEndpoint === '') {
+        provider = 'random-rpc'; // Explicit random selection
+      } else {
+        provider = selectedEndpoint as `wss://${string}` | `ws://${string}`;
+      }
+
       setNetwork({
         networkId: selectedNetworkId,
-        provider: selectedEndpoint || undefined, // Empty string becomes undefined for random selection
+        provider,
       });
       onClose();
       setSelectedNetworkId(null);
@@ -380,10 +434,18 @@ export default function NetworkSelection() {
     // Initialize with current network
     setSelectedNetworkId(network.id);
     if (network.providers.length > 0) {
-      // Use currently connected provider if available, otherwise default to random
-      setSelectedEndpoint(selectedProvider || '');
+      // Check user's previous selection using explicit string types
+      if (selectedProvider === 'light-client') {
+        setSelectedEndpoint('light-client');
+      } else if (selectedProvider === 'random-rpc') {
+        setSelectedEndpoint(''); // Empty string represents random in UI
+      } else if (selectedProvider?.startsWith('wss://') || selectedProvider?.startsWith('ws://')) {
+        setSelectedEndpoint(selectedProvider); // Specific RPC
+      } else {
+        setSelectedEndpoint('random-rpc');
+      }
     }
-    // Reset mobile step
+
     setMobileStep('network');
     onOpen();
   };
