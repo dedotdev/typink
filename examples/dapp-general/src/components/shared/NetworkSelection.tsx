@@ -23,9 +23,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Radio,
-  RadioGroup,
-  Stack,
   Divider,
   Grid,
   GridItem,
@@ -115,11 +112,20 @@ interface NetworkDetailsProps {
 
 function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: NetworkDetailsProps) {
   return (
-    <VStack spacing={4} align='stretch'>
-      <VStack spacing={2} align='center'>
-        <img src={network.logo} alt={network.name} width={48} height={48} style={{ borderRadius: 8 }} />
-        <VStack spacing={0}>
-          <Text fontSize='lg' fontWeight='bold'>
+    <Flex direction='column' h='full'>
+      {/* Fixed Header Section */}
+      <VStack spacing={3} align='center' pb={4} flexShrink={0}>
+        <Box w='60px' h='60px' flexShrink={0}>
+          <img 
+            src={network.logo} 
+            alt={network.name} 
+            width={60} 
+            height={60} 
+            style={{ borderRadius: 8, objectFit: 'contain' }} 
+          />
+        </Box>
+        <VStack spacing={1}>
+          <Text fontSize='lg' fontWeight='bold' textAlign='center'>
             {network.name}
           </Text>
           <HStack spacing={2}>
@@ -144,32 +150,90 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
         </VStack>
       </VStack>
 
-      <Divider />
+      <Divider mb={4} />
 
-      <VStack spacing={3} align='stretch'>
-        <Text fontSize='sm' fontWeight='semibold' color='gray.700'>
-          Select Endpoint ({network.providers.length} available)
-        </Text>
-        <RadioGroup value={selectedEndpoint} onChange={onEndpointChange}>
-          <Stack spacing={2}>
-            {network.providers.map((provider, index) => (
-              <Radio key={provider} value={provider} size='sm'>
-                <VStack spacing={0} align='flex-start' ml={2}>
-                  <Text fontSize='xs' fontFamily='mono' color='gray.800'>
-                    {provider}
-                  </Text>
-                  {index === 0 && (
-                    <Text fontSize='xs' color='gray.500'>
-                      Default
-                    </Text>
-                  )}
-                </VStack>
-              </Radio>
-            ))}
-          </Stack>
-        </RadioGroup>
+      {/* Scrollable Endpoints Section */}
+      <VStack spacing={3} align='stretch' flex={1} overflow='hidden'>
+        <HStack justify='space-between' flexShrink={0}>
+          <Text fontSize='sm' fontWeight='semibold' color='gray.700'>
+            Select Endpoint
+          </Text>
+          <Badge colorScheme='gray' variant='outline'>
+            {network.providers.length} available
+          </Badge>
+        </HStack>
+        
+        <VStack 
+          spacing={2} 
+          align='stretch'
+          flex={1}
+          overflowY='auto'
+          overflowX='hidden'
+          pr={2}
+          css={{
+            '&::-webkit-scrollbar': {
+              width: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#f1f1f1',
+              borderRadius: '2px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#c1c1c1',
+              borderRadius: '2px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: '#a8a8a8',
+            },
+          }}
+        >
+          {network.providers.map((provider) => (
+            <Button
+              key={provider}
+              onClick={() => onEndpointChange(provider)}
+              variant='outline'
+              size='sm'
+              justifyContent='flex-start'
+              alignItems='center'
+              py={3}
+              px={3}
+              h='auto'
+              w='full'
+              bg={selectedEndpoint === provider ? 'blue.50' : 'white'}
+              borderColor={selectedEndpoint === provider ? 'blue.400' : 'gray.200'}
+              borderWidth={selectedEndpoint === provider ? 2 : 1}
+              _hover={{
+                bg: selectedEndpoint === provider ? 'blue.100' : 'gray.50',
+                borderColor: selectedEndpoint === provider ? 'blue.400' : 'gray.300',
+              }}
+              position='relative'
+            >
+              <Box flex={1} minW={0} mr={2}>
+                <Text 
+                  fontSize='xs' 
+                  fontFamily='mono' 
+                  color={selectedEndpoint === provider ? 'blue.700' : 'gray.700'}
+                  textAlign='left'
+                  noOfLines={1}
+                  title={provider}
+                >
+                  {provider}
+                </Text>
+              </Box>
+              {selectedEndpoint === provider && (
+                <Box 
+                  position='absolute' 
+                  right={2} 
+                  color='blue.500'
+                >
+                  <Text fontSize='sm'>✓</Text>
+                </Box>
+              )}
+            </Button>
+          ))}
+        </VStack>
       </VStack>
-    </VStack>
+    </Flex>
   );
 }
 
@@ -286,9 +350,14 @@ export default function NetworkSelection() {
         <ModalContent maxH={isMobile ? '100vh' : '85vh'}>
           <ModalHeader>Select Network</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={0}>
-            <Grid templateColumns={isMobile ? '1fr' : '1fr 1fr'} gap={6} h={isMobile ? 'auto' : 'auto'}>
-              <GridItem display='flex' flexDirection='column'>
+          <ModalBody pb={0} overflow='hidden'>
+            <Grid 
+              templateColumns={isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)'} 
+              gap={6} 
+              h={isMobile ? 'auto' : 'auto'}
+              w='full'
+              overflow='hidden'>
+              <GridItem display='flex' flexDirection='column' overflow='hidden' minW={0}>
                 <Tabs
                   index={tabIndex}
                   onChange={setTabIndex}
@@ -374,31 +443,16 @@ export default function NetworkSelection() {
                 </Tabs>
               </GridItem>
 
-              <GridItem>
+              <GridItem overflow='hidden' minW={0}>
                 <Box
                   borderWidth={1}
                   borderColor='gray.200'
                   borderRadius='lg'
                   p={4}
                   h={isMobile ? '50vh' : '470px'}
+                  w='full'
                   bg='gray.50'
-                  overflowY='auto'
-                  css={{
-                    '&::-webkit-scrollbar': {
-                      width: '6px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      background: '#f1f1f1',
-                      borderRadius: '3px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      background: '#c1c1c1',
-                      borderRadius: '3px',
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                      background: '#a8a8a8',
-                    },
-                  }}>
+                  overflow='hidden'>
                   {selectedNetwork && (
                     <NetworkDetails
                       network={selectedNetwork}
