@@ -547,12 +547,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/chaintypes@npm:^0.132.0":
-  version: 0.132.0
-  resolution: "@dedot/chaintypes@npm:0.132.0"
+"@dedot/chaintypes@npm:^0.133.0":
+  version: 0.133.0
+  resolution: "@dedot/chaintypes@npm:0.133.0"
   peerDependencies:
     dedot: ">=0.15.0"
-  checksum: 10/004e7bae2243f2d514780990dfa34a402284657fe27f287c55f854467719cfeac1b6f376168a339a0574edd9bb4d576cbd3e4db5ba7f46fd8a8d7601ff85c8db
+  checksum: 10/ceb757fad7f04d70e33107ddbb80e85dd2ad32933233b8e477ea8080d76cf0dbb2789195fcd5af94235be3e989c37e413c0b8c191407f6f4247a74ac8cfcf960
   languageName: node
   linkType: hard
 
@@ -6999,7 +6999,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/chaintypes": "npm:^0.133.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
@@ -7192,7 +7192,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/chaintypes": "npm:^0.133.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
@@ -7223,7 +7223,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/chaintypes": "npm:^0.133.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
@@ -7260,7 +7260,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/chaintypes": "npm:^0.133.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
@@ -15322,7 +15322,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "zombienet@workspace:e2e/zombienet"
   dependencies:
-    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/chaintypes": "npm:^0.133.0"
     "@polkadot/keyring": "npm:^13.3.1"
     "@polkadot/types": "npm:^15.5.2"
     "@polkadot/util-crypto": "npm:^13.3.1"
