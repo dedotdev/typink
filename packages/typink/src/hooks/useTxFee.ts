@@ -6,10 +6,8 @@ import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { 
   TxBuilder, 
-  UseTxReturnType,
-  TxEstimatedFeeParameters 
+  UseTxReturnType
 } from './useTx.js';
-import type { Args } from '../types.js';
 
 // Input types for useTxFee with all parameters merged into a single object
 interface UseTxFeeInput<
