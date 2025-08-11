@@ -32,6 +32,7 @@ type MockClient = {
 };
 
 type MockUseTxReturnType = {
+  signAndSend: ReturnType<typeof vi.fn>;
   estimatedFee: ReturnType<typeof vi.fn>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
@@ -66,6 +67,7 @@ describe('useTxFee - Unit Tests', () => {
     mockConnectedAccount = { address: 'mock-address' };
 
     mockUseTxReturnType = {
+      signAndSend: vi.fn().mockResolvedValue(undefined),
       estimatedFee: vi.fn().mockResolvedValue(2000000n),
       inProgress: false,
       inBestBlockProgress: false,
@@ -82,7 +84,11 @@ describe('useTxFee - Unit Tests', () => {
   describe('Hook Structure', () => {
     it('should return correct structure when disabled', () => {
       const { result } = renderHook(() => 
-        useTxFee((tx) => tx.system.remark('test'), { enabled: false })
+        useTxFee({
+          tx: (tx) => tx.system.remark,
+          args: ['test'],
+          enabled: false
+        })
       );
 
       expect(result.current.fee).toBe(null);
@@ -95,7 +101,11 @@ describe('useTxFee - Unit Tests', () => {
   describe('Manual Refetch - TxBuilder', () => {
     it('should estimate fee with TxBuilder via refetch', async () => {
       const { result } = renderHook(() => 
-        useTxFee((tx) => tx.system.remark('test'), { enabled: false })
+        useTxFee({
+          tx: (tx) => tx.system.remark,
+          args: ['test'],
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -112,7 +122,12 @@ describe('useTxFee - Unit Tests', () => {
     it('should pass txOptions with TxBuilder', async () => {
       const txOptions = { tip: 500n };
       const { result } = renderHook(() => 
-        useTxFee((tx) => tx.system.remark('test'), { txOptions, enabled: false })
+        useTxFee({
+          tx: (tx) => tx.system.remark,
+          args: ['test'],
+          txOptions,
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -128,7 +143,11 @@ describe('useTxFee - Unit Tests', () => {
       mockPaymentInfo.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => 
-        useTxFee((tx) => tx.system.remark('test'), { enabled: false })
+        useTxFee({ 
+          tx: (tx) => tx.system.remark, 
+          args: ['test'],
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -144,7 +163,11 @@ describe('useTxFee - Unit Tests', () => {
   describe('Manual Refetch - UseTxReturnType', () => {
     it('should estimate fee with UseTxReturnType via refetch', async () => {
       const { result } = renderHook(() => 
-        useTxFee(mockUseTxReturnType, { enabled: false })
+        useTxFee({ 
+          tx: mockUseTxReturnType, 
+          args: ['test'],
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -154,13 +177,18 @@ describe('useTxFee - Unit Tests', () => {
       expect(result.current.fee).toBe(2000000n);
       expect(result.current.error).toBe(null);
       expect(result.current.isLoading).toBe(false);
-      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ txOptions: {} });
+      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions: {} });
     });
 
     it('should pass txOptions to UseTxReturnType', async () => {
       const txOptions = { tip: 1000n };
       const { result } = renderHook(() => 
-        useTxFee(mockUseTxReturnType, { txOptions, enabled: false })
+        useTxFee({ 
+          tx: mockUseTxReturnType, 
+          args: ['test'],
+          txOptions,
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -168,7 +196,7 @@ describe('useTxFee - Unit Tests', () => {
       });
 
       expect(result.current.fee).toBe(2000000n);
-      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ txOptions });
+      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions });
     });
 
     it('should handle UseTxReturnType errors', async () => {
@@ -176,7 +204,11 @@ describe('useTxFee - Unit Tests', () => {
       mockUseTxReturnType.estimatedFee.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => 
-        useTxFee(mockUseTxReturnType, { enabled: false })
+        useTxFee({ 
+          tx: mockUseTxReturnType, 
+          args: ['test'],
+          enabled: false
+        })
       );
 
       await act(async () => {
@@ -196,7 +228,10 @@ describe('useTxFee - Unit Tests', () => {
         connectedAccount: mockConnectedAccount,
       });
 
-      const { result } = renderHook(() => useTxFee((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTxFee({ 
+        tx: (tx) => tx.system.remark, 
+        args: ['test'] 
+      }));
 
       expect(result.current.fee).toBe(null);
       expect(result.current.isLoading).toBe(false);
@@ -209,7 +244,10 @@ describe('useTxFee - Unit Tests', () => {
         connectedAccount: null,
       });
 
-      const { result } = renderHook(() => useTxFee((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTxFee({ 
+        tx: (tx) => tx.system.remark, 
+        args: ['test'] 
+      }));
 
       expect(result.current.fee).toBe(null);
       expect(result.current.isLoading).toBe(false);
@@ -226,7 +264,11 @@ describe('useTxFee - Unit Tests', () => {
       mockPaymentInfo.mockReturnValue(paymentInfoPromise);
 
       const { result } = renderHook(() => 
-        useTxFee((tx) => tx.system.remark('test'), { enabled: false })
+        useTxFee({ 
+          tx: (tx) => tx.system.remark, 
+          args: ['test'],
+          enabled: false
+        })
       );
 
       expect(result.current.isLoading).toBe(false);

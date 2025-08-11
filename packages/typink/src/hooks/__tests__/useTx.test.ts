@@ -93,7 +93,7 @@ describe('useTx', () => {
 
   describe('Hook Structure and Initial State', () => {
     it('should return the correct structure', () => {
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       expect(result.current).toHaveProperty('signAndSend');
       expect(typeof result.current.signAndSend).toBe('function');
@@ -109,7 +109,7 @@ describe('useTx', () => {
         connectedAccount: mockConnectedAccount,
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       expect(result.current).toHaveProperty('signAndSend');
       expect(typeof result.current.signAndSend).toBe('function');
@@ -125,9 +125,9 @@ describe('useTx', () => {
         connectedAccount: mockConnectedAccount,
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.signAndSend()).rejects.toThrow('Client not found');
+      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow('Client not found');
     });
 
     it('should throw an error if connectedAccount is undefined', async () => {
@@ -136,9 +136,9 @@ describe('useTx', () => {
         connectedAccount: undefined,
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.signAndSend()).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
     });
 
     it('should handle balance check failure', async () => {
@@ -150,9 +150,9 @@ describe('useTx', () => {
         });
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.signAndSend()).rejects.toThrow();
+      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow();
     });
 
     it('should handle transaction errors', async () => {
@@ -161,7 +161,7 @@ describe('useTx', () => {
         throw mockError;
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       await expect(result.current.signAndSend()).rejects.toThrow('Transaction failed');
     });
@@ -172,10 +172,10 @@ describe('useTx', () => {
         throw mockError;
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       try {
-        await result.current.signAndSend();
+        await result.current.signAndSend({ args: ['test'] });
       } catch (e) {
         // Expected to throw
       }
@@ -194,10 +194,10 @@ describe('useTx', () => {
         }, 10);
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       // Start the transaction
-      const promise = result.current.signAndSend();
+      const promise = result.current.signAndSend({ args: ['test'] });
       
       // Check initial progress state
       await act(async () => {
@@ -217,10 +217,10 @@ describe('useTx', () => {
         callback({ status: { type: 'Finalized' } });
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       await act(async () => {
-        await result.current.signAndSend();
+        await result.current.signAndSend({ args: ['test'] });
       });
 
       expect(result.current.inProgress).toBe(false);
@@ -234,10 +234,10 @@ describe('useTx', () => {
         callbackFn = callback;
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       // Start the transaction
-      const signAndSendPromise = result.current.signAndSend();
+      const signAndSendPromise = result.current.signAndSend({ args: ['test'] });
       
       // Check initial progress state
       await act(async () => {
@@ -277,10 +277,11 @@ describe('useTx', () => {
         callback(mockResult);
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       await act(async () => {
         await result.current.signAndSend({
+          args: ['test'],
           callback: mockCallback,
         });
       });
@@ -301,10 +302,11 @@ describe('useTx', () => {
         }, 0);
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
       await act(async () => {
         await result.current.signAndSend({
+          args: ['test'],
           callback: mockCallback,
         });
       });
@@ -321,7 +323,8 @@ describe('useTx', () => {
 
   describe('Transaction Builder Integration', () => {
     it('should call transaction builder with client.tx', async () => {
-      const txBuilder = vi.fn().mockReturnValue(mockTx);
+      const mockTxFn = vi.fn().mockReturnValue(mockTx);
+      const txBuilder = vi.fn().mockReturnValue(mockTxFn);
 
       const { result } = renderHook(() => useTx(txBuilder));
 
@@ -330,10 +333,11 @@ describe('useTx', () => {
       });
 
       await act(async () => {
-        await result.current.signAndSend();
+        await result.current.signAndSend({ args: ['test'] });
       });
 
       expect(txBuilder).toHaveBeenCalledWith(mockClient.tx);
+      expect(mockTxFn).toHaveBeenCalledWith('test');
     });
 
     it('should work with different transaction types', async () => {
@@ -341,10 +345,10 @@ describe('useTx', () => {
         callback({ status: { type: 'Finalized' } });
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.balances.transfer('recipient', 1000)));
+      const { result } = renderHook(() => useTx((tx) => tx.balances.transfer));
 
       await act(async () => {
-        await result.current.signAndSend();
+        await result.current.signAndSend({ args: ['recipient', 1000] });
       });
 
       expect(mockClient.tx.balances.transfer).toHaveBeenCalledWith('recipient', 1000);
@@ -361,9 +365,9 @@ describe('useTx', () => {
     });
 
     it('should estimate fee successfully', async () => {
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test message')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      const fee = await result.current.estimatedFee();
+      const fee = await result.current.estimatedFee({ args: ['test message'] });
 
       expect(fee).toBe(1000000n);
       expect(mockClient.tx.system.remark).toHaveBeenCalledWith('test message');
@@ -371,9 +375,10 @@ describe('useTx', () => {
     });
 
     it('should pass transaction options to estimatedFee', async () => {
-      const { result } = renderHook(() => useTx((tx) => tx.balances.transfer('recipient-address', 1000000n)));
+      const { result } = renderHook(() => useTx((tx) => tx.balances.transfer));
 
       const fee = await result.current.estimatedFee({
+        args: ['recipient-address', 1000000n],
         txOptions: { tip: 100000n },
       });
 
@@ -388,9 +393,9 @@ describe('useTx', () => {
         connectedAccount: mockConnectedAccount,
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee()).rejects.toThrow('Client not found');
+      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('Client not found');
     });
 
     it('should throw error when no connected account', async () => {
@@ -399,9 +404,9 @@ describe('useTx', () => {
         connectedAccount: undefined,
       });
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee()).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
     });
 
     it('should handle errors with readable message', async () => {
@@ -410,9 +415,9 @@ describe('useTx', () => {
 
       (withReadableErrorMessage as any).mockImplementation((_, error) => error);
 
-      const { result } = renderHook(() => useTx((tx) => tx.system.remark('test')));
+      const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee()).rejects.toThrow('Transaction failed');
+      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('Transaction failed');
 
       expect(withReadableErrorMessage).toHaveBeenCalledWith(mockClient, mockError);
     });
@@ -455,7 +460,8 @@ describe('generalTx', () => {
 
       await generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
       });
 
@@ -472,7 +478,8 @@ describe('generalTx', () => {
 
       await generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
         callback: mockCallback,
       });
@@ -489,7 +496,8 @@ describe('generalTx', () => {
 
       const promise = generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
       });
 
@@ -503,7 +511,8 @@ describe('generalTx', () => {
 
       const promise = generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
       });
 
@@ -517,7 +526,8 @@ describe('generalTx', () => {
 
       const promise = generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
       });
 
@@ -531,7 +541,8 @@ describe('generalTx', () => {
 
       await generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
         txOptions: { tip: 1000n },
       });
@@ -546,7 +557,8 @@ describe('generalTx', () => {
 
       await generalTx({
         client: mockClient,
-        txBuilder: (tx) => tx.system.remark('test'),
+        txBuilder: (tx) => tx.system.remark,
+        args: ['test'],
         caller: 'test-address',
       });
 

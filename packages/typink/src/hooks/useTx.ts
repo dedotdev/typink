@@ -11,25 +11,29 @@ import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 // Get the actual ChainApi at runtime version
 export type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
 
-// Type for transaction builder callback
-export type TxBuilder<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = (
-  tx: RuntimeChainApi<ChainApi>['tx']
-) => ISubmittableExtrinsic<ISubmittableResult>;
+// Type for transaction builder callback that returns the transaction method (not called)
+export type TxBuilder<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+> = (tx: RuntimeChainApi<ChainApi>['tx']) => TxFn;
 
-// Parameter types for better reusability
-export type TxSignAndSendParameters = {
+// Import Args type from types.ts
+import type { Args } from '../types.js';
+
+// Parameter types with proper args typing
+export type TxSignAndSendParameters<TxFn extends (...args: any[]) => any = any> = {
   txOptions?: Partial<SignerOptions>; // Transaction options (e.g., tip, mortality)
   callback?: (result: ISubmittableResult) => void;
-};
+} & Args<Parameters<TxFn>>;
 
-export type TxEstimatedFeeParameters = {
+export type TxEstimatedFeeParameters<TxFn extends (...args: any[]) => any = any> = {
   txOptions?: Partial<PayloadOptions>; // Transaction options (e.g., tip, mortality)
-};
+} & Args<Parameters<TxFn>>;
 
-// Type for the return value of useTx
-export type UseTxReturnType = {
-  signAndSend(parameters?: TxSignAndSendParameters): Promise<void>;
-  estimatedFee(parameters?: TxEstimatedFeeParameters): Promise<bigint>;
+// Type for the return value of useTx with proper generics
+export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any> = {
+  signAndSend(parameters?: TxSignAndSendParameters<TxFn>): Promise<void>;
+  estimatedFee(parameters?: TxEstimatedFeeParameters<TxFn>): Promise<bigint>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
@@ -40,15 +44,15 @@ export type UseTxReturnType = {
  * This hook provides functionality to sign and send transactions to the blockchain,
  * and tracks the progress of the transaction.
  *
- * @param txBuilder - A callback function that receives the tx object and returns a transaction
+ * @param txBuilder - A callback function that receives the tx object and returns a transaction method
  * 
  * @example
  * ```typescript
- * const remarkTx = useTx((tx) => tx.system.remark(message));
- * await remarkTx.signAndSend();
+ * const remarkTx = useTx((tx) => tx.system.remark);
+ * await remarkTx.signAndSend({ args: [message] });
  * 
- * const transferTx = useTx((tx) => tx.balances.transfer(recipient, amount));
- * const fee = await transferTx.estimatedFee();
+ * const transferTx = useTx((tx) => tx.balances.transfer);
+ * const fee = await transferTx.estimatedFee({ args: [recipient, amount] });
  * ```
  *
  * @returns An object containing:
@@ -57,9 +61,12 @@ export type UseTxReturnType = {
  *   - inProgress: A boolean indicating if a transaction is in progress
  *   - inBestBlockProgress: A boolean indicating if the transaction is being processed
  */
-export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
-  txBuilder: TxBuilder<ChainApi>
-): UseTxReturnType {
+export function useTx<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+>(
+  txBuilder: TxBuilder<ChainApi, TxFn>
+): UseTxReturnType<TxFn> {
   const [inProgress, setInProgress] = useState(false);
   const [inBestBlockProgress, setInBestBlockProgress] = useState(false);
 
@@ -67,7 +74,7 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
 
   const signAndSend = useMemo(
     () => {
-      return async (parameters: Parameters<UseTxReturnType['signAndSend']>[0] = {}) => {
+      return async (parameters: TxSignAndSendParameters<TxFn> = {} as any) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
@@ -75,7 +82,7 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
         setInBestBlockProgress(true);
 
         try {
-          const { txOptions, callback: optionalCallback } = parameters;
+          const { args = [], txOptions, callback: optionalCallback } = parameters;
 
           const callback = (result: ISubmittableResult) => {
             const { status } = result;
@@ -89,6 +96,7 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
           await generalTx({
             client,
             txBuilder,
+            args,
             caller: connectedAccount.address,
             txOptions,
             callback,
@@ -107,14 +115,15 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
 
   const estimatedFee = useMemo(
     () => {
-      return async (parameters: Parameters<UseTxReturnType['estimatedFee']>[0] = {}) => {
+      return async (parameters: TxEstimatedFeeParameters<TxFn> = {} as any) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
         try {
-          const { txOptions = {} } = parameters;
+          const { args = [], txOptions = {} } = parameters;
 
-          const tx = txBuilder(client.tx);
+          const txFn = txBuilder(client.tx);
+          const tx = txFn(...args);
           
           const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
           
@@ -136,9 +145,13 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
   };
 }
 
-export async function generalTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(parameters: {
+export async function generalTx<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+>(parameters: {
   client: CompatibleSubstrateApi<ChainApi>;
-  txBuilder: TxBuilder<ChainApi>;
+  txBuilder: TxBuilder<ChainApi, TxFn>;
+  args?: any[];
   caller: string;
   txOptions?: Partial<SignerOptions>;
   callback?: (result: ISubmittableResult) => void;
@@ -146,14 +159,15 @@ export async function generalTx<ChainApi extends VersionedGenericSubstrateApi = 
   const defer = deferred<void>();
 
   const signAndSend = async () => {
-    const { client, txBuilder, caller, txOptions = {}, callback } = parameters;
+    const { client, txBuilder, args = [], caller, txOptions = {}, callback } = parameters;
 
     await checkBalanceSufficiency(client as any, caller);
 
     try {
-      const tx = txBuilder(client.tx);
+      const txFn = txBuilder(client.tx);
+      const tx = txFn(...args);
 
-      tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
+      await tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
         callback && callback(result);
 
         const {

@@ -14,14 +14,16 @@ export default function RemarkTransactionExample() {
   useDebounce(() => setDebouncedMessage(message), 500, [message]);
 
   // Create remarkTx for signing and sending
-  const remarkTx = useTx((tx) => tx.system.remark(debouncedMessage));
+  const remarkTx = useTx((tx) => tx.system.remark);
 
   const {
     fee: estimatedFee,
     isLoading: feeLoading,
     error: feeError
-  } = useTxFee(remarkTx, {
-    enabled: !!client && !!connectedAccount && debouncedMessage.trim().length > 0
+  } = useTxFee({
+    tx: remarkTx,
+    args: [debouncedMessage],
+    enabled: debouncedMessage.trim().length > 0
   });
 
   const handleSendRemark = async () => {
@@ -29,6 +31,7 @@ export default function RemarkTransactionExample() {
 
     try {
       await remarkTx.signAndSend({
+        args: [debouncedMessage],
         callback: (result) => {
           toaster.onTxProgress(result);
 

@@ -9,11 +9,18 @@ import {
   UseTxReturnType,
   TxEstimatedFeeParameters 
 } from './useTx.js';
+import type { Args } from '../types.js';
 
-// Input types for useTxFee
-type UseTxFeeInput<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = 
-  | TxBuilder<ChainApi> 
-  | UseTxReturnType;
+// Input types for useTxFee with all parameters merged into a single object
+interface UseTxFeeInput<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TxFn extends (...args: any[]) => any = any
+> {
+  tx: TxBuilder<ChainApi, TxFn> | UseTxReturnType<TxFn>;
+  args?: Parameters<TxFn>;
+  txOptions?: Partial<import('dedot/types').PayloadOptions>;
+  enabled?: boolean;
+}
 
 // Return type for useTxFee
 type UseTxFeeReturnType = {
@@ -23,33 +30,38 @@ type UseTxFeeReturnType = {
   refetch: () => Promise<void>;
 };
 
-// Options for useTxFee
-interface UseTxFeeOptions extends TxEstimatedFeeParameters {
-  enabled?: boolean;
-}
-
 /**
  * A React hook for estimating transaction fees with built-in loading and error state management.
  *
- * This hook can accept either a TxBuilder function or a UseTxReturnType object and will
- * automatically manage the fee estimation process, including loading states and error handling.
+ * This hook accepts a transaction and its arguments, automatically managing the fee estimation 
+ * process, including loading states and error handling. Client and account availability are 
+ * handled internally.
  *
- * @param input - Either a TxBuilder function or a UseTxReturnType object
- * @param options - Optional configuration object
- * @param options.txOptions - Transaction options to include in fee estimation (e.g., tip, nonce)
- * @param options.enabled - Whether to automatically fetch the fee estimate (default: true)
+ * @param input - Object containing tx, args, txOptions, and enabled
+ * @param input.tx - TxBuilder function or UseTxReturnType instance
+ * @param input.args - Arguments for the transaction (optional)
+ * @param input.txOptions - Transaction options to include in fee estimation (e.g., tip, nonce) (optional)
+ * @param input.enabled - Whether to automatically fetch the fee estimate (default: true) (optional)
  * 
  * @example
  * ```typescript
  * // With TxBuilder
- * const { fee, isLoading, error } = useTxFee((tx) => tx.system.remark('hello'));
+ * const { fee, isLoading, error } = useTxFee({ 
+ *   tx: (tx) => tx.system.remark, 
+ *   args: ['hello'] 
+ * });
  * 
  * // With UseTxReturnType
- * const remarkTx = useTx((tx) => tx.system.remark('hello'));
- * const { fee, isLoading, error } = useTxFee(remarkTx);
+ * const remarkTx = useTx((tx) => tx.system.remark);
+ * const { fee, isLoading, error } = useTxFee({ 
+ *   tx: remarkTx, 
+ *   args: ['hello'] 
+ * });
  * 
- * // With options
- * const { fee, isLoading, error, refetch } = useTxFee(remarkTx, {
+ * // With all options
+ * const { fee, isLoading, error, refetch } = useTxFee({ 
+ *   tx: remarkTx, 
+ *   args: ['hello'],
  *   txOptions: { tip: 1000n },
  *   enabled: message.length > 0
  * });
@@ -61,27 +73,30 @@ interface UseTxFeeOptions extends TxEstimatedFeeParameters {
  *   - error: Error message string if estimation failed, null otherwise
  *   - refetch: Function to manually trigger fee estimation
  */
-export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
-  input: UseTxFeeInput<ChainApi>,
-  options: UseTxFeeOptions = {}
+export function useTxFee<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TxFn extends (...args: any[]) => any = any
+>(
+  input: UseTxFeeInput<ChainApi, TxFn>
 ): UseTxFeeReturnType {
-  const { txOptions = {}, enabled = true } = options;
+  const { tx, args = [], txOptions = {}, enabled = true } = input;
   const { client, connectedAccount } = useTypink<ChainApi>();
   
   const [fee, setFee] = useState<bigint | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if input is a UseTxReturnType by looking for the estimatedFee method
-  const isUseTxReturnType = (input: any): input is UseTxReturnType => {
-    return input && typeof input === 'object' && typeof input.estimatedFee === 'function';
+  // Check if tx is a UseTxReturnType by looking for the estimatedFee method
+  const isUseTxReturnType = (tx: any): tx is UseTxReturnType<TxFn> => {
+    return tx && typeof tx === 'object' && typeof tx.estimatedFee === 'function';
   };
 
   // Dependencies for effect
   const deps = useDeepDeps([
     client,
     connectedAccount,
-    input,
+    tx,
+    args,
     txOptions,
     enabled
   ]);
@@ -100,12 +115,15 @@ export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = Substra
     try {
       let estimatedFee: bigint;
 
-      if (isUseTxReturnType(input)) {
-        estimatedFee = await input.estimatedFee({ txOptions });
+      if (isUseTxReturnType(tx)) {
+        // For UseTxReturnType, pass args and txOptions in the proper format
+        const params = args.length > 0 ? { args, txOptions } : { txOptions };
+        estimatedFee = await tx.estimatedFee(params as any);
       } else {
-        const tx = input(client.tx);
+        const txFn = tx(client.tx);
+        const transaction = txFn(...args);
         
-        const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
+        const paymentInfo = await transaction.paymentInfo(connectedAccount.address, txOptions);
         
         estimatedFee = paymentInfo.partialFee;
       }
@@ -121,9 +139,10 @@ export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = Substra
     }
   }, deps);
 
-  // Auto-fetch when dependencies change (only if enabled)
+  // Auto-fetch when dependencies change
+  // Only enabled when: user enabled + client available + account connected
   useEffect(() => {
-    if (enabled) {
+    if (enabled && client && connectedAccount) {
       estimateFee().catch(console.error);
     }
   }, deps);
