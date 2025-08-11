@@ -45,6 +45,11 @@ type UseTxReturnType<
       callback?: (result: ISubmittableResult) => void;
     } & Args<Parameters<RuntimeChainApi<ChainApi>['tx'][P][M]>>,
   ): Promise<void>;
+  estimatedFee(
+    parameters: {
+      txOptions?: Record<string, any>; // Transaction options (e.g., tip, mortality)
+    } & Args<Parameters<RuntimeChainApi<ChainApi>['tx'][P][M]>>,
+  ): Promise<bigint>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
@@ -61,6 +66,7 @@ type UseTxReturnType<
  *
  * @returns An object containing:
  *   - signAndSend: A function to sign and send the transaction with fully typed args
+ *   - estimatedFee: A function to estimate the transaction fee with fully typed args
  *   - inProgress: A boolean indicating if a transaction is in progress
  *   - inBestBlockProgress: A boolean indicating if the transaction is being processed
  */
@@ -117,8 +123,34 @@ export function useTx<
     useDeepDeps([client, pallet, method, connectedAccount]),
   );
 
+  const estimatedFee = useMemo(
+    () => {
+      return async (o: Parameters<UseTxReturnType<ChainApi, P, M>['estimatedFee']>[0]) => {
+        assert(client, 'Client not found');
+        assert(connectedAccount, 'No connected account. Please connect your wallet.');
+
+        try {
+          // @ts-ignore
+          const { args = [], txOptions = {} } = o;
+
+          // @ts-ignore - We need to ignore TS here because of dynamic pallet/method access
+          const tx = client.tx[pallet][method](...args, txOptions);
+          const paymentInfo = await tx.paymentInfo(connectedAccount.address);
+          
+          // Extract the partial fee from the payment info
+          return paymentInfo.partialFee;
+        } catch (e: any) {
+          console.error(e);
+          throw withReadableErrorMessage(client as any, e);
+        }
+      };
+    },
+    useDeepDeps([client, pallet, method, connectedAccount]),
+  );
+
   return {
     signAndSend,
+    estimatedFee,
     inProgress,
     inBestBlockProgress,
   };
