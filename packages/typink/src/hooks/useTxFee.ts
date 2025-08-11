@@ -5,7 +5,6 @@ import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { 
-  RuntimeChainApi, 
   TxBuilder, 
   UseTxReturnType,
   TxEstimatedFeeParameters 
@@ -88,7 +87,7 @@ export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = Substra
   ]);
 
   const estimateFee = useCallback(async () => {
-    if (!enabled || !client || !connectedAccount) {
+    if (!client || !connectedAccount) {
       setFee(null);
       setError(null);
       setIsLoading(false);
@@ -122,9 +121,11 @@ export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = Substra
     }
   }, deps);
 
-  // Auto-fetch when dependencies change
+  // Auto-fetch when dependencies change (only if enabled)
   useEffect(() => {
-    estimateFee().catch(console.error);
+    if (enabled) {
+      estimateFee().catch(console.error);
+    }
   }, deps);
 
   return {
