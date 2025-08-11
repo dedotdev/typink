@@ -59,7 +59,7 @@ export default function RemarkTransactionExample() {
         placeholder='Enter your remark message...'
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        isDisabled={!connectedAccount || remarkTx.inProgress}
+        isDisabled={!connectedAccount || remarkTx.inBestBlockProgress}
       />
 
       {/* Estimated Fee Display */}
@@ -97,8 +97,8 @@ export default function RemarkTransactionExample() {
       <Button
         colorScheme='blue'
         onClick={handleSendRemark}
-        isLoading={remarkTx.inProgress}
-        isDisabled={!client || !connectedAccount || !message.trim() || remarkTx.inProgress}
+        isLoading={remarkTx.inBestBlockProgress}
+        isDisabled={!client || !connectedAccount || !message.trim() || remarkTx.inBestBlockProgress}
         loadingText='Sending...'>
         Send Remark Transaction
       </Button>
