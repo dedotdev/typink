@@ -118,9 +118,7 @@ export function useTxFee<ChainApi extends VersionedGenericSubstrateApi = Substra
       } else {
         const tx = input(client.tx);
         
-        const paymentInfo = txOptions 
-          ? await tx.paymentInfo(connectedAccount.address, txOptions)
-          : await tx.paymentInfo(connectedAccount.address);
+        const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
         
         estimatedFee = paymentInfo.partialFee;
       }
