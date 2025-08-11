@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
-import { InjectedAccount, InjectedSigner } from '../types.js';
+import { InjectedAccount, InjectedSigner, TypinkAccount } from '../types.js';
 import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
-import { noop } from '../utils/index.js';
+import { noop, transformInjectedToTypinkAccounts } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
@@ -18,8 +18,8 @@ export interface WalletSetupContextProps {
   connectedWallet?: Wallet;
   wallets: Wallet[]; // custom available wallets
 
-  setConnectedAccount: (account: InjectedAccount) => void;
-  accounts: InjectedAccount[];
+  setConnectedAccount: (account: TypinkAccount) => void;
+  accounts: TypinkAccount[];
 }
 
 export const WalletSetupContext = createContext<WalletSetupContextProps>({
@@ -60,14 +60,14 @@ export function WalletSetupProvider({
   appName = ''
 }: WalletSetupProviderProps) {
   const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
-  const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
+  const [accounts, setAccounts] = useState<TypinkAccount[]>([]);
 
   const [connectedWalletId, setConnectedWalletId, removeConnectedWalletId] =
     useLocalStorage<string>('TYPINK::CONNECTED_WALLET');
 
   const [signer, setSigner] = useState<InjectedSigner>();
   const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<InjectedAccount>('TYPINK::CONNECTED_ACCOUNT');
+    useLocalStorage<TypinkAccount>('TYPINK::CONNECTED_ACCOUNT');
 
   const getWallet = (id?: string): Wallet => wallets.find((one) => one.id === id)!;
 
@@ -121,7 +121,10 @@ export function WalletSetupProvider({
           removeConnectedAccount();
         }
 
-        unsub = injected.accounts.subscribe(setAccounts);
+        unsub = injected.accounts.subscribe((injectedAccounts: InjectedAccount[]) => {
+          const typinkAccounts = transformInjectedToTypinkAccounts(injectedAccounts, connectedWalletId);
+          setAccounts(typinkAccounts);
+        });
 
         setSigner(injected.signer as any);
       } catch (e) {

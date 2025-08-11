@@ -1,7 +1,12 @@
 import { ReactNode } from 'react';
 import { LooseContractMetadata } from 'dedot/contracts';
+import { InjectedAccount } from './pjs-types.js';
 
 export * from './pjs-types.js';
+
+export interface TypinkAccount extends InjectedAccount {
+  source: string; // wallet id that the account is from
+}
 
 export type Pop<T extends any[]> = T extends [...infer U, any?] ? U : never;
 export type Args<T> = T extends [] ? { args?: [] | undefined } : { args: T };

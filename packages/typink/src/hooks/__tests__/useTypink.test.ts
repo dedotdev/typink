@@ -30,6 +30,7 @@ const mockTypinkContextValue: TypinkContextProps = {
   network: { id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' },
   networkId: 'test' as any,
   setNetworkId: vi.fn(),
+  setNetwork: vi.fn(),
   cacheMetadata: false,
 
   // WalletSetupContextProps

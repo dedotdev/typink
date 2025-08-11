@@ -1,9 +1,9 @@
 import { createContext, useContext } from 'react';
-import { InjectedAccount, InjectedSigner, Props } from '../types.js';
+import { InjectedSigner, Props, TypinkAccount } from '../types.js';
 
 export interface WalletContextProps {
   signer?: InjectedSigner;
-  connectedAccount?: InjectedAccount;
+  connectedAccount?: TypinkAccount;
 }
 
 export const WalletContext = createContext<WalletContextProps>({});
@@ -14,7 +14,7 @@ export const useWallet = () => {
 
 export interface WalletProviderProps extends Props {
   signer?: InjectedSigner;
-  connectedAccount?: InjectedAccount;
+  connectedAccount?: TypinkAccount;
 }
 
 /**
