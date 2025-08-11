@@ -107,10 +107,13 @@ export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateA
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
         try {
-          const { txOptions= {} } = parameters;
+          const { txOptions } = parameters;
 
           const tx = txBuilder(client.tx);
-          const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
+          
+          const paymentInfo = txOptions 
+            ? await tx.paymentInfo(connectedAccount.address, txOptions)
+            : await tx.paymentInfo(connectedAccount.address);
           
           return paymentInfo.partialFee;
         } catch (e: any) {
@@ -140,24 +143,38 @@ export async function generalTx<ChainApi extends VersionedGenericSubstrateApi = 
   const defer = deferred<void>();
 
   const signAndSend = async () => {
-    const { client, txBuilder, caller, txOptions = {}, callback } = parameters;
+    const { client, txBuilder, caller, txOptions, callback } = parameters;
 
     await checkBalanceSufficiency(client as any, caller);
 
     try {
       const tx = txBuilder(client.tx);
 
-      await tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
-        callback && callback(result);
+      if (txOptions) {
+        await tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
+          callback && callback(result);
 
-        const {
-          status: { type },
-        } = result;
+          const {
+            status: { type },
+          } = result;
 
-        if (type === 'Finalized' || type === 'Invalid' || type === 'Drop') {
-          defer.resolve();
-        }
-      });
+          if (type === 'Finalized' || type === 'Invalid' || type === 'Drop') {
+            defer.resolve();
+          }
+        });
+      } else {
+        await tx.signAndSend(caller, (result: ISubmittableResult) => {
+          callback && callback(result);
+
+          const {
+            status: { type },
+          } = result;
+
+          if (type === 'Finalized' || type === 'Invalid' || type === 'Drop') {
+            defer.resolve();
+          }
+        });
+      }
     } catch (e: any) {
       throw withReadableErrorMessage(client as any, e);
     }

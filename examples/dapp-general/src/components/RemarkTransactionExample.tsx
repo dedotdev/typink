@@ -1,58 +1,31 @@
 import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakra-ui/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { useTypink, useTx, formatBalance } from 'typink';
+import { useTypink, useTx, useTxFee, formatBalance } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
   const { client, connectedAccount, network } = useTypink<PolkadotApi>();
   const [message, setMessage] = useState('Hello from Typink!');
-  const [estimatedFee, setEstimatedFee] = useState<bigint | null>(null);
-  const [feeLoading, setFeeLoading] = useState(false);
-  const [feeError, setFeeError] = useState<string | null>(null);
 
   // Debounce message changes to avoid excessive fee calculations
   const [debouncedMessage, setDebouncedMessage] = useState(message);
   useDebounce(() => setDebouncedMessage(message), 500, [message]);
 
-  // Create remarkTx with debounced message for fee estimation
+  // Create remarkTx for signing and sending
   const remarkTx = useTx((tx) => tx.system.remark(debouncedMessage));
 
-  // Calculate estimated fee when debounced message changes
-  const calculateEstimatedFee = useCallback(
-    async (msg: string) => {
-      if (!connectedAccount || !msg.trim()) {
-        setEstimatedFee(null);
-        setFeeError(null);
-        return;
-      }
-
-      setFeeLoading(true);
-      setFeeError(null);
-
-      try {
-        const fee = await remarkTx.estimatedFee();
-        setEstimatedFee(fee);
-      } catch (error: any) {
-        console.error('Error estimating fee:', error);
-        setFeeError('Failed to estimate fee');
-        setEstimatedFee(null);
-      } finally {
-        setFeeLoading(false);
-      }
-    },
-    [connectedAccount, remarkTx],
-  );
-
-  useEffect(() => {
-    calculateEstimatedFee(debouncedMessage);
-  }, [debouncedMessage, calculateEstimatedFee]);
+  const {
+    fee: estimatedFee,
+    isLoading: feeLoading,
+    error: feeError
+  } = useTxFee(remarkTx, {
+    enabled: !!client && !!connectedAccount && debouncedMessage.trim().length > 0
+  });
 
   const handleSendRemark = async () => {
     const toaster = txToaster('Submitting remark transaction...');
-
-    // Fee is already calculated and displayed, no need to recalculate here
 
     try {
       await remarkTx.signAndSend({
@@ -110,7 +83,7 @@ export default function RemarkTransactionExample() {
             <Text fontSize='sm' color='red.500' mt={1}>
               {feeError}
             </Text>
-          ) : estimatedFee !== null ? (
+          ) : estimatedFee ? (
             <Text fontSize='sm' color='blue.600' fontWeight='bold' mt={1}>
               {formatBalance(estimatedFee, network)}
             </Text>
