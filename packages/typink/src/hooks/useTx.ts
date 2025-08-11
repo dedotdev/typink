@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { Args, OmitNever } from '../types.js';
-import { ISubmittableResult, RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
+import { ISubmittableResult, ISubmittableExtrinsic, RpcVersion, VersionedGenericSubstrateApi, PayloadOptions, SignerOptions } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { assert, deferred } from 'dedot/utils';
 import { withReadableErrorMessage } from '../utils/index.js';
@@ -12,77 +11,58 @@ import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 // Get the actual ChainApi at runtime version
 type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
 
-// Extract pallet names from the runtime ChainApi
-type UseTxPallets<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = OmitNever<{
-  [K in keyof RuntimeChainApi<ChainApi>['tx']]: K extends string
-    ? K extends `${infer Literal}`
-      ? Literal
-      : never
-    : never;
-}>;
+// Type for transaction builder callback
+type TxBuilder<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = (
+  tx: RuntimeChainApi<ChainApi>['tx']
+) => ISubmittableExtrinsic<ISubmittableResult>;
 
-// Extract method names for a specific pallet
-type UseTxMethods<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  P extends keyof UseTxPallets<ChainApi> = keyof UseTxPallets<ChainApi>,
-> = OmitNever<{
-  [K in keyof RuntimeChainApi<ChainApi>['tx'][P]]: K extends string
-    ? K extends `${infer Literal}`
-      ? Literal
-      : never
-    : never;
-}>;
-
-// Type for the return value of useTx with proper generic constraints
-type UseTxReturnType<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  P extends keyof UseTxPallets<ChainApi> = keyof UseTxPallets<ChainApi>,
-  M extends keyof UseTxMethods<ChainApi, P> = keyof UseTxMethods<ChainApi, P>,
-> = {
-  signAndSend(
-    parameters: {
-      txOptions?: Record<string, any>; // Transaction options (e.g., tip, mortality)
-      callback?: (result: ISubmittableResult) => void;
-    } & Args<Parameters<RuntimeChainApi<ChainApi>['tx'][P][M]>>,
-  ): Promise<void>;
-  estimatedFee(
-    parameters: {
-      txOptions?: Record<string, any>; // Transaction options (e.g., tip, mortality)
-    } & Args<Parameters<RuntimeChainApi<ChainApi>['tx'][P][M]>>,
-  ): Promise<bigint>;
+// Type for the return value of useTx
+type UseTxReturnType = {
+  signAndSend(parameters?: {
+    txOptions?: Partial<SignerOptions>; // Transaction options (e.g., tip, mortality)
+    callback?: (result: ISubmittableResult) => void;
+  }): Promise<void>;
+  estimatedFee(parameters?: {
+    txOptions?: Partial<PayloadOptions>; // Transaction options (e.g., tip, mortality)
+  }): Promise<bigint>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
 
 /**
- * A React hook for managing general substrate transactions.
+ * A React hook for managing general substrate transactions with improved type safety.
  *
  * This hook provides functionality to sign and send transactions to the blockchain,
  * and tracks the progress of the transaction.
  *
- * @param client - The substrate client instance
- * @param pallet - The pallet name (e.g., 'system', 'balances')
- * @param method - The method name (e.g., 'remark', 'transfer')
+ * @param txBuilder - A callback function that receives the tx object and returns a transaction
+ * 
+ * @example
+ * ```typescript
+ * const remarkTx = useTx((tx) => tx.system.remark(message));
+ * await remarkTx.signAndSend();
+ * 
+ * const transferTx = useTx((tx) => tx.balances.transfer(recipient, amount));
+ * const fee = await transferTx.estimatedFee();
+ * ```
  *
  * @returns An object containing:
- *   - signAndSend: A function to sign and send the transaction with fully typed args
- *   - estimatedFee: A function to estimate the transaction fee with fully typed args
+ *   - signAndSend: A function to sign and send the transaction
+ *   - estimatedFee: A function to estimate the transaction fee
  *   - inProgress: A boolean indicating if a transaction is in progress
  *   - inBestBlockProgress: A boolean indicating if the transaction is being processed
  */
-export function useTx<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  P extends keyof UseTxPallets<ChainApi> = keyof UseTxPallets<ChainApi>,
-  M extends keyof UseTxMethods<ChainApi, P> = keyof UseTxMethods<ChainApi, P>,
->(client: CompatibleSubstrateApi<ChainApi> | undefined, pallet: P, method: M): UseTxReturnType<ChainApi, P, M> {
+export function useTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
+  txBuilder: TxBuilder<ChainApi>
+): UseTxReturnType {
   const [inProgress, setInProgress] = useState(false);
   const [inBestBlockProgress, setInBestBlockProgress] = useState(false);
 
-  const { connectedAccount } = useTypink();
+  const { client, connectedAccount } = useTypink<ChainApi>();
 
   const signAndSend = useMemo(
     () => {
-      return async (o: Parameters<UseTxReturnType<ChainApi, P, M>['signAndSend']>[0]) => {
+      return async (parameters: Parameters<UseTxReturnType['signAndSend']>[0] = {}) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
@@ -90,8 +70,7 @@ export function useTx<
         setInBestBlockProgress(true);
 
         try {
-          // @ts-ignore
-          const { args = [], txOptions, callback: optionalCallback } = o;
+          const { txOptions, callback: optionalCallback } = parameters;
 
           const callback = (result: ISubmittableResult) => {
             const { status } = result;
@@ -104,9 +83,7 @@ export function useTx<
 
           await generalTx({
             client,
-            pallet,
-            method,
-            args,
+            txBuilder,
             caller: connectedAccount.address,
             txOptions,
             callback,
@@ -120,24 +97,21 @@ export function useTx<
         }
       };
     },
-    useDeepDeps([client, pallet, method, connectedAccount]),
+    useDeepDeps([client, txBuilder, connectedAccount]),
   );
 
   const estimatedFee = useMemo(
     () => {
-      return async (o: Parameters<UseTxReturnType<ChainApi, P, M>['estimatedFee']>[0]) => {
+      return async (parameters: Parameters<UseTxReturnType['estimatedFee']>[0] = {}) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
         try {
-          // @ts-ignore
-          const { args = [], txOptions = {} } = o;
+          const { txOptions= {} } = parameters;
 
-          // @ts-ignore - We need to ignore TS here because of dynamic pallet/method access
-          const tx = client.tx[pallet][method](...args, txOptions);
-          const paymentInfo = await tx.paymentInfo(connectedAccount.address);
+          const tx = txBuilder(client.tx);
+          const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
           
-          // Extract the partial fee from the payment info
           return paymentInfo.partialFee;
         } catch (e: any) {
           console.error(e);
@@ -145,7 +119,7 @@ export function useTx<
         }
       };
     },
-    useDeepDeps([client, pallet, method, connectedAccount]),
+    useDeepDeps([client, txBuilder, connectedAccount]),
   );
 
   return {
@@ -156,29 +130,24 @@ export function useTx<
   };
 }
 
-export async function generalTx<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  P extends keyof UseTxPallets<ChainApi> = keyof UseTxPallets<ChainApi>,
-  M extends keyof UseTxMethods<ChainApi, P> = keyof UseTxMethods<ChainApi, P>,
->(parameters: {
+export async function generalTx<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(parameters: {
   client: CompatibleSubstrateApi<ChainApi>;
-  pallet: P;
-  method: M;
+  txBuilder: TxBuilder<ChainApi>;
   caller: string;
-  args?: any[];
-  txOptions?: Record<string, any>;
+  txOptions?: Partial<SignerOptions>;
   callback?: (result: ISubmittableResult) => void;
 }): Promise<void> {
   const defer = deferred<void>();
 
   const signAndSend = async () => {
-    const { client, pallet, method, args = [], caller, txOptions = {}, callback } = parameters;
+    const { client, txBuilder, caller, txOptions = {}, callback } = parameters;
 
     await checkBalanceSufficiency(client as any, caller);
 
     try {
-      // @ts-ignore - We need to ignore TS here because of dynamic pallet/method access
-      await client.tx[pallet][method](...args, txOptions).signAndSend(caller, (result: ISubmittableResult) => {
+      const tx = txBuilder(client.tx);
+
+      await tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
         callback && callback(result);
 
         const {

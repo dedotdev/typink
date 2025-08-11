@@ -11,36 +11,39 @@ export default function RemarkTransactionExample() {
   const [estimatedFee, setEstimatedFee] = useState<bigint | null>(null);
   const [feeLoading, setFeeLoading] = useState(false);
   const [feeError, setFeeError] = useState<string | null>(null);
-  const remarkTx = useTx(client, 'system', 'remark');
-  
+
   // Debounce message changes to avoid excessive fee calculations
   const [debouncedMessage, setDebouncedMessage] = useState(message);
   useDebounce(() => setDebouncedMessage(message), 500, [message]);
 
+  // Create remarkTx with debounced message for fee estimation
+  const remarkTx = useTx((tx) => tx.system.remark(debouncedMessage));
+
   // Calculate estimated fee when debounced message changes
-  const calculateEstimatedFee = useCallback(async (msg: string) => {
-    if (!client || !connectedAccount || !msg.trim()) {
-      setEstimatedFee(null);
+  const calculateEstimatedFee = useCallback(
+    async (msg: string) => {
+      if (!connectedAccount || !msg.trim()) {
+        setEstimatedFee(null);
+        setFeeError(null);
+        return;
+      }
+
+      setFeeLoading(true);
       setFeeError(null);
-      return;
-    }
 
-    setFeeLoading(true);
-    setFeeError(null);
-
-    try {
-      const fee = await remarkTx.estimatedFee({
-        args: [msg]
-      });
-      setEstimatedFee(fee);
-    } catch (error: any) {
-      console.error('Error estimating fee:', error);
-      setFeeError('Failed to estimate fee');
-      setEstimatedFee(null);
-    } finally {
-      setFeeLoading(false);
-    }
-  }, [client, connectedAccount, remarkTx]);
+      try {
+        const fee = await remarkTx.estimatedFee();
+        setEstimatedFee(fee);
+      } catch (error: any) {
+        console.error('Error estimating fee:', error);
+        setFeeError('Failed to estimate fee');
+        setEstimatedFee(null);
+      } finally {
+        setFeeLoading(false);
+      }
+    },
+    [connectedAccount, remarkTx],
+  );
 
   useEffect(() => {
     calculateEstimatedFee(debouncedMessage);
@@ -53,7 +56,6 @@ export default function RemarkTransactionExample() {
 
     try {
       await remarkTx.signAndSend({
-        args: [message],
         callback: (result) => {
           toaster.onTxProgress(result);
 
@@ -93,8 +95,7 @@ export default function RemarkTransactionExample() {
           bg='gray.50'
           borderRadius='md'
           border='1px solid'
-          borderColor='gray.200'
-        >
+          borderColor='gray.200'>
           <Text fontSize='sm' fontWeight='medium' color='gray.700'>
             Estimated Fee:
           </Text>
