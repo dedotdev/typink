@@ -9,22 +9,27 @@ import { checkBalanceSufficiency } from '../helpers/index.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Get the actual ChainApi at runtime version
-type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
+export type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
 
 // Type for transaction builder callback
-type TxBuilder<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = (
+export type TxBuilder<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = (
   tx: RuntimeChainApi<ChainApi>['tx']
 ) => ISubmittableExtrinsic<ISubmittableResult>;
 
+// Parameter types for better reusability
+export type TxSignAndSendParameters = {
+  txOptions?: Partial<SignerOptions>; // Transaction options (e.g., tip, mortality)
+  callback?: (result: ISubmittableResult) => void;
+};
+
+export type TxEstimatedFeeParameters = {
+  txOptions?: Partial<PayloadOptions>; // Transaction options (e.g., tip, mortality)
+};
+
 // Type for the return value of useTx
-type UseTxReturnType = {
-  signAndSend(parameters?: {
-    txOptions?: Partial<SignerOptions>; // Transaction options (e.g., tip, mortality)
-    callback?: (result: ISubmittableResult) => void;
-  }): Promise<void>;
-  estimatedFee(parameters?: {
-    txOptions?: Partial<PayloadOptions>; // Transaction options (e.g., tip, mortality)
-  }): Promise<bigint>;
+export type UseTxReturnType = {
+  signAndSend(parameters?: TxSignAndSendParameters): Promise<void>;
+  estimatedFee(parameters?: TxEstimatedFeeParameters): Promise<bigint>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
@@ -148,7 +153,7 @@ export async function generalTx<ChainApi extends VersionedGenericSubstrateApi = 
     try {
       const tx = txBuilder(client.tx);
 
-      await tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
+      tx.signAndSend(caller, txOptions, (result: ISubmittableResult) => {
         callback && callback(result);
 
         const {

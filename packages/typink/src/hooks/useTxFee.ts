@@ -1,26 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { ISubmittableResult, ISubmittableExtrinsic, RpcVersion, VersionedGenericSubstrateApi, PayloadOptions } from 'dedot/types';
+import { VersionedGenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
-
-// Get the actual ChainApi at runtime version
-type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
-
-// Type for transaction builder callback
-type TxBuilder<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = (
-  tx: RuntimeChainApi<ChainApi>['tx']
-) => ISubmittableExtrinsic<ISubmittableResult>;
-
-// Type for the return value of useTx
-type UseTxReturnType = {
-  estimatedFee(parameters?: {
-    txOptions?: Partial<PayloadOptions>;
-  }): Promise<bigint>;
-  inProgress: boolean;
-  inBestBlockProgress: boolean;
-};
+import { 
+  RuntimeChainApi, 
+  TxBuilder, 
+  UseTxReturnType,
+  TxEstimatedFeeParameters 
+} from './useTx.js';
 
 // Input types for useTxFee
 type UseTxFeeInput<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = 
@@ -36,8 +25,7 @@ type UseTxFeeReturnType = {
 };
 
 // Options for useTxFee
-interface UseTxFeeOptions {
-  txOptions?: Partial<PayloadOptions>;
+interface UseTxFeeOptions extends TxEstimatedFeeParameters {
   enabled?: boolean;
 }
 
