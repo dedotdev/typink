@@ -5108,21 +5108,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.5":
-  version: 18.3.5
-  resolution: "@types/react-dom@npm:18.3.5"
-  peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10/02095b326f373867498e0eb2b5ebb60f9bd9535db0d757ea13504c4b7d75e16605cf1d43ce7a2e67893d177b51db4357cabb2842fb4257c49427d02da1a14e09
-  languageName: node
-  linkType: hard
-
-"@types/react-dom@npm:^19.0.4":
-  version: 19.0.4
-  resolution: "@types/react-dom@npm:19.0.4"
+"@types/react-dom@npm:^19.1.7":
+  version: 19.1.7
+  resolution: "@types/react-dom@npm:19.1.7"
   peerDependencies:
     "@types/react": ^19.0.0
-  checksum: 10/f15d470242f0b7cca57dd7e991a2852525ac93b2cb92f7e6c104d7bd6a978c3b1d0ba9b8698f23bc19c16b5cd98a6d160007be52c61196952f57cf019f204254
+  checksum: 10/a99465e5a17d40725dedb3708357f8998c57caab768cee0992b4bb7822ce7ed2ec697a5f426cb98d3397b020756a6e4b0986dc5f6f4254e13b3536afb38538e6
   languageName: node
   linkType: hard
 
@@ -7003,7 +6994,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
+    "@types/react-dom": "npm:^19.1.7"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
@@ -7013,7 +7004,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.16"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
+    react-dom: "npm:^19.1.1"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     typescript: "npm:^5.5.2"
@@ -7196,7 +7187,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
+    "@types/react-dom": "npm:^19.1.7"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
@@ -7206,7 +7197,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.16"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
+    react-dom: "npm:^19.1.1"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     typescript: "npm:^5.5.2"
@@ -7232,7 +7223,7 @@ __metadata:
     "@subwallet-connect/subwallet-polkadot": "npm:^1.0.8"
     "@subwallet-connect/talisman": "npm:^1.0.8"
     "@types/react": "npm:^18.3.18"
-    "@types/react-dom": "npm:^18.3.5"
+    "@types/react-dom": "npm:^19.1.7"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
@@ -7242,7 +7233,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.16"
     framer-motion: "npm:^10.18.0"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:^19.1.1"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     svelte-qrcode: "npm:^1.0.1"
@@ -7264,7 +7255,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
+    "@types/react-dom": "npm:^19.1.7"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
@@ -7274,7 +7265,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.16"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
+    react-dom: "npm:^19.1.1"
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     typescript: "npm:^5.5.2"
@@ -12440,26 +12431,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:^19.1.1":
+  version: 19.1.1
+  resolution: "react-dom@npm:19.1.1"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.26.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
-  languageName: node
-  linkType: hard
-
-"react-dom@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react-dom@npm:19.0.0"
-  dependencies:
-    scheduler: "npm:^0.25.0"
-  peerDependencies:
-    react: ^19.0.0
-  checksum: 10/aa64a2f1991042f516260e8b0eca0ae777b6c8f1aa2b5ae096e80bbb6ac9b005aef2bca697969841d34f7e1819556263476bdfea36c35092e8d9aefde3de2d9a
+    react: ^19.1.1
+  checksum: 10/9005415d2175b1f1eb4a544ad04afb29691bb7b6dd43bbdaa09932146b310b73bd4552bc772ad78fa481f409eada1560cf887606c83c1a53a922c1e30f1b3a34
   languageName: node
   linkType: hard
 
@@ -13185,19 +13164,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "scheduler@npm:0.25.0"
-  checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
+"scheduler@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "scheduler@npm:0.26.0"
+  checksum: 10/1ecf2e5d7de1a7a132796834afe14a2d589ba7e437615bd8c06f3e0786a3ac3434655e67aac8755d9b14e05754c177e49c064261de2673aaa3c926bc98caa002
   languageName: node
   linkType: hard
 
