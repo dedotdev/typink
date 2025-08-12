@@ -22,15 +22,13 @@ interface WalletButtonProps {
 
 const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
-  const { connectWallet, disconnect } = useTypink();
+  const { connectWallet } = useTypink();
 
   const doConnectWallet = useCallback(() => {
-    console.log('connect to', id);
-    disconnect();
     connectWallet(id);
 
     afterSelectWallet && afterSelectWallet();
-  }, [disconnect, connectWallet]);
+  }, [connectWallet]);
 
   return (
     <Button
