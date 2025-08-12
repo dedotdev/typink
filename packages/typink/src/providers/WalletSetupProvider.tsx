@@ -208,7 +208,9 @@ export function WalletSetupProvider({
   }, [connectedWalletIds, appName]);
 
   const connectWallet = (walletId: string) => {
-    setConnectedWalletIds((prev) => [...(prev || []), walletId]);
+    setConnectedWalletIds((prev) => {
+      return Array.from(new Set([...(prev || []), walletId]));
+    });
   };
 
   const disconnect = (walletId?: string) => {
