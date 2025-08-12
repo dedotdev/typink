@@ -13,12 +13,16 @@ export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 export const defaultNetworkIdAtom = atom<NetworkId | undefined>(undefined);
 
 // Derived atom for current network ID
-export const networkIdAtom = atom<NetworkId | undefined>((get) => {
+export const networkIdAtom = atom<NetworkId>((get) => {
   const connection = get(networkConnectionAtom);
   const defaultId = get(defaultNetworkIdAtom);
   const supportedNetworks = get(supportedNetworksAtom);
 
-  return connection?.networkId || defaultId || supportedNetworks[0]?.id;
+  if (supportedNetworks.length === 0) {
+    throw new Error('No supported networks available. Please provide at least one network in supportedNetworks.');
+  }
+
+  return connection?.networkId || defaultId || supportedNetworks[0].id;
 });
 
 // Derived atom for selected provider
@@ -28,11 +32,16 @@ export const selectedProviderAtom = atom((get) => {
 });
 
 // Derived atom for current network info
-export const currentNetworkAtom = atom<NetworkInfo | undefined>((get) => {
+export const currentNetworkAtom = atom<NetworkInfo>((get) => {
   const networkId = get(networkIdAtom);
   const supportedNetworks = get(supportedNetworksAtom);
 
-  return supportedNetworks.find((network) => network.id === networkId);
+  const network = supportedNetworks.find((network) => network.id === networkId);
+  if (!network) {
+    throw new Error(`Network with ID '${networkId}' not found in supported networks.`);
+  }
+
+  return network;
 });
 
 // Atom for client instance

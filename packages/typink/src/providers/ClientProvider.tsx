@@ -34,8 +34,8 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   client?: CompatibleSubstrateApi<ChainApi>;
   ready: boolean;
   supportedNetworks: NetworkInfo[];
-  network?: NetworkInfo;
-  networkId?: NetworkId;
+  network: NetworkInfo;
+  networkId: NetworkId;
   selectedProvider?: string;
   setNetworkId: (connection: NetworkId) => void;
   setNetwork: (connection: NetworkId | NetworkConnection) => void;
@@ -114,21 +114,15 @@ export function ClientProvider({
   // Initialize network connection on first mount from localStorage
   const [networkConnection, setNetworkConnection] = useAtom(networkConnectionAtom);
 
-  // Initialize network connection if not set
-  useEffect(() => {
+  // Initialize network connection synchronously if not set
+  useMemo(() => {
     if (!networkConnection && supportedNetworks.length > 0) {
       const initialNetworkId = defaultNetworkId || supportedNetworks[0].id;
       setNetworkConnection({ networkId: initialNetworkId });
     }
   }, [networkConnection, defaultNetworkId, supportedNetworks, setNetworkConnection]);
 
-  // Early return if network is not yet initialized
-  if (!networkId || !network) {
-    return <>{children}</>;
-  }
-
-  // Validate current network
-  assert(network, `NetworkId ${networkId} is not available`);
+  // Network and networkId are now guaranteed to be initialized by atoms
 
   // Initialize client when network or provider changes
   useEffect(() => {
