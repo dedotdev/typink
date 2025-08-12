@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text } from '@chakra-ui/react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import AccountAvatar from '@/components/shared/AccountAvatar.tsx';
 import WalletSelection, { ButtonStyle } from '@/components/dialog/WalletSelection.tsx';
 import { shortenAddress } from '@/utils/string.ts';
@@ -10,19 +10,11 @@ export default function AccountSelection() {
   const addresses = useMemo(() => accounts.map((a) => a.address), [accounts]);
   const balances = useBalances(addresses);
 
-  useEffect(() => {
-    if (connectedAccount && accounts.map((one) => one.address).includes(connectedAccount.address)) {
-      return;
-    }
-
-    setConnectedAccount(accounts[0]);
-  }, [accounts]);
-
   if (!connectedAccount) {
     return <></>;
   }
 
-  const { name, address } = connectedAccount;
+  const { name, address, source } = connectedAccount;
 
   return (
     <Box>
@@ -44,7 +36,7 @@ export default function AccountSelection() {
         <MenuList>
           {accounts.map((one) => (
             <MenuItem
-              backgroundColor={one.address === address ? 'gray.200' : ''}
+              backgroundColor={one.address === address && one.source === source ? 'gray.200' : ''}
               gap={3}
               key={`${one.address}-${one.source}`}
               onClick={() => setConnectedAccount(one)}>

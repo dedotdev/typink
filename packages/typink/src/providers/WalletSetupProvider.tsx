@@ -80,10 +80,7 @@ export function WalletSetupProvider({
   const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
 
   const [walletConnections, setWalletConnections] = useState<Map<string, WalletConnection>>(new Map());
-  const [connectedWalletIds, setConnectedWalletIds, removeConnectedWalletIds] = useLocalStorage<string[]>(
-    'TYPINK::CONNECTED_WALLETS',
-    [],
-  );
+  const [connectedWalletIds, setConnectedWalletIds] = useLocalStorage<string[]>('TYPINK::CONNECTED_WALLETS', []);
 
   const [signer, setSigner] = useState<InjectedSigner>();
   const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
@@ -111,9 +108,9 @@ export function WalletSetupProvider({
 
   const isWalletConnected = useCallback(
     (walletId: string): boolean => {
-      return walletConnections.has(walletId);
+      return connectedWalletIds?.includes(walletId) || false;
     },
-    [walletConnections],
+    [connectedWalletIds],
   );
 
   const isFirstRender = useIsFirstRender();
@@ -207,54 +204,62 @@ export function WalletSetupProvider({
     };
   }, [connectedWalletIds, appName]);
 
-  const connectWallet = (walletId: string) => {
-    setConnectedWalletIds((prev) => {
-      return Array.from(new Set([...(prev || []), walletId]));
-    });
-  };
+  const connectWallet = useCallback(
+    (walletId: string) => {
+      console.log('prev wallets', connectedWalletIds);
+      const newWalletIds = Array.from(new Set([...(connectedWalletIds || []), walletId]));
+      setConnectedWalletIds(newWalletIds);
+    },
+    [connectedWalletIds],
+  );
 
-  const disconnect = (walletId?: string) => {
-    if (walletId) {
-      // Disconnect specific wallet
-      const connection = walletConnections.get(walletId);
-      if (connection?.subscription) {
-        connection.subscription();
-      }
-
-      setWalletConnections((prev) => {
-        const newConnections = new Map(prev);
-        newConnections.delete(walletId);
-        return newConnections;
-      });
-
-      setConnectedWalletIds((prev) => prev?.filter((id) => id !== walletId) || []);
-
-      // If disconnecting the primary wallet, set next one as primary or clear signer
-      if (connectedWalletIds?.[0] === walletId) {
-        const remainingWallets = connectedWalletIds?.filter((id) => id !== walletId) || [];
-        if (remainingWallets.length > 0) {
-          const nextConnection = walletConnections.get(remainingWallets[0]);
-          setSigner(nextConnection?.signer);
-        } else {
-          setSigner(undefined);
-          removeConnectedAccount();
-        }
-      }
-    } else {
-      // Disconnect all wallets
-      console.log('Disconnect all wallets');
-      walletConnections.forEach((connection) => {
-        if (connection.subscription) {
+  const disconnect = useCallback(
+    (walletId?: string) => {
+      if (walletId) {
+        // Disconnect specific wallet
+        const connection = walletConnections.get(walletId);
+        if (connection?.subscription) {
           connection.subscription();
         }
-      });
 
-      setWalletConnections(new Map());
-      setConnectedWalletIds([]);
-      removeConnectedAccount();
-      setSigner(undefined);
-    }
-  };
+        setWalletConnections((prev) => {
+          const newConnections = new Map(prev);
+          newConnections.delete(walletId);
+          return newConnections;
+        });
+
+        const newWalletIds = connectedWalletIds!.filter((id) => id !== walletId);
+        setConnectedWalletIds(newWalletIds);
+        walletConnections.delete(walletId);
+
+        // If disconnecting the primary wallet, set next one as primary or clear signer
+        if (connectedWalletIds?.[0] === walletId) {
+          const remainingWallets = connectedWalletIds?.filter((id) => id !== walletId) || [];
+          if (remainingWallets.length > 0) {
+            const nextConnection = walletConnections.get(remainingWallets[0]);
+            setSigner(nextConnection?.signer);
+          } else {
+            setSigner(undefined);
+            removeConnectedAccount();
+          }
+        }
+      } else {
+        // Disconnect all wallets
+        console.log('Disconnect all wallets');
+        walletConnections.forEach((connection) => {
+          if (connection.subscription) {
+            connection.subscription();
+          }
+        });
+
+        setWalletConnections(new Map());
+        setConnectedWalletIds([]);
+        removeConnectedAccount();
+        setSigner(undefined);
+      }
+    },
+    [connectedWalletIds, walletConnections],
+  );
 
   return (
     <WalletSetupContext.Provider
