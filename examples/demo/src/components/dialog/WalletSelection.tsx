@@ -23,10 +23,10 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
   const { disconnect, connectWallet, connectedWalletIds } = useTypink();
 
-  const doConnectWallet = () => {
+  const doConnectWallet = async () => {
     connectedWalletIds.length > 0 && disconnect(connectedWalletIds[0]);
 
-    connectWallet(id);
+    await connectWallet(id);
 
     afterSelectWallet && afterSelectWallet();
   };
