@@ -75,19 +75,3 @@ export const connectedWalletsAtom = atom((get) => {
     .filter(Boolean) as Wallet[];
 });
 
-// Helper atom to get accounts by wallet
-export const accountsByWalletAtom = atomFamily((walletId: string) =>
-  atom((get) => {
-    const connectionAtom = walletConnectionsAtomFamily(walletId);
-    const connection = get(connectionAtom);
-    return connection?.accounts || [];
-  })
-);
-
-// Helper atom to check if a wallet is connected
-export const isWalletConnectedAtom = atomFamily((walletId: string) =>
-  atom((get) => {
-    const walletIds = get(connectedWalletIdsAtom);
-    return walletIds.includes(walletId);
-  })
-);

@@ -27,14 +27,13 @@ interface WalletButtonProps {
 
 const WalletButton = ({ walletInfo }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
-  const { connectWallet, disconnect, isWalletConnected, getAccountsByWallet } = useTypink();
+  const { connectWallet, disconnect, connectedWalletIds, accounts } = useTypink();
 
-  const isConnected = isWalletConnected(id);
-  const accounts = getAccountsByWallet(id);
-  const accountCount = accounts.length;
+  const isConnected = connectedWalletIds.includes(id);
+  const accountCount = accounts.filter((a) => a.source === id).length;
 
-  const doConnectWallet = () => {
-    connectWallet(id);
+  const doConnectWallet = async () => {
+    await connectWallet(id);
   };
 
   const doDisconnectWallet = (e: React.MouseEvent) => {

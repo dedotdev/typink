@@ -9,15 +9,12 @@ import {
   connectedAccountAtom,
   connectedWalletsAtom,
   allAccountsAtom,
-  accountsByWalletAtom,
-  isWalletConnectedAtom,
   primarySignerAtom,
   availableWalletsAtom,
 } from '../atoms/walletAtoms.js';
 import {
   connectWalletAtom,
   disconnectWalletAtom,
-  setConnectedAccountAtom,
   initializeWalletsAtom,
   initializeAppNameAtom,
 } from '../atoms/walletActions.js';
@@ -37,9 +34,6 @@ export interface WalletSetupContextProps {
   setConnectedAccount: (account: TypinkAccount) => void;
   accounts: TypinkAccount[]; // All accounts from all connected wallets
 
-  // Utility methods
-  getAccountsByWallet: (walletId: string) => TypinkAccount[];
-  isWalletConnected: (walletId: string) => boolean;
 }
 
 export const WalletSetupContext = createContext<WalletSetupContextProps>({
@@ -51,8 +45,6 @@ export const WalletSetupContext = createContext<WalletSetupContextProps>({
   connectedWallets: [],
   wallets: [],
   setConnectedAccount: noop,
-  getAccountsByWallet: () => [],
-  isWalletConnected: () => false,
 });
 
 export const useWalletSetup = () => {
@@ -125,20 +117,6 @@ export function WalletSetupProvider({
     setEffectiveConnectedAccount(initialConnectedAccount || connectedAccount);
   }, [initialConnectedAccount, connectedAccount]);
 
-  // Utility methods
-  const getAccountsByWallet = useCallback(
-    (walletId: string): TypinkAccount[] => {
-      return accounts.filter((acc) => acc.source === walletId);
-    },
-    [accounts],
-  );
-
-  const isWalletConnected = useCallback(
-    (walletId: string): boolean => {
-      return connectedWalletIds.includes(walletId);
-    },
-    [connectedWalletIds],
-  );
 
   const handleDisconnect = useCallback(
     (walletId?: string) => {
@@ -171,8 +149,6 @@ export function WalletSetupProvider({
         connectedWallets,
         wallets: availableWallets,
         setConnectedAccount: handleSetConnectedAccount,
-        getAccountsByWallet,
-        isWalletConnected,
 
         appName,
       }}>

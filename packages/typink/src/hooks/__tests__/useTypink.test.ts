@@ -45,8 +45,6 @@ const mockTypinkContextValue: TypinkContextProps = {
   connectedWalletIds: [],
   connectedWallets: [],
   setConnectedAccount: vi.fn(),
-  getAccountsByWallet: vi.fn(),
-  isWalletConnected: vi.fn(),
   
   appName: '',
 
@@ -132,8 +130,6 @@ describe('useTypink', () => {
     expect(result).toHaveProperty('disconnect');
     expect(result).toHaveProperty('connectedWalletIds');
     expect(result).toHaveProperty('connectedWallets');
-    expect(result).toHaveProperty('getAccountsByWallet');
-    expect(result).toHaveProperty('isWalletConnected');
     
 
     // TypinkEventsContextProps properties
@@ -157,8 +153,6 @@ describe('useTypink', () => {
     expect(typeof result.connectWallet).toBe('function');
     expect(typeof result.disconnect).toBe('function');
     expect(typeof result.subscribeToEvent).toBe('function');
-    expect(typeof result.getAccountsByWallet).toBe('function');
-    expect(typeof result.isWalletConnected).toBe('function');
 
     // Type assertions for array types
     expect(Array.isArray(result.supportedNetworks)).toBe(true);

@@ -11,8 +11,6 @@ describe('Multi-Wallet Support', () => {
       // Multi-wallet support
       connectedWalletIds: ['subwallet-js', 'talisman'],
       connectedWallets: [],
-      getAccountsByWallet: (walletId: string) => [],
-      isWalletConnected: (walletId: string) => false,
       
       // Account management
       accounts: [] as TypinkAccount[],
@@ -25,8 +23,6 @@ describe('Multi-Wallet Support', () => {
 
     expect(Array.isArray(mockTypinkContext.connectedWalletIds)).toBe(true);
     expect(Array.isArray(mockTypinkContext.connectedWallets)).toBe(true);
-    expect(typeof mockTypinkContext.getAccountsByWallet).toBe('function');
-    expect(typeof mockTypinkContext.isWalletConnected).toBe('function');
     expect(typeof mockTypinkContext.connectWallet).toBe('function');
     expect(typeof mockTypinkContext.disconnect).toBe('function');
   });
@@ -50,12 +46,9 @@ describe('Multi-Wallet Support', () => {
       },
     ];
 
-    // Simulate getAccountsByWallet function
-    const getAccountsByWallet = (walletId: string) => 
-      mockAccounts.filter(acc => acc.source === walletId);
-
-    const subwalletAccounts = getAccountsByWallet('subwallet-js');
-    const talismanAccounts = getAccountsByWallet('talisman');
+    // Filter accounts by wallet
+    const subwalletAccounts = mockAccounts.filter(acc => acc.source === 'subwallet-js');
+    const talismanAccounts = mockAccounts.filter(acc => acc.source === 'talisman');
 
     expect(subwalletAccounts).toHaveLength(2);
     expect(subwalletAccounts[0].name).toBe('Alice (SubWallet)');
@@ -68,13 +61,10 @@ describe('Multi-Wallet Support', () => {
   it('should demonstrate wallet connection state checking', () => {
     const connectedWallets = new Set(['subwallet-js', 'talisman']);
 
-    // Simulate isWalletConnected function
-    const isWalletConnected = (walletId: string) => 
-      connectedWallets.has(walletId);
-
-    expect(isWalletConnected('subwallet-js')).toBe(true);
-    expect(isWalletConnected('talisman')).toBe(true);
-    expect(isWalletConnected('polkadot-js')).toBe(false);
+    // Check wallet connection status directly
+    expect(connectedWallets.has('subwallet-js')).toBe(true);
+    expect(connectedWallets.has('talisman')).toBe(true);
+    expect(connectedWallets.has('polkadot-js')).toBe(false);
   });
 
   it('should support selective wallet disconnection', () => {
@@ -113,15 +103,13 @@ describe('Multi-Wallet Support', () => {
       connectedWalletIds: [],
       connectedWallets: [],
       accounts: [] as TypinkAccount[],
-      getAccountsByWallet: (walletId: string) => [],
-      isWalletConnected: (walletId: string) => false,
       
     };
 
     expect(emptyState.connectedWalletIds).toHaveLength(0);
     expect(emptyState.connectedWallets).toHaveLength(0);
     expect(emptyState.accounts).toHaveLength(0);
-    expect(emptyState.getAccountsByWallet('any-wallet')).toHaveLength(0);
-    expect(emptyState.isWalletConnected('any-wallet')).toBe(false);
+    // Test that empty state has no connected wallets
+    expect(emptyState.connectedWalletIds).toHaveLength(0);
   });
 });
