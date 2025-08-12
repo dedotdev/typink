@@ -1,13 +1,10 @@
-import { createContext, useEffect } from 'react';
-import { Provider as JotaiProvider, useSetAtom } from 'jotai';
+import { createContext } from 'react';
+import { Provider as JotaiProvider } from 'jotai';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
 import { VersionedGenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
-
-const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
-
 import {
   useWalletSetup,
   WalletSetupContextProps,
@@ -15,7 +12,8 @@ import {
   WalletSetupProviderProps,
 } from './WalletSetupProvider.js';
 import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
-import { setExternalSignerAtom } from '../atoms/walletActions.js';
+
+const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
 
 export interface TypinkContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>
   extends ClientContextProps<ChainApi>,

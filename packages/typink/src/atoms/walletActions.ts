@@ -39,8 +39,7 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
 
     const typinkAccounts = transformInjectedToTypinkAccounts(initialConnectedAccounts, walletId);
 
-    // Create subscription for this wallet
-    // TODO update the selected account on subscription changes
+    // Create subscription for this wallet with account validation
     const subscription = injected.accounts.subscribe((injectedAccounts) => {
       const updatedTypinkAccounts = transformInjectedToTypinkAccounts(injectedAccounts, walletId);
 
@@ -52,6 +51,20 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
           ...currentConnection,
           accounts: updatedTypinkAccounts,
         });
+      }
+
+      // Check if the currently connected account is still valid (only for this wallet)
+      const connectedAccount = get(connectedAccountAtom);
+      if (connectedAccount && connectedAccount.source === walletId) {
+        // Only check if the connected account belongs to this wallet
+        const accountStillExists = updatedTypinkAccounts.some(
+          account => account.address === connectedAccount.address
+        );
+        
+        if (!accountStillExists) {
+          console.log(`Connected account ${connectedAccount.address} is no longer available in wallet ${walletId}, resetting...`);
+          set(connectedAccountAtom, undefined);
+        }
       }
     });
 

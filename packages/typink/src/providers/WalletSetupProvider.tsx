@@ -1,22 +1,22 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { InjectedSigner, TypinkAccount } from '../types.js';
+import { TypinkAccount } from '../types.js';
 import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
 import {
-  connectedWalletIdsAtom,
-  connectedAccountAtom,
-  connectedWalletsAtom,
   allAccountsAtom,
-  finalEffectiveSignerAtom,
   availableWalletsAtom,
+  connectedAccountAtom,
+  connectedWalletIdsAtom,
+  connectedWalletsAtom,
+  finalEffectiveSignerAtom,
 } from '../atoms/walletAtoms.js';
 import {
   connectWalletAtom,
   disconnectWalletAtom,
-  initializeWalletsAtom,
   initializeAppNameAtom,
+  initializeWalletsAtom,
   setExternalSignerAtom,
 } from '../atoms/walletActions.js';
 
