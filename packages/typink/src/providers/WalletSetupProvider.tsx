@@ -130,11 +130,17 @@ export function WalletSetupProvider({
     [setConnectedAccount],
   );
 
-  // Auto-connect wallets on mount
+  // Auto-connect wallets when connectedWalletIds changes (including on first load)
   useEffect(() => {
-    connectedWalletIds.forEach(async (walletId) => {
-      await connectWallet(walletId);
-    });
+    if (connectedWalletIds.length > 0) {
+      connectedWalletIds.forEach(async (walletId) => {
+        try {
+          await connectWallet(walletId);
+        } catch (error) {
+          console.error(`Failed to auto-connect wallet ${walletId}:`, error);
+        }
+      });
+    }
   }, []);
 
   return (

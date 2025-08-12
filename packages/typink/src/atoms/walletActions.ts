@@ -1,10 +1,10 @@
 import { atom } from 'jotai';
 import {
-  connectedWalletIdsAtom,
-  walletConnectionsAtomFamily,
-  connectedAccountAtom,
   availableWalletsAtom,
+  connectedAccountAtom,
+  connectedWalletIdsAtom,
   WalletConnection,
+  walletConnectionsAtomFamily,
 } from './walletAtoms.js';
 import { TypinkAccount } from '../types.js';
 import { Wallet } from '../wallets/index.js';
@@ -19,12 +19,6 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
   const walletIds = get(connectedWalletIdsAtom);
   const availableWallets = get(availableWalletsAtom);
   const appName = get(appNameAtom);
-
-  // Check if already connected
-  if (walletIds.includes(walletId)) {
-    console.log(`Wallet ${walletId} is already connected`);
-    return;
-  }
 
   try {
     const targetWallet = availableWallets.find((w) => w.id === walletId);
@@ -45,6 +39,7 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
     const typinkAccounts = transformInjectedToTypinkAccounts(initialConnectedAccounts, walletId);
 
     // Create subscription for this wallet
+    // TODO update the selected account on subscription changes
     const subscription = injected.accounts.subscribe((injectedAccounts) => {
       const updatedTypinkAccounts = transformInjectedToTypinkAccounts(injectedAccounts, walletId);
 
@@ -72,7 +67,7 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
     set(connectionAtom, connection);
 
     // Add to connected wallet IDs
-    set(connectedWalletIdsAtom, [...walletIds, walletId]);
+    set(connectedWalletIdsAtom, Array.from(new Set([...walletIds, walletId])));
   } catch (e) {
     console.error(`Error while connecting wallet ${walletId}:`, e);
     throw e;

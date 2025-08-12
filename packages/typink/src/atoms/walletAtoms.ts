@@ -17,7 +17,12 @@ export interface WalletConnection {
 export const walletConnectionsAtomFamily = atomFamily((_: string) => atom<WalletConnection | null>(null));
 
 // Persistent atom for tracking connected wallet IDs
-export const connectedWalletIdsAtom = atomWithStorage<string[]>('TYPINK::CONNECTED_WALLETS', []);
+export const connectedWalletIdsAtom = atomWithStorage<string[]>(
+  'TYPINK::CONNECTED_WALLETS', 
+  [], 
+  undefined, 
+  { getOnInit: true }
+);
 
 // Persistent atom for the currently selected account
 export const connectedAccountAtom = atomWithStorage<TypinkAccount | undefined>('TYPINK::CONNECTED_ACCOUNT', undefined);
