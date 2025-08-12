@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { ThemingProps } from '@chakra-ui/system';
 import { useTypink, Wallet } from 'typink';
+import { useCallback } from 'react';
 
 interface WalletButtonProps {
   walletInfo: Wallet;
@@ -21,13 +22,15 @@ interface WalletButtonProps {
 
 const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
-  const { connectWallet } = useTypink();
+  const { connectWallet, disconnect } = useTypink();
 
-  const doConnectWallet = () => {
+  const doConnectWallet = useCallback(() => {
+    console.log('connect to', id);
+    disconnect();
     connectWallet(id);
 
     afterSelectWallet && afterSelectWallet();
-  };
+  }, [disconnect, connectWallet]);
 
   return (
     <Button

@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import { useEffect, useMemo } from 'react';
-import ConnectedWallet from '@/components/dialog/ConnectedWallet.tsx';
 import WalletSelection, { ButtonStyle } from '@/components/dialog/WalletSelection.tsx';
 import { shortenAddress } from '@/utils/string.ts';
 import { formatBalance, useBalances, useTypink } from 'typink';
@@ -39,13 +38,11 @@ export default function AccountSelection() {
         </MenuButton>
 
         <MenuList>
-          <ConnectedWallet />
-
           {accounts.map((one) => (
             <MenuItem
               backgroundColor={one.address === address ? 'gray.200' : ''}
               gap={2}
-              key={one.address}
+              key={`${one.address}-${one.source}`}
               onClick={() => setConnectedAccount(one)}>
               <Flex direction='column'>
                 <Text fontWeight='500'>{one.name}</Text>
@@ -61,7 +58,7 @@ export default function AccountSelection() {
             buttonLabel='Switch Wallet'
             buttonProps={{ color: 'primary.500' }}
           />
-          <MenuItem onClick={disconnect} color='red.500'>
+          <MenuItem onClick={() => disconnect()} color='red.500'>
             Sign Out
           </MenuItem>
         </MenuList>
