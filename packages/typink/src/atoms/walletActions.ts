@@ -5,8 +5,9 @@ import {
   connectedWalletIdsAtom,
   WalletConnection,
   walletConnectionsAtomFamily,
+  externalSignerAtom,
 } from './walletAtoms.js';
-import { TypinkAccount } from '../types.js';
+import { TypinkAccount, InjectedSigner } from '../types.js';
 import { Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { transformInjectedToTypinkAccounts } from '../utils/index.js';
@@ -129,4 +130,9 @@ export const initializeWalletsAtom = atom(null, (_get, set, wallets: Wallet[]) =
 // Initialization atom for setting app name
 export const initializeAppNameAtom = atom(null, (_get, set, appName: string) => {
   set(appNameAtom, appName);
+});
+
+// Write-only atom for setting external signer
+export const setExternalSignerAtom = atom(null, (_get, set, signer: InjectedSigner | undefined) => {
+  set(externalSignerAtom, signer);
 });

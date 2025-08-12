@@ -8,7 +8,7 @@ import {
   supportedNetworksAtom,
   defaultNetworkIdAtom,
 } from './clientAtoms.js';
-import { primarySignerAtom } from './walletAtoms.js';
+import { finalEffectiveSignerAtom } from './walletAtoms.js';
 import { JsonRpcApi, NetworkInfo, validateProvider } from '../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider, SmoldotProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
@@ -83,7 +83,7 @@ export const initializeClientAtom = atom(null, async (get, set) => {
   const network = get(currentNetworkAtom);
   const selectedProvider = validateProvider(get(selectedProviderAtom));
   const cacheMetadata = get(cacheMetadataAtom);
-  const signer = get(primarySignerAtom);
+  const signer = get(finalEffectiveSignerAtom);
 
   // Clean up existing client
   const existingClient = get(clientAtom);
@@ -150,7 +150,7 @@ export const initializeClientAtom = atom(null, async (get, set) => {
 // Write-only atom for updating signer on client
 export const updateClientSignerAtom = atom(null, (get) => {
   const client = get(clientAtom);
-  const signer = get(primarySignerAtom);
+  const signer = get(finalEffectiveSignerAtom);
 
   if (client) {
     client.setSigner(signer);

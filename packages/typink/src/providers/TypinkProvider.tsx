@@ -1,5 +1,5 @@
-import { createContext } from 'react';
-import { Provider as JotaiProvider } from 'jotai';
+import { createContext, useEffect } from 'react';
+import { Provider as JotaiProvider, useSetAtom } from 'jotai';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
@@ -15,6 +15,7 @@ import {
   WalletSetupProviderProps,
 } from './WalletSetupProvider.js';
 import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from './TypinkEventsProvider.js';
+import { setExternalSignerAtom } from '../atoms/walletActions.js';
 
 export interface TypinkContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>
   extends ClientContextProps<ChainApi>,

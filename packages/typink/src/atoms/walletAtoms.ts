@@ -17,12 +17,9 @@ export interface WalletConnection {
 export const walletConnectionsAtomFamily = atomFamily((_: string) => atom<WalletConnection | null>(null));
 
 // Persistent atom for tracking connected wallet IDs
-export const connectedWalletIdsAtom = atomWithStorage<string[]>(
-  'TYPINK::CONNECTED_WALLETS', 
-  [], 
-  undefined, 
-  { getOnInit: true }
-);
+export const connectedWalletIdsAtom = atomWithStorage<string[]>('TYPINK::CONNECTED_WALLETS', [], undefined, {
+  getOnInit: true,
+});
 
 // Persistent atom for the currently selected account
 export const connectedAccountAtom = atomWithStorage<TypinkAccount | undefined>('TYPINK::CONNECTED_ACCOUNT', undefined);
@@ -49,14 +46,32 @@ export const allAccountsAtom = atom((get) => {
   return Array.from(connections.values()).flatMap((conn) => conn.accounts);
 });
 
-// Derived atom for the primary signer (first connected wallet)
-export const primarySignerAtom = atom<InjectedSigner | undefined>((get) => {
-  const walletIds = get(connectedWalletIdsAtom);
-  if (walletIds.length === 0) return undefined;
+// Smart signer atom that considers the connected account's wallet
+export const effectiveSignerAtom = atom<InjectedSigner | undefined>((get) => {
+  const connectedAccount = get(connectedAccountAtom);
+  const walletConnections = get(allWalletConnectionsAtom);
 
-  const firstConnectionAtom = walletConnectionsAtomFamily(walletIds[0]);
-  const firstConnection = get(firstConnectionAtom);
-  return firstConnection?.signer;
+  if (connectedAccount) {
+    // Use signer from the wallet that owns the connected account
+    const accountWallet = walletConnections.get(connectedAccount.source);
+    if (accountWallet?.signer) {
+      return accountWallet.signer;
+    }
+  }
+
+  return undefined;
+});
+
+// Atom for external signer (from props or external wallet connectors)
+export const externalSignerAtom = atom<InjectedSigner | undefined>(undefined);
+
+// Final effective signer atom that considers external signer priority
+export const finalEffectiveSignerAtom = atom<InjectedSigner | undefined>((get) => {
+  const externalSigner = get(externalSignerAtom);
+  const accountBasedSigner = get(effectiveSignerAtom);
+
+  // External signer takes precedence over account-based signer
+  return externalSigner || accountBasedSigner;
 });
 
 // Available wallets atom (can be set during provider initialization)

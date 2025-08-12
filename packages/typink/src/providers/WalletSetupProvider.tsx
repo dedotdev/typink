@@ -9,7 +9,7 @@ import {
   connectedAccountAtom,
   connectedWalletsAtom,
   allAccountsAtom,
-  primarySignerAtom,
+  finalEffectiveSignerAtom,
   availableWalletsAtom,
 } from '../atoms/walletAtoms.js';
 import {
@@ -17,6 +17,7 @@ import {
   disconnectWalletAtom,
   initializeWalletsAtom,
   initializeAppNameAtom,
+  setExternalSignerAtom,
 } from '../atoms/walletActions.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
@@ -77,13 +78,14 @@ export function WalletSetupProvider({
   // Initialize atoms
   const initializeWallets = useSetAtom(initializeWalletsAtom);
   const initializeAppName = useSetAtom(initializeAppNameAtom);
+  const setExternalSigner = useSetAtom(setExternalSignerAtom);
 
   // Use atoms for state
   const connectedWalletIds = useAtomValue(connectedWalletIdsAtom);
   const connectedWallets = useAtomValue(connectedWalletsAtom);
   const accounts = useAtomValue(allAccountsAtom);
   const availableWallets = useAtomValue(availableWalletsAtom);
-  const primarySigner = useAtomValue(primarySignerAtom);
+  const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
 
   // Use atom actions
   const connectWallet = useSetAtom(connectWalletAtom);
@@ -100,16 +102,15 @@ export function WalletSetupProvider({
     initializeAppName(appName);
   }, [appName, initializeAppName]);
 
-  // Handle initial signer and connected account
-  const [effectiveSigner, setEffectiveSigner] = useState<InjectedSigner | undefined>(initialSigner);
+  // Handle external signer from props
+  useEffect(() => {
+    setExternalSigner(initialSigner);
+  }, [initialSigner, setExternalSigner]);
+
+  // Handle connected account
   const [effectiveConnectedAccount, setEffectiveConnectedAccount] = useState<TypinkAccount | undefined>(
     initialConnectedAccount,
   );
-
-  useEffect(() => {
-    // Use provided signer or fall back to primary signer from connected wallets
-    setEffectiveSigner(initialSigner || primarySigner);
-  }, [initialSigner, primarySigner]);
 
   useEffect(() => {
     // Use provided connected account or fall back to Jotai atom
@@ -156,7 +157,7 @@ export function WalletSetupProvider({
 
         appName,
       }}>
-      <WalletProvider signer={effectiveSigner} connectedAccount={effectiveConnectedAccount}>
+      <WalletProvider signer={finalEffectiveSigner} connectedAccount={effectiveConnectedAccount}>
         {children}
       </WalletProvider>
     </WalletSetupContext.Provider>
