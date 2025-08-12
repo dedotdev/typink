@@ -9964,6 +9964,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jotai@npm:^2.13.1":
+  version: 2.13.1
+  resolution: "jotai@npm:2.13.1"
+  peerDependencies:
+    "@babel/core": ">=7.0.0"
+    "@babel/template": ">=7.0.0"
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@babel/template":
+      optional: true
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10/6176f24c351dbcac7129ecc8000c12d3a358197963ecb71e24963873995f4286d8608575a36d4c6d6579e17d31a229f32eeab34676f2edeca63f372623661c20
+  languageName: node
+  linkType: hard
+
 "js-cookie@npm:^2.2.1":
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
@@ -14365,6 +14386,7 @@ __metadata:
     "@substrate/connect-known-chains": "npm:^1.10.3"
     "@types/react": "npm:^18.3.18"
     fast-deep-equal: "npm:^3.1.3"
+    jotai: "npm:^2.13.1"
     react-use: "npm:^17.6.0"
   peerDependencies:
     "@dedot/chaintypes": ">=0.132.0"

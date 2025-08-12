@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { Provider as JotaiProvider } from 'jotai';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
@@ -93,17 +94,19 @@ export function TypinkProvider({
   appName,
 }: TypinkProviderProps) {
   return (
-    <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
-      <ClientProvider
-        defaultNetworkId={defaultNetworkId}
-        cacheMetadata={cacheMetadata}
-        supportedNetworks={supportedNetworks}>
-        <TypinkEventsProvider>
-          <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
-            {children}
-          </TypinkProviderInner>
-        </TypinkEventsProvider>
-      </ClientProvider>
-    </WalletSetupProvider>
+    <JotaiProvider>
+      <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
+        <ClientProvider
+          defaultNetworkId={defaultNetworkId}
+          cacheMetadata={cacheMetadata}
+          supportedNetworks={supportedNetworks}>
+          <TypinkEventsProvider>
+            <TypinkProviderInner deployments={deployments} defaultCaller={defaultCaller}>
+              {children}
+            </TypinkProviderInner>
+          </TypinkEventsProvider>
+        </ClientProvider>
+      </WalletSetupProvider>
+    </JotaiProvider>
   );
 }

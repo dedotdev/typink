@@ -1,20 +1,26 @@
-import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
-import { useLocalStorage } from 'react-use';
-import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
-import { InjectedAccount, InjectedSigner, TypinkAccount } from '../types.js';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { InjectedSigner, TypinkAccount } from '../types.js';
 import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
-import { assert } from 'dedot/utils';
-import { noop, transformInjectedToTypinkAccounts } from '../utils/index.js';
+import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
-
-// Data structures for multi-wallet management
-interface WalletConnection {
-  walletId: string;
-  wallet: Wallet;
-  signer: InjectedSigner;
-  accounts: TypinkAccount[];
-  subscription?: () => void;
-}
+import {
+  connectedWalletIdsAtom,
+  connectedAccountAtom,
+  connectedWalletsAtom,
+  allAccountsAtom,
+  accountsByWalletAtom,
+  isWalletConnectedAtom,
+  primarySignerAtom,
+  availableWalletsAtom,
+} from '../atoms/walletAtoms.js';
+import {
+  connectWalletAtom,
+  disconnectWalletAtom,
+  setConnectedAccountAtom,
+  initializeWalletsAtom,
+  initializeAppNameAtom,
+} from '../atoms/walletActions.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
 export interface WalletSetupContextProps {
@@ -22,7 +28,7 @@ export interface WalletSetupContextProps {
 
   // Multi-wallet support
   connectWallet: (id: string) => void;
-  disconnect: (walletId?: string) => void; // Optional walletId for selective disconnect
+  disconnect: (walletId?: string) => void;
   connectedWalletIds: string[]; // Array of connected wallet IDs
   connectedWallets: Wallet[]; // Array of connected wallet objects
   wallets: Wallet[]; // Available wallets
@@ -77,221 +83,116 @@ export function WalletSetupProvider({
   wallets: initialWallets,
   appName = '',
 }: WalletSetupProviderProps) {
-  const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
-
-  const [walletConnections, setWalletConnections] = useState<Map<string, WalletConnection>>(new Map());
-  const [connectedWalletIds, setConnectedWalletIds] = useLocalStorage<string[]>('TYPINK::CONNECTED_WALLETS', []);
-
-  const [signer, setSigner] = useState<InjectedSigner>();
-  const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<TypinkAccount>('TYPINK::CONNECTED_ACCOUNT');
-
-  const connectedWallets = useMemo(
-    () => (connectedWalletIds?.map((id) => wallets.find((w) => w.id === id)).filter(Boolean) as Wallet[]) || [],
-    [connectedWalletIds, wallets],
+  // Initialize atoms
+  const initializeWallets = useSetAtom(initializeWalletsAtom);
+  const initializeAppName = useSetAtom(initializeAppNameAtom);
+  
+  // Use atoms for state
+  const connectedWalletIds = useAtomValue(connectedWalletIdsAtom);
+  const connectedWallets = useAtomValue(connectedWalletsAtom);
+  const accounts = useAtomValue(allAccountsAtom);
+  const availableWallets = useAtomValue(availableWalletsAtom);
+  const primarySigner = useAtomValue(primarySignerAtom);
+  
+  // Use atom actions
+  const connectWallet = useSetAtom(connectWalletAtom);
+  const disconnectWallet = useSetAtom(disconnectWalletAtom);
+  const [connectedAccount, setConnectedAccount] = useAtom(connectedAccountAtom);
+  
+  // Initialize wallets and app name
+  useEffect(() => {
+    const walletsToUse = initialWallets || DEFAULT_WALLETS;
+    initializeWallets(walletsToUse);
+  }, [initialWallets, initializeWallets]);
+  
+  useEffect(() => {
+    initializeAppName(appName);
+  }, [appName, initializeAppName]);
+  
+  // Handle initial signer and connected account
+  const [effectiveSigner, setEffectiveSigner] = useState<InjectedSigner | undefined>(initialSigner);
+  const [effectiveConnectedAccount, setEffectiveConnectedAccount] = useState<TypinkAccount | undefined>(
+    initialConnectedAccount
   );
-
-  const accounts = useMemo(
-    () => Array.from(walletConnections.values()).flatMap((conn) => conn.accounts),
-    [walletConnections],
-  );
-
-  const getWallet = (id?: string): Wallet => wallets.find((one) => one.id === id)!;
-
+  
+  useEffect(() => {
+    // Use provided signer or fall back to primary signer from connected wallets
+    setEffectiveSigner(initialSigner || primarySigner);
+  }, [initialSigner, primarySigner]);
+  
+  useEffect(() => {
+    // Use provided connected account or fall back to Jotai atom
+    setEffectiveConnectedAccount(initialConnectedAccount || connectedAccount);
+  }, [initialConnectedAccount, connectedAccount]);
+  
+  // Utility methods
   const getAccountsByWallet = useCallback(
     (walletId: string): TypinkAccount[] => {
-      const connection = walletConnections.get(walletId);
-      return connection ? connection.accounts : [];
+      const walletAccountsAtom = accountsByWalletAtom(walletId);
+      // This is a workaround since we can't use hooks conditionally
+      // In practice, this will be called from within a component that has access to Jotai
+      return accounts.filter(acc => acc.source === walletId);
     },
-    [walletConnections],
+    [accounts]
   );
-
+  
   const isWalletConnected = useCallback(
     (walletId: string): boolean => {
-      return connectedWalletIds?.includes(walletId) || false;
+      return connectedWalletIds.includes(walletId);
     },
-    [connectedWalletIds],
+    [connectedWalletIds]
   );
-
-  const isFirstRender = useIsFirstRender();
-
-  useEffect(() => {
-    setSigner(initialSigner);
-  }, [initialSigner]);
-
-  useEffect(() => {
-    if (initialConnectedAccount) {
-      setConnectedAccount(initialConnectedAccount);
-    } else if (!isFirstRender) {
-      // make sure we don't accidentally remove connected account on first render
-      removeConnectedAccount();
-    }
-  }, [initialConnectedAccount]);
-
-  // Multi-wallet connection management
-  useEffect(() => {
-    if (!connectedWalletIds || connectedWalletIds.length === 0) return;
-
-    const connectToWallet = async (walletId: string) => {
-      if (walletConnections.has(walletId)) return; // Already connected
-
-      try {
-        const targetWallet: Wallet = getWallet(walletId);
-        assert(targetWallet, `Wallet Id Not Found ${walletId}`);
-
-        await targetWallet.waitUntilReady();
-        const injectedProvider = targetWallet.injectedProvider;
-        assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
-
-        const injected = await injectedProvider.enable(appName);
-        const initialConnectedAccounts = await injected.accounts.get();
-
-        if (initialConnectedAccounts.length === 0) {
-          console.warn(`No accounts found for wallet: ${walletId}`);
-          return;
-        }
-
-        const typinkAccounts = transformInjectedToTypinkAccounts(initialConnectedAccounts, walletId);
-
-        // Create subscription for this wallet
-        const subscription = injected.accounts.subscribe((injectedAccounts: InjectedAccount[]) => {
-          const updatedTypinkAccounts = transformInjectedToTypinkAccounts(injectedAccounts, walletId);
-
-          setWalletConnections((prev) => {
-            const newConnections = new Map(prev);
-            const connection = newConnections.get(walletId);
-            if (connection) {
-              newConnections.set(walletId, {
-                ...connection,
-                accounts: updatedTypinkAccounts,
-              });
-            }
-            return newConnections;
-          });
-        });
-
-        const connection: WalletConnection = {
-          walletId,
-          wallet: targetWallet,
-          signer: injected.signer,
-          accounts: typinkAccounts,
-          subscription,
-        };
-
-        setWalletConnections((prev) => new Map(prev).set(walletId, connection));
-
-        // Set first wallet as primary signer for backward compatibility
-        if (connectedWalletIds.indexOf(walletId) === 0) {
-          setSigner(injected.signer as any);
-        }
-      } catch (e) {
-        console.error(`Error while connecting wallet ${walletId}:`, e);
-        // Remove failed wallet from connected list
-        setConnectedWalletIds((prev) => prev?.filter((id) => id !== walletId) || []);
-      }
-    };
-
-    // Connect to all wallets in the list
-    connectedWalletIds.forEach(connectToWallet);
-
-    // Cleanup function
-    return () => {
-      walletConnections.forEach((connection) => {
-        if (connection.subscription) {
-          connection.subscription();
-        }
-      });
-    };
-  }, [connectedWalletIds, appName]);
-
-  // TODO fix this
-  // useEffect(() => {
-  //   if (
-  //     connectedAccount &&
-  //     !walletConnections.get(connectedAccount.source)?.accounts?.some((a) => a.address === connectedAccount.address)
-  //   ) {
-  //     removeConnectedAccount();
-  //   }
-  // }, [connectedAccount, walletConnections]);
-
-  const connectWallet = useCallback(
+  
+  // Wrapper functions for async actions
+  const handleConnectWallet = useCallback(
     (walletId: string) => {
-      console.log('prev wallets', connectedWalletIds);
-      const newWalletIds = Array.from(new Set([...(connectedWalletIds || []), walletId]));
-      setConnectedWalletIds(newWalletIds);
+      // connectWallet is async but we don't await it here for backward compatibility
+      connectWallet(walletId).catch(e => {
+        console.error(`Failed to connect wallet ${walletId}:`, e);
+      });
     },
-    [connectedWalletIds],
+    [connectWallet]
   );
-
-  const disconnect = useCallback(
+  
+  const handleDisconnect = useCallback(
     (walletId?: string) => {
-      if (walletId) {
-        // Disconnect specific wallet
-        const connection = walletConnections.get(walletId);
-        if (connection?.subscription) {
-          connection.subscription();
-        }
-
-        setWalletConnections((prev) => {
-          const newConnections = new Map(prev);
-          newConnections.delete(walletId);
-          return newConnections;
-        });
-
-        const newWalletIds = connectedWalletIds!.filter((id) => id !== walletId);
-        setConnectedWalletIds(newWalletIds);
-        walletConnections.delete(walletId);
-
-        // Check if the connected account belongs to the disconnected wallet
-        if (connectedAccount?.source === walletId) {
-          removeConnectedAccount();
-        }
-
-        // If disconnecting the primary wallet, set next one as primary or clear signer
-        if (connectedWalletIds?.[0] === walletId) {
-          const remainingWallets = connectedWalletIds?.filter((id) => id !== walletId) || [];
-          if (remainingWallets.length > 0) {
-            const nextConnection = walletConnections.get(remainingWallets[0]);
-            setSigner(nextConnection?.signer);
-          } else {
-            setSigner(undefined);
-          }
-        }
-      } else {
-        // Disconnect all wallets
-        console.log('Disconnect all wallets');
-        walletConnections.forEach((connection) => {
-          if (connection.subscription) {
-            connection.subscription();
-          }
-        });
-
-        setWalletConnections(new Map());
-        setConnectedWalletIds([]);
-        removeConnectedAccount();
-        setSigner(undefined);
-      }
+      disconnectWallet(walletId);
     },
-    [connectedWalletIds, walletConnections, connectedAccount],
+    [disconnectWallet]
   );
-
+  
+  const handleSetConnectedAccount = useCallback(
+    (account: TypinkAccount) => {
+      setConnectedAccount(account);
+    },
+    [setConnectedAccount]
+  );
+  
+  // Auto-connect wallets on mount
+  useEffect(() => {
+    connectedWalletIds.forEach(walletId => {
+      // Reconnect wallets that were previously connected
+      handleConnectWallet(walletId);
+    });
+  }, []); // Only run on mount
+  
   return (
     <WalletSetupContext.Provider
       value={{
         // Multi-wallet support
         accounts,
-        connectWallet,
-        disconnect,
-        connectedWalletIds: connectedWalletIds || [],
+        connectWallet: handleConnectWallet,
+        disconnect: handleDisconnect,
+        connectedWalletIds,
         connectedWallets,
-        wallets,
-        setConnectedAccount,
+        wallets: availableWallets,
+        setConnectedAccount: handleSetConnectedAccount,
         getAccountsByWallet,
         isWalletConnected,
 
         appName,
       }}>
-      <WalletProvider signer={signer} connectedAccount={connectedAccount}>
+      <WalletProvider signer={effectiveSigner} connectedAccount={effectiveConnectedAccount}>
         {children}
       </WalletProvider>
     </WalletSetupContext.Provider>
