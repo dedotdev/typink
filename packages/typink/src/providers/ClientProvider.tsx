@@ -89,7 +89,14 @@ export function ClientProvider({
     initializeSupportedNetworks(supportedNetworks);
     initializeDefaultNetworkId(defaultNetworkId);
     initializeCacheMetadata(cacheMetadata);
-  }, [supportedNetworks, defaultNetworkId, cacheMetadata, initializeSupportedNetworks, initializeDefaultNetworkId, initializeCacheMetadata]);
+  }, [
+    supportedNetworks,
+    defaultNetworkId,
+    cacheMetadata,
+    initializeSupportedNetworks,
+    initializeDefaultNetworkId,
+    initializeCacheMetadata,
+  ]);
 
   // Use atoms for state
   const client = useAtomValue(clientAtom);
@@ -135,21 +142,6 @@ export function ClientProvider({
     updateClientSigner();
   }, [signer, updateClientSigner]);
 
-  // Wrapper functions for actions
-  const handleSetNetwork = useCallback(
-    (connection: NetworkId | NetworkConnection) => {
-      setNetwork(connection);
-    },
-    [setNetwork],
-  );
-
-  const handleSetNetworkId = useCallback(
-    (networkId: NetworkId) => {
-      setNetworkId(networkId);
-    },
-    [setNetworkId],
-  );
-
   return (
     <ClientContext.Provider
       key={`${networkId}-${selectedProvider || 'default'}`}
@@ -159,8 +151,8 @@ export function ClientProvider({
         network,
         networkId,
         selectedProvider: validateProvider(selectedProvider),
-        setNetworkId: handleSetNetworkId,
-        setNetwork: handleSetNetwork,
+        setNetworkId,
+        setNetwork,
         cacheMetadata: cacheMeta,
         supportedNetworks: allSupportedNetworks,
       }}>
