@@ -46,33 +46,44 @@ const WalletButton = ({ walletInfo }: WalletButtonProps) => {
       direction='column'
       width='full'
       border='1px solid'
-      borderColor='gray.200'
+      borderColor={isConnected ? 'green.200' : 'gray.200'}
       borderRadius='md'
       p={4}
-      _hover={{ borderColor: 'gray.300' }}>
-      <Flex align='center' justify='space-between' width='full'>
-        <Flex align='center' gap={3} flex='1'>
-          <img src={logo} alt={`${name}`} width={24} />
-          <VStack align='start' spacing={0}>
-            <Text fontWeight='medium'>{name}</Text>
+      bg={isConnected ? 'green.50' : 'white'}
+      _hover={{ borderColor: isConnected ? 'green.300' : 'gray.300' }}>
+      
+      {/* Main content row */}
+      <Flex align='flex-start' justify='space-between' width='full'>
+        {/* Left side: Logo and wallet info */}
+        <Flex align='flex-start' gap={3} flex='1'>
+          <img src={logo} alt={`${name}`} width={24} height={24} style={{ marginTop: '2px' }} />
+          <VStack align='start' spacing={1} flex='1'>
+            <Text fontWeight='medium' fontSize='md'>{name}</Text>
             {isConnected && (
-              <Text fontSize='xs' color='gray.600'>
-                {accountCount} account{accountCount !== 1 ? 's' : ''} connected
-              </Text>
+              <>
+                <Badge colorScheme='green' size='sm' variant='solid'>
+                  Connected
+                </Badge>
+                <Text fontSize='xs' color='gray.600'>
+                  {accountCount} account{accountCount !== 1 ? 's' : ''} connected
+                </Text>
+              </>
             )}
           </VStack>
         </Flex>
 
-        <Flex align='center' gap={2}>
+        {/* Right side: Action buttons with fixed width to prevent shifting */}
+        <Flex align='flex-start' justify='flex-end' minW='120px'>
           {isConnected ? (
-            <>
-              <Badge colorScheme='green' size='sm'>
-                Connected
-              </Badge>
-              <Button size='sm' variant='outline' colorScheme='red' onClick={doDisconnectWallet}>
-                Disconnect
-              </Button>
-            </>
+            <Button 
+              size='sm' 
+              variant='outline' 
+              colorScheme='red' 
+              onClick={doDisconnectWallet}
+              width='full'
+            >
+              Disconnect
+            </Button>
           ) : (
             <Button
               onClick={doConnectWallet}
@@ -80,7 +91,9 @@ const WalletButton = ({ walletInfo }: WalletButtonProps) => {
               isDisabled={!installed}
               loadingText='Connecting...'
               size='sm'
-              colorScheme='blue'>
+              colorScheme='blue'
+              width='full'
+            >
               Connect
             </Button>
           )}
@@ -112,10 +125,14 @@ export default function WalletSelection({
   buttonProps,
 }: WalletSelectionProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { wallets, accounts, connectedAccount, setConnectedAccount } = useTypink();
+  const { wallets, accounts, connectedAccount, setConnectedAccount, disconnect } = useTypink();
   const [currentView, setCurrentView] = useState<ModalView>(ModalView.WALLET_SELECTION);
 
   const hasConnectedWallets = accounts.length > 0;
+
+  const handleDisconnectAll = useCallback(() => {
+    disconnect(); // Calling disconnect without walletId disconnects all
+  }, [disconnect]);
 
   const handleAccountSelect = useCallback(
     (account: TypinkAccount) => {
@@ -143,14 +160,24 @@ export default function WalletSelection({
           {hasConnectedWallets && (
             <>
               <Divider my={2} />
-              <Button
-                size='md'
-                colorScheme='blue'
-                variant='outline'
-                width='full'
-                onClick={() => setCurrentView(ModalView.ACCOUNT_SELECTION)}>
-                Select Account
-              </Button>
+              <Flex gap={2} width='full'>
+                <Button
+                  size='md'
+                  colorScheme='red'
+                  variant='outline'
+                  flex='1'
+                  onClick={handleDisconnectAll}>
+                  Disconnect All
+                </Button>
+                <Button
+                  size='md'
+                  colorScheme='blue'
+                  variant='outline'
+                  flex='1'
+                  onClick={() => setCurrentView(ModalView.ACCOUNT_SELECTION)}>
+                  Select Account
+                </Button>
+              </Flex>
             </>
           )}
         </VStack>

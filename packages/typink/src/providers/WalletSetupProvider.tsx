@@ -204,6 +204,16 @@ export function WalletSetupProvider({
     };
   }, [connectedWalletIds, appName]);
 
+  // TODO fix this
+  // useEffect(() => {
+  //   if (
+  //     connectedAccount &&
+  //     !walletConnections.get(connectedAccount.source)?.accounts?.some((a) => a.address === connectedAccount.address)
+  //   ) {
+  //     removeConnectedAccount();
+  //   }
+  // }, [connectedAccount, walletConnections]);
+
   const connectWallet = useCallback(
     (walletId: string) => {
       console.log('prev wallets', connectedWalletIds);
@@ -232,6 +242,11 @@ export function WalletSetupProvider({
         setConnectedWalletIds(newWalletIds);
         walletConnections.delete(walletId);
 
+        // Check if the connected account belongs to the disconnected wallet
+        if (connectedAccount?.source === walletId) {
+          removeConnectedAccount();
+        }
+
         // If disconnecting the primary wallet, set next one as primary or clear signer
         if (connectedWalletIds?.[0] === walletId) {
           const remainingWallets = connectedWalletIds?.filter((id) => id !== walletId) || [];
@@ -240,7 +255,6 @@ export function WalletSetupProvider({
             setSigner(nextConnection?.signer);
           } else {
             setSigner(undefined);
-            removeConnectedAccount();
           }
         }
       } else {
@@ -258,7 +272,7 @@ export function WalletSetupProvider({
         setSigner(undefined);
       }
     },
-    [connectedWalletIds, walletConnections],
+    [connectedWalletIds, walletConnections, connectedAccount],
   );
 
   return (

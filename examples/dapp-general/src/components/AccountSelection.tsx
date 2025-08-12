@@ -10,33 +10,44 @@ export default function AccountSelection() {
   const addresses = useMemo(() => accounts.map((a) => a.address), [accounts]);
   const balances = useBalances(addresses);
 
-  if (!connectedAccount) {
-    return <></>;
-  }
-
-  const { name, address, source } = connectedAccount;
+  // // Show placeholder if no account is selected but accounts are available
+  // if (!connectedAccount) {
+  //   return (
+  //     <Button variant='outline' isDisabled>
+  //       Select Account
+  //     </Button>
+  //   );
+  // }
 
   return (
     <Box>
       <Menu autoSelect={false}>
         <MenuButton as={Button} variant='outline'>
-          <Flex align='center' gap={4}>
-            <AccountAvatar account={connectedAccount} size={24} />
-            <Flex direction='column' align='start'>
-              <Text fontWeight='semi-bold' fontSize='md'>
-                {name}
-              </Text>
-              <Text fontSize='xs' fontWeight='400' color='gray.600'>
-                {shortenAddress(address)}
-              </Text>
+          {connectedAccount ? (
+            <Flex align='center' gap={4}>
+              <AccountAvatar account={connectedAccount} size={24} />
+              <Flex direction='column' align='start'>
+                <Text fontWeight='semi-bold' fontSize='md'>
+                  {connectedAccount.name}
+                </Text>
+                <Text fontSize='xs' fontWeight='400' color='gray.600'>
+                  {shortenAddress(connectedAccount.address)}
+                </Text>
+              </Flex>
             </Flex>
-          </Flex>
+          ) : (
+            <Text fontWeight='semi-bold' fontSize='md'>
+              Select Account
+            </Text>
+          )}
         </MenuButton>
 
         <MenuList>
           {accounts.map((one) => (
             <MenuItem
-              backgroundColor={one.address === address && one.source === source ? 'gray.200' : ''}
+              backgroundColor={
+                one.address === connectedAccount?.address && one.source === connectedAccount?.source ? 'gray.200' : ''
+              }
               gap={3}
               key={`${one.address}-${one.source}`}
               onClick={() => setConnectedAccount(one)}>
@@ -51,11 +62,11 @@ export default function AccountSelection() {
           <MenuDivider />
           <WalletSelection
             buttonStyle={ButtonStyle.MENU_ITEM}
-            buttonLabel='Switch Wallet'
+            buttonLabel='Connect Wallet'
             buttonProps={{ color: 'primary.500' }}
           />
           <MenuItem onClick={() => disconnect()} color='red.500'>
-            Sign Out
+            Disconnect
           </MenuItem>
         </MenuList>
       </Menu>
