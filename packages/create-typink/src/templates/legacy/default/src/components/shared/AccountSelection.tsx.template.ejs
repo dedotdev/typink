@@ -110,7 +110,12 @@ export default function AccountSelection() {
   const { network } = useTypink();
 
   const accounts = useMemo(
-    () => (wallet?.accounts || []).map((a) => ({ address: a.address, name: a.uns?.name })),
+    () =>
+      (wallet?.accounts || []).map((a) => ({
+        address: a.address,
+        name: a.uns?.name,
+        source: wallet?.label || 'subconnect',
+      })),
     [wallet],
   );
   const addresses = useMemo(() => accounts.map((a) => a.address), [accounts]);
