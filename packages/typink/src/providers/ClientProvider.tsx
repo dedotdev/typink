@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { NetworkId, NetworkInfo, NetworkConnection, Props, validateProvider } from '../types.js';
+import { NetworkConnection, NetworkId, NetworkInfo, Props, validateProvider } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
@@ -8,23 +8,23 @@ import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import { useWallet } from './WalletProvider.js';
 import {
+  cacheMetadataAtom,
   clientAtom,
   clientReadyAtom,
+  currentNetworkAtom,
+  networkConnectionAtom,
   networkIdAtom,
   selectedProviderAtom,
-  currentNetworkAtom,
-  supportedNetworksAtom,
   setNetworkAtom,
   setNetworkIdAtom,
-  cacheMetadataAtom,
-  networkConnectionAtom,
+  supportedNetworksAtom,
 } from '../atoms/clientAtoms.js';
 import {
-  initializeClientAtom,
-  updateClientSignerAtom,
-  initializeSupportedNetworksAtom,
-  initializeDefaultNetworkIdAtom,
   initializeCacheMetadataAtom,
+  initializeClientAtom,
+  initializeDefaultNetworkIdAtom,
+  initializeSupportedNetworksAtom,
+  updateClientSignerAtom,
 } from '../atoms/clientActions.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --

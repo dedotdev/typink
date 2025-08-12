@@ -46,14 +46,16 @@ function TypinkProviderInner<ChainApi extends VersionedGenericSubstrateApi = Sub
 
   return (
     <TypinkContext.Provider
-      value={{
-        ...typinkEventsContext,
-        ...clientContext,
-        ...walletSetupContext,
-        ...walletContext,
-        deployments,
-        defaultCaller,
-      } as TypinkContextProps<ChainApi>}>
+      value={
+        {
+          ...typinkEventsContext,
+          ...clientContext,
+          ...walletSetupContext,
+          ...walletContext,
+          deployments,
+          defaultCaller,
+        } as TypinkContextProps<ChainApi>
+      }>
       {children}
     </TypinkContext.Provider>
   );

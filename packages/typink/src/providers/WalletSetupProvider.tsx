@@ -33,7 +33,6 @@ export interface WalletSetupContextProps {
   // Account management
   setConnectedAccount: (account: TypinkAccount) => void;
   accounts: TypinkAccount[]; // All accounts from all connected wallets
-
 }
 
 export const WalletSetupContext = createContext<WalletSetupContextProps>({
@@ -116,7 +115,6 @@ export function WalletSetupProvider({
     // Use provided connected account or fall back to Jotai atom
     setEffectiveConnectedAccount(initialConnectedAccount || connectedAccount);
   }, [initialConnectedAccount, connectedAccount]);
-
 
   const handleDisconnect = useCallback(
     (walletId?: string) => {
