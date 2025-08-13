@@ -6896,7 +6896,7 @@ __metadata:
     inquirer: "npm:^12.3.2"
     listr2: "npm:^8.2.5"
     prettier: "npm:^3.4.2"
-    validate-npm-package-name: "npm:^6.0.0"
+    validate-npm-package-name: "npm:^6.0.2"
   bin:
     create-typink: ./bin/create-typink.mjs
   languageName: unknown
@@ -14661,10 +14661,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validate-npm-package-name@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "validate-npm-package-name@npm:6.0.0"
-  checksum: 10/4d018c4fa07f95534a5fea667adc653b1ef52f08bf56aff066c28394499d0a6949c0b00edbd7077c4dc1e041da9220af7c742ced67d7d2d6a1b07d10cbe91b29
+"validate-npm-package-name@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "validate-npm-package-name@npm:6.0.2"
+  checksum: 10/f0e022b0a7f11345a92b64121b059b720204cd64406a0d65d81526181dcb70aef551c7c6bf9ca37b91607a7c6ff4d62e1f63a86c8d9b7346d722a641a4bd8789
   languageName: node
   linkType: hard
 
