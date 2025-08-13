@@ -13,12 +13,6 @@ vi.mock('dedot/contracts', () => ({
   Contract: vi.fn(),
 }));
 
-vi.mock('react-use', () => ({
-  useAsync: vi.fn((callback) => {
-    callback();
-  }),
-}));
-
 describe('useRawContract', () => {
   const mockClient = {};
   const mockDefaultCaller = 'defaultCallerAddress';

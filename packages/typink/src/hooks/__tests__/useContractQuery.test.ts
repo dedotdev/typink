@@ -6,10 +6,6 @@ import { waitForNextUpdate } from './test-utils.js';
 import { useTypink } from '../useTypink.js';
 
 // Mock the external dependencies
-vi.mock('react-use', () => ({
-  useBoolean: vi.fn(() => [false, { setTrue: vi.fn(), setFalse: vi.fn() }]),
-  useDeepCompareEffect: vi.fn((effect) => effect()),
-}));
 
 vi.mock('./internal/index.js', () => ({
   useRefresher: vi.fn(() => ({ refresh: vi.fn(), counter: 0 })),
