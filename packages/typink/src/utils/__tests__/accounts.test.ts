@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { 
+import {
   transformInjectedToTypinkAccounts,
   filterAccountsByWallet,
   groupAccountsByWallet,
-  findAccountByAddress
+  findAccountByAddress,
 } from '../accounts.js';
 import { InjectedAccount, TypinkAccount } from '../../types.js';
 
@@ -12,13 +12,10 @@ describe('accounts utilities', () => {
     {
       address: '5FXjUGjJf2xVwjVtxJmQtMnJKAZBd7eJpBgGKPJw6AjKTSzP',
       name: 'Alice',
-      genesisHash: '0x1234567890abcdef',
-      type: 'sr25519',
     },
     {
       address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
       name: 'Bob',
-      type: 'ed25519',
     },
     {
       address: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
@@ -52,14 +49,11 @@ describe('accounts utilities', () => {
       expect(result[0]).toEqual({
         address: '5FXjUGjJf2xVwjVtxJmQtMnJKAZBd7eJpBgGKPJw6AjKTSzP',
         name: 'Alice',
-        genesisHash: '0x1234567890abcdef',
-        type: 'sr25519',
         source: 'subwallet-js',
       });
       expect(result[1]).toEqual({
         address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
         name: 'Bob',
-        type: 'ed25519',
         source: 'subwallet-js',
       });
       expect(result[2]).toEqual({
@@ -126,7 +120,7 @@ describe('accounts utilities', () => {
     });
 
     it('should handle accounts from single wallet', () => {
-      const singleWalletAccounts = mockTypinkAccounts.filter(acc => acc.source === 'subwallet-js');
+      const singleWalletAccounts = mockTypinkAccounts.filter((acc) => acc.source === 'subwallet-js');
       const result = groupAccountsByWallet(singleWalletAccounts);
 
       expect(Object.keys(result)).toHaveLength(1);
