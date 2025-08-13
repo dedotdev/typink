@@ -6,7 +6,6 @@ import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
-import { useWallet } from './WalletProvider.js';
 import {
   cacheMetadataAtom,
   clientAtom,
@@ -75,7 +74,6 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
-  const { signer } = useWallet();
 
   // Initialize atoms
   const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
@@ -131,10 +129,12 @@ export function ClientProvider({
     });
   }, [networkId, selectedProvider, initializeClient]);
 
-  // Update client signer when it changes
+  // Update client signer when client is ready
   useEffect(() => {
-    updateClientSigner();
-  }, [signer, updateClientSigner]);
+    if (client && ready) {
+      updateClientSigner();
+    }
+  }, [client, ready, updateClientSigner]);
 
   return (
     <ClientContext.Provider
