@@ -79,9 +79,9 @@ export function useTxFee<
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if tx is a UseTxReturnType by looking for the estimatedFee method
+  // Check if tx is a UseTxReturnType by looking for the getEstimatedFee method
   const isUseTxReturnType = (tx: any): tx is UseTxReturnType<TxFn> => {
-    return tx && typeof tx === 'object' && typeof tx.estimatedFee === 'function';
+    return tx && typeof tx === 'object' && typeof tx.getEstimatedFee === 'function';
   };
 
   // Dependencies for effect
@@ -104,7 +104,7 @@ export function useTxFee<
       if (isUseTxReturnType(tx)) {
         // For UseTxReturnType, pass args and txOptions in the proper format
         const params = args.length > 0 ? { args, txOptions } : { txOptions };
-        estimatedFee = await tx.estimatedFee(params as any);
+        estimatedFee = await tx.getEstimatedFee(params as any);
       } else {
         const txFn = tx(client.tx);
         const transaction = txFn(...args);
