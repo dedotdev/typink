@@ -1,7 +1,7 @@
 import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { useTypink, useTx, useTxFee, formatBalance } from 'typink';
+import { useTypink, useTx, useTxFee, useBalance, formatBalance } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 import { PolkadotApi } from '@dedot/chaintypes';
 import RecipientSelector from './RecipientSelector';
@@ -17,10 +17,10 @@ const parseAmount = (amountStr: string, decimals: number = 10): bigint | null =>
   try {
     const trimmed = amountStr.trim();
     if (!trimmed || isNaN(Number(trimmed))) return null;
-    
+
     const amount = parseFloat(trimmed);
     if (amount <= 0) return null;
-    
+
     // Convert display units to chain units using network decimals
     const multiplier = Math.pow(10, decimals);
     return BigInt(Math.floor(amount * multiplier));
@@ -34,29 +34,32 @@ export default function TransferKeepAliveExample() {
   const [recipient, setRecipient] = useState('');
   const [amountStr, setAmountStr] = useState('');
 
+  // Get current balance of connected account
+  const currentBalance = useBalance(connectedAccount?.address);
+
   // Debounce inputs to avoid excessive fee calculations
   const [debouncedRecipient, setDebouncedRecipient] = useState(recipient);
   const [debouncedAmountStr, setDebouncedAmountStr] = useState(amountStr);
-  
-  useDebounce(() => setDebouncedRecipient(recipient), 500, [recipient]);
-  useDebounce(() => setDebouncedAmountStr(amountStr), 500, [amountStr]);
+
+  useDebounce(() => setDebouncedRecipient(recipient), 150, [recipient]);
+  useDebounce(() => setDebouncedAmountStr(amountStr), 150, [amountStr]);
 
   // Validation
   const isValidRecipient = isValidPolkadotAddress(debouncedRecipient);
   const parsedAmount = parseAmount(debouncedAmountStr, network?.decimals || 10);
   const isValidAmount = parsedAmount !== null && parsedAmount > 0n;
-  
+
   // Create transferKeepAlive transaction
   const transferTx = useTx((tx) => tx.balances.transferKeepAlive);
 
   const {
     fee: estimatedFee,
     isLoading: feeLoading,
-    error: feeError
+    error: feeError,
   } = useTxFee({
     tx: transferTx,
     args: [debouncedRecipient, parsedAmount || 0n],
-    enabled: isValidRecipient && isValidAmount
+    enabled: isValidRecipient && isValidAmount,
   });
 
   const handleTransfer = async () => {
@@ -96,6 +99,25 @@ export default function TransferKeepAliveExample() {
         Transfer {network?.symbol || 'tokens'} to another account using transferKeepAlive (maintains minimum balance).
       </Text>
 
+      {/* Current Balance Display */}
+      {connectedAccount && (
+        <Flex
+          p={3}
+          alignItems='center'
+          justifyContent='space-between'
+          bg='blue.50'
+          borderRadius='md'
+          border='1px solid'
+          borderColor='blue.200'>
+          <Text fontSize='sm' fontWeight='medium' color='blue.700'>
+            Current Balance:
+          </Text>
+          <Text fontSize='sm' color='blue.800' fontWeight='bold'>
+            {formatBalance(currentBalance?.free, network)}
+          </Text>
+        </Flex>
+      )}
+
       <RecipientSelector
         value={recipient}
         onChange={setRecipient}
@@ -113,7 +135,7 @@ export default function TransferKeepAliveExample() {
         step='0.000000001'
         min='0'
       />
-      
+
       {amountStr.length > 0 && !isValidAmount && (
         <Text fontSize='xs' color='red.500'>
           Please enter a valid amount greater than 0
@@ -166,7 +188,7 @@ export default function TransferKeepAliveExample() {
           Please connect your wallet to send transfers
         </Text>
       )}
-      
+
       {connectedAccount && (!isValidRecipient || !isValidAmount) && (recipient.length > 0 || amountStr.length > 0) && (
         <Text fontSize='xs' color='gray.500' textAlign='center'>
           Enter a valid recipient address and amount to see fee estimate
