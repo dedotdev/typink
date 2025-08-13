@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { BOB, devPairs, transferNativeBalance } from './utils';
+import { BOB, devPairs, transferNativeBalance } from './utils.js';
 
 describe('basic client operations', () => {
   it('should get current block number', async () => {

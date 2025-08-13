@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { ALICE, BOB, CHARLIE, deployPsp22Contract, psp22Metadata, wrapper } from '../utils';
+import { ALICE, BOB, CHARLIE, deployPsp22Contract, psp22Metadata, wrapper } from '../utils.js';
 import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractQuery, useContractTx, useRawContract } from 'typink';
 import { Contract } from 'dedot/contracts';
-import { Psp22ContractApi } from 'contracts/psp22';
+import { Psp22ContractApi } from '../contracts/psp22/index.js';
 
 describe('useContractQuery', () => {
   let contractAddress: string, contract: Contract<Psp22ContractApi>;

@@ -1,11 +1,11 @@
 import { ContractDeployment, development, InjectedSigner, Props, SignerPayloadJSON, TypinkProvider } from 'typink';
 import Keyring from '@polkadot/keyring';
-import { FlipperContractApi } from './contracts/flipper';
-import { Psp22ContractApi } from './contracts/psp22';
+import { FlipperContractApi } from './contracts/flipper/index.js';
+import { Psp22ContractApi } from './contracts/psp22/index.js';
 // @ts-ignore
-import * as flipperMetadata from './contracts/flipper_v5.json';
+import flipperMetadata from './contracts/flipper_v5.json';
 // @ts-ignore
-import * as psp22Metadata from './contracts/psp22.json';
+import psp22Metadata from './contracts/psp22.json';
 import { Contract, ContractDeployer } from 'dedot/contracts';
 import { assert, deferred } from 'dedot/utils';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
@@ -45,7 +45,7 @@ export const Wrapper = ({ children, deployments = [] }: Props) => (
     deployments={deployments}
     defaultCaller={ALICE}
     signer={mockSigner}
-    connectedAccount={{ address: ALICE }}
+    connectedAccount={{ address: ALICE, source: 'test' }}
     appName='Typink Test App'>
     {children}
   </TypinkProvider>
