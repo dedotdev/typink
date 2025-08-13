@@ -28,8 +28,9 @@ export function transformInjectedToTypinkAccounts(
   if (!walletSource) return [];
   
   return injectedAccounts.map(account => ({
-    ...account,
     source: walletSource,
+    address: account.address,
+    name: account.name,
   }));
 }
 
