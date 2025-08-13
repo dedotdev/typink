@@ -25,6 +25,7 @@ import {
   initializeSupportedNetworksAtom,
   updateClientSignerAtom,
 } from '../atoms/clientActions.js';
+import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
   ISubstrateClient<ChainApi[RpcVersion]>;
@@ -103,6 +104,7 @@ export function ClientProvider({
   const network = useAtomValue(currentNetworkAtom);
   const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
   const cacheMeta = useAtomValue(cacheMetadataAtom);
+  const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
 
   // Use atom actions
   const setNetwork = useSetAtom(setNetworkAtom);
@@ -136,12 +138,12 @@ export function ClientProvider({
     });
   }, [networkId, selectedProvider, initializeClient]);
 
-  // Update client signer when client is ready
+  // Update client signer when client is ready or signer changes
   useEffect(() => {
     if (client && ready) {
       updateClientSigner();
     }
-  }, [client, ready, updateClientSigner]);
+  }, [client, ready, finalEffectiveSigner, updateClientSigner]);
 
   return (
     <ClientContext.Provider
