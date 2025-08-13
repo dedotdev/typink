@@ -74,7 +74,6 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
-
   // Initialize atoms
   const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
   const initializeDefaultNetworkId = useSetAtom(initializeDefaultNetworkIdAtom);
@@ -112,10 +111,18 @@ export function ClientProvider({
   // Initialize network connection on first mount from localStorage
   const [networkConnection, setNetworkConnection] = useAtom(networkConnectionAtom);
 
-  // Initialize network connection synchronously if not set
+  // Initialize network connection synchronously if not set or invalid
   useMemo(() => {
-    if (!networkConnection && supportedNetworks.length > 0) {
+    if (supportedNetworks.length === 0) return;
+
+    // Check if stored network connection is valid
+    const storedNetworkId = networkConnection?.networkId;
+    const isStoredNetworkValid = storedNetworkId && supportedNetworks.some((network) => network.id === storedNetworkId);
+
+    // Only set network connection if no valid stored connection exists
+    if (!networkConnection || !isStoredNetworkValid) {
       const initialNetworkId = defaultNetworkId || supportedNetworks[0].id;
+      console.log('initialNetworkId', initialNetworkId);
       setNetworkConnection({ networkId: initialNetworkId });
     }
   }, [networkConnection, defaultNetworkId, supportedNetworks, setNetworkConnection]);

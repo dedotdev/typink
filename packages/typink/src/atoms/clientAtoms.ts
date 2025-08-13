@@ -4,7 +4,12 @@ import { NetworkConnection, NetworkId, NetworkInfo } from '../types.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Persistent atom for network connection settings
-export const networkConnectionAtom = atomWithStorage<NetworkConnection | null>('TYPINK::NETWORK_CONNECTION', null);
+export const networkConnectionAtom = atomWithStorage<NetworkConnection | null>(
+  'TYPINK::NETWORK_CONNECTION',
+  null,
+  undefined,
+  { getOnInit: true },
+);
 
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
