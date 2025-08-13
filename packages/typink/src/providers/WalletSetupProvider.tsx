@@ -1,34 +1,50 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { useLocalStorage } from 'react-use';
-import { useDeepDeps, useIsFirstRender } from '../hooks/index.js';
-import { InjectedAccount, InjectedSigner } from '../types.js';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { TypinkAccount } from '../types.js';
 import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
-import { assert } from 'dedot/utils';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
+import {
+  allAccountsAtom,
+  availableWalletsAtom,
+  connectedAccountAtom,
+  connectedWalletIdsAtom,
+  connectedWalletsAtom,
+  finalEffectiveSignerAtom,
+} from '../atoms/walletAtoms.js';
+import {
+  connectWalletAtom,
+  disconnectWalletAtom,
+  initializeAppNameAtom,
+  initializeWalletsAtom,
+  setExternalSignerAtom,
+} from '../atoms/walletActions.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
 export interface WalletSetupContextProps {
   appName: string;
 
-  // for setting up wallets
-  connectWallet: (id: string) => void;
-  disconnect: () => void;
-  connectedWalletId?: string;
-  connectedWallet?: Wallet;
-  wallets: Wallet[]; // custom available wallets
+  // Multi-wallet support
+  connectWallet: (id: string) => Promise<void>;
+  disconnect: (walletId?: string) => void;
+  connectedWalletIds: string[]; // Array of connected wallet IDs
+  connectedWallets: Wallet[]; // Array of connected wallet objects
+  wallets: Wallet[]; // Available wallets
 
-  setConnectedAccount: (account: InjectedAccount) => void;
-  accounts: InjectedAccount[];
+  // Account management
+  setConnectedAccount: (account: TypinkAccount) => void;
+  accounts: TypinkAccount[]; // All accounts from all connected wallets
 }
 
 export const WalletSetupContext = createContext<WalletSetupContextProps>({
   appName: 'Typink Dapp',
   accounts: [],
-  connectWallet: noop,
+  connectWallet: () => Promise.reject(),
   disconnect: noop,
-  setConnectedAccount: noop,
+  connectedWalletIds: [],
+  connectedWallets: [],
   wallets: [],
+  setConnectedAccount: noop,
 });
 
 export const useWalletSetup = () => {
@@ -57,106 +73,91 @@ export function WalletSetupProvider({
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
   wallets: initialWallets,
-  appName = ''
+  appName = '',
 }: WalletSetupProviderProps) {
-  const wallets = useMemo(() => initialWallets || DEFAULT_WALLETS, useDeepDeps([initialWallets]));
-  const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
+  // Initialize atoms
+  const initializeWallets = useSetAtom(initializeWalletsAtom);
+  const initializeAppName = useSetAtom(initializeAppNameAtom);
+  const setExternalSigner = useSetAtom(setExternalSignerAtom);
 
-  const [connectedWalletId, setConnectedWalletId, removeConnectedWalletId] =
-    useLocalStorage<string>('TYPINK::CONNECTED_WALLET');
+  // Use atoms for state
+  const connectedWalletIds = useAtomValue(connectedWalletIdsAtom);
+  const connectedWallets = useAtomValue(connectedWalletsAtom);
+  const accounts = useAtomValue(allAccountsAtom);
+  const availableWallets = useAtomValue(availableWalletsAtom);
+  const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
 
-  const [signer, setSigner] = useState<InjectedSigner>();
-  const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<InjectedAccount>('TYPINK::CONNECTED_ACCOUNT');
+  // Use atom actions
+  const connectWallet = useSetAtom(connectWalletAtom);
+  const disconnectWallet = useSetAtom(disconnectWalletAtom);
+  const [connectedAccount, setConnectedAccount] = useAtom(connectedAccountAtom);
 
-  const getWallet = (id?: string): Wallet => wallets.find((one) => one.id === id)!;
-
-  const connectedWallet = useMemo(() => getWallet(connectedWalletId), [connectedWalletId]);
-
-  const isFirstRender = useIsFirstRender();
+  // Initialize wallets and app name
+  useEffect(() => {
+    const walletsToUse = initialWallets || DEFAULT_WALLETS;
+    initializeWallets(walletsToUse);
+  }, [initialWallets, initializeWallets]);
 
   useEffect(() => {
-    setSigner(initialSigner);
-  }, [initialSigner]);
+    initializeAppName(appName);
+  }, [appName, initializeAppName]);
+
+  // Handle external signer from props
+  useEffect(() => {
+    setExternalSigner(initialSigner);
+  }, [initialSigner, setExternalSigner]);
+
+  // Handle connected account
+  const [effectiveConnectedAccount, setEffectiveConnectedAccount] = useState<TypinkAccount | undefined>(
+    initialConnectedAccount,
+  );
 
   useEffect(() => {
-    if (initialConnectedAccount) {
-      setConnectedAccount(initialConnectedAccount);
-    } else if (!isFirstRender) {
-      // make sure we don't accidentally remove connected account on first render
-      removeConnectedAccount();
+    // Use provided connected account or fall back to Jotai atom
+    setEffectiveConnectedAccount(initialConnectedAccount || connectedAccount);
+  }, [initialConnectedAccount, connectedAccount]);
+
+  const handleDisconnect = useCallback(
+    (walletId?: string) => {
+      disconnectWallet(walletId);
+    },
+    [disconnectWallet],
+  );
+
+  const handleSetConnectedAccount = useCallback(
+    (account: TypinkAccount) => {
+      setConnectedAccount(account);
+    },
+    [setConnectedAccount],
+  );
+
+  // Auto-connect wallets when connectedWalletIds changes (including on first load)
+  useEffect(() => {
+    if (connectedWalletIds.length > 0) {
+      connectedWalletIds.forEach(async (walletId) => {
+        try {
+          await connectWallet(walletId);
+        } catch (error) {
+          console.error(`Failed to auto-connect wallet ${walletId}:`, error);
+        }
+      });
     }
-  }, [initialConnectedAccount]);
-
-  useEffect(() => {
-    if (!connectedWalletId) return;
-
-    let unsub: () => void;
-
-    (async () => {
-      try {
-        const targetWallet: Wallet = getWallet(connectedWalletId);
-
-        assert(targetWallet, `Wallet Id Not Found ${connectedWalletId}`);
-
-        await targetWallet.waitUntilReady();
-        const injectedProvider = targetWallet.injectedProvider;
-
-        assert(injectedProvider?.enable, `Invalid Wallet: ${targetWallet.id}`);
-
-        const injected = await injectedProvider.enable(appName);
-        const initialConnectedAccounts = await injected.accounts.get();
-
-        // TODO keep track of wallet decision?
-        if (initialConnectedAccounts.length === 0) {
-          removeConnectedWalletId();
-          return;
-        }
-
-        // reset accounts on wallet changing
-        setAccounts([]);
-
-        // only remove the connected account if we're switching to a different wallet
-        if (!isFirstRender) {
-          removeConnectedAccount();
-        }
-
-        unsub = injected.accounts.subscribe(setAccounts);
-
-        setSigner(injected.signer as any);
-      } catch (e) {
-        console.error('Error while connecting wallet:', e);
-        removeConnectedWalletId();
-      }
-    })();
-
-    return () => unsub && unsub();
-  }, [connectedWalletId, appName]);
-
-  const connectWallet = async (walletId: string) => {
-    setConnectedWalletId(walletId);
-  };
-
-  const disconnect = () => {
-    removeConnectedWalletId();
-    removeConnectedAccount();
-    setSigner(undefined);
-    setAccounts([]);
-  };
+  }, []);
 
   return (
     <WalletSetupContext.Provider
       value={{
         accounts,
         connectWallet,
-        disconnect,
-        connectedWalletId,
-        connectedWallet,
-        setConnectedAccount,
-        wallets,
-        appName
+        disconnect: handleDisconnect,
+        connectedWalletIds,
+        connectedWallets,
+        wallets: availableWallets,
+        setConnectedAccount: handleSetConnectedAccount,
+
+        appName,
       }}>
-      <WalletProvider signer={signer} connectedAccount={connectedAccount}>
+      <WalletProvider signer={finalEffectiveSigner} connectedAccount={effectiveConnectedAccount}>
         {children}
       </WalletProvider>
     </WalletSetupContext.Provider>

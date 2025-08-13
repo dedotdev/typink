@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { ALICE, BOB, deployPsp22Contract, devPairs, mintPSP22Balance, psp22Metadata, wrapper } from '../utils';
+import { ALICE, BOB, deployPsp22Contract, devPairs, mintPSP22Balance, psp22Metadata, wrapper } from '../utils.js';
 import { numberToHex } from 'dedot/utils';
 import { Contract } from 'dedot/contracts';
-import { Psp22ContractApi } from '../contracts/psp22';
+import { Psp22ContractApi } from '../contracts/psp22/index.js';
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePSP22Balance } from 'typink';
 

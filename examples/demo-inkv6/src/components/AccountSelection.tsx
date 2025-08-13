@@ -45,7 +45,7 @@ export default function AccountSelection() {
             <MenuItem
               backgroundColor={one.address === address ? 'gray.200' : ''}
               gap={2}
-              key={one.address}
+              key={`${one.address}-${one.source}`}
               onClick={() => setConnectedAccount(one)}>
               <Flex direction='column'>
                 <Text fontWeight='500'>{one.name}</Text>
@@ -61,7 +61,7 @@ export default function AccountSelection() {
             buttonLabel='Switch Wallet'
             buttonProps={{ color: 'primary.500' }}
           />
-          <MenuItem onClick={disconnect} color='red.500'>
+          <MenuItem onClick={() => disconnect()} color='red.500'>
             Sign Out
           </MenuItem>
         </MenuList>

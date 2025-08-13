@@ -1,13 +1,30 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
-import { useInitializeClient } from '../hooks/internal/index.js';
-import { NetworkId, NetworkInfo, NetworkConnection, Props, validateProvider } from '../types.js';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { NetworkConnection, NetworkId, NetworkInfo, Props, validateProvider } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
-import { useWallet } from './WalletProvider.js';
-import { useLocalStorage } from 'react-use';
+import {
+  cacheMetadataAtom,
+  clientAtom,
+  clientReadyAtom,
+  currentNetworkAtom,
+  networkConnectionAtom,
+  networkIdAtom,
+  selectedProviderAtom,
+  setNetworkAtom,
+  setNetworkIdAtom,
+  supportedNetworksAtom,
+} from '../atoms/clientAtoms.js';
+import {
+  initializeCacheMetadataAtom,
+  initializeClientAtom,
+  initializeDefaultNetworkIdAtom,
+  initializeSupportedNetworksAtom,
+  updateClientSignerAtom,
+} from '../atoms/clientActions.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
   ISubstrateClient<ChainApi[RpcVersion]>;
@@ -57,45 +74,67 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
-  const { signer } = useWallet();
 
-  const initialNetworkId = useMemo<NetworkId>(() => {
-    return (defaultNetworkId || supportedNetworks[0].id) as NetworkId;
-  }, [defaultNetworkId, supportedNetworks]);
+  // Initialize atoms
+  const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
+  const initializeDefaultNetworkId = useSetAtom(initializeDefaultNetworkIdAtom);
+  const initializeCacheMetadata = useSetAtom(initializeCacheMetadataAtom);
+  const initializeClient = useSetAtom(initializeClientAtom);
+  const updateClientSigner = useSetAtom(updateClientSignerAtom);
 
-  const [connectionState, setConnectionState] = useLocalStorage<NetworkConnection>('TYPINK::NETWORK_CONNECTION', {
-    networkId: initialNetworkId,
-  });
+  // Initialize configuration immediately (synchronous)
+  useMemo(() => {
+    initializeSupportedNetworks(supportedNetworks);
+    initializeDefaultNetworkId(defaultNetworkId);
+    initializeCacheMetadata(cacheMetadata);
+  }, [
+    supportedNetworks,
+    defaultNetworkId,
+    cacheMetadata,
+    initializeSupportedNetworks,
+    initializeDefaultNetworkId,
+    initializeCacheMetadata,
+  ]);
 
-  const networkId = connectionState?.networkId || initialNetworkId;
-  const selectedProvider = validateProvider(connectionState?.provider);
+  // Use atoms for state
+  const client = useAtomValue(clientAtom);
+  const ready = useAtomValue(clientReadyAtom);
+  const networkId = useAtomValue(networkIdAtom);
+  const selectedProvider = useAtomValue(selectedProviderAtom);
+  const network = useAtomValue(currentNetworkAtom);
+  const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
+  const cacheMeta = useAtomValue(cacheMetadataAtom);
 
-  const network = useMemo(
-    () => supportedNetworks.find((network) => network.id === networkId),
-    [networkId, supportedNetworks],
-  );
+  // Use atom actions
+  const setNetwork = useSetAtom(setNetworkAtom);
+  const setNetworkId = useSetAtom(setNetworkIdAtom);
 
-  assert(network, `NetworkId ${networkId} is not available`);
+  // Initialize network connection on first mount from localStorage
+  const [networkConnection, setNetworkConnection] = useAtom(networkConnectionAtom);
 
-  const { ready, client } = useInitializeClient(network, { cacheMetadata, selectedProvider });
-
-  useEffect(() => {
-    client?.setSigner(signer);
-  }, [signer, client]);
-
-  const setNetwork = (connection: NetworkId | NetworkConnection) => {
-    if (typeof connection === 'string') {
-      // Backward compatibility: if just networkId is passed
-      setConnectionState({ networkId: connection });
-    } else {
-      // New format with endpoint selection
-      setConnectionState(connection);
+  // Initialize network connection synchronously if not set
+  useMemo(() => {
+    if (!networkConnection && supportedNetworks.length > 0) {
+      const initialNetworkId = defaultNetworkId || supportedNetworks[0].id;
+      setNetworkConnection({ networkId: initialNetworkId });
     }
-  };
+  }, [networkConnection, defaultNetworkId, supportedNetworks, setNetworkConnection]);
 
-  const setNetworkId = (networkId: NetworkId) => {
-    setNetwork(networkId);
-  };
+  // Network and networkId are now guaranteed to be initialized by atoms
+
+  // Initialize client when network or provider changes
+  useEffect(() => {
+    initializeClient().catch((e) => {
+      console.error('Failed to initialize client:', e);
+    });
+  }, [networkId, selectedProvider, initializeClient]);
+
+  // Update client signer when client is ready
+  useEffect(() => {
+    if (client && ready) {
+      updateClientSigner();
+    }
+  }, [client, ready, updateClientSigner]);
 
   return (
     <ClientContext.Provider
@@ -105,11 +144,11 @@ export function ClientProvider({
         ready,
         network,
         networkId,
-        selectedProvider,
+        selectedProvider: validateProvider(selectedProvider),
         setNetworkId,
         setNetwork,
-        cacheMetadata,
-        supportedNetworks,
+        cacheMetadata: cacheMeta,
+        supportedNetworks: allSupportedNetworks,
       }}>
       {children}
     </ClientContext.Provider>

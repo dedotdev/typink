@@ -30,6 +30,7 @@ const mockTypinkContextValue: TypinkContextProps = {
   network: { id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' },
   networkId: 'test' as any,
   setNetworkId: vi.fn(),
+  setNetwork: vi.fn(),
   cacheMetadata: false,
 
   // WalletSetupContextProps
@@ -37,12 +38,15 @@ const mockTypinkContextValue: TypinkContextProps = {
   connectedAccount: undefined,
   wallets: [],
 
-  // WalletContextProps
+  // Multi-wallet support
   accounts: [],
-  disconnect: vi.fn(),
-  appName: '',
   connectWallet: vi.fn(),
+  disconnect: vi.fn(),
+  connectedWalletIds: [],
+  connectedWallets: [],
   setConnectedAccount: vi.fn(),
+  
+  appName: '',
 
   // TypinkEventsContextProps
   subscribeToEvent: vi.fn(),
@@ -120,9 +124,13 @@ describe('useTypink', () => {
     expect(result).toHaveProperty('connectedAccount');
     expect(result).toHaveProperty('wallets');
 
-    // WalletContextProps properties
+    // Multi-wallet properties
     expect(result).toHaveProperty('accounts');
+    expect(result).toHaveProperty('connectWallet');
     expect(result).toHaveProperty('disconnect');
+    expect(result).toHaveProperty('connectedWalletIds');
+    expect(result).toHaveProperty('connectedWallets');
+    
 
     // TypinkEventsContextProps properties
     expect(result).toHaveProperty('subscribeToEvent');
@@ -142,6 +150,7 @@ describe('useTypink', () => {
 
     // Type assertions for function types
     expect(typeof result.setNetworkId).toBe('function');
+    expect(typeof result.connectWallet).toBe('function');
     expect(typeof result.disconnect).toBe('function');
     expect(typeof result.subscribeToEvent).toBe('function');
 
@@ -150,6 +159,8 @@ describe('useTypink', () => {
     expect(Array.isArray(result.accounts)).toBe(true);
     expect(Array.isArray(result.deployments)).toBe(true);
     expect(Array.isArray(result.wallets)).toBe(true);
+    expect(Array.isArray(result.connectedWalletIds)).toBe(true);
+    expect(Array.isArray(result.connectedWallets)).toBe(true);
   });
 
   it('should have correct return types with generic PolkadotApi', () => {

@@ -3,6 +3,12 @@ import { LooseContractMetadata } from 'dedot/contracts';
 
 export * from './pjs-types.js';
 
+export interface TypinkAccount {
+  source: string; // wallet id that the account is from
+  address: string;
+  name?: string;
+}
+
 export type Pop<T extends any[]> = T extends [...infer U, any?] ? U : never;
 export type Args<T> = T extends [] ? { args?: [] | undefined } : { args: T };
 export type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
@@ -42,15 +48,15 @@ export function validateProvider(provider: string | undefined): ProviderType {
   if (!provider) {
     return 'random-rpc'; // Default for undefined
   }
-  
+
   if (provider === 'light-client' || provider === 'random-rpc') {
     return provider;
   }
-  
+
   if (provider.startsWith('wss://') || provider.startsWith('ws://')) {
     return provider as `wss://${string}` | `ws://${string}`;
   }
-  
+
   // Invalid provider - fallback to random
   console.warn(`Invalid provider "${provider}", falling back to random-rpc`);
   return 'random-rpc';

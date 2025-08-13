@@ -1,11 +1,11 @@
-import { InjectedAccount, Props } from 'typink';
+import { Props, TypinkAccount } from 'typink';
 import { createContext, useContext } from 'react';
 import { useLocalStorage } from 'react-use';
 import { useConnectWallet } from '@subwallet-connect/react';
 
 interface AppContextProps {
-  connectedAccount?: InjectedAccount;
-  setConnectedAccount: (account?: InjectedAccount) => void;
+  connectedAccount?: TypinkAccount;
+  setConnectedAccount: (account?: TypinkAccount) => void;
   signOut: () => Promise<void>;
 }
 
@@ -20,7 +20,7 @@ interface AppProviderProps extends Props {}
 export const AppProvider = ({ children }: AppProviderProps) => {
   const [{ wallet }, _, disconnect] = useConnectWallet();
   const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<InjectedAccount>('CONNECTED_ACCOUNT');
+    useLocalStorage<TypinkAccount>('CONNECTED_ACCOUNT');
 
   const signOut = async () => {
     if (!wallet) return;

@@ -2,7 +2,10 @@ import { Flex, Text } from '@chakra-ui/react';
 import { useTypink } from 'typink';
 
 export default function ConnectedWallet() {
-  const { connectedWallet } = useTypink();
+  const { connectedWallets } = useTypink();
+
+  const connectedWallet = connectedWallets[0];
+  if (!connectedWallet) return null;
 
   return (
     <Flex align='center' gap={3} flex={1} justify='center' pb={2}>

@@ -7,12 +7,12 @@ import type { WalletState } from '@subwallet-connect/core';
 import polkadotJs from '@subwallet-connect/polkadot-js';
 import subwalletPolkadot from '@subwallet-connect/subwallet-polkadot';
 import talisman from '@subwallet-connect/talisman';
-import { InjectedAccount, Props } from 'typink';
+import { TypinkAccount, Props } from 'typink';
 
 interface WalletConnectorContextProps {
   wallet: WalletState | null;
-  connectedAccount?: InjectedAccount;
-  setConnectedAccount: (account?: InjectedAccount) => void;
+  connectedAccount?: TypinkAccount;
+  setConnectedAccount: (account?: TypinkAccount) => void;
   connectWallet: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -36,7 +36,7 @@ export const WalletConnectorProvider = ({ children }: WalletConnectorProviderPro
 export const WalletConnectorSetup = ({ children }: WalletConnectorProviderProps) => {
   const [{ wallet }, connect, disconnect] = useConnectWallet();
   const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<InjectedAccount>('CONNECTED_ACCOUNT');
+    useLocalStorage<TypinkAccount>('CONNECTED_ACCOUNT');
 
   const signOut = async () => {
     if (!wallet) return;
@@ -107,14 +107,14 @@ export const onboardWallets = init({
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 import { getWalletBySource, Wallet } from '@talismn/connect-wallets';
-import { InjectedAccount, Props } from 'typink';
+import { TypinkAccount, Props } from 'typink';
 
 interface WalletConnectorContextProps {
   wallet?: Wallet;
   connectWallet: (wallet: Wallet) => Promise<void>;
-  connectedAccount?: InjectedAccount;
-  setConnectedAccount: (account?: InjectedAccount) => void;
-  accounts: InjectedAccount[];
+  connectedAccount?: TypinkAccount;
+  setConnectedAccount: (account?: TypinkAccount) => void;
+  accounts: TypinkAccount[];
   signOut: () => Promise<void>;
 }
 
@@ -131,8 +131,8 @@ const SELECTED_WALLET_KEY = '@talisman-connect/selected-wallet-name';
 export const WalletConnectorProvider = ({ children }: WalletConnectorProviderProps) => {
   const [wallet, setWallet] = useState<Wallet>();
   const [connectedAccount, setConnectedAccount, removeConnectedAccount] =
-    useLocalStorage<InjectedAccount>('CONNECTED_ACCOUNT');
-  const [accounts, setAccounts] = useState<InjectedAccount[]>([]);
+    useLocalStorage<TypinkAccount>('CONNECTED_ACCOUNT');
+  const [accounts, setAccounts] = useState<TypinkAccount[]>([]);
 
   useEffect(() => {
     const selectedItem = localStorage.getItem(SELECTED_WALLET_KEY);
@@ -151,7 +151,7 @@ export const WalletConnectorProvider = ({ children }: WalletConnectorProviderPro
 
       await wallet.enable('---');
       wallet.subscribeAccounts((walletAccounts = []) => {
-        setAccounts(walletAccounts.map(({ name, address }) => ({ name, address })));
+        setAccounts(walletAccounts.map(({ name, address, source }) => ({ name, address, source })));
       });
     })();
   }, [wallet]);

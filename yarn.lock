@@ -636,6 +636,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dedot/react-identicon@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@dedot/react-identicon@npm:0.1.0"
+  dependencies:
+    "@dedot/utils": "npm:^0.7.0"
+    copy-to-clipboard: "npm:^3.3.3"
+    jdenticon: "npm:3.2.0"
+  peerDependencies:
+    react: ^18.3.1 || 19
+    react-dom: ^18.3.1 || 19
+  checksum: 10/d0e16670e0d59b435f7cb7280e6ce7ce4195a864b79040ede34e29ab830455c6b5061a1c3001d218e572a9fe0f25b92f46536ee208a8f81c9b939c6893c3aaf8
+  languageName: node
+  linkType: hard
+
 "@dedot/runtime-specs@npm:0.15.0":
   version: 0.15.0
   resolution: "@dedot/runtime-specs@npm:0.15.0"
@@ -692,6 +706,17 @@ __metadata:
     "@scure/base": "npm:^1.2.6"
     eventemitter3: "npm:^5.0.1"
   checksum: 10/b67a22672761a4d98a6980161b6607c94041d3a16a9be4927e2cb8fad35a34fce806be4592ba8343c7cfd3154ce3a576ee2b7b18910956c8bbc5d86093ecc14a
+  languageName: node
+  linkType: hard
+
+"@dedot/utils@npm:^0.7.0":
+  version: 0.7.1
+  resolution: "@dedot/utils@npm:0.7.1"
+  dependencies:
+    "@noble/hashes": "npm:^1.7.1"
+    "@scure/base": "npm:^1.2.4"
+    eventemitter3: "npm:^5.0.1"
+  checksum: 10/0e1563ea0bc70314e7bc030a7e89d22f733b5f6745b7ae13e64d48f37570679247ee8498bfb09f7b38729220f6f4d07c72840554fbee2d79600639492fbeccf0
   languageName: node
   linkType: hard
 
@@ -2872,7 +2897,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:^1.8.0":
+"@noble/hashes@npm:^1.7.1, @noble/hashes@npm:^1.8.0":
   version: 1.8.0
   resolution: "@noble/hashes@npm:1.8.0"
   checksum: 10/474b7f56bc6fb2d5b3a42132561e221b0ea4f91e590f4655312ca13667840896b34195e2b53b7f097ec080a1fdd3b58d902c2a8d0fbdf51d2e238b53808a177e
@@ -4456,7 +4481,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/base@npm:^1.2.6":
+"@scure/base@npm:^1.2.4, @scure/base@npm:^1.2.6":
   version: 1.2.6
   resolution: "@scure/base@npm:1.2.6"
   checksum: 10/c1a7bd5e0b0c8f94c36fbc220f4a67cc832b00e2d2065c7d8a404ed81ab1c94c5443def6d361a70fc382db3496e9487fb9941728f0584782b274c18a4bed4187
@@ -6359,6 +6384,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"canvas-renderer@npm:~2.2.0":
+  version: 2.2.1
+  resolution: "canvas-renderer@npm:2.2.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/857ebc09893e977b46e1acb14e1b02e4bd96c71d965721b0d635586e5ac96ccb8a1adf184cdfd19053b3adcb38b9d0db6ad1f517914f3ea753fd48d802bd92c4
+  languageName: node
+  linkType: hard
+
 "chai@npm:^5.1.2":
   version: 5.1.2
   resolution: "chai@npm:5.1.2"
@@ -6836,7 +6870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-to-clipboard@npm:3.3.3, copy-to-clipboard@npm:^3.3.1":
+"copy-to-clipboard@npm:3.3.3, copy-to-clipboard@npm:^3.3.1, copy-to-clipboard@npm:^3.3.3":
   version: 3.3.3
   resolution: "copy-to-clipboard@npm:3.3.3"
   dependencies:
@@ -7000,6 +7034,7 @@ __metadata:
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
     "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/react-identicon": "npm:^0.1.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.0.10"
@@ -9877,6 +9912,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jdenticon@npm:3.2.0":
+  version: 3.2.0
+  resolution: "jdenticon@npm:3.2.0"
+  dependencies:
+    canvas-renderer: "npm:~2.2.0"
+  bin:
+    jdenticon: bin/jdenticon.js
+  checksum: 10/a6d7f9ff0c54d8b2aa0417a132f38ab7ef75505a4ad249aface1bca6fc111b95ed92f491515419d7a838191e5f7e49c93813570ba58a872d4bb7434de1c14118
+  languageName: node
+  linkType: hard
+
 "jest-diff@npm:>=29.4.3 < 30, jest-diff@npm:^29.4.1":
   version: 29.7.0
   resolution: "jest-diff@npm:29.7.0"
@@ -9915,6 +9961,27 @@ __metadata:
     "@sideway/formula": "npm:^3.0.1"
     "@sideway/pinpoint": "npm:^2.0.0"
   checksum: 10/2ffc81be5b88b123b715df2dd52adcc5333ba995d9dc36c4179572fa459831bbdaa25b32f75654342bbe18c04931125c4fa44445f46341369598993550e4db76
+  languageName: node
+  linkType: hard
+
+"jotai@npm:^2.13.1":
+  version: 2.13.1
+  resolution: "jotai@npm:2.13.1"
+  peerDependencies:
+    "@babel/core": ">=7.0.0"
+    "@babel/template": ">=7.0.0"
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@babel/template":
+      optional: true
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10/6176f24c351dbcac7129ecc8000c12d3a358197963ecb71e24963873995f4286d8608575a36d4c6d6579e17d31a229f32eeab34676f2edeca63f372623661c20
   languageName: node
   linkType: hard
 
@@ -14319,7 +14386,7 @@ __metadata:
     "@substrate/connect-known-chains": "npm:^1.10.3"
     "@types/react": "npm:^18.3.18"
     fast-deep-equal: "npm:^3.1.3"
-    react-use: "npm:^17.6.0"
+    jotai: "npm:^2.13.1"
   peerDependencies:
     "@dedot/chaintypes": ">=0.132.0"
     dedot: ">=0.15.0"
