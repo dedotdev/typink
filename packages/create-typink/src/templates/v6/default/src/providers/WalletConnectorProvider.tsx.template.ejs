@@ -151,7 +151,7 @@ export const WalletConnectorProvider = ({ children }: WalletConnectorProviderPro
 
       await wallet.enable('---');
       wallet.subscribeAccounts((walletAccounts = []) => {
-        setAccounts(walletAccounts.map(({ name, address }) => ({ name, address })));
+        setAccounts(walletAccounts.map(({ name, address, source }) => ({ name, address, source })));
       });
     })();
   }, [wallet]);
