@@ -1,39 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { PayloadOptions, VersionedGenericSubstrateApi } from 'dedot/types';
+import { PayloadOptions } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
-import { TxBuilder, UseTxReturnType, InferTxFn } from './useTx.js';
+import { UseTxReturnType } from './useTx.js';
 import type { Args } from '../types.js';
 
-// Input types for useTxFee with TxBuilder function
-type UseTxFeeInputWithBuilder<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>,
-> = {
-  tx: TBuilder;
-  txOptions?: Partial<PayloadOptions>;
-  enabled?: boolean;
-} & Args<Parameters<InferTxFn<TBuilder>>>;
-
-// Input types for useTxFee with UseTxReturnType
-type UseTxFeeInputWithTxHook<TxFn extends (...args: any[]) => any = any> = {
+// Input type for useTxFee - only supports UseTxReturnType
+type UseTxFeeInput<TxFn extends (...args: any[]) => any = any> = {
   tx: UseTxReturnType<TxFn>;
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
 } & Args<Parameters<TxFn>>;
-
-// Union type for backward compatibility
-type UseTxFeeInput<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = TxBuilder<ChainApi> | UseTxReturnType<any>,
-> =
-  TTx extends TxBuilder<ChainApi>
-    ? UseTxFeeInputWithBuilder<ChainApi, TTx>
-    : TTx extends UseTxReturnType<infer TxFn>
-      ? UseTxFeeInputWithTxHook<TxFn>
-      : UseTxFeeInputWithBuilder<ChainApi> | UseTxFeeInputWithTxHook;
 
 // Return type for useTxFee
 type UseTxFeeReturnType = {
@@ -46,25 +25,19 @@ type UseTxFeeReturnType = {
 /**
  * A React hook for estimating transaction fees with built-in loading and error state management.
  *
- * This hook accepts a transaction and its arguments, automatically managing the fee estimation
- * process, including loading states and error handling. Client and account availability are
- * handled internally.
+ * This hook accepts a transaction created with `useTx` and its arguments, automatically managing
+ * the fee estimation process, including loading states and error handling. Client and account
+ * availability are handled internally.
  *
  * @param input - Object containing tx, args, txOptions, and enabled
- * @param input.tx - TxBuilder function or UseTxReturnType instance
- * @param input.args - Arguments for the transaction (optional)
+ * @param input.tx - UseTxReturnType instance from useTx hook
+ * @param input.args - Arguments for the transaction (required if transaction has parameters)
  * @param input.txOptions - Transaction options to include in fee estimation (e.g., tip, nonce) (optional)
  * @param input.enabled - Whether to automatically fetch the fee estimate (default: true) (optional)
  *
  * @example
  * ```typescript
- * // With TxBuilder
- * const { fee, isLoading, error } = useTxFee({
- *   tx: (tx) => tx.system.remark,
- *   args: ['hello']
- * });
- *
- * // With UseTxReturnType
+ * // Basic usage
  * const remarkTx = useTx((tx) => tx.system.remark);
  * const { fee, isLoading, error } = useTxFee({
  *   tx: remarkTx,
@@ -72,11 +45,12 @@ type UseTxFeeReturnType = {
  * });
  *
  * // With all options
+ * const transferTx = useTx((tx) => tx.balances.transfer);
  * const { fee, isLoading, error, refresh } = useTxFee({
- *   tx: remarkTx,
- *   args: ['hello'],
+ *   tx: transferTx,
+ *   args: [recipient, amount],
  *   txOptions: { tip: 1000n },
- *   enabled: message.length > 0
+ *   enabled: isValidRecipient && isValidAmount
  * });
  * ```
  *
@@ -86,21 +60,15 @@ type UseTxFeeReturnType = {
  *   - error: Error message string if estimation failed, null otherwise
  *   - refresh: Function to manually trigger fee estimation
  */
-export function useTxFee<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = TxBuilder<ChainApi> | UseTxReturnType<any>,
->(input: UseTxFeeInput<ChainApi, TTx>): UseTxFeeReturnType {
+export function useTxFee<TxFn extends (...args: any[]) => any = any>(
+  input: UseTxFeeInput<TxFn>,
+): UseTxFeeReturnType {
   const { tx, args = [], txOptions = {}, enabled = true } = input;
-  const { client, connectedAccount } = useTypink<ChainApi>();
+  const { client, connectedAccount } = useTypink<SubstrateApi>();
 
   const [fee, setFee] = useState<bigint | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Check if tx is a UseTxReturnType by looking for the getEstimatedFee method
-  const isUseTxReturnType = (tx: any): tx is UseTxReturnType<any> => {
-    return tx && typeof tx === 'object' && typeof tx.getEstimatedFee === 'function';
-  };
 
   // Dependencies for effect
   const deps = useDeepDeps([client, connectedAccount, tx, args, txOptions, enabled]);
@@ -117,21 +85,9 @@ export function useTxFee<
     setError(null);
 
     try {
-      let estimatedFee: bigint;
-
-      if (isUseTxReturnType(tx)) {
-        // For UseTxReturnType, pass args and txOptions in the proper format
-        const params = args.length > 0 ? { args, txOptions } : { txOptions };
-        estimatedFee = await tx.getEstimatedFee(params as any);
-      } else {
-        const txFn = tx(client.tx);
-        const transaction = txFn(...args);
-
-        const paymentInfo = await transaction.paymentInfo(connectedAccount.address, txOptions);
-
-        estimatedFee = paymentInfo.partialFee;
-      }
-
+      // Pass args and txOptions in the proper format
+      const params = args.length > 0 ? { args, txOptions } : { txOptions };
+      const estimatedFee = await tx.getEstimatedFee(params as any);
       setFee(estimatedFee);
     } catch (e: any) {
       console.error('Error estimating fee:', e);
