@@ -43,7 +43,9 @@ export const currentNetworkAtom = atom<NetworkInfo>((get) => {
 
   const network = supportedNetworks.find((network) => network.id === networkId);
   if (!network) {
-    throw new Error(`Network with ID '${networkId}' not found in supported networks.`);
+    const fallback = supportedNetworks[0];
+    console.error(`Network with ID '${networkId}' not found in supported networks, fallback to ${fallback.id}`);
+    return fallback;
   }
 
   return network;
