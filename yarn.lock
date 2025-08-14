@@ -7207,7 +7207,7 @@ __metadata:
     dedot: "npm:^0.15.0"
     eslint: "npm:^8.57.1"
     eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
+    eslint-plugin-react-refresh: "npm:^0.4.20"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -7238,7 +7238,7 @@ __metadata:
     dedot: "npm:^0.15.0"
     eslint: "npm:^8.57.1"
     eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
+    eslint-plugin-react-refresh: "npm:^0.4.20"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -7269,7 +7269,7 @@ __metadata:
     dedot: "npm:^0.15.0"
     eslint: "npm:^8.57.1"
     eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
+    eslint-plugin-react-refresh: "npm:^0.4.20"
     framer-motion: "npm:^10.18.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -7305,7 +7305,7 @@ __metadata:
     dedot: "npm:^0.15.0"
     eslint: "npm:^8.57.1"
     eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
+    eslint-plugin-react-refresh: "npm:^0.4.20"
     framer-motion: "npm:^10.18.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -8045,12 +8045,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-refresh@npm:^0.4.16":
-  version: 0.4.16
-  resolution: "eslint-plugin-react-refresh@npm:0.4.16"
+"eslint-plugin-react-refresh@npm:^0.4.20":
+  version: 0.4.20
+  resolution: "eslint-plugin-react-refresh@npm:0.4.20"
   peerDependencies:
     eslint: ">=8.40"
-  checksum: 10/72f022097978a4efe161cd07fd30b65f441e102c3139dd58cb132ecbc756c7d8b2739b78408556bcfb2d38c0f703eeac7eaef756818d887230e2cb93925af5a5
+  checksum: 10/88aec8eeaf96f1a09df72a2134dc36dd8ef22a3ceb1ccba7865e63a128596e6be31942925edf896dcd12d0d51b8cb77530293ef4e738b600955a5a5c913f52d8
   languageName: node
   linkType: hard
 
