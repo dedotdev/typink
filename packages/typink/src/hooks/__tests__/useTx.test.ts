@@ -97,8 +97,8 @@ describe('useTx', () => {
 
       expect(result.current).toHaveProperty('signAndSend');
       expect(typeof result.current.signAndSend).toBe('function');
-      expect(result.current).toHaveProperty('estimatedFee');
-      expect(typeof result.current.estimatedFee).toBe('function');
+      expect(result.current).toHaveProperty('getEstimatedFee');
+      expect(typeof result.current.getEstimatedFee).toBe('function');
       expect(result.current.inProgress).toBe(false);
       expect(result.current.inBestBlockProgress).toBe(false);
     });
@@ -355,7 +355,7 @@ describe('useTx', () => {
     });
   });
 
-  describe('estimatedFee', () => {
+  describe('getEstimatedFee', () => {
     beforeEach(() => {
       mockPaymentInfo.mockResolvedValue({
         partialFee: 1000000n,
@@ -367,17 +367,17 @@ describe('useTx', () => {
     it('should estimate fee successfully', async () => {
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      const fee = await result.current.estimatedFee({ args: ['test message'] });
+      const fee = await result.current.getEstimatedFee({ args: ['test message'] });
 
       expect(fee).toBe(1000000n);
       expect(mockClient.tx.system.remark).toHaveBeenCalledWith('test message');
       expect(mockPaymentInfo).toHaveBeenCalledWith('mock-address', {});
     });
 
-    it('should pass transaction options to estimatedFee', async () => {
+    it('should pass transaction options to getEstimatedFee', async () => {
       const { result } = renderHook(() => useTx((tx) => tx.balances.transfer));
 
-      const fee = await result.current.estimatedFee({
+      const fee = await result.current.getEstimatedFee({
         args: ['recipient-address', 1000000n],
         txOptions: { tip: 100000n },
       });
@@ -395,7 +395,7 @@ describe('useTx', () => {
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('Client not found');
+      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow('Client not found');
     });
 
     it('should throw error when no connected account', async () => {
@@ -406,7 +406,7 @@ describe('useTx', () => {
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
     });
 
     it('should handle errors with readable message', async () => {
@@ -417,7 +417,7 @@ describe('useTx', () => {
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.estimatedFee({ args: ['test'] })).rejects.toThrow('Transaction failed');
+      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow('Transaction failed');
 
       expect(withReadableErrorMessage).toHaveBeenCalledWith(mockClient, mockError);
     });

@@ -7026,38 +7026,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dapp-general@workspace:examples/dapp-general":
-  version: 0.0.0-use.local
-  resolution: "dapp-general@workspace:examples/dapp-general"
-  dependencies:
-    "@chakra-ui/icons": "npm:2.2.5"
-    "@chakra-ui/react": "npm:^2.10.5"
-    "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
-    "@dedot/react-identicon": "npm:^0.1.0"
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.0"
-    "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
-    "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
-    "@typescript-eslint/parser": "npm:^6.21.0"
-    "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.15.0"
-    eslint: "npm:^8.57.1"
-    eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
-    framer-motion: "npm:^10.18.0"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
-    react-toastify: "npm:^10.0.6"
-    react-use: "npm:^17.6.0"
-    typescript: "npm:^5.5.2"
-    typink: "workspace:*"
-    vite: "npm:^6.0.5"
-    vite-tsconfig-paths: "npm:^5.1.4"
-  languageName: unknown
-  linkType: soft
-
 "dargs@npm:^7.0.0":
   version: 7.0.0
   resolution: "dargs@npm:7.0.0"
@@ -7220,6 +7188,69 @@ __metadata:
   languageName: node
   linkType: hard
 
+"demo-general@workspace:examples/demo-general":
+  version: 0.0.0-use.local
+  resolution: "demo-general@workspace:examples/demo-general"
+  dependencies:
+    "@chakra-ui/icons": "npm:2.2.5"
+    "@chakra-ui/react": "npm:^2.10.5"
+    "@chakra-ui/system": "npm:^2.6.2"
+    "@dedot/chaintypes": "npm:^0.132.0"
+    "@dedot/react-identicon": "npm:^0.1.0"
+    "@emotion/react": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.0"
+    "@types/react": "npm:^19.0.10"
+    "@types/react-dom": "npm:^19.0.4"
+    "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
+    "@typescript-eslint/parser": "npm:^6.21.0"
+    "@vitejs/plugin-react": "npm:^4.3.4"
+    dedot: "npm:^0.15.0"
+    eslint: "npm:^8.57.1"
+    eslint-plugin-react-hooks: "npm:^4.6.2"
+    eslint-plugin-react-refresh: "npm:^0.4.16"
+    framer-motion: "npm:^10.18.0"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-toastify: "npm:^10.0.6"
+    react-use: "npm:^17.6.0"
+    typescript: "npm:^5.5.2"
+    typink: "workspace:*"
+    vite: "npm:^6.0.5"
+    vite-tsconfig-paths: "npm:^5.1.4"
+  languageName: unknown
+  linkType: soft
+
+"demo-inkv5@workspace:examples/demo-inkv5":
+  version: 0.0.0-use.local
+  resolution: "demo-inkv5@workspace:examples/demo-inkv5"
+  dependencies:
+    "@chakra-ui/icons": "npm:2.2.5"
+    "@chakra-ui/react": "npm:^2.10.5"
+    "@chakra-ui/system": "npm:^2.6.2"
+    "@dedot/chaintypes": "npm:^0.132.0"
+    "@emotion/react": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.0"
+    "@types/react": "npm:^19.0.10"
+    "@types/react-dom": "npm:^19.0.4"
+    "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
+    "@typescript-eslint/parser": "npm:^6.21.0"
+    "@vitejs/plugin-react": "npm:^4.3.4"
+    dedot: "npm:^0.15.0"
+    eslint: "npm:^8.57.1"
+    eslint-plugin-react-hooks: "npm:^4.6.2"
+    eslint-plugin-react-refresh: "npm:^0.4.16"
+    framer-motion: "npm:^10.18.0"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-toastify: "npm:^10.0.6"
+    react-use: "npm:^17.6.0"
+    typescript: "npm:^5.5.2"
+    typink: "workspace:*"
+    vite: "npm:^6.0.5"
+    vite-tsconfig-paths: "npm:^5.1.4"
+  languageName: unknown
+  linkType: soft
+
 "demo-inkv6@workspace:examples/demo-inkv6":
   version: 0.0.0-use.local
   resolution: "demo-inkv6@workspace:examples/demo-inkv6"
@@ -7281,37 +7312,6 @@ __metadata:
     react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
     svelte-qrcode: "npm:^1.0.1"
-    typescript: "npm:^5.5.2"
-    typink: "workspace:*"
-    vite: "npm:^6.0.5"
-    vite-tsconfig-paths: "npm:^5.1.4"
-  languageName: unknown
-  linkType: soft
-
-"demo@workspace:examples/demo":
-  version: 0.0.0-use.local
-  resolution: "demo@workspace:examples/demo"
-  dependencies:
-    "@chakra-ui/icons": "npm:2.2.5"
-    "@chakra-ui/react": "npm:^2.10.5"
-    "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.132.0"
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.0"
-    "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
-    "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
-    "@typescript-eslint/parser": "npm:^6.21.0"
-    "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.15.0"
-    eslint: "npm:^8.57.1"
-    eslint-plugin-react-hooks: "npm:^4.6.2"
-    eslint-plugin-react-refresh: "npm:^0.4.16"
-    framer-motion: "npm:^10.18.0"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
-    react-toastify: "npm:^10.0.6"
-    react-use: "npm:^17.6.0"
     typescript: "npm:^5.5.2"
     typink: "workspace:*"
     vite: "npm:^6.0.5"

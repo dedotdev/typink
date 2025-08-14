@@ -1,22 +1,18 @@
 import {
   Box,
   Button,
-  ChakraProps,
-  MenuItem,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
   Flex,
   Text,
   Badge,
   Divider,
   VStack,
 } from '@chakra-ui/react';
-import { ThemingProps } from '@chakra-ui/system';
 import { useTypink, Wallet, TypinkAccount } from 'typink';
 import { useCallback, useState } from 'react';
 import AccountAvatar from '@/components/shared/AccountAvatar.tsx';
@@ -51,9 +47,7 @@ const WalletButton = ({ walletInfo }: WalletButtonProps) => {
       p={4}
       bg={isConnected ? 'green.50' : 'white'}
       _hover={{ borderColor: isConnected ? 'green.300' : 'gray.300' }}>
-      {/* Main content row */}
       <Flex align='flex-start' justify='space-between' width='full'>
-        {/* Left side: Logo and wallet info */}
         <Flex align='flex-start' gap={3} flex='1'>
           <img src={logo} alt={`${name}`} width={24} height={24} style={{ marginTop: '2px' }} />
           <VStack align='start' spacing={1} flex='1'>
@@ -73,7 +67,6 @@ const WalletButton = ({ walletInfo }: WalletButtonProps) => {
           </VStack>
         </Flex>
 
-        {/* Right side: Action buttons with fixed width to prevent shifting */}
         <Flex align='flex-start' justify='flex-end' minW='120px'>
           {isConnected ? (
             <Button size='sm' variant='outline' colorScheme='red' onClick={doDisconnectWallet} width='full'>
@@ -97,35 +90,24 @@ const WalletButton = ({ walletInfo }: WalletButtonProps) => {
   );
 };
 
-export enum ButtonStyle {
-  BUTTON,
-  MENU_ITEM,
-}
-
-interface WalletSelectionProps {
-  buttonStyle?: ButtonStyle;
-  buttonLabel?: string;
-  buttonProps?: ChakraProps & ThemingProps<'Button'>;
-}
-
 enum ModalView {
   WALLET_SELECTION = 'wallet',
   ACCOUNT_SELECTION = 'account',
 }
 
-export default function WalletSelection({
-  buttonStyle = ButtonStyle.BUTTON,
-  buttonLabel = 'Connect Wallet',
-  buttonProps,
-}: WalletSelectionProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { wallets, accounts, connectedAccount, setConnectedAccount, disconnect, connectedWalletIds } = useTypink();
+interface WalletSelectionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function WalletSelectionModal({ isOpen, onClose }: WalletSelectionModalProps) {
+  const { wallets, accounts, connectedAccount, setConnectedAccount, disconnect } = useTypink();
   const [currentView, setCurrentView] = useState<ModalView>(ModalView.WALLET_SELECTION);
 
   const hasConnectedWallets = accounts.length > 0;
 
   const handleDisconnectAll = useCallback(() => {
-    disconnect(); // Calling disconnect without walletId disconnects all
+    disconnect();
   }, [disconnect]);
 
   const handleAccountSelect = useCallback(
@@ -138,7 +120,7 @@ export default function WalletSelection({
 
   const handleModalClose = useCallback(() => {
     onClose();
-    setCurrentView(ModalView.WALLET_SELECTION); // Reset view when closing
+    setCurrentView(ModalView.WALLET_SELECTION);
   }, [onClose]);
 
   const renderWalletSelection = () => (
@@ -147,7 +129,6 @@ export default function WalletSelection({
       <ModalCloseButton />
       <ModalBody mb={4}>
         <VStack spacing={3}>
-          {/* Scrollable wallet list */}
           <Box maxHeight='400px' overflowY='auto' width='full' px={1}>
             <VStack spacing={3}>
               {wallets.map((one) => (
@@ -156,7 +137,6 @@ export default function WalletSelection({
             </VStack>
           </Box>
 
-          {/* Action buttons - always visible */}
           {hasConnectedWallets && (
             <>
               <Divider />
@@ -192,7 +172,6 @@ export default function WalletSelection({
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody mb={4}>
-        {/* Scrollable account list */}
         <Box maxHeight='500px' overflowY='auto' width='full' px={1}>
           <VStack spacing={2}>
             {accounts.map((account) => {
@@ -234,24 +213,11 @@ export default function WalletSelection({
   );
 
   return (
-    <>
-      {buttonStyle === ButtonStyle.MENU_ITEM && (
-        <MenuItem onClick={onOpen} {...buttonProps}>
-          {buttonLabel}
-        </MenuItem>
-      )}
-      {buttonStyle === ButtonStyle.BUTTON && (
-        <Button size='md' variant='outline' onClick={onOpen} {...buttonProps} aria-label='Connect Wallet'>
-          {connectedWalletIds.length > 0 ? '💼' : 'Connect Wallet'}
-        </Button>
-      )}
-
-      <Modal onClose={handleModalClose} size='md' isOpen={isOpen} closeOnOverlayClick={false} closeOnEsc={true}>
-        <ModalOverlay />
-        <ModalContent>
-          {currentView === ModalView.WALLET_SELECTION ? renderWalletSelection() : renderAccountSelection()}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal onClose={handleModalClose} size='md' isOpen={isOpen} closeOnOverlayClick={false} closeOnEsc={true}>
+      <ModalOverlay />
+      <ModalContent>
+        {currentView === ModalView.WALLET_SELECTION ? renderWalletSelection() : renderAccountSelection()}
+      </ModalContent>
+    </Modal>
   );
 }

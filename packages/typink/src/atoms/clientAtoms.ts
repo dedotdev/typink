@@ -4,7 +4,12 @@ import { NetworkConnection, NetworkId, NetworkInfo } from '../types.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Persistent atom for network connection settings
-export const networkConnectionAtom = atomWithStorage<NetworkConnection | null>('TYPINK::NETWORK_CONNECTION', null);
+export const networkConnectionAtom = atomWithStorage<NetworkConnection | null>(
+  'TYPINK::NETWORK_CONNECTION',
+  null,
+  undefined,
+  { getOnInit: true },
+);
 
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
@@ -38,7 +43,9 @@ export const currentNetworkAtom = atom<NetworkInfo>((get) => {
 
   const network = supportedNetworks.find((network) => network.id === networkId);
   if (!network) {
-    throw new Error(`Network with ID '${networkId}' not found in supported networks.`);
+    const fallback = supportedNetworks[0];
+    console.error(`Network with ID '${networkId}' not found in supported networks, fallback to ${fallback.id}`);
+    return fallback;
   }
 
   return network;

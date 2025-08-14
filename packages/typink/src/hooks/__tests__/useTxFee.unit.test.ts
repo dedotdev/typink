@@ -33,7 +33,7 @@ type MockClient = {
 
 type MockUseTxReturnType = {
   signAndSend: ReturnType<typeof vi.fn>;
-  estimatedFee: ReturnType<typeof vi.fn>;
+  getEstimatedFee: ReturnType<typeof vi.fn>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
@@ -68,7 +68,7 @@ describe('useTxFee - Unit Tests', () => {
 
     mockUseTxReturnType = {
       signAndSend: vi.fn().mockResolvedValue(undefined),
-      estimatedFee: vi.fn().mockResolvedValue(2000000n),
+      getEstimatedFee: vi.fn().mockResolvedValue(2000000n),
       inProgress: false,
       inBestBlockProgress: false,
     };
@@ -94,7 +94,7 @@ describe('useTxFee - Unit Tests', () => {
       expect(result.current.fee).toBe(null);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(null);
-      expect(typeof result.current.refetch).toBe('function');
+      expect(typeof result.current.refresh).toBe('function');
     });
   });
 
@@ -109,7 +109,7 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(1000000n);
@@ -131,7 +131,7 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(1000000n);
@@ -151,7 +151,7 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(null);
@@ -171,13 +171,13 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(2000000n);
       expect(result.current.error).toBe(null);
       expect(result.current.isLoading).toBe(false);
-      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions: {} });
+      expect(mockUseTxReturnType.getEstimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions: {} });
     });
 
     it('should pass txOptions to UseTxReturnType', async () => {
@@ -192,16 +192,16 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(2000000n);
-      expect(mockUseTxReturnType.estimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions });
+      expect(mockUseTxReturnType.getEstimatedFee).toHaveBeenCalledWith({ args: ['test'], txOptions });
     });
 
     it('should handle UseTxReturnType errors', async () => {
       const errorMessage = 'EstimatedFee failed';
-      mockUseTxReturnType.estimatedFee.mockRejectedValue(new Error(errorMessage));
+      mockUseTxReturnType.getEstimatedFee.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => 
         useTxFee({ 
@@ -212,7 +212,7 @@ describe('useTxFee - Unit Tests', () => {
       );
 
       await act(async () => {
-        await result.current.refetch();
+        await result.current.refresh();
       });
 
       expect(result.current.fee).toBe(null);
@@ -274,7 +274,7 @@ describe('useTxFee - Unit Tests', () => {
       expect(result.current.isLoading).toBe(false);
 
       // Start refetch
-      const refetchPromise = result.current.refetch();
+      const refetchPromise = result.current.refresh();
       
       await act(async () => {
         await new Promise(resolve => setTimeout(resolve, 0));

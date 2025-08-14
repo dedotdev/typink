@@ -25,6 +25,7 @@ import {
   initializeSupportedNetworksAtom,
   updateClientSignerAtom,
 } from '../atoms/clientActions.js';
+import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
   ISubstrateClient<ChainApi[RpcVersion]>;
@@ -74,7 +75,6 @@ export function ClientProvider({
 }: ClientProviderProps) {
   assert(supportedNetworks.length > 0, 'Required at least one supported network');
 
-
   // Initialize atoms
   const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
   const initializeDefaultNetworkId = useSetAtom(initializeDefaultNetworkIdAtom);
@@ -104,6 +104,7 @@ export function ClientProvider({
   const network = useAtomValue(currentNetworkAtom);
   const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
   const cacheMeta = useAtomValue(cacheMetadataAtom);
+  const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
 
   // Use atom actions
   const setNetwork = useSetAtom(setNetworkAtom);
@@ -112,10 +113,18 @@ export function ClientProvider({
   // Initialize network connection on first mount from localStorage
   const [networkConnection, setNetworkConnection] = useAtom(networkConnectionAtom);
 
-  // Initialize network connection synchronously if not set
+  // Initialize network connection synchronously if not set or invalid
   useMemo(() => {
-    if (!networkConnection && supportedNetworks.length > 0) {
+    if (supportedNetworks.length === 0) return;
+
+    // Check if stored network connection is valid
+    const storedNetworkId = networkConnection?.networkId;
+    const isStoredNetworkValid = storedNetworkId && supportedNetworks.some((network) => network.id === storedNetworkId);
+
+    // Only set network connection if no valid stored connection exists
+    if (!networkConnection || !isStoredNetworkValid) {
       const initialNetworkId = defaultNetworkId || supportedNetworks[0].id;
+      console.log('initialNetworkId', initialNetworkId);
       setNetworkConnection({ networkId: initialNetworkId });
     }
   }, [networkConnection, defaultNetworkId, supportedNetworks, setNetworkConnection]);
@@ -129,12 +138,12 @@ export function ClientProvider({
     });
   }, [networkId, selectedProvider, initializeClient]);
 
-  // Update client signer when client is ready
+  // Update client signer when client is ready or signer changes
   useEffect(() => {
     if (client && ready) {
       updateClientSigner();
     }
-  }, [client, ready, updateClientSigner]);
+  }, [client, ready, finalEffectiveSigner, updateClientSigner]);
 
   return (
     <ClientContext.Provider

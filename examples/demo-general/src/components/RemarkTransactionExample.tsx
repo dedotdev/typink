@@ -19,11 +19,11 @@ export default function RemarkTransactionExample() {
   const {
     fee: estimatedFee,
     isLoading: feeLoading,
-    error: feeError
+    error: feeError,
   } = useTxFee({
     tx: remarkTx,
     args: [debouncedMessage],
-    enabled: debouncedMessage.trim().length > 0
+    enabled: debouncedMessage.trim().length > 0,
   });
 
   const handleSendRemark = async () => {

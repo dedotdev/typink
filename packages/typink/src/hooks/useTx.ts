@@ -33,7 +33,7 @@ export type TxEstimatedFeeParameters<TxFn extends (...args: any[]) => any = any>
 // Type for the return value of useTx with proper generics
 export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any> = {
   signAndSend(parameters?: TxSignAndSendParameters<TxFn>): Promise<void>;
-  estimatedFee(parameters?: TxEstimatedFeeParameters<TxFn>): Promise<bigint>;
+  getEstimatedFee(parameters?: TxEstimatedFeeParameters<TxFn>): Promise<bigint>;
   inProgress: boolean;
   inBestBlockProgress: boolean;
 };
@@ -52,12 +52,12 @@ export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrins
  * await remarkTx.signAndSend({ args: [message] });
  * 
  * const transferTx = useTx((tx) => tx.balances.transfer);
- * const fee = await transferTx.estimatedFee({ args: [recipient, amount] });
+ * const fee = await transferTx.getEstimatedFee({ args: [recipient, amount] });
  * ```
  *
  * @returns An object containing:
  *   - signAndSend: A function to sign and send the transaction
- *   - estimatedFee: A function to estimate the transaction fee
+ *   - getEstimatedFee: A function to estimate the transaction fee
  *   - inProgress: A boolean indicating if a transaction is in progress
  *   - inBestBlockProgress: A boolean indicating if the transaction is being processed
  */
@@ -113,7 +113,7 @@ export function useTx<
     useDeepDeps([client, txBuilder, connectedAccount]),
   );
 
-  const estimatedFee = useMemo(
+  const getEstimatedFee = useMemo(
     () => {
       return async (parameters: TxEstimatedFeeParameters<TxFn> = {} as any) => {
         assert(client, 'Client not found');
@@ -139,7 +139,7 @@ export function useTx<
 
   return {
     signAndSend,
-    estimatedFee,
+    getEstimatedFee,
     inProgress,
     inBestBlockProgress,
   };

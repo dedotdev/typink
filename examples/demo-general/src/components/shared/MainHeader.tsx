@@ -1,11 +1,7 @@
 import { Box, Container, Flex } from '@chakra-ui/react';
-import AccountSelection from '@/components/AccountSelection.tsx';
-import WalletSelection from '@/components/dialog/WalletSelection.tsx';
-import { useTypink } from 'typink';
+import AccountManager from '@/components/AccountManager.tsx';
 
 export default function MainHeader() {
-  const { signer } = useTypink();
-
   return (
     <Box borderBottom={1} borderStyle='solid' borderColor='gray.200'>
       <Container
@@ -22,7 +18,9 @@ export default function MainHeader() {
             <img src='/typink-logo.png' />
           </Box>
         </a>
-        <Flex gap={2}>{signer ? <AccountSelection /> : <WalletSelection />}</Flex>
+        <Flex gap={2}>
+          <AccountManager />
+        </Flex>
       </Container>
     </Box>
   );

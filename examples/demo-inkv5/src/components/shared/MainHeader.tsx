@@ -22,10 +22,7 @@ export default function MainHeader() {
             <img src='/typink-logo.png' />
           </Box>
         </a>
-        <Flex gap={2}>
-          {accounts.length > 0 && <AccountSelection />}
-          <WalletSelection />
-        </Flex>
+        <Flex gap={2}>{accounts.length > 0 ? <AccountSelection /> : <WalletSelection />}</Flex>
       </Container>
     </Box>
   );
