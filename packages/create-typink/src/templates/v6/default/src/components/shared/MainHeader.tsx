@@ -8,7 +8,7 @@ import { RESOURCE_BASE_URL } from '@/components/shared/icons.tsx';
 import { useTypink } from 'typink';
 
 export default function MainHeader() {
-  const { signer } = useTypink();
+  const { accounts } = useTypink();
   const { colorMode } = useColorMode();
 
   return (
@@ -47,7 +47,7 @@ export default function MainHeader() {
         <Flex gap={2}>
           <ThemeModeButton />
           <NetworkSelection />
-          {signer ? <AccountSelection /> : <WalletSelection />}
+          {accounts.length > 0 ? <AccountSelection /> : <WalletSelection />}
         </Flex>
       </Container>
     </Box>
