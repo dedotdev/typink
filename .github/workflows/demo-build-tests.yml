@@ -24,5 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - run: yarn install --immutable
-    - run: yarn workspace demo build
+    - run: yarn workspace demo-general build
+    - run: yarn workspace demo-inkv5 build
+    - run: yarn workspace demo-inkv6 build
     - run: yarn workspace demo-subconnect build
