@@ -1,11 +1,7 @@
 import { Box, Container, Flex } from '@chakra-ui/react';
-import AccountSelection from '@/components/AccountSelection.tsx';
-import WalletSelection from '@/components/dialog/WalletSelection.tsx';
-import { useTypink } from 'typink';
+import ConnectionManager from '@/components/ConnectionManager.tsx';
 
 export default function MainHeader() {
-  const { accounts } = useTypink();
-
   return (
     <Box borderBottom={1} borderStyle='solid' borderColor='gray.200'>
       <Container
@@ -23,8 +19,7 @@ export default function MainHeader() {
           </Box>
         </a>
         <Flex gap={2}>
-          {accounts.length > 0 && <AccountSelection />}
-          <WalletSelection />
+          <ConnectionManager />
         </Flex>
       </Container>
     </Box>
