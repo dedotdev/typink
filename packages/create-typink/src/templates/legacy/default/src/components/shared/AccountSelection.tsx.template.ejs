@@ -186,7 +186,10 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { formatBalance, useBalances, useTypink } from 'typink';
 
 function ConnectedWallet() {
-  const { connectedWallet } = useTypink();
+  const { connectedWallets } = useTypink();
+
+  const connectedWallet = connectedWallets[0];
+  if (!connectedWallet) return null;
 
   return (
     <Flex align='center' gap={3} flex={1} justify='center' pb={2}>
@@ -254,7 +257,7 @@ export default function AccountSelection() {
             buttonLabel='Switch Wallet'
             buttonProps={{ color: 'primary.500' }}
           />
-          <MenuItem onClick={disconnect} color='red.500'>
+          <MenuItem onClick={() => disconnect()} color='red.500'>
             Sign Out
           </MenuItem>
         </MenuList>
