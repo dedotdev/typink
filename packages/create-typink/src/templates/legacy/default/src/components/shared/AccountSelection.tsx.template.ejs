@@ -257,7 +257,7 @@ export default function AccountSelection() {
             buttonLabel='Switch Wallet'
             buttonProps={{ color: 'primary.500' }}
           />
-          <MenuItem onClick={disconnect} color='red.500'>
+          <MenuItem onClick={() => disconnect()} color='red.500'>
             Sign Out
           </MenuItem>
         </MenuList>
