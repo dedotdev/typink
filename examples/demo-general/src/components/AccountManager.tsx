@@ -1,11 +1,22 @@
-import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { useMemo } from 'react';
 import AccountAvatar from '@/components/shared/AccountAvatar.tsx';
 import WalletSelectionModal from '@/components/dialog/WalletSelectionModal.tsx';
 import { shortenAddress } from '@/utils/string.ts';
 import { formatBalance, useBalances, useTypink } from 'typink';
 
-export default function ConnectionManager() {
+export default function AccountManager() {
   const { accounts, connectedAccount, setConnectedAccount, disconnect, network, connectedWallets } = useTypink();
   const addresses = useMemo(() => accounts.map((a) => a.address), [accounts]);
   const balances = useBalances(addresses);
@@ -47,7 +58,9 @@ export default function ConnectionManager() {
                 {accounts.map((one) => (
                   <MenuItem
                     backgroundColor={
-                      one.address === connectedAccount?.address && one.source === connectedAccount?.source ? 'gray.200' : ''
+                      one.address === connectedAccount?.address && one.source === connectedAccount?.source
+                        ? 'gray.200'
+                        : ''
                     }
                     gap={3}
                     key={`${one.address}-${one.source}`}
@@ -73,7 +86,7 @@ export default function ConnectionManager() {
           </Menu>
         </Box>
       )}
-      
+
       <WalletSelectionModal isOpen={isOpen} onClose={onClose} />
     </>
   );

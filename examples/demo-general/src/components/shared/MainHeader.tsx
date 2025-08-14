@@ -1,5 +1,5 @@
 import { Box, Container, Flex } from '@chakra-ui/react';
-import ConnectionManager from '@/components/ConnectionManager.tsx';
+import AccountManager from '@/components/AccountManager.tsx';
 
 export default function MainHeader() {
   return (
@@ -19,7 +19,7 @@ export default function MainHeader() {
           </Box>
         </a>
         <Flex gap={2}>
-          <ConnectionManager />
+          <AccountManager />
         </Flex>
       </Container>
     </Box>
