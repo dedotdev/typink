@@ -17,6 +17,9 @@ export type TxBuilder<
   TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
 > = (tx: RuntimeChainApi<ChainApi>['tx']) => TxFn;
 
+// Helper type to infer TxFn from a TxBuilder function
+export type InferTxFn<T> = T extends TxBuilder<any, infer U> ? U : never;
+
 // Import Args type from types.ts
 import type { Args } from '../types.js';
 
@@ -63,10 +66,10 @@ export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrins
  */
 export function useTx<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+  TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>
 >(
-  txBuilder: TxBuilder<ChainApi, TxFn>
-): UseTxReturnType<TxFn> {
+  txBuilder: TBuilder
+): UseTxReturnType<InferTxFn<TBuilder>> {
   const [inProgress, setInProgress] = useState(false);
   const [inBestBlockProgress, setInBestBlockProgress] = useState(false);
 
@@ -74,7 +77,7 @@ export function useTx<
 
   const signAndSend = useMemo(
     () => {
-      return async (parameters: TxSignAndSendParameters<TxFn> = {} as any) => {
+      return async (parameters: TxSignAndSendParameters<InferTxFn<TBuilder>> = {} as any) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 
@@ -115,7 +118,7 @@ export function useTx<
 
   const getEstimatedFee = useMemo(
     () => {
-      return async (parameters: TxEstimatedFeeParameters<TxFn> = {} as any) => {
+      return async (parameters: TxEstimatedFeeParameters<InferTxFn<TBuilder>> = {} as any) => {
         assert(client, 'Client not found');
         assert(connectedAccount, 'No connected account. Please connect your wallet.');
 

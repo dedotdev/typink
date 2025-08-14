@@ -85,7 +85,7 @@ describe('useTxFee - Unit Tests', () => {
     it('should return correct structure when disabled', () => {
       const { result } = renderHook(() => 
         useTxFee({
-          tx: (tx) => tx.system.remark,
+          tx: mockUseTxReturnType,
           args: ['test'],
           enabled: false
         })
@@ -98,67 +98,7 @@ describe('useTxFee - Unit Tests', () => {
     });
   });
 
-  describe('Manual Refetch - TxBuilder', () => {
-    it('should estimate fee with TxBuilder via refetch', async () => {
-      const { result } = renderHook(() => 
-        useTxFee({
-          tx: (tx) => tx.system.remark,
-          args: ['test'],
-          enabled: false
-        })
-      );
-
-      await act(async () => {
-        await result.current.refresh();
-      });
-
-      expect(result.current.fee).toBe(1000000n);
-      expect(result.current.error).toBe(null);
-      expect(result.current.isLoading).toBe(false);
-      expect(mockClient.tx.system.remark).toHaveBeenCalledWith('test');
-      expect(mockPaymentInfo).toHaveBeenCalledWith('mock-address', {});
-    });
-
-    it('should pass txOptions with TxBuilder', async () => {
-      const txOptions = { tip: 500n };
-      const { result } = renderHook(() => 
-        useTxFee({
-          tx: (tx) => tx.system.remark,
-          args: ['test'],
-          txOptions,
-          enabled: false
-        })
-      );
-
-      await act(async () => {
-        await result.current.refresh();
-      });
-
-      expect(result.current.fee).toBe(1000000n);
-      expect(mockPaymentInfo).toHaveBeenCalledWith('mock-address', txOptions);
-    });
-
-    it('should handle TxBuilder errors', async () => {
-      const errorMessage = 'Payment info failed';
-      mockPaymentInfo.mockRejectedValue(new Error(errorMessage));
-
-      const { result } = renderHook(() => 
-        useTxFee({ 
-          tx: (tx) => tx.system.remark, 
-          args: ['test'],
-          enabled: false
-        })
-      );
-
-      await act(async () => {
-        await result.current.refresh();
-      });
-
-      expect(result.current.fee).toBe(null);
-      expect(result.current.error).toBe(errorMessage);
-      expect(result.current.isLoading).toBe(false);
-    });
-  });
+  // TxBuilder tests removed - only UseTxReturnType is supported now
 
   describe('Manual Refetch - UseTxReturnType', () => {
     it('should estimate fee with UseTxReturnType via refetch', async () => {
@@ -257,15 +197,15 @@ describe('useTxFee - Unit Tests', () => {
 
   describe('Loading States', () => {
     it('should show loading during manual refetch', async () => {
-      let resolvePaymentInfo: (value: any) => void;
-      const paymentInfoPromise = new Promise((resolve) => {
-        resolvePaymentInfo = resolve;
+      let resolveEstimatedFee: (value: any) => void;
+      const estimatedFeePromise = new Promise((resolve) => {
+        resolveEstimatedFee = resolve;
       });
-      mockPaymentInfo.mockReturnValue(paymentInfoPromise);
+      mockUseTxReturnType.getEstimatedFee.mockReturnValue(estimatedFeePromise);
 
       const { result } = renderHook(() => 
         useTxFee({ 
-          tx: (tx) => tx.system.remark, 
+          tx: mockUseTxReturnType, 
           args: ['test'],
           enabled: false
         })
@@ -284,7 +224,7 @@ describe('useTxFee - Unit Tests', () => {
 
       // Resolve the promise
       act(() => {
-        resolvePaymentInfo!({ partialFee: 1500000n });
+        resolveEstimatedFee!(1500000n);
       });
 
       await act(async () => {
