@@ -6,17 +6,34 @@ import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { TxBuilder, UseTxReturnType, InferTxFn } from './useTx.js';
 
-// Input types for useTxFee with all parameters merged into a single object
-interface UseTxFeeInput<
+// Input types for useTxFee with TxBuilder function
+interface UseTxFeeInputWithBuilder<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = any,
+  TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>,
 > {
-  tx: TTx;
-  args?: TTx extends TxBuilder<ChainApi> ? Parameters<InferTxFn<TTx>> : 
-        TTx extends UseTxReturnType<infer TxFn> ? Parameters<TxFn> : any[];
+  tx: TBuilder;
+  args?: Parameters<InferTxFn<TBuilder>>;
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
 }
+
+interface UseTxFeeInputWithTxHook<TxFn extends (...args: any[]) => any = any> {
+  tx: UseTxReturnType<TxFn>;
+  args?: Parameters<TxFn>;
+  txOptions?: Partial<PayloadOptions>;
+  enabled?: boolean;
+}
+
+// Union type for backward compatibility
+type UseTxFeeInput<
+  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = TxBuilder<ChainApi> | UseTxReturnType<any>,
+> =
+  TTx extends TxBuilder<ChainApi>
+    ? UseTxFeeInputWithBuilder<ChainApi, TTx>
+    : TTx extends UseTxReturnType<infer TxFn>
+      ? UseTxFeeInputWithTxHook<TxFn>
+      : UseTxFeeInputWithBuilder<ChainApi> | UseTxFeeInputWithTxHook;
 
 // Return type for useTxFee
 type UseTxFeeReturnType = {
@@ -71,7 +88,7 @@ type UseTxFeeReturnType = {
  */
 export function useTxFee<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = any,
+  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = TxBuilder<ChainApi> | UseTxReturnType<any>,
 >(input: UseTxFeeInput<ChainApi, TTx>): UseTxFeeReturnType {
   const { tx, args = [], txOptions = {}, enabled = true } = input;
   const { client, connectedAccount } = useTypink<ChainApi>();
