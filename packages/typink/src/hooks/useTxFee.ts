@@ -5,24 +5,24 @@ import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { TxBuilder, UseTxReturnType, InferTxFn } from './useTx.js';
+import type { Args } from '../types.js';
 
 // Input types for useTxFee with TxBuilder function
-interface UseTxFeeInputWithBuilder<
+type UseTxFeeInputWithBuilder<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
   TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>,
-> {
+> = {
   tx: TBuilder;
-  args?: Parameters<InferTxFn<TBuilder>>;
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
-}
+} & Args<Parameters<InferTxFn<TBuilder>>>;
 
-interface UseTxFeeInputWithTxHook<TxFn extends (...args: any[]) => any = any> {
+// Input types for useTxFee with UseTxReturnType
+type UseTxFeeInputWithTxHook<TxFn extends (...args: any[]) => any = any> = {
   tx: UseTxReturnType<TxFn>;
-  args?: Parameters<TxFn>;
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
-}
+} & Args<Parameters<TxFn>>;
 
 // Union type for backward compatibility
 type UseTxFeeInput<
