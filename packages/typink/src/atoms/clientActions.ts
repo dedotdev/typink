@@ -12,14 +12,24 @@ import { finalEffectiveSignerAtom } from './walletAtoms.js';
 import { JsonRpcApi, NetworkInfo, validateProvider } from '../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider, SmoldotProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
-// @ts-ignore
-import SmoldotWorker from 'dedot/smoldot/worker?worker';
 import { type Chain, type Client } from 'smoldot';
 
 // Global smoldot instances
 let smoldotClient: Client | null = null;
 let smoldotChains: Map<string, Chain> = new Map();
 let relayChains: Map<string, Chain> = new Map();
+
+/**
+ * Initialize smoldot worker
+ */
+const initSmoldotWorker = () => {
+  return startWithWorker(
+    new Worker(
+      new URL('dedot/smoldot/worker', import.meta.url), // --
+      { type: 'module' },
+    ),
+  );
+};
 
 /**
  * Shared method to get or create a smoldot chain with relay chain support
@@ -31,7 +41,7 @@ async function getOrCreateSmoldotChain(network: NetworkInfo): Promise<Chain> {
 
   // Initialize smoldot client with Web Worker if needed
   if (!smoldotClient) {
-    smoldotClient = startWithWorker(new SmoldotWorker());
+    smoldotClient = initSmoldotWorker();
   }
 
   let chain: Chain;
