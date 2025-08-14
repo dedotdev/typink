@@ -4,15 +4,16 @@ import { PayloadOptions, VersionedGenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
-import { TxBuilder, UseTxReturnType } from './useTx.js';
+import { TxBuilder, UseTxReturnType, InferTxFn } from './useTx.js';
 
 // Input types for useTxFee with all parameters merged into a single object
 interface UseTxFeeInput<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => any = any,
+  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = any,
 > {
-  tx: TxBuilder<ChainApi, TxFn> | UseTxReturnType<TxFn>;
-  args?: Parameters<TxFn>;
+  tx: TTx;
+  args?: TTx extends TxBuilder<ChainApi> ? Parameters<InferTxFn<TTx>> : 
+        TTx extends UseTxReturnType<infer TxFn> ? Parameters<TxFn> : any[];
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
 }
@@ -70,8 +71,8 @@ type UseTxFeeReturnType = {
  */
 export function useTxFee<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => any = any,
->(input: UseTxFeeInput<ChainApi, TxFn>): UseTxFeeReturnType {
+  TTx extends TxBuilder<ChainApi> | UseTxReturnType<any> = any,
+>(input: UseTxFeeInput<ChainApi, TTx>): UseTxFeeReturnType {
   const { tx, args = [], txOptions = {}, enabled = true } = input;
   const { client, connectedAccount } = useTypink<ChainApi>();
 
@@ -80,7 +81,7 @@ export function useTxFee<
   const [error, setError] = useState<string | null>(null);
 
   // Check if tx is a UseTxReturnType by looking for the getEstimatedFee method
-  const isUseTxReturnType = (tx: any): tx is UseTxReturnType<TxFn> => {
+  const isUseTxReturnType = (tx: any): tx is UseTxReturnType<any> => {
     return tx && typeof tx === 'object' && typeof tx.getEstimatedFee === 'function';
   };
 
