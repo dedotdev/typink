@@ -4,7 +4,7 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import { useTypink } from 'typink';
 
 export default function MainHeader() {
-  const { signer } = useTypink();
+  const { accounts } = useTypink();
 
   return (
     <Box borderBottom={1} borderStyle='solid' borderColor='gray.200'>
@@ -22,7 +22,7 @@ export default function MainHeader() {
             <img src='/typink-logo.png' />
           </Box>
         </a>
-        <Flex gap={2}>{signer ? <AccountSelection /> : <WalletSelection />}</Flex>
+        <Flex gap={2}>{accounts.length > 0 ? <AccountSelection /> : <WalletSelection />}</Flex>
       </Container>
     </Box>
   );

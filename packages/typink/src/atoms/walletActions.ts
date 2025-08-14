@@ -58,11 +58,13 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
       if (connectedAccount && connectedAccount.source === walletId) {
         // Only check if the connected account belongs to this wallet
         const accountStillExists = updatedTypinkAccounts.some(
-          account => account.address === connectedAccount.address
+          (account) => account.address === connectedAccount.address,
         );
-        
+
         if (!accountStillExists) {
-          console.log(`Connected account ${connectedAccount.address} is no longer available in wallet ${walletId}, resetting...`);
+          console.log(
+            `Connected account ${connectedAccount.address} is no longer available in wallet ${walletId}, resetting...`,
+          );
           set(connectedAccountAtom, undefined);
         }
       }
