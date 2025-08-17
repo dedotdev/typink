@@ -4,7 +4,7 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { useContract, useContractQuery, useContractTx, usePSP22Balance, useTypink, formatBalance } from 'typink';
+import { useContract, useContractTx, usePSP22Balance, useTypink, formatBalance, useRootStorage } from 'typink';
 import { txToaster } from '@/utils/txToaster.tsx';
 
 export default function Psp22Board() {
@@ -15,29 +15,12 @@ export default function Psp22Board() {
   const [address, setAddress] = useState('');
   const [watch, setWatch] = useState(false);
 
-  const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
-    contract,
-    fn: 'psp22MetadataTokenName',
-  });
+  const { storage, isLoading, refresh } = useRootStorage({ contract });
 
-  const { data: tokenSymbol, isLoading: loadingTokenSymbol } = useContractQuery({
-    contract,
-    fn: 'psp22MetadataTokenSymbol',
-  });
-
-  const { data: tokenDecimal, isLoading: loadingTokenDecimal } = useContractQuery({
-    contract,
-    fn: 'psp22MetadataTokenDecimals',
-  });
-
-  const {
-    data: totalSupply,
-    isLoading: loadingTotalSupply,
-    refresh: refreshTotalSupply,
-  } = useContractQuery({
-    contract,
-    fn: 'psp22TotalSupply',
-  });
+  const tokenName = storage?.name;
+  const tokenSymbol = storage?.symbol;
+  const tokenDecimal = storage?.decimals;
+  const totalSupply = storage?.data?.totalSupply;
 
   const { data: myBalance, isLoading: loadingBalance } = usePSP22Balance({
     contractAddress: contract?.address,
@@ -68,7 +51,7 @@ export default function Psp22Board() {
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
-            refreshTotalSupply();
+            refresh();
           }
 
           toaster.updateTxStatus(status);
@@ -78,7 +61,7 @@ export default function Psp22Board() {
       console.error(e);
       toaster.onError(e);
     } finally {
-      refreshTotalSupply();
+      refresh();
     }
   };
 
@@ -88,25 +71,25 @@ export default function Psp22Board() {
       <Box mt={4}>
         <Box mb={2}>
           Token Name:{' '}
-          <PendingText fontWeight='600' isLoading={loadingTokenName}>
+          <PendingText fontWeight='600' isLoading={isLoading}>
             {tokenName}
           </PendingText>
         </Box>
         <Box mb={2}>
           Token Symbol:{' '}
-          <PendingText fontWeight='600' isLoading={loadingTokenSymbol}>
+          <PendingText fontWeight='600' isLoading={isLoading}>
             {tokenSymbol}
           </PendingText>
         </Box>
         <Box mb={2}>
           Token Decimal:{' '}
-          <PendingText fontWeight='600' isLoading={loadingTokenDecimal}>
+          <PendingText fontWeight='600' isLoading={isLoading}>
             {tokenDecimal}
           </PendingText>
         </Box>
         <Box mb={2}>
           Total Supply:{' '}
-          <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
+          <PendingText fontWeight='600' isLoading={isLoading}>
             {formatBalance(totalSupply, network)}
           </PendingText>
         </Box>
