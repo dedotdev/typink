@@ -27,12 +27,12 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
   codeHashOrWasm: Hash | Uint8Array | string,
   options: ExecutionOptions = {},
 ): UseDeployer<T> {
-  const { client, networkId, connectedAccount, defaultCaller } = useTypink();
+  const { client, network, connectedAccount, defaultCaller } = useTypink();
   const [deployer, setDeployer] = useState<ContractDeployer<T>>();
 
   useEffect(
     () => {
-      if (!client || !networkId) {
+      if (!client || !network) {
         setDeployer(undefined);
         return;
       }
@@ -51,7 +51,7 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 
       setDeployer(deployer);
     },
-    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+    useDeepDeps([client, network?.id, connectedAccount?.address, defaultCaller, options]),
   );
 
   return {
