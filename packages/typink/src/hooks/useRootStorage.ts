@@ -117,7 +117,9 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
 
         // Check if contract has storage property
         if (!('storage' in contract)) {
-          throw new Error('Contract does not have storage property. Ensure you are using a valid Contract instance.');
+          throw new TypeError(
+            'Contract does not have storage property. Ensure you are using a valid Contract instance.',
+          );
         }
 
         // Fetch root storage
@@ -156,7 +158,7 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
 
       // Check if contract has storage property
       if (!('storage' in contract)) {
-        throw new Error('Contract does not have storage property. Ensure you are using a valid Contract instance.');
+        throw new TypeError('Contract does not have storage property. Ensure you are using a valid Contract instance.');
       }
 
       // Fetch root storage
