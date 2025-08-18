@@ -2,15 +2,11 @@ import { ContractDeployment, <%= options.networks %> } from 'typink';
 
 <% if (options.presetContract === 'flipper') { %>
     import flipperMetadata from './artifacts/flipper/flipper.json';
-<% } else if (options.presetContract === 'psp22') { %>
-    import psp22Metadata from './artifacts/psp22/psp22.json';
 <% } %>
 
 export enum ContractId {
   <% if (options.presetContract === 'flipper') { %>
   FLIPPER = 'flipper',
-  <% } else if (options.presetContract === 'psp22') { %>
-  PSP22 = 'psp22',
   <% } %>
 }
 
@@ -24,15 +20,28 @@ export const flipperDeployments: ContractDeployment[] = [
     address: '0x8036a0ff5670f418FB382cA8a2367A35970C9cdc',
   },
 <% } %>
-];
-<% } else if (options.presetContract === 'psp22') { %>
-export const psp22Deployments: ContractDeployment[] = [
-<% if (options.networks.includes("popTestnet")) { %>
+<% if (options.networks.includes("passetHub")) { %>
   {
-    id: ContractId.PSP22,
-    metadata: psp22Metadata as any,
-    network: popTestnet.id,
-    address: '0x5fdF0C445145e34E86216FEECB83fe11e170756d',
+    id: ContractId.FLIPPER,
+    metadata: flipperMetadata as any,
+    network: passetHub.id,
+    address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50',
+  },
+<% } %>
+<% if (options.networks.includes("kusamaAssetHub")) { %>
+  {
+    id: ContractId.FLIPPER,
+    metadata: flipperMetadata as any,
+    network: kusamaAssetHub.id,
+    address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751',
+  },
+<% } %>
+<% if (options.networks.includes("westendAssetHub")) { %>
+  {
+    id: ContractId.FLIPPER,
+    metadata: flipperMetadata as any,
+    network: westendAssetHub.id,
+    address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449',
   },
 <% } %>
 ];
@@ -41,7 +50,5 @@ export const psp22Deployments: ContractDeployment[] = [
 export const deployments = [
   <% if (options.presetContract === 'flipper') { %>
     ...flipperDeployments, 
-  <% } else if (options.presetContract === 'psp22') { %>
-    ...psp22Deployments
   <% } %>
 ];

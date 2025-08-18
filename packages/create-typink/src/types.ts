@@ -2,13 +2,13 @@ export const WALLET_CONNECTORS = ['Default', 'SubConnect V2', 'Talisman Connect'
 export type WalletConnector = (typeof WALLET_CONNECTORS)[number];
 
 export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['greeter', 'psp22'] as const;
-export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['flipper', 'psp22'] as const;
+export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['flipper'] as const;
 export type PresetContract =
   | (typeof PRESET_CONTRACTS_FOR_PALLET_CONTRACTS)[number]
   | (typeof PRESET_CONTRACTS_FOR_PALLET_REVIVE)[number];
 
 export const NETWORKS_FOR_PALLET_CONTRACTS = ['Pop Testnet', 'Aleph Zero Testnet', 'Aleph Zero', 'Astar'] as const;
-export const NETWORKS_FOR_PALLET_REVIVE = ['Pop Testnet'] as const;
+export const NETWORKS_FOR_PALLET_REVIVE = ['Pop Testnet', 'Passet Hub', 'Kusama AssetHub', 'Westend AssetHub'] as const;
 export type Network =
   | (typeof NETWORKS_FOR_PALLET_CONTRACTS)[number] // prettier-ignore
   | (typeof NETWORKS_FOR_PALLET_REVIVE)[number];
