@@ -107,7 +107,7 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
     const fetchStorage = async () => {
       if (!contract) {
         setStorage(undefined);
-        setIsLoading(false);
+        setIsLoading(true);
         return;
       }
 

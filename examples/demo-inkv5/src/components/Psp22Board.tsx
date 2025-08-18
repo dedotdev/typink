@@ -15,7 +15,7 @@ export default function Psp22Board() {
   const [address, setAddress] = useState('');
   const [watch, setWatch] = useState(false);
 
-  const { storage, isLoading, refresh } = useRootStorage({ contract });
+  const { storage, isLoading, refresh: refreshStorage } = useRootStorage({ contract });
 
   const tokenName = storage?.name;
   const tokenSymbol = storage?.symbol;
@@ -51,7 +51,7 @@ export default function Psp22Board() {
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
-            refresh();
+            refreshStorage().catch(console.error);
           }
 
           toaster.updateTxStatus(status);
@@ -61,7 +61,7 @@ export default function Psp22Board() {
       console.error(e);
       toaster.onError(e);
     } finally {
-      refresh();
+      refreshStorage().catch(console.error);
     }
   };
 
