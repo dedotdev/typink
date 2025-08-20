@@ -2,12 +2,9 @@ import { atom } from 'jotai';
 import {
   clientsMapAtom,
   clientReadyStatesAtom,
-  currentNetworkAtom,
-  selectedProviderAtom,
   cacheMetadataAtom,
   supportedNetworksAtom,
   defaultNetworkIdAtom,
-  networkIdAtom,
   networkConnectionsAtom,
   networksAtom,
 } from './clientAtoms.js';
@@ -154,56 +151,27 @@ async function cleanupClient(
   }
 }
 
-// Write-only atom for initializing/updating the primary client
-export const initializeClientAtom = atom(null, async (get, set) => {
-  const network = get(currentNetworkAtom);
-  const networkId = get(networkIdAtom);
-  const selectedProvider = get(selectedProviderAtom);
-  const cacheMetadata = get(cacheMetadataAtom);
-  const signer = get(finalEffectiveSignerAtom);
 
-  // Only clean up the existing primary client if it exists
-  const existingClient = get(clientsMapAtom).get(networkId);
-  if (existingClient) {
-    await cleanupClient(existingClient, networkId, selectedProvider);
-    set(removeNetworkStateAtom, networkId);
-  }
-
-  if (!network) {
-    set(setNetworkReadyStateAtom, networkId, false);
-    return;
-  }
-
-  // Set ready state to false while connecting
-  set(setNetworkReadyStateAtom, networkId, false);
-
-  try {
-    const client = await createClient(network, selectedProvider, cacheMetadata, signer);
-    set(setNetworkClientAtom, networkId, client);
-    set(setNetworkReadyStateAtom, networkId, true);
-  } catch (e) {
-    console.error('Error initializing primary client:', e);
-    set(setNetworkReadyStateAtom, networkId, false);
-    throw e;
-  }
-});
-
-// Write-only atom for initializing additional clients (all non-primary networks)
-export const initializeAdditionalClientsAtom = atom(null, async (get, set) => {
+// Write-only atom for initializing all clients (merged from initializeClientAtom and initializeAdditionalClientsAtom)
+export const initializeClientsAtom = atom(null, async (get, set) => {
   const connections = get(networkConnectionsAtom);
   const supportedNetworks = get(supportedNetworksAtom);
   const cacheMetadata = get(cacheMetadataAtom);
   const signer = get(finalEffectiveSignerAtom);
-  const primaryNetworkId = get(networkIdAtom);
 
-  // Get additional network IDs (all except primary)
+  if (connections.length === 0) {
+    console.warn('No network connections configured');
+    return;
+  }
+
+  const primaryConnection = connections[0];
   const additionalConnections = connections.slice(1);
-  const additionalNetworkIds = additionalConnections.map(conn => conn.networkId);
+  const allNetworkIds = connections.map(conn => conn.networkId);
+  const activeNetworkIds = new Set(allNetworkIds);
 
   // Clean up ALL networks that aren't in the current connections list
   // This ensures complete ecosystem switching cleanup
   const currentNetworksWithState = Array.from(get(clientReadyStatesAtom).keys());
-  const activeNetworkIds = new Set(connections.map(conn => conn.networkId));
 
   // Clean up obsolete networks sequentially (cleanup needs to be sequential)
   for (const networkId of currentNetworksWithState) {
@@ -218,17 +186,15 @@ export const initializeAdditionalClientsAtom = atom(null, async (get, set) => {
     }
   }
 
-  // Helper function to initialize a single additional network
-  const initializeNetwork = async (networkId: NetworkId): Promise<void> => {
+  // Helper function to initialize a single network
+  const initializeNetwork = async (connection: { networkId: NetworkId; provider?: string }, isPrimary = false): Promise<void> => {
+    const { networkId, provider: providerType } = connection;
     const network = supportedNetworks.find((n) => n.id === networkId);
+    
     if (!network) {
-      console.error(`Additional network with ID '${networkId}' not found in supported networks`);
+      console.error(`Network with ID '${networkId}' not found in supported networks`);
       return;
     }
-
-    // Get connection settings for this network
-    const connection = additionalConnections.find((conn) => conn.networkId === networkId);
-    const providerType = connection?.provider;
 
     // Clean up existing client if any (for re-initialization)
     const existingClient = get(clientsMapAtom).get(networkId);
@@ -246,13 +212,21 @@ export const initializeAdditionalClientsAtom = atom(null, async (get, set) => {
       set(setNetworkClientAtom, networkId, client);
       set(setNetworkReadyStateAtom, networkId, true);
     } catch (e) {
-      console.error(`Error initializing additional client for network ${networkId}:`, e);
+      console.error(`Error initializing ${isPrimary ? 'primary' : 'additional'} client for network ${networkId}:`, e);
       set(setNetworkReadyStateAtom, networkId, false);
+      if (isPrimary) {
+        throw e; // Re-throw for primary client errors
+      }
     }
   };
 
-  // Initialize all additional networks in parallel
-  await Promise.all(additionalNetworkIds.map(initializeNetwork));
+  // Initialize primary client first
+  await initializeNetwork(primaryConnection, true);
+
+  // Initialize additional networks in parallel
+  if (additionalConnections.length > 0) {
+    await Promise.all(additionalConnections.map(conn => initializeNetwork(conn, false)));
+  }
 });
 
 // Write-only atom for cleaning up all clients

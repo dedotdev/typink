@@ -23,8 +23,7 @@ import {
 } from '../atoms/clientAtoms.js';
 import {
   initializeCacheMetadataAtom,
-  initializeClientAtom,
-  initializeAdditionalClientsAtom,
+  initializeClientsAtom,
   initializeDefaultNetworkIdAtom,
   initializeSupportedNetworksAtom,
   updateClientSignerAtom,
@@ -131,8 +130,7 @@ export function ClientProvider({
   const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
   const initializeDefaultNetworkId = useSetAtom(initializeDefaultNetworkIdAtom);
   const initializeCacheMetadata = useSetAtom(initializeCacheMetadataAtom);
-  const initializeClient = useSetAtom(initializeClientAtom);
-  const initializeAdditionalClients = useSetAtom(initializeAdditionalClientsAtom);
+  const initializeClients = useSetAtom(initializeClientsAtom);
   const updateClientSigner = useSetAtom(updateClientSignerAtom);
   const cleanupAllClients = useSetAtom(cleanupAllClientsAtom);
 
@@ -181,23 +179,14 @@ export function ClientProvider({
     setNetworkConnectionsInitialized(true);
   }, []); // Empty deps - only runs once on mount
 
-  // Initialize primary client when network or provider changes
+  // Initialize all clients when network connections change
   useEffect(() => {
     if (networkConnections.length > 0) {
-      initializeClient().catch((e) => {
-        console.error('Failed to initialize primary client:', e);
+      initializeClients().catch((e) => {
+        console.error('Failed to initialize clients:', e);
       });
     }
-  }, [networkId, networkConnections, initializeClient]);
-
-  // Initialize additional clients when connections change
-  useEffect(() => {
-    if (networkConnections.length > 1) {
-      initializeAdditionalClients().catch((e) => {
-        console.error('Failed to initialize additional clients:', e);
-      });
-    }
-  }, [networkConnections, initializeAdditionalClients]);
+  }, [networkId, networkConnections, initializeClients]);
 
   // Update client signer when clients are ready or signer changes
   useEffect(() => {
