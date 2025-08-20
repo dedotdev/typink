@@ -17,9 +17,7 @@ import {
   useMediaQuery,
   Card,
   CardBody,
-  SimpleGrid,
   Avatar,
-  AvatarGroup,
 } from '@chakra-ui/react';
 import { useTypink, NetworkInfo } from 'typink';
 import { useMemo, useState } from 'react';
@@ -71,85 +69,55 @@ function NetworkStatusIndicator() {
 
 interface NetworkGroupCardProps {
   group: NetworkGroup;
-  isSelected: boolean;
   isConnected: boolean;
-  onSelect: (groupId: string) => void;
+  onConnect: (group: NetworkGroup) => void;
+  isConnecting: boolean;
 }
 
-function NetworkGroupCard({ group, isSelected, isConnected, onSelect }: NetworkGroupCardProps) {
+function NetworkGroupCard({ group, isConnected, onConnect, isConnecting }: NetworkGroupCardProps) {
   return (
     <Card
-      cursor='pointer'
-      onClick={() => onSelect(group.id)}
-      bg={isConnected ? 'green.50' : isSelected ? 'blue.50' : 'white'}
-      borderColor={isConnected ? 'green.200' : isSelected ? 'blue.200' : 'gray.200'}
-      borderWidth={isConnected || isSelected ? 2 : 1}
+      bg={isConnected ? 'green.50' : 'white'}
+      borderColor={isConnected ? 'green.200' : 'gray.200'}
+      borderWidth={1}
       _hover={{
-        bg: isConnected ? 'green.100' : isSelected ? 'blue.100' : 'gray.50',
-        borderColor: isConnected ? 'green.300' : isSelected ? 'blue.300' : 'gray.300',
-        transform: 'translateY(-2px)',
-        boxShadow: 'md',
+        borderColor: isConnected ? 'green.300' : 'gray.300',
+        boxShadow: 'sm',
       }}
-      transition='all 0.2s'
-      height='200px'>
-      <CardBody p={6}>
-        <VStack spacing={4} align='stretch' height='full'>
-          {/* Header with ecosystem name and status */}
-          <HStack justify='space-between' align='center'>
-            <Text fontSize='lg' fontWeight='bold' color='gray.900'>
-              {group.ecosystem}
-            </Text>
-            {isConnected && (
-              <Badge colorScheme='green' variant='solid'>
-                Connected
-              </Badge>
-            )}
-          </HStack>
-
-          {/* Primary network display */}
-          <VStack spacing={3} flex={1}>
-            <HStack spacing={3} width='full' align='center'>
-              <Avatar size='sm' src={group.primary.logo} name={group.primary.name} />
-              <VStack spacing={0} align='start' flex={1}>
-                <Text fontSize='sm' fontWeight='semibold'>
-                  {group.primary.name}
+      transition='all 0.2s'>
+      <CardBody p={4}>
+        <HStack justify='space-between' align='center' spacing={4}>
+          {/* Left side - Ecosystem info */}
+          <HStack spacing={3} flex={1}>
+            <Avatar size='md' src={group.primary.logo} name={group.primary.name} />
+            <VStack spacing={1} align='start'>
+              <HStack spacing={2} align='center'>
+                <Text fontSize='md' fontWeight='bold' color='gray.900'>
+                  {group.ecosystem}
                 </Text>
-                <Text fontSize='xs' color='gray.600'>
-                  Primary • {group.primary.symbol}
-                </Text>
-              </VStack>
-            </HStack>
-
-            {/* Secondary networks */}
-            <VStack spacing={2} width='full' align='start'>
-              <Text fontSize='xs' color='gray.500' fontWeight='medium'>
-                Secondary Networks:
-              </Text>
-              <HStack spacing={2} flexWrap='wrap'>
-                <AvatarGroup size='xs' max={3}>
-                  {group.secondary.map((network) => (
-                    <Avatar key={network.id} src={network.logo} name={network.name} title={network.name} />
-                  ))}
-                </AvatarGroup>
-                <Text fontSize='xs' color='gray.600'>
-                  {group.secondary.map((n) => n.name).join(', ')}
-                </Text>
+                {isConnected && (
+                  <Badge colorScheme='green' variant='solid' size='sm'>
+                    Connected
+                  </Badge>
+                )}
               </HStack>
+              <Text fontSize='sm' color='gray.600'>
+                {group.primary.name}, {group.secondary.map(n => n.name).join(', ')}
+              </Text>
             </VStack>
-          </VStack>
-
-          {/* Total networks count */}
-          <HStack justify='space-between' align='center' pt={2}>
-            <Text fontSize='xs' color='gray.500'>
-              {1 + group.secondary.length} networks total
-            </Text>
-            {(isSelected || isConnected) && (
-              <Box color={isConnected ? 'green.500' : 'blue.500'}>
-                <Text fontSize='sm'>✓</Text>
-              </Box>
-            )}
           </HStack>
-        </VStack>
+
+          {/* Right side - Connect button */}
+          <Button
+            colorScheme={isConnected ? 'green' : 'blue'}
+            variant={isConnected ? 'outline' : 'solid'}
+            size='sm'
+            onClick={() => onConnect(group)}
+            isLoading={isConnecting}
+            loadingText='Connecting...'>
+            {isConnected ? 'Connected' : 'Connect'}
+          </Button>
+        </HStack>
       </CardBody>
     </Card>
   );
@@ -159,8 +127,7 @@ export default function NetworkGroupSelector() {
   const { network, setNetworks, supportedNetworks } = useTypink();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isMobile] = useMediaQuery('(max-width: 768px)');
-  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectingGroupId, setConnectingGroupId] = useState<string | null>(null);
 
   // Define the network groups
   const networkGroups = useMemo((): NetworkGroup[] => {
@@ -221,42 +188,24 @@ export default function NetworkGroupSelector() {
     return networkGroups.find((group) => group.primary.id === network.id);
   }, [networkGroups, network.id]);
 
-  const handleGroupSelect = (groupId: string) => {
-    setSelectedGroupId(groupId);
-  };
-
-  const handleConnect = async () => {
-    if (!selectedGroupId) return;
-
-    const selectedGroup = networkGroups.find((g) => g.id === selectedGroupId);
-    if (!selectedGroup) return;
-
-    setIsConnecting(true);
+  const handleConnect = async (group: NetworkGroup) => {
+    setConnectingGroupId(group.id);
     try {
       // Set all networks at once (primary first, then secondary)
-      const allNetworkIds = [selectedGroup.primary.id, ...selectedGroup.secondary.map((n) => n.id)];
+      const allNetworkIds = [group.primary.id, ...group.secondary.map((n) => n.id)];
       setNetworks(allNetworkIds);
 
       onClose();
-      setSelectedGroupId(null);
     } catch (error) {
       console.error('Failed to connect to network group:', error);
     } finally {
-      setIsConnecting(false);
+      setConnectingGroupId(null);
     }
-  };
-
-  const handleOpen = () => {
-    // Initialize with current group if available
-    if (currentGroup) {
-      setSelectedGroupId(currentGroup.id);
-    }
-    onOpen();
   };
 
   const handleClose = () => {
     onClose();
-    setSelectedGroupId(null);
+    setConnectingGroupId(null);
   };
 
   // If no groups are available, return a simple network display
@@ -276,7 +225,7 @@ export default function NetworkGroupSelector() {
 
   return (
     <>
-      <Button variant='outline' onClick={handleOpen}>
+      <Button variant='outline' onClick={onOpen}>
         <Flex direction='row' align='center' gap={2}>
           <img src={network.logo} alt={network.name} width={22} style={{ borderRadius: 4 }} />
           <span>{currentGroup ? currentGroup.ecosystem : network.name}</span>
@@ -292,41 +241,16 @@ export default function NetworkGroupSelector() {
           <ModalHeader>Select Network Ecosystem</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <VStack spacing={6} align='stretch'>
-              <Text color='gray.600' fontSize='sm' textAlign='center'>
-                Choose an ecosystem to connect to multiple related networks simultaneously. The first network becomes
-                your primary connection, others are secondary.
-              </Text>
-
-              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-                {networkGroups.map((group) => (
-                  <NetworkGroupCard
-                    key={group.id}
-                    group={group}
-                    isSelected={selectedGroupId === group.id}
-                    isConnected={currentGroup?.id === group.id}
-                    onSelect={handleGroupSelect}
-                  />
-                ))}
-              </SimpleGrid>
-
-              {selectedGroupId && (
-                <Box borderWidth={1} borderColor='blue.200' borderRadius='lg' p={4} bg='blue.50'>
-                  <VStack spacing={3} align='center'>
-                    <Text fontSize='sm' color='blue.800' fontWeight='medium'>
-                      Ready to connect to {networkGroups.find((g) => g.id === selectedGroupId)?.ecosystem} ecosystem
-                    </Text>
-                    <Button
-                      colorScheme='blue'
-                      onClick={handleConnect}
-                      isLoading={isConnecting}
-                      loadingText='Connecting...'
-                      size='md'>
-                      Connect to Ecosystem
-                    </Button>
-                  </VStack>
-                </Box>
-              )}
+            <VStack spacing={4} align='stretch'>
+              {networkGroups.map((group) => (
+                <NetworkGroupCard
+                  key={group.id}
+                  group={group}
+                  isConnected={currentGroup?.id === group.id}
+                  onConnect={handleConnect}
+                  isConnecting={connectingGroupId === group.id}
+                />
+              ))}
             </VStack>
           </ModalBody>
         </ModalContent>

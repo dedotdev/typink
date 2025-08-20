@@ -102,7 +102,7 @@ export function ClientProvider({
           connections.push(item);
         }
       }
-    } 
+    }
     // Priority 2: Convert defaultNetworkId to defaultNetworkIds=[defaultNetworkId] if provided
     else if (defaultNetworkId) {
       if (typeof defaultNetworkId === 'string') {
@@ -110,7 +110,7 @@ export function ClientProvider({
       } else {
         connections.push(defaultNetworkId);
       }
-    } 
+    }
     // Priority 3: Default to first supported network
     else {
       connections.push({ networkId: supportedNetworks[0].id });
@@ -141,12 +141,7 @@ export function ClientProvider({
     initializeSupportedNetworks(supportedNetworks);
     initializeCacheMetadata(cacheMetadata);
     // Note: Don't set defaultNetworkId immediately - let localStorage load first
-  }, [
-    supportedNetworks,
-    cacheMetadata,
-    initializeSupportedNetworks,
-    initializeCacheMetadata,
-  ]);
+  }, [supportedNetworks, cacheMetadata, initializeSupportedNetworks, initializeCacheMetadata]);
 
   // Use atoms for state
   const client = useAtomValue(clientAtom);
@@ -174,12 +169,10 @@ export function ClientProvider({
 
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
-      console.log('No stored connections, initializing from props:', initialConnections);
       setNetworkConnections(initialConnections);
       // Set default network ID only when initializing from props
       initializeDefaultNetworkId(initialConnections[0].networkId);
     } else if (networkConnections.length > 0) {
-      console.log('Using stored connections:', networkConnections);
       // Update default network ID to match stored primary connection
       initializeDefaultNetworkId(networkConnections[0].networkId);
     }
@@ -187,15 +180,6 @@ export function ClientProvider({
     // Mark initialization as complete
     setNetworkConnectionsInitialized(true);
   }, []); // Empty deps - only runs once on mount
-
-  // Log current connections for debugging
-  useEffect(() => {
-    if (networkConnections.length > 0) {
-      console.log('Using network connections:', networkConnections);
-    }
-  }, [networkConnections]);
-
-  // Network connections are now guaranteed to be initialized by atoms
 
   // Initialize primary client when network or provider changes
   useEffect(() => {
