@@ -24,19 +24,19 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
   contractId: string,
   options: ExecutionOptions = {},
 ): UseContract<T> {
-  const { deployments, client, networkId, connectedAccount, defaultCaller } = useTypink();
+  const { deployments, client, network, connectedAccount, defaultCaller } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
 
   useEffect(
     () => {
-      if (!client || !networkId) {
+      if (!client || !network) {
         setContract(undefined);
         return;
       }
 
-      const deployment = deployments.find((d) => d.id === contractId && d.network === networkId);
+      const deployment = deployments.find((d) => d.id === contractId && d.network === network.id);
       if (!deployment) {
-        throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${networkId}`);
+        throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${network.id}`);
       }
 
       const contract = new Contract<T>(
@@ -54,7 +54,7 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
 
       setContract(contract);
     },
-    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+    useDeepDeps([client, network?.id, connectedAccount?.address, defaultCaller, options]),
   );
 
   return {
