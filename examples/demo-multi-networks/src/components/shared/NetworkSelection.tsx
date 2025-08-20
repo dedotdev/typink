@@ -324,7 +324,7 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
 }
 
 export default function NetworkSelection() {
-  const { network, setNetwork, supportedNetworks, selectedProvider } = useTypink();
+  const { network, setNetwork, supportedNetworks } = useTypink();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [smallest] = useMediaQuery('(max-width: 325px)');
   const [isMobile] = useMediaQuery('(max-width: 768px)');
@@ -380,13 +380,8 @@ export default function NetworkSelection() {
     setSelectedNetworkId(networkId);
     const networkInfo = Object.values(supportedNetworks).find((n) => n.id === networkId);
     if (networkInfo && networkInfo.providers.length > 0) {
-      // If selecting the same network as currently connected, use the current provider
-      // Otherwise, default to random selection for new networks
-      if (networkId === network.id && selectedProvider) {
-        setSelectedEndpoint(selectedProvider);
-      } else {
-        setSelectedEndpoint(''); // Always default to random RPC for new network selections
-      }
+      // Always default to random RPC for network selections
+      setSelectedEndpoint('');
     }
 
     // On mobile, move to endpoint selection step
@@ -432,17 +427,8 @@ export default function NetworkSelection() {
     // Initialize with current network
     setSelectedNetworkId(network.id);
     if (network.providers.length > 0) {
-      // Check user's previous selection using explicit string types
-      if (selectedProvider === 'light-client') {
-        setSelectedEndpoint('light-client');
-      } else if (selectedProvider === 'random-rpc') {
-        setSelectedEndpoint(''); // Empty string represents random in UI
-      } else if (selectedProvider?.startsWith('wss://') || selectedProvider?.startsWith('ws://')) {
-        setSelectedEndpoint(selectedProvider); // Specific RPC
-      } else {
-        // Default to Random RPC for all networks (first-time users)
-        setSelectedEndpoint(''); // Empty string represents random in UI
-      }
+      // Default to Random RPC for all networks
+      setSelectedEndpoint(''); // Empty string represents random in UI
     }
 
     setMobileStep('network');
