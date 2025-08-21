@@ -1,8 +1,8 @@
-import { createContext, useMemo } from 'react';
+import { createContext } from 'react';
 import { Provider as JotaiProvider } from 'jotai';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
-import { ContractDeployment, SubstrateAddress, NetworkId } from '../types.js';
+import { ContractDeployment, SubstrateAddress } from '../types.js';
 import { VersionedGenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import {

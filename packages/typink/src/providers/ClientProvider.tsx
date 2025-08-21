@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useCallback } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { NetworkConnection, NetworkId, NetworkInfo, Props, validateProvider } from '../types.js';
+import { NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
@@ -35,9 +35,11 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   client?: CompatibleSubstrateApi<ChainApi>; // primary client instance
 
   network: NetworkInfo; // primary network info
+  networkConnection: NetworkConnection; // primary network connection details
   setNetwork: (connection: NetworkId | NetworkConnection) => void; // set primary connection
 
   networks: NetworkInfo[]; // list of all network infos (primary first)
+  networkConnections: NetworkConnection[]; // list of all network connections (primary first)
   setNetworks: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
 
   clients: Map<NetworkId, CompatibleSubstrateApi<ChainApi> | undefined>; // client instance per network id
@@ -200,15 +202,14 @@ export function ClientProvider({
     <ClientContext.Provider
       key={`${networkConnections.map((c) => c.networkId).join(',')}`}
       value={{
-        // Core state
         ready,
         client,
-        // Multi-client support
         clients,
         getClient,
-        // Network info
         network,
+        networkConnection: networkConnections[0],
         networks,
+        networkConnections,
         setNetwork,
         setNetworks,
         cacheMetadata: cacheMeta,
