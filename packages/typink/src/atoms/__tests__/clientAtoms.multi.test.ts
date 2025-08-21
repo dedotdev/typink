@@ -5,7 +5,7 @@ import {
   clientAtom,
   clientReadyAtom,
   networkConnectionsAtom,
-  networksAtom,
+  currentNetworksAtom,
   setNetworksAtom,
   initializeNetworkIdsAtom,
   supportedNetworksAtom,
@@ -42,11 +42,12 @@ describe('Multi-client Atoms', () => {
     },
   ];
 
-  const mockClient = (networkId: string) => ({
-    disconnect: async () => {},
-    setSigner: () => {},
-    _networkId: networkId,
-  } as any);
+  const mockClient = (networkId: string) =>
+    ({
+      disconnect: async () => {},
+      setSigner: () => {},
+      _networkId: networkId,
+    }) as any;
 
   beforeEach(() => {
     store = createStore();
@@ -102,26 +103,19 @@ describe('Multi-client Atoms', () => {
       clientsMap.set('kusama', mockClient('kusama'));
 
       store.set(clientsMapAtom, clientsMap);
-      
+
       // Change primary network by changing connections (kusama becomes primary)
-      store.set(networkConnectionsAtom, [
-        { networkId: 'kusama' },
-        { networkId: 'polkadot' }
-      ]);
+      store.set(networkConnectionsAtom, [{ networkId: 'kusama' }, { networkId: 'polkadot' }]);
 
       const primaryClient = store.get(clientAtom);
       expect(primaryClient?._networkId).toBe('kusama');
     });
   });
 
-
   describe('clientReadyAtom (unified ready state)', () => {
     it('should return true when ALL connected networks have clients', () => {
       // Set up network connections
-      store.set(networkConnectionsAtom, [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' }
-      ]);
+      store.set(networkConnectionsAtom, [{ networkId: 'polkadot' }, { networkId: 'kusama' }]);
 
       const clients = new Map();
       clients.set('polkadot', mockClient('polkadot'));
@@ -135,10 +129,7 @@ describe('Multi-client Atoms', () => {
 
     it('should return false when any connected network lacks a client', () => {
       // Set up network connections
-      store.set(networkConnectionsAtom, [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' }
-      ]);
+      store.set(networkConnectionsAtom, [{ networkId: 'polkadot' }, { networkId: 'kusama' }]);
 
       const clients = new Map();
       clients.set('polkadot', mockClient('polkadot'));
@@ -152,10 +143,10 @@ describe('Multi-client Atoms', () => {
 
     it('should return false when no networks are connected', () => {
       store.set(networkConnectionsAtom, []);
-      
+
       const clients = new Map();
       clients.set('polkadot', mockClient('polkadot'));
-      
+
       store.set(clientsMapAtom, clients);
 
       const overallReady = store.get(clientReadyAtom);
@@ -165,11 +156,7 @@ describe('Multi-client Atoms', () => {
 
   describe('networkConnectionsAtom', () => {
     it('should store network connections', () => {
-      const connections = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-        { networkId: 'westend' }
-      ];
+      const connections = [{ networkId: 'polkadot' }, { networkId: 'kusama' }, { networkId: 'westend' }];
       store.set(networkConnectionsAtom, connections);
 
       const result = store.get(networkConnectionsAtom);
@@ -184,26 +171,20 @@ describe('Multi-client Atoms', () => {
 
   describe('networksAtom', () => {
     it('should derive NetworkInfo from connections', () => {
-      const connections = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' }
-      ];
+      const connections = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
-      const networks = store.get(networksAtom);
+      const networks = store.get(currentNetworksAtom);
       expect(networks).toHaveLength(2);
       expect(networks[0].id).toBe('polkadot');
       expect(networks[1].id).toBe('kusama');
     });
 
     it('should handle unknown network IDs gracefully', () => {
-      const connections = [
-        { networkId: 'polkadot' },
-        { networkId: 'unknown-network' }
-      ];
+      const connections = [{ networkId: 'polkadot' }, { networkId: 'unknown-network' }];
       store.set(networkConnectionsAtom, connections);
 
-      const networks = store.get(networksAtom);
+      const networks = store.get(currentNetworksAtom);
       expect(networks).toHaveLength(1); // Only polkadot should be included
       expect(networks[0].id).toBe('polkadot');
     });
@@ -215,14 +196,10 @@ describe('Multi-client Atoms', () => {
 
       // Verify connections were created
       const connections = store.get(networkConnectionsAtom);
-      expect(connections).toEqual([
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-        { networkId: 'westend' }
-      ]);
+      expect(connections).toEqual([{ networkId: 'polkadot' }, { networkId: 'kusama' }, { networkId: 'westend' }]);
 
       // Verify networks atom
-      const networks = store.get(networksAtom);
+      const networks = store.get(currentNetworksAtom);
       expect(networks).toHaveLength(3);
       expect(networks[0].id).toBe('polkadot');
       expect(networks[1].id).toBe('kusama');
@@ -243,7 +220,7 @@ describe('Multi-client Atoms', () => {
       expect(connections).toEqual([
         { networkId: 'polkadot' },
         { networkId: 'kusama', provider: 'wss://kusama-custom.api' },
-        { networkId: 'westend', provider: 'light-client' }
+        { networkId: 'westend', provider: 'light-client' },
       ]);
     });
 
@@ -254,23 +231,21 @@ describe('Multi-client Atoms', () => {
 
       // Replace with new networks
       store.set(setNetworksAtom, ['polkadot']);
-      
+
       const connections = store.get(networkConnectionsAtom);
-      expect(connections).toEqual([
-        { networkId: 'polkadot' }
-      ]);
+      expect(connections).toEqual([{ networkId: 'polkadot' }]);
     });
 
     it('should handle empty array', () => {
       // Set some networks first
       store.set(setNetworksAtom, ['polkadot', 'kusama']);
-      
+
       // Clear them
       store.set(setNetworksAtom, []);
-      
+
       expect(store.get(networkConnectionsAtom)).toEqual([]);
       // networksAtom falls back to first supported network when no connections
-      const networks = store.get(networksAtom);
+      const networks = store.get(currentNetworksAtom);
       expect(networks).toHaveLength(1);
       expect(networks[0].id).toBe('polkadot');
     });
@@ -284,10 +259,7 @@ describe('Multi-client Atoms', () => {
       store.set(setNetworksAtom, mixedInput);
 
       const connections = store.get(networkConnectionsAtom);
-      expect(connections).toEqual([
-        { networkId: 'polkadot' },
-        { networkId: 'kusama', provider: 'light-client' }
-      ]);
+      expect(connections).toEqual([{ networkId: 'polkadot' }, { networkId: 'kusama', provider: 'light-client' }]);
     });
   });
 
@@ -313,11 +285,11 @@ describe('Multi-client Atoms', () => {
       expect(store.get(clientReadyAtom)).toBe(true);
 
       // Verify all networks
-      const networks = store.get(networksAtom);
+      const networks = store.get(currentNetworksAtom);
       expect(networks).toHaveLength(3);
       expect(networks[0].id).toBe('polkadot'); // Primary
-      expect(networks[1].id).toBe('kusama');   // Secondary
-      expect(networks[2].id).toBe('westend');  // Secondary
+      expect(networks[1].id).toBe('kusama'); // Secondary
+      expect(networks[2].id).toBe('westend'); // Secondary
 
       // Verify all clients are accessible
       const allClients = store.get(clientsMapAtom);
@@ -328,7 +300,7 @@ describe('Multi-client Atoms', () => {
       // Verify ready state is based on client presence
       // All three networks have clients, so overall ready should be true
       expect(store.get(clientReadyAtom)).toBe(true);
-      
+
       // Test that removing a client makes ready false
       const updatedClients = new Map(clientsMap);
       updatedClients.delete('westend');

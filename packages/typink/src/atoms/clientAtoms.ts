@@ -17,30 +17,8 @@ export const networkConnectionsInitializedAtom = atom<boolean>(false);
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 
-// Derived atom for current primary network info
-export const currentNetworkAtom = atom<NetworkInfo>((get) => {
-  const connections = get(networkConnectionsAtom);
-  const supportedNetworks = get(supportedNetworksAtom);
-
-  if (supportedNetworks.length === 0) {
-    throw new Error('No supported networks available. Please provide at least one network in supportedNetworks.');
-  }
-
-  // Get primary network ID from connections or fallback
-  const networkId = connections.length > 0 ? connections[0].networkId : supportedNetworks[0].id;
-
-  const network = supportedNetworks.find((network) => network.id === networkId);
-  if (!network) {
-    const fallback = supportedNetworks[0];
-    console.error(`Network with ID '${networkId}' not found in supported networks, fallback to ${fallback.id}`);
-    return fallback;
-  }
-
-  return network;
-});
-
 // Derived atom for all network infos (primary + secondary)
-export const networksAtom = atom<NetworkInfo[]>((get) => {
+export const currentNetworksAtom = atom<NetworkInfo[]>((get) => {
   const connections = get(networkConnectionsAtom);
   const supportedNetworks = get(supportedNetworksAtom);
 
@@ -61,6 +39,12 @@ export const networksAtom = atom<NetworkInfo[]>((get) => {
   }
 
   return networks;
+});
+
+// Derived atom for current primary network info
+export const currentNetworkAtom = atom<NetworkInfo>((get) => {
+  const currentNetworks = get(currentNetworksAtom);
+  return currentNetworks[0];
 });
 
 // Atom for all clients map (primary + secondary)

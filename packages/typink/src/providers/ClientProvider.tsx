@@ -17,7 +17,7 @@ import {
   setNetworkAtom,
   setNetworksAtom,
   supportedNetworksAtom,
-  networksAtom,
+  currentNetworksAtom,
 } from '../atoms/clientAtoms.js';
 import {
   initializeCacheMetadataAtom,
@@ -140,7 +140,7 @@ export function ClientProvider({
   const ready = useAtomValue(clientReadyAtom);
   const clients = useAtomValue(clientsMapAtom);
   const network = useAtomValue(currentNetworkAtom);
-  const networks = useAtomValue(networksAtom);
+  const networks = useAtomValue(currentNetworksAtom);
   const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
   const cacheMeta = useAtomValue(cacheMetadataAtom);
   const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
