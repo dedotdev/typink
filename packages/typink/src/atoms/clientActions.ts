@@ -1,12 +1,7 @@
 import { atom } from 'jotai';
-import {
-  clientsMapAtom,
-  cacheMetadataAtom,
-  supportedNetworksAtom,
-  networkConnectionsAtom,
-} from './clientAtoms.js';
+import { clientsMapAtom, cacheMetadataAtom, supportedNetworksAtom, networkConnectionsAtom } from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
-import { JsonRpcApi, NetworkId, NetworkInfo, validateProvider } from '../types.js';
+import { JsonRpcApi, NetworkConnection, NetworkId, NetworkInfo, validateProvider } from '../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider, SmoldotProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
@@ -148,7 +143,6 @@ async function cleanupClient(
   }
 }
 
-
 // Write-only atom for initializing all clients (merged from initializeClientAtom and initializeAdditionalClientsAtom)
 export const initializeClientsAtom = atom(null, async (get, set) => {
   const connections = get(networkConnectionsAtom);
@@ -161,9 +155,7 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
     return;
   }
 
-  const primaryConnection = connections[0];
-  const additionalConnections = connections.slice(1);
-  const allNetworkIds = connections.map(conn => conn.networkId);
+  const allNetworkIds = connections.map((conn) => conn.networkId);
   const activeNetworkIds = new Set(allNetworkIds);
 
   // Clean up ALL networks that aren't in the current connections list
@@ -185,10 +177,10 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
   }
 
   // Helper function to initialize a single network
-  const initializeNetwork = async (connection: { networkId: NetworkId; provider?: string }, isPrimary = false): Promise<void> => {
+  const initializeNetwork = async (connection: NetworkConnection): Promise<void> => {
     const { networkId, provider: providerType } = connection;
     const network = supportedNetworks.find((n) => n.id === networkId);
-    
+
     if (!network) {
       console.error(`Network with ID '${networkId}' not found in supported networks`);
       return;
@@ -206,21 +198,12 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
       // Update client immediately (only add when successfully connected)
       set(setNetworkClientAtom, networkId, client);
     } catch (e) {
-      console.error(`Error initializing ${isPrimary ? 'primary' : 'additional'} client for network ${networkId}:`, e);
-      // Don't add client to map if initialization fails
-      if (isPrimary) {
-        throw e; // Re-throw for primary client errors
-      }
+      console.error(`Error initializing client for network ${networkId}:`, e);
+      throw e;
     }
   };
 
-  // Initialize primary client first
-  await initializeNetwork(primaryConnection, true);
-
-  // Initialize additional networks in parallel
-  if (additionalConnections.length > 0) {
-    await Promise.all(additionalConnections.map(conn => initializeNetwork(conn, false)));
-  }
+  await Promise.all(connections.map((conn) => initializeNetwork(conn)));
 });
 
 // Write-only atom for cleaning up all clients
@@ -275,7 +258,6 @@ export const updateClientSignerAtom = atom(null, (get) => {
 export const initializeSupportedNetworksAtom = atom(null, (_get, set, networks: NetworkInfo[]) => {
   set(supportedNetworksAtom, networks);
 });
-
 
 // Initialization atom for setting cache metadata
 export const initializeCacheMetadataAtom = atom(null, (_get, set, cacheMetadata: boolean) => {
