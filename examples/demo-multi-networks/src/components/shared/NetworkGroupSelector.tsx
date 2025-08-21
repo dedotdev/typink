@@ -32,12 +32,12 @@ interface NetworkGroup {
 }
 
 function NetworkStatusIndicator() {
-  const { clientReadyStates, networks } = useTypink();
+  const { clients, networks } = useTypink();
 
   // Calculate overall status
   const allNetworkIds = networks.map((n) => n.id);
   const readyCount = allNetworkIds.filter((id) => {
-    return clientReadyStates.get(id) === true;
+    return clients.has(id);
   }).length;
 
   const totalNetworks = allNetworkIds.length;
@@ -102,7 +102,7 @@ function NetworkGroupCard({ group, isConnected, onConnect, isConnecting }: Netwo
                 )}
               </HStack>
               <Text fontSize='sm' color='gray.600'>
-                {group.primary.name}, {group.secondary.map(n => n.name).join(', ')}
+                {group.primary.name}, {group.secondary.map((n) => n.name).join(', ')}
               </Text>
             </VStack>
           </HStack>

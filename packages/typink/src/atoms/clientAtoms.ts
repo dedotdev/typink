@@ -102,13 +102,10 @@ export const clientAtom = atom<CompatibleSubstrateApi | undefined>((get) => {
   return clientsMap.get(networkId);
 });
 
-// Atom for client ready states map
-export const clientReadyStatesAtom = atom<Map<NetworkId, boolean>>(new Map());
-
-// Atom for overall ready state - true only when ALL networks are ready
+// Atom for overall ready state - true only when ALL networks have clients
 export const clientReadyAtom = atom<boolean>((get) => {
   const connections = get(networkConnectionsAtom);
-  const readyStates = get(clientReadyStatesAtom);
+  const clients = get(clientsMapAtom);
   
   // Get all network IDs from connections
   const allNetworkIds = connections.map(conn => conn.networkId);
@@ -118,14 +115,14 @@ export const clientReadyAtom = atom<boolean>((get) => {
     return false;
   }
   
-  // Check if ALL networks are ready
+  // Check if ALL networks have clients
   for (const networkId of allNetworkIds) {
-    if (!readyStates.get(networkId)) {
-      return false; // At least one network is not ready
+    if (!clients.has(networkId)) {
+      return false; // At least one network doesn't have a client
     }
   }
   
-  // All networks are ready
+  // All networks have clients
   return true;
 });
 

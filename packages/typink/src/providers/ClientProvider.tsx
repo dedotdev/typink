@@ -11,7 +11,6 @@ import {
   clientAtom,
   clientReadyAtom,
   clientsMapAtom,
-  clientReadyStatesAtom,
   currentNetworkAtom,
   networkConnectionsAtom,
   networkConnectionsInitializedAtom,
@@ -44,7 +43,6 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   networks: NetworkInfo[]; // list of all network infos (primary first)
   setNetworks: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
 
-  clientReadyStates: Map<NetworkId, boolean>; // client ready state for each client per network id
   clients: Map<NetworkId, CompatibleSubstrateApi<ChainApi> | undefined>; // client instance per network id
 
   getClient: (networkId?: NetworkId) => CompatibleSubstrateApi<ChainApi> | undefined;
@@ -145,7 +143,6 @@ export function ClientProvider({
   const client = useAtomValue(clientAtom);
   const ready = useAtomValue(clientReadyAtom);
   const clients = useAtomValue(clientsMapAtom);
-  const clientReadyStates = useAtomValue(clientReadyStatesAtom);
   const networkId = useAtomValue(networkIdAtom);
   const network = useAtomValue(currentNetworkAtom);
   const networks = useAtomValue(networksAtom);
@@ -223,7 +220,6 @@ export function ClientProvider({
         client,
         // Multi-client support
         clients,
-        clientReadyStates,
         getClient,
         // Network info
         network,

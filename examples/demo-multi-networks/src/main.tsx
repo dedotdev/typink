@@ -5,34 +5,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
 import {
-  alephZero,
-  alephZeroTestnet,
-  astar,
-  basilisk,
   development,
-  hydration,
   kusama,
   kusamaAssetHub,
   kusamaPeople,
   paseo,
   paseoAssetHub,
-  paseoHydration,
   paseoPeople,
-  passetHub,
   polkadot,
   polkadotAssetHub,
   polkadotjs,
   polkadotPeople,
-  popTestnet,
-  shibuyaTestnet,
-  shiden,
   subwallet,
   talisman,
   TypinkProvider,
-  vara,
-  westend,
-  westendAssetHub,
-  westendPeople,
 } from 'typink';
 
 // Define supported networks focusing on the three main ecosystems
@@ -51,22 +37,6 @@ const SUPPORTED_NETWORK = [
   paseo,
   paseoAssetHub,
   paseoPeople,
-
-  // Additional networks for completeness
-  hydration,
-  basilisk,
-  vara,
-  alephZero,
-  astar,
-  shiden,
-  westend,
-  westendAssetHub,
-  westendPeople,
-  passetHub,
-  paseoHydration,
-  popTestnet,
-  alephZeroTestnet,
-  shibuyaTestnet,
 ];
 
 if (process.env.NODE_ENV === 'development') {

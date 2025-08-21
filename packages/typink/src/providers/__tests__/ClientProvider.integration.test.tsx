@@ -3,8 +3,11 @@ import { renderHook } from '@testing-library/react';
 import { ClientProvider, useClient } from '../ClientProvider.js';
 import { NetworkInfo } from '../../types.js';
 import React from 'react';
+import { Provider, createStore } from 'jotai';
 
 describe('ClientProvider Integration Tests', () => {
+  let store: ReturnType<typeof createStore>;
+  
   const mockNetworks: NetworkInfo[] = [
     {
       id: 'test-network',
@@ -25,6 +28,8 @@ describe('ClientProvider Integration Tests', () => {
   ];
 
   beforeEach(() => {
+    // Create fresh store for each test
+    store = createStore();
     // Clear localStorage to ensure clean state
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.clear();
@@ -34,9 +39,11 @@ describe('ClientProvider Integration Tests', () => {
   describe('Single Client Mode (Backward Compatibility)', () => {
     it('should provide client context with single network', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -55,9 +62,11 @@ describe('ClientProvider Integration Tests', () => {
 
     it('should allow network switching', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -73,11 +82,13 @@ describe('ClientProvider Integration Tests', () => {
   describe('Multi-Client Mode', () => {
     it('should support multiple networks', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider
-          defaultNetworkIds={['test-network', 'secondary-network']}
-          supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider
+            defaultNetworkIds={['test-network', 'secondary-network']}
+            supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -93,17 +104,18 @@ describe('ClientProvider Integration Tests', () => {
       // Multi-client properties should be available
       expect(result.current.clients).toBeDefined();
       expect(result.current.clients instanceof Map).toBe(true);
-      expect(result.current.clientReadyStates).toBeDefined();
       expect(result.current.setNetworks).toBeDefined();
     });
 
     it('should provide getClient helper function', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider
-          defaultNetworkIds={['test-network', 'secondary-network']}
-          supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider
+            defaultNetworkIds={['test-network', 'secondary-network']}
+            supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -122,11 +134,13 @@ describe('ClientProvider Integration Tests', () => {
       expect(() => {
         renderHook(() => useClient(), {
           wrapper: ({ children }: { children: React.ReactNode }) => (
-            <ClientProvider
-              defaultNetworkIds={['test-network', 'invalid-network']}
-              supportedNetworks={mockNetworks}>
-              {children}
-            </ClientProvider>
+            <Provider store={store}>
+              <ClientProvider
+                defaultNetworkIds={['test-network', 'invalid-network']}
+                supportedNetworks={mockNetworks}>
+                {children}
+              </ClientProvider>
+            </Provider>
           ),
         });
       }).toThrow("Network ID 'invalid-network' not found in supported networks");
@@ -136,9 +150,11 @@ describe('ClientProvider Integration Tests', () => {
   describe('Empty Configuration', () => {
     it('should work with minimal configuration', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider supportedNetworks={[mockNetworks[0]]}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider supportedNetworks={[mockNetworks[0]]}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -150,11 +166,13 @@ describe('ClientProvider Integration Tests', () => {
 
     it('should handle single network configuration', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider
-          defaultNetworkIds={['test-network']}
-          supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider
+            defaultNetworkIds={['test-network']}
+            supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });
@@ -166,11 +184,13 @@ describe('ClientProvider Integration Tests', () => {
 
     it('should support batch network updates', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ClientProvider
-          defaultNetworkIds={['test-network']}
-          supportedNetworks={mockNetworks}>
-          {children}
-        </ClientProvider>
+        <Provider store={store}>
+          <ClientProvider
+            defaultNetworkIds={['test-network']}
+            supportedNetworks={mockNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
       );
 
       const { result } = renderHook(() => useClient(), { wrapper });

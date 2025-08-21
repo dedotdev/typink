@@ -3,7 +3,6 @@ import { createStore } from 'jotai';
 import {
   clientsMapAtom,
   clientAtom,
-  clientReadyStatesAtom,
   clientReadyAtom,
   networkIdAtom,
   networkConnectionsAtom,
@@ -115,52 +114,37 @@ describe('Multi-client Atoms', () => {
     });
   });
 
-  describe('clientReadyStatesAtom', () => {
-    it('should track ready states for multiple clients', () => {
-      const readyStates = new Map();
-      readyStates.set('polkadot', true);
-      readyStates.set('kusama', false);
-      readyStates.set('westend', true);
-
-      store.set(clientReadyStatesAtom, readyStates);
-
-      const result = store.get(clientReadyStatesAtom);
-      expect(result.get('polkadot')).toBe(true);
-      expect(result.get('kusama')).toBe(false);
-      expect(result.get('westend')).toBe(true);
-    });
-  });
 
   describe('clientReadyAtom (unified ready state)', () => {
-    it('should return true when ALL connected networks are ready', () => {
+    it('should return true when ALL connected networks have clients', () => {
       // Set up network connections
       store.set(networkConnectionsAtom, [
         { networkId: 'polkadot' },
         { networkId: 'kusama' }
       ]);
 
-      const readyStates = new Map();
-      readyStates.set('polkadot', true);
-      readyStates.set('kusama', true); // All networks ready
+      const clients = new Map();
+      clients.set('polkadot', mockClient('polkadot'));
+      clients.set('kusama', mockClient('kusama')); // All networks have clients
 
-      store.set(clientReadyStatesAtom, readyStates);
+      store.set(clientsMapAtom, clients);
 
       const overallReady = store.get(clientReadyAtom);
       expect(overallReady).toBe(true);
     });
 
-    it('should return false when any connected network is not ready', () => {
+    it('should return false when any connected network lacks a client', () => {
       // Set up network connections
       store.set(networkConnectionsAtom, [
         { networkId: 'polkadot' },
         { networkId: 'kusama' }
       ]);
 
-      const readyStates = new Map();
-      readyStates.set('polkadot', true);
-      readyStates.set('kusama', false); // One network not ready
+      const clients = new Map();
+      clients.set('polkadot', mockClient('polkadot'));
+      // kusama client missing - one network doesn't have a client
 
-      store.set(clientReadyStatesAtom, readyStates);
+      store.set(clientsMapAtom, clients);
 
       const overallReady = store.get(clientReadyAtom);
       expect(overallReady).toBe(false);
@@ -169,10 +153,10 @@ describe('Multi-client Atoms', () => {
     it('should return false when no networks are connected', () => {
       store.set(networkConnectionsAtom, []);
       
-      const readyStates = new Map();
-      readyStates.set('polkadot', true);
+      const clients = new Map();
+      clients.set('polkadot', mockClient('polkadot'));
       
-      store.set(clientReadyStatesAtom, readyStates);
+      store.set(clientsMapAtom, clients);
 
       const overallReady = store.get(clientReadyAtom);
       expect(overallReady).toBe(false);
@@ -319,18 +303,13 @@ describe('Multi-client Atoms', () => {
       clientsMap.set('westend', mockClient('westend'));
       store.set(clientsMapAtom, clientsMap);
 
-      // Set up ready states
-      const readyStates = new Map();
-      readyStates.set('polkadot', true);
-      readyStates.set('kusama', true);
-      readyStates.set('westend', false);
-      store.set(clientReadyStatesAtom, readyStates);
+      // Note: Ready state is now determined by client presence in the map
 
       // Verify primary network (first in the list)
       expect(store.get(networkIdAtom)).toBe('polkadot');
       expect(store.get(clientAtom)?._networkId).toBe('polkadot');
-      // With new logic, ready is false because not ALL networks are ready (westend is false)
-      expect(store.get(clientReadyAtom)).toBe(false);
+      // With new logic, ready is true because ALL networks have clients
+      expect(store.get(clientReadyAtom)).toBe(true);
 
       // Verify all networks
       const networks = store.get(networksAtom);
@@ -345,18 +324,15 @@ describe('Multi-client Atoms', () => {
       expect(allClients.get('kusama')?._networkId).toBe('kusama');
       expect(allClients.get('westend')?._networkId).toBe('westend');
 
-      // Verify ready states
-      const allReadyStates = store.get(clientReadyStatesAtom);
-      expect(allReadyStates.get('kusama')).toBe(true);
-      expect(allReadyStates.get('westend')).toBe(false);
-      
-      // Test that when all networks become ready, overall ready is true
-      const updatedReadyStates = new Map();
-      updatedReadyStates.set('polkadot', true);
-      updatedReadyStates.set('kusama', true);
-      updatedReadyStates.set('westend', true);
-      store.set(clientReadyStatesAtom, updatedReadyStates);
+      // Verify ready state is based on client presence
+      // All three networks have clients, so overall ready should be true
       expect(store.get(clientReadyAtom)).toBe(true);
+      
+      // Test that removing a client makes ready false
+      const updatedClients = new Map(clientsMap);
+      updatedClients.delete('westend');
+      store.set(clientsMapAtom, updatedClients);
+      expect(store.get(clientReadyAtom)).toBe(false);
     });
   });
 });

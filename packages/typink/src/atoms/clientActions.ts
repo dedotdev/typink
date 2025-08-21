@@ -1,12 +1,10 @@
 import { atom } from 'jotai';
 import {
   clientsMapAtom,
-  clientReadyStatesAtom,
   cacheMetadataAtom,
   supportedNetworksAtom,
   defaultNetworkIdAtom,
   networkConnectionsAtom,
-  networksAtom,
 } from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
 import { JsonRpcApi, NetworkId, NetworkInfo, validateProvider } from '../types.js';
@@ -171,13 +169,14 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
 
   // Clean up ALL networks that aren't in the current connections list
   // This ensures complete ecosystem switching cleanup
-  const currentNetworksWithState = Array.from(get(clientReadyStatesAtom).keys());
+  const currentClients = get(clientsMapAtom);
+  const currentNetworkIds = Array.from(currentClients.keys());
 
   // Clean up obsolete networks sequentially (cleanup needs to be sequential)
-  for (const networkId of currentNetworksWithState) {
+  for (const networkId of currentNetworkIds) {
     if (!activeNetworkIds.has(networkId)) {
       // This network is no longer active, clean it up
-      const existingClient = get(clientsMapAtom).get(networkId);
+      const existingClient = currentClients.get(networkId);
       if (existingClient) {
         const connection = connections.find((conn) => conn.networkId === networkId);
         await cleanupClient(existingClient, networkId, connection?.provider);
@@ -203,17 +202,13 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
       set(removeNetworkStateAtom, networkId);
     }
 
-    // Set ready state to false immediately (real-time update)
-    set(setNetworkReadyStateAtom, networkId, false);
-
     try {
       const client = await createClient(network, providerType, cacheMetadata, signer);
-      // Update client and ready state immediately (real-time update)
+      // Update client immediately (only add when successfully connected)
       set(setNetworkClientAtom, networkId, client);
-      set(setNetworkReadyStateAtom, networkId, true);
     } catch (e) {
       console.error(`Error initializing ${isPrimary ? 'primary' : 'additional'} client for network ${networkId}:`, e);
-      set(setNetworkReadyStateAtom, networkId, false);
+      // Don't add client to map if initialization fails
       if (isPrimary) {
         throw e; // Re-throw for primary client errors
       }
@@ -240,18 +235,11 @@ export const cleanupAllClientsAtom = atom(null, async (get, set) => {
     await cleanupClient(client, id, connection?.provider);
   }
 
-  // Clear the maps
+  // Clear the map
   set(clientsMapAtom, new Map());
-  set(clientReadyStatesAtom, new Map());
 });
 
 // Atomic update functions to prevent race conditions
-export const setNetworkReadyStateAtom = atom(null, (get, set, networkId: NetworkId, ready: boolean) => {
-  const readyStates = new Map(get(clientReadyStatesAtom));
-  readyStates.set(networkId, ready);
-  set(clientReadyStatesAtom, readyStates);
-});
-
 export const setNetworkClientAtom = atom(
   null,
   (get, set, networkId: NetworkId, client: CompatibleSubstrateApi | undefined) => {
@@ -267,13 +255,8 @@ export const setNetworkClientAtom = atom(
 
 export const removeNetworkStateAtom = atom(null, (get, set, networkId: NetworkId) => {
   const clientsMap = new Map(get(clientsMapAtom));
-  const readyStates = new Map(get(clientReadyStatesAtom));
-
   clientsMap.delete(networkId);
-  readyStates.delete(networkId);
-
   set(clientsMapAtom, clientsMap);
-  set(clientReadyStatesAtom, readyStates);
 });
 
 // Write-only atom for updating signer on all clients

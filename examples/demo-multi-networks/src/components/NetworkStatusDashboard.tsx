@@ -160,19 +160,19 @@ function EcosystemSection({ ecosystem }: { ecosystem: EcosystemGroup }) {
 }
 
 export default function NetworkStatusDashboard() {
-  const { networks, clientReadyStates, clients } = useTypink();
+  const { networks, clients } = useTypink();
 
   // Process networks into ecosystems and status
   const ecosystems = useMemo((): EcosystemGroup[] => {
     const networkStatuses: NetworkStatus[] = networks.map((network) => {
-      const isReady = clientReadyStates.get(network.id) === true;
       const isConnected = clients.has(network.id);
+      const isReady = isConnected; // Simplified: if client exists, it's ready
 
       let status: NetworkStatus['status'];
-      if (isReady) {
+      if (isConnected) {
         status = 'connected';
       } else {
-        status = 'connecting';
+        status = 'connecting'; // Or could be 'disconnected' since we lost the intermediate state
       }
 
       return {
@@ -239,7 +239,7 @@ export default function NetworkStatusDashboard() {
         if (bIndex === -1) return -1;
         return aIndex - bIndex;
       });
-  }, [networks, clientReadyStates, clients]);
+  }, [networks, clients]);
 
   if (networks.length === 0) {
     return (
