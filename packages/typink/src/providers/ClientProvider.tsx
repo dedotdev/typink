@@ -14,7 +14,6 @@ import {
   currentNetworkAtom,
   networkConnectionsAtom,
   networkConnectionsInitializedAtom,
-  networkIdAtom,
   setNetworkAtom,
   setNetworksAtom,
   supportedNetworksAtom,
@@ -140,7 +139,6 @@ export function ClientProvider({
   const client = useAtomValue(clientAtom);
   const ready = useAtomValue(clientReadyAtom);
   const clients = useAtomValue(clientsMapAtom);
-  const networkId = useAtomValue(networkIdAtom);
   const network = useAtomValue(currentNetworkAtom);
   const networks = useAtomValue(networksAtom);
   const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
@@ -175,7 +173,7 @@ export function ClientProvider({
         console.error('Failed to initialize clients:', e);
       });
     }
-  }, [networkId, networkConnections, initializeClients]);
+  }, [networkConnections, initializeClients]);
 
   // Update client signer when clients are ready or signer changes
   useEffect(() => {
@@ -200,7 +198,7 @@ export function ClientProvider({
       if (!networkId) return client;
       return clients.get(networkId);
     },
-    [client, clients, networkId],
+    [client, clients],
   );
 
   return (

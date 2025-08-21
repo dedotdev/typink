@@ -17,10 +17,8 @@ export const networkConnectionsInitializedAtom = atom<boolean>(false);
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 
-
-
-// Derived atom for primary network ID (first in the connections list)
-export const networkIdAtom = atom<NetworkId>((get) => {
+// Derived atom for current primary network info
+export const currentNetworkAtom = atom<NetworkInfo>((get) => {
   const connections = get(networkConnectionsAtom);
   const supportedNetworks = get(supportedNetworksAtom);
 
@@ -28,25 +26,8 @@ export const networkIdAtom = atom<NetworkId>((get) => {
     throw new Error('No supported networks available. Please provide at least one network in supportedNetworks.');
   }
 
-  // If we have connections, use the primary (first) one
-  if (connections.length > 0) {
-    return connections[0].networkId;
-  }
-
-  // Fallback to first supported network when no connections exist
-  return supportedNetworks[0].id;
-});
-
-// Derived atom for selected provider (from primary network)
-export const selectedProviderAtom = atom((get) => {
-  const connections = get(networkConnectionsAtom);
-  return connections[0]?.provider;
-});
-
-// Derived atom for current primary network info
-export const currentNetworkAtom = atom<NetworkInfo>((get) => {
-  const networkId = get(networkIdAtom);
-  const supportedNetworks = get(supportedNetworksAtom);
+  // Get primary network ID from connections or fallback
+  const networkId = connections.length > 0 ? connections[0].networkId : supportedNetworks[0].id;
 
   const network = supportedNetworks.find((network) => network.id === networkId);
   if (!network) {
@@ -62,9 +43,9 @@ export const currentNetworkAtom = atom<NetworkInfo>((get) => {
 export const networksAtom = atom<NetworkInfo[]>((get) => {
   const connections = get(networkConnectionsAtom);
   const supportedNetworks = get(supportedNetworksAtom);
-  
+
   const networks: NetworkInfo[] = [];
-  
+
   for (const connection of connections) {
     const network = supportedNetworks.find((n) => n.id === connection.networkId);
     if (network) {
@@ -73,12 +54,12 @@ export const networksAtom = atom<NetworkInfo[]>((get) => {
       console.error(`Network with ID '${connection.networkId}' not found in supported networks`);
     }
   }
-  
+
   // If no networks configured, return at least the first supported network
   if (networks.length === 0 && supportedNetworks.length > 0) {
     networks.push(supportedNetworks[0]);
   }
-  
+
   return networks;
 });
 
@@ -87,8 +68,16 @@ export const clientsMapAtom = atom<Map<NetworkId, CompatibleSubstrateApi>>(new M
 
 // Atom for primary client instance (backward compatibility)
 export const clientAtom = atom<CompatibleSubstrateApi | undefined>((get) => {
-  const networkId = get(networkIdAtom);
+  const connections = get(networkConnectionsAtom);
+  const supportedNetworks = get(supportedNetworksAtom);
   const clientsMap = get(clientsMapAtom);
+
+  if (supportedNetworks.length === 0) {
+    return undefined;
+  }
+
+  // Get primary network ID from connections or fallback
+  const networkId = connections.length > 0 ? connections[0].networkId : supportedNetworks[0].id;
   return clientsMap.get(networkId);
 });
 
@@ -96,22 +85,22 @@ export const clientAtom = atom<CompatibleSubstrateApi | undefined>((get) => {
 export const clientReadyAtom = atom<boolean>((get) => {
   const connections = get(networkConnectionsAtom);
   const clients = get(clientsMapAtom);
-  
+
   // Get all network IDs from connections
-  const allNetworkIds = connections.map(conn => conn.networkId);
-  
+  const allNetworkIds = connections.map((conn) => conn.networkId);
+
   // If no networks configured, not ready
   if (allNetworkIds.length === 0) {
     return false;
   }
-  
+
   // Check if ALL networks have clients
   for (const networkId of allNetworkIds) {
     if (!clients.has(networkId)) {
       return false; // At least one network doesn't have a client
     }
   }
-  
+
   // All networks have clients
   return true;
 });
@@ -122,10 +111,8 @@ export const cacheMetadataAtom = atom(false);
 // Write-only atom for updating primary network connection (backward compatibility)
 export const setNetworkAtom = atom(null, (get, set, connection: NetworkId | NetworkConnection) => {
   const currentConnections = get(networkConnectionsAtom);
-  const newPrimaryConnection = typeof connection === 'string' 
-    ? { networkId: connection }
-    : connection;
-  
+  const newPrimaryConnection = typeof connection === 'string' ? { networkId: connection } : connection;
+
   // Update only the primary (first) connection, keep the rest
   const newConnections = [newPrimaryConnection, ...currentConnections.slice(1)];
   set(networkConnectionsAtom, newConnections);

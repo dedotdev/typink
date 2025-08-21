@@ -4,7 +4,6 @@ import {
   clientsMapAtom,
   clientAtom,
   clientReadyAtom,
-  networkIdAtom,
   networkConnectionsAtom,
   networksAtom,
   setNetworksAtom,
@@ -307,7 +306,8 @@ describe('Multi-client Atoms', () => {
       // Note: Ready state is now determined by client presence in the map
 
       // Verify primary network (first in the list)
-      expect(store.get(networkIdAtom)).toBe('polkadot');
+      const connections = store.get(networkConnectionsAtom);
+      expect(connections[0].networkId).toBe('polkadot');
       expect(store.get(clientAtom)?._networkId).toBe('polkadot');
       // With new logic, ready is true because ALL networks have clients
       expect(store.get(clientReadyAtom)).toBe(true);
