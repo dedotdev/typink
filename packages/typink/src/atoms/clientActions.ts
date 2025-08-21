@@ -3,7 +3,6 @@ import {
   clientsMapAtom,
   cacheMetadataAtom,
   supportedNetworksAtom,
-  defaultNetworkIdAtom,
   networkConnectionsAtom,
 } from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
@@ -277,10 +276,6 @@ export const initializeSupportedNetworksAtom = atom(null, (_get, set, networks: 
   set(supportedNetworksAtom, networks);
 });
 
-// Initialization atom for setting default network ID
-export const initializeDefaultNetworkIdAtom = atom(null, (_get, set, networkId: string | undefined) => {
-  set(defaultNetworkIdAtom, networkId);
-});
 
 // Initialization atom for setting cache metadata
 export const initializeCacheMetadataAtom = atom(null, (_get, set, cacheMetadata: boolean) => {

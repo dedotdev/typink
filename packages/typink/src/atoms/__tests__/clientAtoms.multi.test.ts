@@ -10,7 +10,6 @@ import {
   setNetworksAtom,
   initializeNetworkIdsAtom,
   supportedNetworksAtom,
-  defaultNetworkIdAtom,
 } from '../clientAtoms.js';
 import { NetworkInfo } from '../../types.js';
 
@@ -54,7 +53,6 @@ describe('Multi-client Atoms', () => {
     store = createStore();
     // Initialize supported networks
     store.set(supportedNetworksAtom, mockNetworks);
-    store.set(defaultNetworkIdAtom, 'polkadot');
   });
 
   describe('clientsMapAtom', () => {
@@ -106,8 +104,11 @@ describe('Multi-client Atoms', () => {
 
       store.set(clientsMapAtom, clientsMap);
       
-      // Change primary network
-      store.set(defaultNetworkIdAtom, 'kusama');
+      // Change primary network by changing connections (kusama becomes primary)
+      store.set(networkConnectionsAtom, [
+        { networkId: 'kusama' },
+        { networkId: 'polkadot' }
+      ]);
 
       const primaryClient = store.get(clientAtom);
       expect(primaryClient?._networkId).toBe('kusama');

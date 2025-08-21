@@ -23,7 +23,6 @@ import {
 import {
   initializeCacheMetadataAtom,
   initializeClientsAtom,
-  initializeDefaultNetworkIdAtom,
   initializeSupportedNetworksAtom,
   updateClientSignerAtom,
   cleanupAllClientsAtom,
@@ -126,7 +125,6 @@ export function ClientProvider({
 
   // Initialize atoms
   const initializeSupportedNetworks = useSetAtom(initializeSupportedNetworksAtom);
-  const initializeDefaultNetworkId = useSetAtom(initializeDefaultNetworkIdAtom);
   const initializeCacheMetadata = useSetAtom(initializeCacheMetadataAtom);
   const initializeClients = useSetAtom(initializeClientsAtom);
   const updateClientSigner = useSetAtom(updateClientSignerAtom);
@@ -136,7 +134,6 @@ export function ClientProvider({
   useMemo(() => {
     initializeSupportedNetworks(supportedNetworks);
     initializeCacheMetadata(cacheMetadata);
-    // Note: Don't set defaultNetworkId immediately - let localStorage load first
   }, [supportedNetworks, cacheMetadata, initializeSupportedNetworks, initializeCacheMetadata]);
 
   // Use atoms for state
@@ -165,11 +162,6 @@ export function ClientProvider({
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
-      // Set default network ID only when initializing from props
-      initializeDefaultNetworkId(initialConnections[0].networkId);
-    } else if (networkConnections.length > 0) {
-      // Update default network ID to match stored primary connection
-      initializeDefaultNetworkId(networkConnections[0].networkId);
     }
 
     // Mark initialization as complete

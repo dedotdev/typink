@@ -17,16 +17,12 @@ export const networkConnectionsInitializedAtom = atom<boolean>(false);
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 
-// Atom for default network ID (set during provider initialization)
-export const defaultNetworkIdAtom = atom<NetworkId | undefined>(undefined);
 
 
 // Derived atom for primary network ID (first in the connections list)
 export const networkIdAtom = atom<NetworkId>((get) => {
   const connections = get(networkConnectionsAtom);
-  const defaultId = get(defaultNetworkIdAtom);
   const supportedNetworks = get(supportedNetworksAtom);
-  const initialized = get(networkConnectionsInitializedAtom);
 
   if (supportedNetworks.length === 0) {
     throw new Error('No supported networks available. Please provide at least one network in supportedNetworks.');
@@ -37,14 +33,8 @@ export const networkIdAtom = atom<NetworkId>((get) => {
     return connections[0].networkId;
   }
 
-  // If not initialized yet, wait for localStorage to load before using fallbacks
-  if (!initialized) {
-    // During loading, use defaultId if available, otherwise first supported network
-    return defaultId || supportedNetworks[0].id;
-  }
-
-  // If initialized and still no connections, use fallbacks
-  return defaultId || supportedNetworks[0].id;
+  // Fallback to first supported network when no connections exist
+  return supportedNetworks[0].id;
 });
 
 // Derived atom for selected provider (from primary network)
