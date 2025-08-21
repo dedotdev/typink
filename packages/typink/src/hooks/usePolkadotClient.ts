@@ -12,7 +12,7 @@ import { VersionedGenericSubstrateApi } from 'dedot/types';
  * @param {NetworkId} [networkId] - The network ID to get the client for. If not provided, returns the primary client.
  * @returns {CompatibleSubstrateApi<ChainApi> | undefined} The client instance for the specified network, or undefined if not found
  */
-export function useClientById<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
+export function usePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
   networkId?: NetworkId,
 ): CompatibleSubstrateApi<ChainApi> | undefined {
   const { getClient } = useTypink<ChainApi>();

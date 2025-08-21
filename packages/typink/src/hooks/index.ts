@@ -3,7 +3,7 @@ export * from './psp22/index.js';
 export * from './useBalance.js';
 export * from './useBalances.js';
 export * from './useCheckMappedAccount.js';
-export * from './useClientById.js';
+export * from './usePolkadotClient.js';
 export * from './useContract.js';
 export * from './useContractQuery.js';
 export * from './useContractTx.js';
