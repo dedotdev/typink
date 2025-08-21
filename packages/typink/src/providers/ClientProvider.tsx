@@ -13,7 +13,6 @@ import {
   clientsMapAtom,
   currentNetworkAtom,
   networkConnectionsAtom,
-  networkConnectionsInitializedAtom,
   setNetworkAtom,
   setNetworksAtom,
   supportedNetworksAtom,
@@ -151,7 +150,6 @@ export function ClientProvider({
 
   // Get network connections from localStorage (via atomWithStorage)
   const [networkConnections, setNetworkConnections] = useAtom(networkConnectionsAtom);
-  const setNetworkConnectionsInitialized = useSetAtom(networkConnectionsInitializedAtom);
 
   // Initialize network connections and default network ID properly
   useEffect(() => {
@@ -161,9 +159,6 @@ export function ClientProvider({
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
     }
-
-    // Mark initialization as complete
-    setNetworkConnectionsInitialized(true);
   }, []); // Empty deps - only runs once on mount
 
   // Initialize all clients when network connections change

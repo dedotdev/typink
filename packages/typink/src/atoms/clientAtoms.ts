@@ -11,9 +11,6 @@ export const networkConnectionsAtom = atomWithStorage<NetworkConnection[]>(
   { getOnInit: true },
 );
 
-// Atom to track if network connections have been initialized from localStorage
-export const networkConnectionsInitializedAtom = atom<boolean>(false);
-
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 
