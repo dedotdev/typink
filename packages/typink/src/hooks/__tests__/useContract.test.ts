@@ -28,8 +28,7 @@ describe('useContract', () => {
   const mockedUseTypink = {
     deployments: [dummyDeployment],
     client,
-    // @ts-ignore
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount,
     defaultCaller,
   };
@@ -72,10 +71,10 @@ describe('useContract', () => {
     expect(Contract).not.toHaveBeenCalled();
   });
 
-  it('should not initialize contract when networkId is missing', () => {
+  it('should not initialize contract when network is missing', () => {
     vi.mocked(useTypink).mockReturnValue({
       ...mockedUseTypink,
-      networkId: undefined,
+      network: undefined,
     } as any);
 
     const { result } = renderHook(() => useContract('test-contract'));

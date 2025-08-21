@@ -26,8 +26,13 @@ const mockContextValue: ClientContextProps = {
   ready: true,
   supportedNetworks: [],
   network: { id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' },
-  networkId: 'test' as any,
-  setNetworkId: vi.fn(),
+  networkConnection: { networkId: 'test' },
+  networks: [{ id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' }],
+  networkConnections: [{ networkId: 'test' }],
+  clients: new Map(),
+  setNetwork: vi.fn(),
+  setNetworks: vi.fn(),
+  getClient: vi.fn(),
   cacheMetadata: false,
 };
 
@@ -76,12 +81,12 @@ describe('useClient', () => {
     // These type assertions will fail at compile time if types are wrong
     type ClientType = typeof result.client;
     type ReadyType = typeof result.ready;
-    type NetworkIdType = typeof result.networkId;
+    type NetworkType = typeof result.network;
 
     // Verify the properties exist and have expected types
     expect(typeof result.ready).toBe('boolean');
-    expect(typeof result.networkId).toBe('string');
-    expect(typeof result.setNetworkId).toBe('function');
+    expect(typeof result.network.id).toBe('string');
+    expect(typeof result.setNetwork).toBe('function');
     expect(Array.isArray(result.supportedNetworks)).toBe(true);
   });
 
@@ -93,7 +98,7 @@ describe('useClient', () => {
 
     expect(clientContext).toEqual(mockContextValue);
     expect(typeof clientContext.ready).toBe('boolean');
-    expect(typeof clientContext.networkId).toBe('string');
+    expect(typeof clientContext.network.id).toBe('string');
   });
 
   it('should maintain type safety across different ChainApi types', () => {
@@ -105,7 +110,7 @@ describe('useClient', () => {
 
     // Both should have the same runtime properties
     expect(defaultResult.ready).toBe(polkadotResult.ready);
-    expect(defaultResult.networkId).toBe(polkadotResult.networkId);
+    expect(defaultResult.network.id).toBe(polkadotResult.network.id);
     expect(defaultResult.client).toBe(polkadotResult.client);
 
     // Type-level verification that both are valid ClientContextProps

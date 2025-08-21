@@ -34,7 +34,7 @@ describe('usePSP22Balance', () => {
   const mockUseTypink = {
     deployments: [mockDeployment],
     client: mockClient,
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount: mockConnectedAccount,
     defaultCaller: mockDefaultCaller,
   };

@@ -29,8 +29,7 @@ describe('useDeployer', () => {
   const mockedUseTypink = {
     deployments: [dummyDeployment],
     client,
-    // @ts-ignore
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount,
     defaultCaller,
   };

@@ -28,9 +28,13 @@ const mockTypinkContextValue: TypinkContextProps = {
   ready: true,
   supportedNetworks: [],
   network: { id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' },
-  networkId: 'test' as any,
-  setNetworkId: vi.fn(),
+  networkConnection: { networkId: 'test' },
+  networks: [{ id: 'test', name: 'Test Network', providers: [], decimals: 10, logo: '', symbol: 'UNIT' }],
+  networkConnections: [{ networkId: 'test' }],
+  clients: new Map(),
   setNetwork: vi.fn(),
+  setNetworks: vi.fn(),
+  getClient: vi.fn(),
   cacheMetadata: false,
 
   // WalletSetupContextProps
@@ -115,8 +119,13 @@ describe('useTypink', () => {
     expect(result).toHaveProperty('ready');
     expect(result).toHaveProperty('supportedNetworks');
     expect(result).toHaveProperty('network');
-    expect(result).toHaveProperty('networkId');
-    expect(result).toHaveProperty('setNetworkId');
+    expect(result).toHaveProperty('networkConnection');
+    expect(result).toHaveProperty('networks');
+    expect(result).toHaveProperty('networkConnections');
+    expect(result).toHaveProperty('clients');
+    expect(result).toHaveProperty('setNetwork');
+    expect(result).toHaveProperty('setNetworks');
+    expect(result).toHaveProperty('getClient');
     expect(result).toHaveProperty('cacheMetadata');
 
     // WalletSetupContextProps properties
@@ -145,11 +154,13 @@ describe('useTypink', () => {
 
     // Type assertions for primitive types
     expect(typeof result.ready).toBe('boolean');
-    expect(typeof result.networkId).toBe('string');
+    expect(typeof result.network.id).toBe('string');
     expect(typeof result.defaultCaller).toBe('string');
 
     // Type assertions for function types
-    expect(typeof result.setNetworkId).toBe('function');
+    expect(typeof result.setNetwork).toBe('function');
+    expect(typeof result.setNetworks).toBe('function');
+    expect(typeof result.getClient).toBe('function');
     expect(typeof result.connectWallet).toBe('function');
     expect(typeof result.disconnect).toBe('function');
     expect(typeof result.subscribeToEvent).toBe('function');
@@ -171,7 +182,7 @@ describe('useTypink', () => {
 
     expect(typinkContext).toEqual(mockTypinkContextValue);
     expect(typeof typinkContext.ready).toBe('boolean');
-    expect(typeof typinkContext.networkId).toBe('string');
+    expect(typeof typinkContext.network.id).toBe('string');
     expect(typeof typinkContext.defaultCaller).toBe('string');
     expect(Array.isArray(typinkContext.deployments)).toBe(true);
   });
@@ -185,7 +196,7 @@ describe('useTypink', () => {
 
     // Both should have the same runtime properties
     expect(defaultResult.ready).toBe(polkadotResult.ready);
-    expect(defaultResult.networkId).toBe(polkadotResult.networkId);
+    expect(defaultResult.network.id).toBe(polkadotResult.network.id);
     expect(defaultResult.client).toBe(polkadotResult.client);
     expect(defaultResult.deployments).toEqual(polkadotResult.deployments);
     expect(defaultResult.defaultCaller).toBe(polkadotResult.defaultCaller);
