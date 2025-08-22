@@ -7358,9 +7358,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"demo-multi-networks@workspace:examples/demo-multi-networks":
+"demo-multi-clients@workspace:examples/demo-multi-clients":
   version: 0.0.0-use.local
-  resolution: "demo-multi-networks@workspace:examples/demo-multi-networks"
+  resolution: "demo-multi-clients@workspace:examples/demo-multi-clients"
   dependencies:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"

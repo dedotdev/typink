@@ -10,10 +10,10 @@ import {
   Box,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useBalance, useTypink, formatBalance } from 'typink';
+import { useBalance, useTypink, formatBalance, NetworkInfo } from 'typink';
 import { useMemo } from 'react';
 
-function NetworkBalanceCard({ network, address }: { network: any; address: string }) {
+function NetworkBalanceCard({ network, address }: { network: NetworkInfo; address: string }) {
   const balance = useBalance(address, { networkId: network.id });
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
