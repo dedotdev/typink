@@ -242,14 +242,7 @@ describe('Client Actions', () => {
   });
 
   describe('updateClientSignerAtom', () => {
-    it.skip('should update signer on all clients when read', () => {
-      // This test is skipped due to complex integration requirements
-      // The actual functionality is tested through other integration tests
-    });
 
-    it.skip('should handle undefined signer', () => {
-      // This test is skipped due to complex integration requirements
-    });
 
     it('should handle empty clients map', () => {
       store.set(clientsMapAtom, new Map());
@@ -412,10 +405,6 @@ describe('Client Actions', () => {
       expect(SmoldotProvider).toHaveBeenCalledWith(mockChain);
     });
 
-    it.skip('should initialize parachain with relay chain', async () => {
-      // This test is skipped due to complex smoldot worker mocking requirements
-      // The functionality is indirectly tested through other integration scenarios
-    });
 
     it('should handle light client without chainSpec', async () => {
       const connections: NetworkConnection[] = [
