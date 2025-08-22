@@ -3,6 +3,7 @@ import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAle
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
 import NetworkStatusDashboard from '@/components/NetworkStatusDashboard';
+import MultiNetworkBalanceDashboard from '@/components/MultiNetworkBalanceDashboard';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <BalanceInsufficientAlert />
         <VStack spacing={6} align='stretch'>
           <NetworkStatusDashboard />
+          <MultiNetworkBalanceDashboard />
         </VStack>
       </Box>
       <MainFooter />
