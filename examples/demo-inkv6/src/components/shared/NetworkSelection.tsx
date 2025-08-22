@@ -12,7 +12,7 @@ function NetworkStatusIndicator() {
 }
 
 export default function NetworkSelection() {
-  const { network, setNetworkId, supportedNetworks } = useTypink();
+  const { network, setNetwork, supportedNetworks } = useTypink();
   const [smallest] = useMediaQuery('(max-width: 325px)');
 
   return (
@@ -31,7 +31,7 @@ export default function NetworkSelection() {
         {Object.values(supportedNetworks).map((one) => (
           <MenuItem
             key={one.id}
-            onClick={() => setNetworkId(one.id as string)}
+            onClick={() => setNetwork(one.id as string)}
             backgroundColor={one.id === network.id ? 'gray.200' : ''}>
             <Flex direction='row' align='center' gap={2}>
               <img src={one.logo} alt={one.name} width={18} style={{ borderRadius: 4 }} />

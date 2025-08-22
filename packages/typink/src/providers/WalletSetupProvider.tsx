@@ -73,7 +73,7 @@ export function WalletSetupProvider({
   signer: initialSigner,
   connectedAccount: initialConnectedAccount,
   wallets: initialWallets,
-  appName = '',
+  appName = 'Typink Dapp',
 }: WalletSetupProviderProps) {
   // Initialize atoms
   const initializeWallets = useSetAtom(initializeWalletsAtom);

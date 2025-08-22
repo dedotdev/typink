@@ -501,34 +501,6 @@ describe('ClientProvider Integration Tests', () => {
   });
 
   describe('Backward Compatibility', () => {
-    it('should provide setNetworkId as alias for setNetwork', () => {
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <Provider store={store}>
-          <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
-            {children}
-          </ClientProvider>
-        </Provider>
-      );
-
-      const { result } = renderHook(() => useClient(), { wrapper });
-
-      expect(result.current.setNetworkId).toBe(result.current.setNetwork);
-    });
-
-    it('should provide setNetworkIds as alias for setNetworks', () => {
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <Provider store={store}>
-          <ClientProvider defaultNetworkIds={['test-network']} supportedNetworks={mockNetworks}>
-            {children}
-          </ClientProvider>
-        </Provider>
-      );
-
-      const { result } = renderHook(() => useClient(), { wrapper });
-
-      expect(result.current.setNetworkIds).toBe(result.current.setNetworks);
-    });
-
     it('should maintain single client interface for backward compatibility', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <Provider store={store}>

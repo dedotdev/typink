@@ -169,7 +169,7 @@ describe('WalletSetupProvider', () => {
 
       renderHook(() => useWalletSetup(), { wrapper });
 
-      expect(mockInitializeAppNameAtom).toHaveBeenCalledWith('');
+      expect(mockInitializeAppNameAtom).toHaveBeenCalledWith('Typink Dapp');
     });
 
     it('should handle external signer initialization', () => {

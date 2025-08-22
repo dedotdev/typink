@@ -42,10 +42,6 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   setNetwork: (connection: NetworkId | NetworkConnection) => void; // set primary connection
   setNetworks: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
 
-  // for backward compatible purposes
-  setNetworkId: (connection: NetworkId | NetworkConnection) => void; // set primary connection
-  setNetworkIds: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
-
   clients: Map<NetworkId, CompatibleSubstrateApi<ChainApi> | undefined>; // client instance per network id
 
   getClient: (networkId?: NetworkId) => CompatibleSubstrateApi<ChainApi> | undefined;
@@ -216,8 +212,6 @@ export function ClientProvider({
         networkConnections,
         setNetwork,
         setNetworks,
-        setNetworkId: setNetwork,
-        setNetworkIds: setNetworks,
         cacheMetadata: cacheMeta,
         supportedNetworks: allSupportedNetworks,
       }}>

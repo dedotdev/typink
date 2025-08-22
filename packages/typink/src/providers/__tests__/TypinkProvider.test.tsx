@@ -89,8 +89,6 @@ describe('TypinkProvider', () => {
     networkConnections: [{ networkId: 'test-network' }],
     setNetwork: vi.fn(),
     setNetworks: vi.fn(),
-    setNetworkId: vi.fn(),
-    setNetworkIds: vi.fn(),
     clients: new Map(),
     getClient: vi.fn(),
     supportedNetworks: mockNetworks,
