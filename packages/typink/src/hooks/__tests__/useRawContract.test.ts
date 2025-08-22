@@ -1,12 +1,17 @@
 import { renderHook } from '@testing-library/react';
 import { useRawContract } from '../useRawContract.js';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { Contract } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dependencies
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('dedot/contracts', () => ({
@@ -26,6 +31,11 @@ describe('useRawContract', () => {
       client: mockClient,
       defaultCaller: mockDefaultCaller,
       connectedAccount: mockConnectedAccount,
+    } as any);
+
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client: mockClient,
+      network: { id: 'test-network' },
     } as any);
 
     vi.mocked(Contract).mockImplementation(() => ({}) as any);
@@ -90,6 +100,11 @@ describe('useRawContract', () => {
       client: undefined,
       defaultCaller: mockDefaultCaller,
       connectedAccount: mockConnectedAccount,
+    } as any);
+
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client: undefined,
+      network: { id: 'test-network' },
     } as any);
 
     rerender();

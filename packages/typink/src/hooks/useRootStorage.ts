@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { Unsub } from 'dedot/types';
-import { useTypink } from './useTypink.js';
 import { useDeepDeps } from './internal/index.js';
 
 /**
@@ -177,8 +176,10 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
   // Watch for block changes and auto-refresh
   useEffect(
     () => {
-      if (!contract || !watch || !contract) return;
+      if (!contract || !watch) return;
+
       const client = contract.client;
+      if (!client) return;
 
       let unsub: Unsub;
       let done = false;

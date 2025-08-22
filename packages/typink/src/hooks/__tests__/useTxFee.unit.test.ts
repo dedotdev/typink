@@ -2,11 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTxFee } from '../useTxFee.js';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { withReadableErrorMessage } from '../../utils/index.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('../../utils', () => ({
@@ -76,6 +81,11 @@ describe('useTxFee - Unit Tests', () => {
     (useTypink as any).mockReturnValue({
       client: mockClient,
       connectedAccount: mockConnectedAccount,
+    });
+
+    (usePolkadotClient as any).mockReturnValue({
+      client: mockClient,
+      network: { id: 'test-network' },
     });
 
     (withReadableErrorMessage as any).mockImplementation((client: any, error: any) => error.message);
@@ -168,6 +178,11 @@ describe('useTxFee - Unit Tests', () => {
         connectedAccount: mockConnectedAccount,
       });
 
+      (usePolkadotClient as any).mockReturnValue({
+        client: null,
+        network: { id: 'test-network' },
+      });
+
       const { result } = renderHook(() => useTxFee({ 
         tx: (tx) => tx.system.remark, 
         args: ['test'] 
@@ -182,6 +197,11 @@ describe('useTxFee - Unit Tests', () => {
       (useTypink as any).mockReturnValue({
         client: mockClient,
         connectedAccount: null,
+      });
+
+      (usePolkadotClient as any).mockReturnValue({
+        client: mockClient,
+        network: { id: 'test-network' },
       });
 
       const { result } = renderHook(() => useTxFee({ 

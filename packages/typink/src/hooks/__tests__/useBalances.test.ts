@@ -2,10 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBalances } from '../useBalances.js';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+// Mock the usePolkadotClient hook
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 describe('useBalances', () => {
@@ -22,10 +28,21 @@ describe('useBalances', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Default mock for usePolkadotClient
+    (usePolkadotClient as any).mockReturnValue({
+      client: mockClient,
+      network: { id: 'test-network' },
+    });
   });
 
   it('should return an empty object when client is not available', async () => {
     (useTypink as ReturnType<typeof vi.fn>).mockReturnValue({ client: null });
+    
+    (usePolkadotClient as any).mockReturnValue({
+      client: null,
+      network: { id: 'test-network' },
+    });
 
     const { result } = renderHook(() => useBalances(mockAddresses));
 

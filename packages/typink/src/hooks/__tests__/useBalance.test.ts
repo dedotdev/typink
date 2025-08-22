@@ -41,7 +41,7 @@ describe('useBalance', () => {
 
   it('should call useBalances with the correct address', () => {
     renderHook(() => useBalance(mockAddress));
-    expect(useBalancesModule.useBalances).toHaveBeenCalledWith([mockAddress]);
+    expect(useBalancesModule.useBalances).toHaveBeenCalledWith([mockAddress], undefined);
   });
 
   it('should memoize the addresses array', () => {

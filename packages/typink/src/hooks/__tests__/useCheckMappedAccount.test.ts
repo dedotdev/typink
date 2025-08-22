@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useCheckMappedAccount } from '../useCheckMappedAccount.js';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { toEvmAddress } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForNextUpdate } from './test-utils.js';
@@ -8,6 +9,10 @@ import { waitForNextUpdate } from './test-utils.js';
 // Mock external dependencies
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('dedot/contracts', () => ({
@@ -34,6 +39,10 @@ describe('useCheckMappedAccount', () => {
 
   beforeEach(() => {
     vi.mocked(useTypink).mockReturnValue(defaultMockTypink as any);
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client: mockClient,
+      network: { id: 'test-network' },
+    } as any);
     vi.mocked(toEvmAddress).mockReturnValue(evmAddress);
     mockClient.query.revive.originalAccount.mockResolvedValue(true);
   });
@@ -47,6 +56,11 @@ describe('useCheckMappedAccount', () => {
       vi.mocked(useTypink).mockReturnValue({
         client: null,
         connectedAccount,
+      } as any);
+      
+      vi.mocked(usePolkadotClient).mockReturnValue({
+        client: null,
+        network: { id: 'test-network' },
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());
@@ -98,9 +112,9 @@ describe('useCheckMappedAccount', () => {
         },
       };
 
-      vi.mocked(useTypink).mockReturnValue({
+      vi.mocked(usePolkadotClient).mockReturnValue({
         client: clientWithoutRevive,
-        connectedAccount,
+        network: { id: 'test-network' },
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());
@@ -118,9 +132,9 @@ describe('useCheckMappedAccount', () => {
         },
       };
 
-      vi.mocked(useTypink).mockReturnValue({
+      vi.mocked(usePolkadotClient).mockReturnValue({
         client: clientThatThrows,
-        connectedAccount,
+        network: { id: 'test-network' },
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());
