@@ -82,3 +82,7 @@ export interface NetworkInfo {
   chainSpec?: () => Promise<string>;
   relayChain?: NetworkInfo;
 }
+
+export interface NetworkOptions {
+  networkId?: NetworkId;
+}

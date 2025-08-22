@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { Unsub } from 'dedot/types';
-import { useTypink } from './useTypink.js';
 import { useDeepDeps } from './internal/index.js';
 
 /**
@@ -87,8 +86,6 @@ export type UseRootStorageReturnType<T extends GenericContractApi = GenericContr
 export function useRootStorage<T extends GenericContractApi = GenericContractApi>(
   parameters: UseRootStorageParameters<T> | undefined | false,
 ): UseRootStorageReturnType<T> {
-  const { client } = useTypink();
-
   const [storage, setStorage] = useState<T['types']['RootStorage']>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -179,7 +176,10 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
   // Watch for block changes and auto-refresh
   useEffect(
     () => {
-      if (!client || !watch || !contract) return;
+      if (!contract || !watch) return;
+
+      const client = contract.client;
+      if (!client) return;
 
       let unsub: Unsub;
       let done = false;
@@ -204,7 +204,7 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
         unsub && unsub();
       };
     },
-    useDeepDeps([client, refresh, watch]),
+    useDeepDeps([(contract as any)?._instanceId, refresh, watch]),
   );
 
   return {

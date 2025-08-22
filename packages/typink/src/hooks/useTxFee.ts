@@ -5,13 +5,15 @@ import { SubstrateApi } from 'dedot/chaintypes';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { UseTxReturnType } from './useTx.js';
-import type { Args } from '../types.js';
+import type { Args, NetworkId } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 // Input type for useTxFee - only supports UseTxReturnType
 type UseTxFeeInput<TxFn extends (...args: any[]) => any = any> = {
   tx: UseTxReturnType<TxFn>;
   txOptions?: Partial<PayloadOptions>;
   enabled?: boolean;
+  networkId?: NetworkId;
 } & Args<Parameters<TxFn>>;
 
 // Return type for useTxFee
@@ -60,11 +62,10 @@ type UseTxFeeReturnType = {
  *   - error: Error message string if estimation failed, null otherwise
  *   - refresh: Function to manually trigger fee estimation
  */
-export function useTxFee<TxFn extends (...args: any[]) => any = any>(
-  input: UseTxFeeInput<TxFn>,
-): UseTxFeeReturnType {
+export function useTxFee<TxFn extends (...args: any[]) => any = any>(input: UseTxFeeInput<TxFn>): UseTxFeeReturnType {
   const { tx, args = [], txOptions = {}, enabled = true } = input;
-  const { client, connectedAccount } = useTypink<SubstrateApi>();
+  const { connectedAccount } = useTypink<SubstrateApi>();
+  const { client } = usePolkadotClient(input?.networkId);
 
   const [fee, setFee] = useState<bigint | null>(null);
   const [isLoading, setIsLoading] = useState(false);

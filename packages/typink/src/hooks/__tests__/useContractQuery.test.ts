@@ -131,7 +131,7 @@ describe('useContractQuery', () => {
     expect(contract.query.testFunction).toHaveBeenCalledTimes(3);
   });
 
-  it('should update refresh state when refresh function is called', async () => {
+  (it('should update refresh state when refresh function is called', async () => {
     contract.query.testFunction.mockImplementation(() => {
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -180,7 +180,7 @@ describe('useContractQuery', () => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(testError);
       expect(result.current.data).toBeUndefined();
-    });
+    }));
 
   it('should reset error state on successful query after an error', async () => {
     const testError = new Error('Test error');

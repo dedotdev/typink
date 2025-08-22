@@ -86,7 +86,7 @@ export const westendPeople: NetworkInfo = {
 };
 
 export const paseo: NetworkInfo = {
-  id: 'paseo_testnet',
+  id: 'paseo',
   type: NetworkType.TESTNET,
   name: 'Paseo',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/paseotest.png`,
@@ -120,7 +120,7 @@ export const paseoPeople: NetworkInfo = {
 };
 
 export const paseoAssetHub: NetworkInfo = {
-  id: 'paseo_assethub',
+  id: 'paseo_asset_hub',
   type: NetworkType.TESTNET,
   name: 'Paseo Asset Hub',
   logo: 'https://assethub-paseo.subscan.io/_next/image?url=%2Fchains%2Fassethub-paseo%2Flogo-mini.png&w=256&q=75',

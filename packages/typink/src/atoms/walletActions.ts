@@ -3,11 +3,11 @@ import {
   availableWalletsAtom,
   connectedAccountAtom,
   connectedWalletIdsAtom,
+  externalSignerAtom,
   WalletConnection,
   walletConnectionsAtomFamily,
-  externalSignerAtom,
 } from './walletAtoms.js';
-import { TypinkAccount, InjectedSigner } from '../types.js';
+import { InjectedSigner, TypinkAccount } from '../types.js';
 import { Wallet } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { transformInjectedToTypinkAccounts } from '../utils/index.js';

@@ -68,7 +68,8 @@ function TypinkProviderInner<ChainApi extends VersionedGenericSubstrateApi = Sub
  * @param props.children - The child components to be rendered within the provider
  * @param props.deployments - An array of contract deployments (optional, defaults to empty array)
  * @param props.defaultCaller - The default substrate address to be used as the caller (optional, defaults to ALICE address)
- * @param props.defaultNetworkId - The default network ID to be used
+ * @param props.defaultNetworkIds - Default list of networks to use when no stored connections exist (first is primary, rest are secondary)
+ * @param props.defaultNetworkId - Fallback network if defaultNetworkIds is not provided
  * @param props.cacheMetadata - Whether to cache metadata or not (default: false)
  * @param props.supportedNetworks - An array of supported networks
  * @param props.signer - The signer to be used for signing transactions. If using an external wallet connector
@@ -86,6 +87,7 @@ export function TypinkProvider({
   children,
   deployments = [],
   defaultCaller = DEFAULT_ADDRESS,
+  defaultNetworkIds,
   defaultNetworkId,
   cacheMetadata = false,
   supportedNetworks,
@@ -98,6 +100,7 @@ export function TypinkProvider({
     <JotaiProvider>
       <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>
         <ClientProvider
+          defaultNetworkIds={defaultNetworkIds}
           defaultNetworkId={defaultNetworkId}
           cacheMetadata={cacheMetadata}
           supportedNetworks={supportedNetworks}>

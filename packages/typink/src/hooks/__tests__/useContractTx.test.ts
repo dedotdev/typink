@@ -1,12 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useContractTx } from '../useContractTx.js';
 import { useTypink } from '../useTypink.js';
 import { Contract } from 'dedot/contracts';
-import { sleep, waitForNextUpdate } from './test-utils.js';
+import { waitForNextUpdate } from './test-utils.js';
 import { checkBalanceSufficiency } from '../../helpers/index.js';
 import { BalanceInsufficientError } from '../../utils/index.js';
-import { useDeployerTx } from '../useDeployerTx.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({

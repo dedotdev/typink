@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useContract } from '../useContract.js';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { Contract } from 'dedot/contracts';
 import { TypinkError } from '../../utils/index.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,6 +9,10 @@ import { waitForNextUpdate } from './test-utils.js';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('dedot/contracts', () => ({
@@ -28,14 +33,17 @@ describe('useContract', () => {
   const mockedUseTypink = {
     deployments: [dummyDeployment],
     client,
-    // @ts-ignore
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount,
     defaultCaller,
   };
 
   beforeEach(() => {
     vi.mocked(useTypink).mockReturnValue(mockedUseTypink as any);
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client,
+      network: { id: 'test-network' },
+    } as any);
     vi.mocked(Contract).mockImplementation(() => ({}) as any);
   });
 
@@ -66,16 +74,26 @@ describe('useContract', () => {
       client: undefined,
     } as any);
 
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client: undefined,
+      network: { id: 'test-network' },
+    } as any);
+
     const { result } = renderHook(() => useContract('test-contract'));
 
     expect(result.current.contract).toBeUndefined();
     expect(Contract).not.toHaveBeenCalled();
   });
 
-  it('should not initialize contract when networkId is missing', () => {
+  it('should not initialize contract when network is missing', () => {
     vi.mocked(useTypink).mockReturnValue({
       ...mockedUseTypink,
-      networkId: undefined,
+      network: undefined,
+    } as any);
+
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client,
+      network: undefined,
     } as any);
 
     const { result } = renderHook(() => useContract('test-contract'));

@@ -89,9 +89,9 @@ describe('useDeployerTx', () => {
   it('should call the contract method with correct parameters', async () => {
     const mockSignAndSend = vi.fn().mockImplementationOnce((_, callback) => {
       return new Promise<void>((resolve) => {
-        callback({ 
+        callback({
           status: { type: 'Finalized' },
-          contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+          contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef'),
         });
         resolve();
       });
@@ -127,14 +127,14 @@ describe('useDeployerTx', () => {
     const mockSignAndSend = vi.fn().mockImplementation((_, callback) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
-          callback({ 
+          callback({
             status: { type: 'BestChainBlockIncluded' },
-            contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+            contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef'),
           });
           setTimeout(() => {
-            callback({ 
+            callback({
               status: { type: 'Finalized' },
-              contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef')
+              contractAddress: vi.fn().mockResolvedValue('0x1234567890abcdef'),
             });
             resolve();
           }, 10);

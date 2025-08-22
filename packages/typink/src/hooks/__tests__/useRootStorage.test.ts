@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { useRootStorage } from '../useRootStorage.js';
 import { useTypink } from '../useTypink.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,6 +34,7 @@ describe('useRootStorage', () => {
 
     mockContract = {
       _instanceId: 'test-instance-123',
+      client: mockClient,
       storage: {
         root: vi.fn().mockResolvedValue(mockRootStorage),
       },
@@ -95,6 +96,7 @@ describe('useRootStorage', () => {
       const errorMessage = 'Failed to fetch storage';
       const errorContract = {
         _instanceId: 'error-instance',
+        client: mockClient,
         storage: {
           root: vi.fn().mockRejectedValue(new Error(errorMessage)),
         },
@@ -113,6 +115,7 @@ describe('useRootStorage', () => {
     it('should handle contract without storage property', async () => {
       const invalidContract = {
         _instanceId: 'invalid-instance',
+        client: mockClient,
         // No storage property
       } as any;
 
@@ -206,11 +209,15 @@ describe('useRootStorage', () => {
     });
 
     it('should not subscribe when client is undefined', async () => {
-      vi.mocked(useTypink).mockReturnValue({
+      const contractWithoutClient = {
+        _instanceId: 'no-client-instance',
         client: undefined,
-      } as any);
+        storage: {
+          root: vi.fn().mockResolvedValue(mockRootStorage),
+        },
+      } as any;
 
-      renderHook(() => useRootStorage({ contract: mockContract, watch: true }));
+      renderHook(() => useRootStorage({ contract: contractWithoutClient, watch: true }));
 
       await waitForNextUpdate();
 
@@ -263,6 +270,7 @@ describe('useRootStorage', () => {
       const newStorage = { value: false, newField: 'test' };
       const newContract = {
         _instanceId: 'new-instance-456',
+        client: mockClient,
         storage: {
           root: vi.fn().mockResolvedValue(newStorage),
         },
@@ -314,6 +322,7 @@ describe('useRootStorage', () => {
 
       const typedContract = {
         _instanceId: 'typed-instance',
+        client: mockClient,
         storage: {
           root: vi.fn().mockResolvedValue({
             value: true,
