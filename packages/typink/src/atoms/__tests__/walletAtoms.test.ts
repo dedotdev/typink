@@ -23,10 +23,16 @@ describe('Wallet Atoms', () => {
     id,
     name: `Mock Wallet ${id}`,
     logo: 'mock-logo.png',
-    homepage: 'https://mock-wallet.com',
-    downloadUrl: 'https://download-mock-wallet.com',
-    injectedProvider: undefined,
-    isReady: vi.fn().mockResolvedValue(true),
+    options: {
+      id,
+      name: `Mock Wallet ${id}`,
+      logo: 'mock-logo.png',
+    },
+    version: '1.0.0',
+    injectedWeb3: {} as any,
+    injectedProvider: null as any,
+    ready: false,
+    installed: false,
     waitUntilReady: vi.fn().mockResolvedValue(undefined),
   });
 

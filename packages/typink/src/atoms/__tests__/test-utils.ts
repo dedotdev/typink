@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { createStore } from 'jotai';
 import { Wallet } from '../../wallets/index.js';
-import { NetworkInfo, TypinkAccount, InjectedSigner, JsonRpcApi, NetworkType } from '../../types.js';
+import { NetworkInfo, TypinkAccount, InjectedSigner, JsonRpcApi, NetworkType, NetworkConnection, ProviderType } from '../../types.js';
 import { CompatibleSubstrateApi } from '../../providers/ClientProvider.js';
 import { WalletConnection } from '../walletAtoms.js';
 
@@ -57,22 +57,31 @@ export const createMockWallet = (
     name?: string;
     logo?: string;
   } = {}
-): Wallet => ({
-  id,
-  name: options.name || `Mock Wallet ${id}`,
-  logo: options.logo || 'mock-logo.png',
-  homepage: 'https://mock-wallet.com',
-  downloadUrl: 'https://download-mock-wallet.com',
-  injectedProvider: options.injectedProvider,
-  isReady: vi.fn().mockImplementation(() => {
-    if (options.readyError) return Promise.reject(options.readyError);
-    return Promise.resolve(true);
-  }),
-  waitUntilReady: vi.fn().mockImplementation(() => {
-    if (options.readyError) return Promise.reject(options.readyError);
-    return Promise.resolve();
-  }),
-});
+): Wallet => {
+  const walletOptions = {
+    id,
+    name: options.name || `Mock Wallet ${id}`,
+    logo: options.logo || 'mock-logo.png',
+  };
+
+  const mockWallet = {
+    id,
+    name: options.name || `Mock Wallet ${id}`,
+    logo: options.logo || 'mock-logo.png',
+    options: walletOptions,
+    version: options.injectedProvider?.version || '1.0.0',
+    injectedWeb3: {} as any,
+    injectedProvider: options.injectedProvider,
+    ready: !!options.injectedProvider,
+    installed: false,
+    waitUntilReady: vi.fn().mockImplementation(() => {
+      if (options.readyError) return Promise.reject(options.readyError);
+      return Promise.resolve();
+    }),
+  } as unknown as Wallet;
+
+  return mockWallet;
+};
 
 /**
  * Mock factory for creating injected provider instances
@@ -162,7 +171,7 @@ export const createMockSubstrateClient = (
   }),
   setSigner: options.setSigner || vi.fn(),
   _networkId: networkId, // For testing identification
-} as any);
+} as unknown as CompatibleSubstrateApi);
 
 /**
  * Mock factory for creating WalletConnection instances
@@ -322,7 +331,7 @@ export const setupNetworkClientScenario = (
   store: ReturnType<typeof createTestStore>,
   options: {
     networks: NetworkInfo[];
-    connections: { networkId: string; provider?: string }[];
+    connections: NetworkConnection[];
     cacheMetadata?: boolean;
   }
 ) => {
@@ -349,13 +358,18 @@ export const setupNetworkClientScenario = (
       
       // Mock the client creation
       const mockClients = Array.from(clients.values());
-      const { DedotClient, LegacyClient } = vi.mocked(await import('dedot'));
+      const dedotModule = await import('dedot');
+      const mockedDedot = vi.mocked(dedotModule);
       
       let clientIndex = 0;
-      DedotClient.new.mockImplementation(() => Promise.resolve(mockClients[clientIndex++]));
-      LegacyClient.new.mockImplementation(() => Promise.resolve(mockClients[clientIndex++]));
+      if (mockedDedot.DedotClient.new) {
+        vi.mocked(mockedDedot.DedotClient.new).mockImplementation(() => Promise.resolve(mockClients[clientIndex++] as any));
+      }
+      if (mockedDedot.LegacyClient.new) {
+        vi.mocked(mockedDedot.LegacyClient.new).mockImplementation(() => Promise.resolve(mockClients[clientIndex++] as any));
+      }
       
-      await store.set(initializeClientsAtom, undefined);
+      await store.set(initializeClientsAtom);
       
       return { clients };
     }

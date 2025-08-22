@@ -89,13 +89,16 @@ describe('Wallet Actions', () => {
     id,
     name: `Mock Wallet ${id}`,
     logo: 'mock-logo.png',
-    homepage: 'https://mock-wallet.com',
-    downloadUrl: 'https://download-mock-wallet.com',
+    options: {
+      id,
+      name: `Mock Wallet ${id}`,
+      logo: 'mock-logo.png',
+    },
+    version: provider?.version || '1.0.0',
+    injectedWeb3: {} as any,
     injectedProvider: provider,
-    isReady: vi.fn().mockImplementation(() => {
-      if (readyError) return Promise.reject(readyError);
-      return Promise.resolve(true);
-    }),
+    ready: !!provider,
+    installed: false,
     waitUntilReady: vi.fn().mockImplementation(() => {
       if (readyError) return Promise.reject(readyError);
       return Promise.resolve();
