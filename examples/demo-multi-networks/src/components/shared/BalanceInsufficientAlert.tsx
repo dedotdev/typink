@@ -17,8 +17,6 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useBalance, useTypink } from 'typink';
 import { useMemo } from 'react';
 
-const DEFAULT_FAUCET_URL = 'https://github.com/use-ink/contracts-ui/blob/master/FAUCETS.md';
-
 function NetworkInsufficientCard({ network }: { network: any }) {
   return (
     <WrapItem>
@@ -64,8 +62,7 @@ export default function BalanceInsufficientAlert() {
     return null;
   }
 
-  // Get the primary faucet URL (prefer network-specific, fallback to default)
-  const primaryFaucetUrl = insufficientNetworks[0]?.faucetUrl || DEFAULT_FAUCET_URL;
+  const primaryFaucetUrl = insufficientNetworks[0]?.faucetUrl;
 
   return (
     <Alert status='warning' mb={4} borderRadius='md'>
@@ -86,15 +83,16 @@ export default function BalanceInsufficientAlert() {
               </Wrap>
             </Box>
 
-            {/* Faucet link */}
-            <Link
-              href={primaryFaucetUrl}
-              isExternal
-              color='orange.600'
-              fontWeight='medium'
-              _hover={{ color: 'orange.700', textDecoration: 'underline' }}>
-              Claim testnet tokens from faucet <ExternalLinkIcon mx='2px' />
-            </Link>
+            {!!primaryFaucetUrl && (
+              <Link
+                href={primaryFaucetUrl}
+                isExternal
+                color='orange.600'
+                fontWeight='medium'
+                _hover={{ color: 'orange.700', textDecoration: 'underline' }}>
+                Claim testnet tokens from faucet <ExternalLinkIcon mx='2px' />
+              </Link>
+            )}
           </VStack>
         </AlertDescription>
       </Box>
