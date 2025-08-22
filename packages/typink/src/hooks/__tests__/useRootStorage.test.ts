@@ -215,7 +215,7 @@ describe('useRootStorage', () => {
         storage: {
           root: vi.fn().mockResolvedValue(mockRootStorage),
         },
-      };
+      } as any;
 
       renderHook(() => useRootStorage({ contract: contractWithoutClient, watch: true }));
 

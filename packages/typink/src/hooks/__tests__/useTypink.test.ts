@@ -34,6 +34,8 @@ const mockTypinkContextValue: TypinkContextProps = {
   clients: new Map(),
   setNetwork: vi.fn(),
   setNetworks: vi.fn(),
+  setNetworkId: vi.fn(),
+  setNetworkIds: vi.fn(),
   getClient: vi.fn(),
   cacheMetadata: false,
 

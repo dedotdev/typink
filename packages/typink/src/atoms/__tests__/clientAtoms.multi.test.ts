@@ -9,7 +9,7 @@ import {
   setNetworksAtom,
   supportedNetworksAtom,
 } from '../clientAtoms.js';
-import { NetworkInfo } from '../../types.js';
+import { NetworkConnection, NetworkInfo } from '../../types.js';
 
 describe('Multi-client Atoms', () => {
   let store: ReturnType<typeof createStore>;
@@ -64,7 +64,9 @@ describe('Multi-client Atoms', () => {
 
       const result = store.get(clientsMapAtom);
       expect(result.size).toBe(2);
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(result.get('polkadot')?._networkId).toBe('polkadot');
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(result.get('kusama')?._networkId).toBe('kusama');
     });
 
@@ -83,6 +85,7 @@ describe('Multi-client Atoms', () => {
       store.set(clientsMapAtom, clientsMap);
 
       const primaryClient = store.get(clientAtom);
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(primaryClient?._networkId).toBe('polkadot');
     });
 
@@ -107,6 +110,7 @@ describe('Multi-client Atoms', () => {
       store.set(networkConnectionsAtom, [{ networkId: 'kusama' }, { networkId: 'polkadot' }]);
 
       const primaryClient = store.get(clientAtom);
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(primaryClient?._networkId).toBe('kusama');
     });
   });
@@ -206,7 +210,7 @@ describe('Multi-client Atoms', () => {
     });
 
     it('should set networks with NetworkConnection array', () => {
-      const networkConnections = [
+      const networkConnections: NetworkConnection[] = [
         { networkId: 'polkadot' },
         { networkId: 'kusama', provider: 'wss://kusama-custom.api' },
         { networkId: 'westend', provider: 'light-client' },
@@ -252,7 +256,7 @@ describe('Multi-client Atoms', () => {
     it('should handle mixed NetworkId and NetworkConnection input', () => {
       const mixedInput = [
         'polkadot', // NetworkId
-        { networkId: 'kusama', provider: 'light-client' }, // NetworkConnection
+        { networkId: 'kusama', provider: 'light-client' as any }, // NetworkConnection
       ];
 
       store.set(setNetworksAtom, mixedInput);
@@ -279,6 +283,7 @@ describe('Multi-client Atoms', () => {
       // Verify primary network (first in the list)
       const connections = store.get(networkConnectionsAtom);
       expect(connections[0].networkId).toBe('polkadot');
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(store.get(clientAtom)?._networkId).toBe('polkadot');
       // With new logic, ready is true because ALL networks have clients
       expect(store.get(clientReadyAtom)).toBe(true);
@@ -293,7 +298,9 @@ describe('Multi-client Atoms', () => {
       // Verify all clients are accessible
       const allClients = store.get(clientsMapAtom);
       expect(allClients.size).toBe(3);
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(allClients.get('kusama')?._networkId).toBe('kusama');
+      // @ts-ignore - Accessing private _networkId property for testing
       expect(allClients.get('westend')?._networkId).toBe('westend');
 
       // Verify ready state is based on client presence

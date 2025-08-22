@@ -185,7 +185,7 @@ describe('useTxFee - Unit Tests', () => {
 
       const { result } = renderHook(() =>
         useTxFee({
-          tx: (tx) => tx.system.remark,
+          tx: ((tx: any) => tx.system.remark) as any,
           args: ['test'],
         }),
       );
@@ -208,7 +208,7 @@ describe('useTxFee - Unit Tests', () => {
 
       const { result } = renderHook(() =>
         useTxFee({
-          tx: (tx) => tx.system.remark,
+          tx: ((tx: any) => tx.system.remark) as any,
           args: ['test'],
         }),
       );

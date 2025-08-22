@@ -4,6 +4,7 @@ import { useTypink } from '../useTypink.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContractEvent } from 'dedot/contracts';
 import { Contract } from 'dedot/contracts';
+// @ts-ignore - JSON import in test environment
 import { Psp22ContractApi } from '../psp22/contracts/psp22';
 import { useClient, useTypinkEvents } from '../../providers/index.js';
 import { typinkEventsWrapper, waitForNextUpdate } from './test-utils.js';
@@ -52,6 +53,7 @@ describe('useWatchContractEvent', () => {
 
   it('should successfully subscribe to the system events when all parameters are valid', async () => {
     const { rerender } = renderHook(
+      // @ts-ignore - Event name type issues in test
       ({ enabled }) => useWatchContractEvent(mockContract, 'Transfer', vi.fn(), enabled),
       { initialProps: { enabled: true } },
     );
@@ -99,6 +101,7 @@ describe('useWatchContractEvent', () => {
     mockSub.mockImplementation(result.current.subscribeToEvent);
 
     const mockCallback = vi.fn();
+    // @ts-ignore - Event name type issues in test
     renderHook(() => useWatchContractEvent(mockContract, 'Transfer', mockCallback));
 
     await waitFor(() => {
@@ -115,6 +118,7 @@ describe('useWatchContractEvent', () => {
 
     mockSub.mockReturnValue(mockUnsub);
 
+    // @ts-ignore - Event name type issues in test
     const { unmount } = renderHook(() => useWatchContractEvent(mockContract, 'Transfer', vi.fn()));
 
     // Wait for unsub to be set

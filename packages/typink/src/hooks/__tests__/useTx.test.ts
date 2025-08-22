@@ -159,7 +159,7 @@ describe('useTx', () => {
 
     it('should throw an error if connectedAccount is undefined', async () => {
       (useTypink as any).mockReturnValue({
-        client: mockClient,
+        client: mockClient as any,
         connectedAccount: undefined,
         getClient: vi.fn().mockReturnValue(mockClient),
         networks: [{ id: 'test-network', name: 'Test Network' }],
@@ -451,7 +451,7 @@ describe('useTx', () => {
 
     it('should throw error when no connected account', async () => {
       (useTypink as any).mockReturnValue({
-        client: mockClient,
+        client: mockClient as any,
         connectedAccount: undefined,
         getClient: vi.fn().mockReturnValue(mockClient),
         networks: [{ id: 'test-network', name: 'Test Network' }],
@@ -468,7 +468,7 @@ describe('useTx', () => {
       const mockError = new Error('Transaction failed');
       mockPaymentInfo.mockRejectedValue(mockError);
 
-      (withReadableErrorMessage as any).mockImplementation((_, error) => error);
+      (withReadableErrorMessage as any).mockImplementation((_: any, error: any) => error);
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
@@ -517,7 +517,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -535,7 +535,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -553,7 +553,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -568,7 +568,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -583,7 +583,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -598,7 +598,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -614,7 +614,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
