@@ -72,7 +72,7 @@ describe('useDeployer', () => {
       ...mockedUseTypink,
       client: undefined,
     } as any);
-    
+
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: undefined,
       network: { id: 'test-network' },

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
 import { useTxFee } from '../useTxFee.js';
 import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
@@ -54,7 +54,7 @@ describe('useTxFee - Unit Tests', () => {
     vi.clearAllMocks();
 
     mockPaymentInfo = vi.fn().mockResolvedValue({
-      partialFee: 1000000n
+      partialFee: 1000000n,
     });
 
     mockTx = {
@@ -93,12 +93,12 @@ describe('useTxFee - Unit Tests', () => {
 
   describe('Hook Structure', () => {
     it('should return correct structure when disabled', () => {
-      const { result } = renderHook(() => 
+      const { result } = renderHook(() =>
         useTxFee({
           tx: mockUseTxReturnType,
           args: ['test'],
-          enabled: false
-        })
+          enabled: false,
+        }),
       );
 
       expect(result.current.fee).toBe(null);
@@ -112,12 +112,12 @@ describe('useTxFee - Unit Tests', () => {
 
   describe('Manual Refetch - UseTxReturnType', () => {
     it('should estimate fee with UseTxReturnType via refetch', async () => {
-      const { result } = renderHook(() => 
-        useTxFee({ 
-          tx: mockUseTxReturnType, 
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: mockUseTxReturnType,
           args: ['test'],
-          enabled: false
-        })
+          enabled: false,
+        }),
       );
 
       await act(async () => {
@@ -132,13 +132,13 @@ describe('useTxFee - Unit Tests', () => {
 
     it('should pass txOptions to UseTxReturnType', async () => {
       const txOptions = { tip: 1000n };
-      const { result } = renderHook(() => 
-        useTxFee({ 
-          tx: mockUseTxReturnType, 
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: mockUseTxReturnType,
           args: ['test'],
           txOptions,
-          enabled: false
-        })
+          enabled: false,
+        }),
       );
 
       await act(async () => {
@@ -153,12 +153,12 @@ describe('useTxFee - Unit Tests', () => {
       const errorMessage = 'EstimatedFee failed';
       mockUseTxReturnType.getEstimatedFee.mockRejectedValue(new Error(errorMessage));
 
-      const { result } = renderHook(() => 
-        useTxFee({ 
-          tx: mockUseTxReturnType, 
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: mockUseTxReturnType,
           args: ['test'],
-          enabled: false
-        })
+          enabled: false,
+        }),
       );
 
       await act(async () => {
@@ -183,10 +183,12 @@ describe('useTxFee - Unit Tests', () => {
         network: { id: 'test-network' },
       });
 
-      const { result } = renderHook(() => useTxFee({ 
-        tx: (tx) => tx.system.remark, 
-        args: ['test'] 
-      }));
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: (tx) => tx.system.remark,
+          args: ['test'],
+        }),
+      );
 
       expect(result.current.fee).toBe(null);
       expect(result.current.isLoading).toBe(false);
@@ -204,10 +206,12 @@ describe('useTxFee - Unit Tests', () => {
         network: { id: 'test-network' },
       });
 
-      const { result } = renderHook(() => useTxFee({ 
-        tx: (tx) => tx.system.remark, 
-        args: ['test'] 
-      }));
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: (tx) => tx.system.remark,
+          args: ['test'],
+        }),
+      );
 
       expect(result.current.fee).toBe(null);
       expect(result.current.isLoading).toBe(false);
@@ -223,23 +227,23 @@ describe('useTxFee - Unit Tests', () => {
       });
       mockUseTxReturnType.getEstimatedFee.mockReturnValue(estimatedFeePromise);
 
-      const { result } = renderHook(() => 
-        useTxFee({ 
-          tx: mockUseTxReturnType, 
+      const { result } = renderHook(() =>
+        useTxFee({
+          tx: mockUseTxReturnType,
           args: ['test'],
-          enabled: false
-        })
+          enabled: false,
+        }),
       );
 
       expect(result.current.isLoading).toBe(false);
 
       // Start refetch
       const refetchPromise = result.current.refresh();
-      
+
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
-      
+
       expect(result.current.isLoading).toBe(true);
 
       // Resolve the promise

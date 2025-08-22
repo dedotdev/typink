@@ -3,9 +3,9 @@ import { extractHumanReadableError } from '../errors.js';
 import { DedotError } from 'dedot/utils';
 import {
   ContractDispatchError,
-  ContractLangError,
   ContractInstantiateDispatchError,
   ContractInstantiateLangError,
+  ContractLangError,
 } from 'dedot/contracts';
 
 // Mock the ISubstrateClient

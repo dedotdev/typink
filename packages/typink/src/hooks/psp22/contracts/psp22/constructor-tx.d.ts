@@ -2,9 +2,9 @@
 
 import type { GenericSubstrateApi } from 'dedot/types';
 import type {
+  ConstructorTxOptions,
   GenericConstructorTx,
   GenericConstructorTxCall,
-  ConstructorTxOptions,
   GenericContractApi,
   GenericInstantiateSubmittableExtrinsic,
 } from 'dedot/contracts';

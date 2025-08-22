@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
-import { TypinkError, generateInstanceId } from '../utils/index.js';
+import { generateInstanceId, TypinkError } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { NetworkOptions } from '../types.js';
 import { usePolkadotClient } from './usePolkadotClient.js';

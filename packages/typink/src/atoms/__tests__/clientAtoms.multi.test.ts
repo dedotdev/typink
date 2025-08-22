@@ -1,13 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createStore } from 'jotai';
 import {
-  clientsMapAtom,
   clientAtom,
   clientReadyAtom,
-  networkConnectionsAtom,
+  clientsMapAtom,
   currentNetworksAtom,
+  networkConnectionsAtom,
   setNetworksAtom,
-  initializeNetworkIdsAtom,
   supportedNetworksAtom,
 } from '../clientAtoms.js';
 import { NetworkInfo } from '../../types.js';

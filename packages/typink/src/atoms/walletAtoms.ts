@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { atomWithStorage, atomFamily } from 'jotai/utils';
+import { atomFamily, atomWithStorage } from 'jotai/utils';
 import { InjectedSigner, TypinkAccount } from '../types.js';
 import { Wallet } from '../wallets/index.js';
 

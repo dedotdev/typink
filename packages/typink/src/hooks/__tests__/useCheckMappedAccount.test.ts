@@ -57,7 +57,7 @@ describe('useCheckMappedAccount', () => {
         client: null,
         connectedAccount,
       } as any);
-      
+
       vi.mocked(usePolkadotClient).mockReturnValue({
         client: null,
         network: { id: 'test-network' },
@@ -201,7 +201,7 @@ describe('useCheckMappedAccount', () => {
       const queryPromise = new Promise((resolve) => {
         resolveQuery = resolve;
       });
-      
+
       mockClient.query.revive.originalAccount.mockReturnValue(queryPromise);
 
       const { result } = renderHook(() => useCheckMappedAccount());
@@ -251,7 +251,7 @@ describe('useCheckMappedAccount', () => {
 
       // Clear previous calls
       mockClient.query.revive.originalAccount.mockClear();
-      
+
       // Change the mock response
       mockClient.query.revive.originalAccount.mockResolvedValue(false);
 

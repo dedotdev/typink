@@ -2,11 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useWatchContractEvent } from '../useWatchContractEvent.js';
 import { useTypink } from '../useTypink.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ContractEvent } from 'dedot/contracts';
 import { Contract } from 'dedot/contracts';
 import { Psp22ContractApi } from '../psp22/contracts/psp22';
-import { useTypinkEvents, useClient } from '../../providers/index.js';
+import { useClient, useTypinkEvents } from '../../providers/index.js';
 import { typinkEventsWrapper, waitForNextUpdate } from './test-utils.js';
-import type { ContractEvent } from 'dedot/contracts';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),

@@ -73,7 +73,7 @@ describe('useContract', () => {
       ...mockedUseTypink,
       client: undefined,
     } as any);
-    
+
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: undefined,
       network: { id: 'test-network' },
@@ -90,7 +90,7 @@ describe('useContract', () => {
       ...mockedUseTypink,
       network: undefined,
     } as any);
-    
+
     vi.mocked(usePolkadotClient).mockReturnValue({
       client,
       network: undefined,

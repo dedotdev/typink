@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
@@ -12,18 +12,18 @@ import {
   clientReadyAtom,
   clientsMapAtom,
   currentNetworkAtom,
+  currentNetworksAtom,
   networkConnectionsAtom,
   setNetworkAtom,
   setNetworksAtom,
   supportedNetworksAtom,
-  currentNetworksAtom,
 } from '../atoms/clientAtoms.js';
 import {
+  cleanupAllClientsAtom,
   initializeCacheMetadataAtom,
   initializeClientsAtom,
   initializeSupportedNetworksAtom,
   updateClientSignerAtom,
-  cleanupAllClientsAtom,
 } from '../atoms/clientActions.js';
 import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
 

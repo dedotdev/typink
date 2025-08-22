@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useTx, generalTx } from '../useTx.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+import { generalTx, useTx } from '../useTx.js';
 import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
-import { sleep, waitForNextUpdate } from './test-utils.js';
 import { checkBalanceSufficiency } from '../../helpers/index.js';
 import { BalanceInsufficientError, withReadableErrorMessage } from '../../utils/index.js';
 
@@ -122,7 +121,7 @@ describe('useTx', () => {
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
       });
-      
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
@@ -145,7 +144,7 @@ describe('useTx', () => {
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
       });
-      
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
@@ -168,7 +167,9 @@ describe('useTx', () => {
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow(
+        'No connected account. Please connect your wallet.',
+      );
     });
 
     it('should handle balance check failure', async () => {
@@ -218,7 +219,7 @@ describe('useTx', () => {
   describe('Progress State Management', () => {
     it('should set inProgress and inBestBlockProgress to true on start', async () => {
       let callbackFn: (result: any) => void;
-      
+
       mockSignAndSend.mockImplementation((caller, txOptions, callback) => {
         callbackFn = callback;
         // Don't call the callback immediately to keep the transaction in progress
@@ -234,12 +235,12 @@ describe('useTx', () => {
 
       // Start the transaction without awaiting
       const promise = result.current.signAndSend({ args: ['test'] });
-      
+
       // Give React time to update the state
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
-      
+
       // Check that both states are true while transaction is in progress
       expect(result.current.inProgress).toBe(true);
       expect(result.current.inBestBlockProgress).toBe(true);
@@ -248,7 +249,7 @@ describe('useTx', () => {
       await act(async () => {
         await promise;
       });
-      
+
       // After completion, both should be false
       expect(result.current.inProgress).toBe(false);
       expect(result.current.inBestBlockProgress).toBe(false);
@@ -272,7 +273,7 @@ describe('useTx', () => {
 
     it('should set inBestBlockProgress to false on BestChainBlockIncluded', async () => {
       let callbackFn: (result: any) => void;
-      
+
       mockSignAndSend.mockImplementation((caller, txOptions, callback) => {
         callbackFn = callback;
       });
@@ -281,12 +282,12 @@ describe('useTx', () => {
 
       // Start the transaction
       const signAndSendPromise = result.current.signAndSend({ args: ['test'] });
-      
+
       // Check initial progress state
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
-      
+
       expect(result.current.inProgress).toBe(true);
       expect(result.current.inBestBlockProgress).toBe(true);
 
@@ -435,7 +436,7 @@ describe('useTx', () => {
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
       });
-      
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
@@ -458,7 +459,9 @@ describe('useTx', () => {
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow(
+        'No connected account. Please connect your wallet.',
+      );
     });
 
     it('should handle errors with readable message', async () => {

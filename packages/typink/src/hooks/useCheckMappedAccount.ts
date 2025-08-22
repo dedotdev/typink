@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { toEvmAddress } from 'dedot/contracts';
-import { SubstrateAddress, NetworkOptions } from '../types.js';
+import { NetworkOptions, SubstrateAddress } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { usePolkadotClient } from './usePolkadotClient.js';
 

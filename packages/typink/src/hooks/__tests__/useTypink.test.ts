@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTypink } from '../useTypink.js';
 import { TypinkContextProps } from '../../providers/TypinkProvider.js';
 import { PolkadotApi } from '@dedot/chaintypes';
@@ -49,7 +49,7 @@ const mockTypinkContextValue: TypinkContextProps = {
   connectedWalletIds: [],
   connectedWallets: [],
   setConnectedAccount: vi.fn(),
-  
+
   appName: '',
 
   // TypinkEventsContextProps
@@ -139,7 +139,6 @@ describe('useTypink', () => {
     expect(result).toHaveProperty('disconnect');
     expect(result).toHaveProperty('connectedWalletIds');
     expect(result).toHaveProperty('connectedWallets');
-    
 
     // TypinkEventsContextProps properties
     expect(result).toHaveProperty('subscribeToEvent');

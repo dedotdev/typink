@@ -3,10 +3,10 @@
 import type { GenericSubstrateApi } from 'dedot/types';
 import type { AccountId32Like, BytesLike } from 'dedot/codecs';
 import type {
+  ContractSubmittableExtrinsic,
+  ContractTxOptions,
   GenericContractTx,
   GenericContractTxCall,
-  ContractTxOptions,
-  ContractSubmittableExtrinsic,
 } from 'dedot/contracts';
 
 export interface ContractTx<ChainApi extends GenericSubstrateApi> extends GenericContractTx<ChainApi> {

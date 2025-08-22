@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  transformInjectedToTypinkAccounts,
   filterAccountsByWallet,
-  groupAccountsByWallet,
   findAccountByAddress,
+  groupAccountsByWallet,
+  transformInjectedToTypinkAccounts,
 } from '../accounts.js';
 import { InjectedAccount, TypinkAccount } from '../../types.js';
 

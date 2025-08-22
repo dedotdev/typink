@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDeepDeps } from './internal/index.js';
 import { Args, OmitNever, Pop } from '../types.js';
 import { Contract, ContractCallOptions, GenericContractApi } from 'dedot/contracts';
-import { useTypink } from './useTypink.js';
 import { Unsub } from 'dedot/types';
 
 type ContractQuery<A extends GenericContractApi = GenericContractApi> = OmitNever<{
@@ -53,8 +52,6 @@ export function useContractQuery<
     | false,
 ): UseContractQueryReturnType<T, M> {
   // TODO replace loading tracking state with tanstack
-
-  const { client } = useTypink();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);

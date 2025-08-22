@@ -7,6 +7,10 @@
     "declarationDir": "dist",
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/templates/**/*"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/templates/**/*"
+  ]
 }

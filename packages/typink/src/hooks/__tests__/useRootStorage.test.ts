@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { useRootStorage } from '../useRootStorage.js';
 import { useTypink } from '../useTypink.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import {
   parseArguments,
-  renderIntroArt,
+  pkgFromUserAgent,
   promptMissingOptions,
   renderHelpMessage,
+  renderIntroArt,
   renderOutroMessage,
-  pkgFromUserAgent,
 } from './utils/index.js';
 import { createProject } from './createProject.js';
 import { fileURLToPath } from 'url';

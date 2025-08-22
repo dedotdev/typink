@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import {
-  ISubmittableResult,
   ISubmittableExtrinsic,
-  RpcVersion,
-  VersionedGenericSubstrateApi,
+  ISubmittableResult,
   PayloadOptions,
+  RpcVersion,
   SignerOptions,
+  VersionedGenericSubstrateApi,
 } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { assert, deferred } from 'dedot/utils';
@@ -14,6 +14,9 @@ import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
+// Import Args type from types.ts
+import type { Args, NetworkId, NetworkOptions } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 // Get the actual ChainApi at runtime version
 export type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
@@ -26,10 +29,6 @@ export type TxBuilder<
 
 // Helper type to infer TxFn from a TxBuilder function
 export type InferTxFn<T> = T extends TxBuilder<any, infer U> ? U : never;
-
-// Import Args type from types.ts
-import type { Args, NetworkId, NetworkOptions } from '../types.js';
-import { usePolkadotClient } from './usePolkadotClient.js';
 
 // Parameter types with proper args typing
 export type TxSignAndSendParameters<TxFn extends (...args: any[]) => any = any> = {

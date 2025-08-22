@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useClient, ClientContextProps } from '../../providers/ClientProvider.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ClientContextProps, useClient } from '../../providers/ClientProvider.js';
 import { PolkadotApi } from '@dedot/chaintypes';
 import * as React from 'react';
 

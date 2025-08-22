@@ -96,7 +96,6 @@ export function TypinkProvider({
   wallets,
   appName,
 }: TypinkProviderProps) {
-
   return (
     <JotaiProvider>
       <WalletSetupProvider signer={signer} connectedAccount={connectedAccount} wallets={wallets} appName={appName}>

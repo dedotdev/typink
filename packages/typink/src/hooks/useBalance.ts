@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Balance, useBalances } from './useBalances.js';
-import { SubstrateAddress, NetworkOptions } from '../types.js';
+import { NetworkOptions, SubstrateAddress } from '../types.js';
 
 /**
  * A custom React hook that retrieves the balance for a given Substrate address.

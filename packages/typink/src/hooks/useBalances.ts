@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SubstrateAddress, NetworkOptions } from '../types.js';
+import { NetworkOptions, SubstrateAddress } from '../types.js';
 import { Unsub } from 'dedot/types';
 import { useDeepDeps } from './internal/index.js';
 import { usePolkadotClient } from './usePolkadotClient.js';

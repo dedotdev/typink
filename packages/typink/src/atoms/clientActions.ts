@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
-import { clientsMapAtom, cacheMetadataAtom, supportedNetworksAtom, networkConnectionsAtom } from './clientAtoms.js';
+import { cacheMetadataAtom, clientsMapAtom, networkConnectionsAtom, supportedNetworksAtom } from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
 import { JsonRpcApi, NetworkConnection, NetworkId, NetworkInfo, validateProvider } from '../types.js';
-import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider, SmoldotProvider } from 'dedot';
+import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, SmoldotProvider, WsProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';

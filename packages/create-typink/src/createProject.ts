@@ -4,16 +4,15 @@ import { fileURLToPath } from 'url';
 import * as path from 'path';
 import chalk from 'chalk';
 import {
-  createProjectDirectory,
-  createFirstCommit,
   copyTemplateFiles,
-  prettierFormat,
+  createFirstCommit,
+  createProjectDirectory,
   installPackages,
+  prettierFormat,
 } from './tasks/index.js';
 
 export async function createProject(options: Options) {
   const { projectName, skipInstall, noGit } = options;
-
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
