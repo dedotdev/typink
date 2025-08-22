@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useTypink } from './useTypink.js';
-import { SubstrateAddress } from '../types.js';
+import { SubstrateAddress, NetworkOptions } from '../types.js';
 import { Unsub } from 'dedot/types';
 import { useDeepDeps } from './internal/index.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 export interface Balance {
   free: bigint;
@@ -21,12 +21,13 @@ export interface Balances {
  * It updates the balances state whenever the client or addresses change.
  *
  * @param addresses - An array of Substrate addresses to fetch balances for.
+ * @param options - Optional network selection options.
  * @returns An object containing the balances for each provided address. The object keys are the addresses,
  *          and the values are Balance objects containing free, reserved, and frozen amounts.
  */
-export function useBalances(addresses: SubstrateAddress[]) {
+export function useBalances(addresses: SubstrateAddress[], options?: NetworkOptions) {
   const [balances, setBalances] = useState<Balances>({});
-  const { client } = useTypink();
+  const { client } = usePolkadotClient(options?.networkId);
 
   // TODO filter out invalid addresses
 
@@ -64,7 +65,7 @@ export function useBalances(addresses: SubstrateAddress[]) {
         unsub && unsub();
       };
     },
-    useDeepDeps([client, addresses]),
+    useDeepDeps([client, addresses, options?.networkId]),
   );
 
   return balances;

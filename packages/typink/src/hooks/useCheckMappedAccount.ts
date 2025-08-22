@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { toEvmAddress } from 'dedot/contracts';
-import { SubstrateAddress } from '../types.js';
+import { SubstrateAddress, NetworkOptions } from '../types.js';
 import { ISubstrateClient } from 'dedot';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 export interface UseCheckMappedAccountResult {
   isMapped: boolean | undefined;
@@ -29,10 +30,16 @@ function isReviveAvailable(client: ISubstrateClient<any>): boolean {
  * deployed on pallet revive.
  *
  * @param address - The Substrate address to check (defaults to connected account)
+ * @param options - Optional network selection options
  * @returns Object containing mapping status, loading state, error, EVM address, and refresh function
  */
-export function useCheckMappedAccount(address?: SubstrateAddress): UseCheckMappedAccountResult {
-  const { client, connectedAccount } = useTypink();
+export function useCheckMappedAccount(
+  address?: SubstrateAddress,
+  options?: NetworkOptions,
+): UseCheckMappedAccountResult {
+  const { connectedAccount } = useTypink();
+  const { client } = usePolkadotClient(options?.networkId);
+
   const [isMapped, setIsMapped] = useState<boolean>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error>();

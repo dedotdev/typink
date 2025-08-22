@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { ISubmittableResult, ISubmittableExtrinsic, RpcVersion, VersionedGenericSubstrateApi, PayloadOptions, SignerOptions } from 'dedot/types';
+import {
+  ISubmittableResult,
+  ISubmittableExtrinsic,
+  RpcVersion,
+  VersionedGenericSubstrateApi,
+  PayloadOptions,
+  SignerOptions,
+} from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { assert, deferred } from 'dedot/utils';
 import { withReadableErrorMessage } from '../utils/index.js';
@@ -14,23 +21,26 @@ export type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = Subs
 // Type for transaction builder callback that returns the transaction method (not called)
 export type TxBuilder<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any,
 > = (tx: RuntimeChainApi<ChainApi>['tx']) => TxFn;
 
 // Helper type to infer TxFn from a TxBuilder function
 export type InferTxFn<T> = T extends TxBuilder<any, infer U> ? U : never;
 
 // Import Args type from types.ts
-import type { Args } from '../types.js';
+import type { Args, NetworkId, NetworkOptions } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 // Parameter types with proper args typing
 export type TxSignAndSendParameters<TxFn extends (...args: any[]) => any = any> = {
   txOptions?: Partial<SignerOptions>; // Transaction options (e.g., tip, mortality)
   callback?: (result: ISubmittableResult) => void;
+  networkId?: NetworkId; // Optional network ID to specify which client to use
 } & Args<Parameters<TxFn>>;
 
 export type TxEstimatedFeeParameters<TxFn extends (...args: any[]) => any = any> = {
   txOptions?: Partial<PayloadOptions>; // Transaction options (e.g., tip, mortality)
+  networkId?: NetworkId; // Optional network ID to specify which client to use
 } & Args<Parameters<TxFn>>;
 
 // Type for the return value of useTx with proper generics
@@ -48,12 +58,13 @@ export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrins
  * and tracks the progress of the transaction.
  *
  * @param txBuilder - A callback function that receives the tx object and returns a transaction method
- * 
+ *
+ * @param options
  * @example
  * ```typescript
  * const remarkTx = useTx((tx) => tx.system.remark);
  * await remarkTx.signAndSend({ args: [message] });
- * 
+ *
  * const transferTx = useTx((tx) => tx.balances.transfer);
  * const fee = await transferTx.getEstimatedFee({ args: [recipient, amount] });
  * ```
@@ -66,14 +77,13 @@ export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrins
  */
 export function useTx<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>
->(
-  txBuilder: TBuilder
-): UseTxReturnType<InferTxFn<TBuilder>> {
+  TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>,
+>(txBuilder: TBuilder, options?: NetworkOptions): UseTxReturnType<InferTxFn<TBuilder>> {
   const [inProgress, setInProgress] = useState(false);
   const [inBestBlockProgress, setInBestBlockProgress] = useState(false);
 
-  const { client, connectedAccount } = useTypink<ChainApi>();
+  const { connectedAccount } = useTypink<ChainApi>();
+  const { client } = usePolkadotClient(options?.networkId);
 
   const signAndSend = useMemo(
     () => {
@@ -127,9 +137,9 @@ export function useTx<
 
           const txFn = txBuilder(client.tx);
           const tx = txFn(...args);
-          
+
           const paymentInfo = await tx.paymentInfo(connectedAccount.address, txOptions);
-          
+
           return paymentInfo.partialFee;
         } catch (e: any) {
           console.error(e);
@@ -150,7 +160,7 @@ export function useTx<
 
 export async function generalTx<
   ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any
+  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any,
 >(parameters: {
   client: CompatibleSubstrateApi<ChainApi>;
   txBuilder: TxBuilder<ChainApi, TxFn>;

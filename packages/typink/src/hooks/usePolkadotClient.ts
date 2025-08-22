@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
 import { useTypink } from './useTypink.js';
-import { NetworkId } from '../types.js';
+import { NetworkId, NetworkInfo } from '../types.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { VersionedGenericSubstrateApi } from 'dedot/types';
+import { assert } from 'dedot/utils';
 
+interface UsePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
+  client?: CompatibleSubstrateApi<ChainApi> | undefined;
+  network: NetworkInfo;
+}
 /**
  * A React hook for accessing a specific client by network ID.
  *
@@ -14,10 +19,15 @@ import { VersionedGenericSubstrateApi } from 'dedot/types';
  */
 export function usePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
   networkId?: NetworkId,
-): CompatibleSubstrateApi<ChainApi> | undefined {
-  const { getClient } = useTypink<ChainApi>();
+): UsePolkadotClient<ChainApi> {
+  const { getClient, networks } = useTypink<ChainApi>();
 
-  return useMemo(() => {
+  const network = networkId ? networks.find((n) => n.id === networkId) : networks?.[0];
+  assert(network, `Network not found with id ${networkId}`);
+
+  const client = useMemo(() => {
     return getClient(networkId);
   }, [getClient, networkId]);
+
+  return { client, network };
 }

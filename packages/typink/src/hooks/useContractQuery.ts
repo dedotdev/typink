@@ -120,7 +120,8 @@ export function useContractQuery<
 
   useEffect(
     () => {
-      if (!client || !watch) return;
+      if (!contract || !watch) return;
+      const client = contract.client;
 
       let unsub: Unsub;
       let done = false;
@@ -143,7 +144,7 @@ export function useContractQuery<
         unsub && unsub();
       };
     },
-    useDeepDeps([client, refresh, watch]),
+    useDeepDeps([(contract as any)?._instanceId, refresh, watch]),
   );
 
   return {
