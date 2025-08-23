@@ -11,7 +11,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist && cp -R ./src/templates ./dist",
+    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
     "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
     "test": "npx vitest --watch=false"
   },
@@ -20,7 +20,6 @@
     "@dedot/utils": "^0.15.0",
     "arg": "^5.0.2",
     "chalk": "^5.5.0",
-    "ejs": "^3.1.10",
     "execa": "^9.5.2",
     "inquirer": "^12.9.2",
     "listr2": "^8.3.3",
