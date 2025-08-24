@@ -179,7 +179,6 @@ function EcosystemSection({ ecosystem, onRetry }: { ecosystem: EcosystemGroup; o
 
 export default function NetworkStatusDashboard() {
   const { networks, clients, connectionStatus, setNetworks, networkConnections } = useTypink();
-  console.log('connectionStatus', connectionStatus);
 
   // Handle retry for failed connections
   const handleRetry = (networkId: string) => {

@@ -97,27 +97,8 @@ export const setNetworkAtom = atom(null, (get, set, connection: NetworkId | Netw
   // Update only the primary (first) connection, keep the rest
   const newConnections = [newPrimaryConnection, ...currentConnections.slice(1)];
   
-  // Clear connection status for networks that are no longer in the new connections
-  const currentStatusMap = get(clientConnectionStatusMapAtom);
-  const newStatusMap = new Map(currentStatusMap);
-  const newNetworkIds = new Set(newConnections.map(conn => conn.networkId));
-  
-  // Remove status for networks that are no longer active
-  for (const networkId of currentStatusMap.keys()) {
-    if (!newNetworkIds.has(networkId)) {
-      newStatusMap.delete(networkId);
-    }
-  }
-  
-  // Initialize new networks with NotConnected status
-  for (const conn of newConnections) {
-    if (!newStatusMap.has(conn.networkId)) {
-      newStatusMap.set(conn.networkId, ClientConnectionStatus.NotConnected);
-    }
-  }
-  
-  set(clientConnectionStatusMapAtom, newStatusMap);
-  set(networkConnectionsAtom, newConnections);
+  // Reuse setNetworksAtom logic to handle connection status management
+  set(setNetworksAtom, newConnections);
 });
 
 // Write-only atom for updating all network connections at once
