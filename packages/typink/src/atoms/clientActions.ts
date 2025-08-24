@@ -239,20 +239,16 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
       });
 
       provider.on('disconnected', () => {
-        // Check if this is a permanent disconnection (after max retries)
-        // For now, we'll treat disconnected as an intermediate state
-        // The error event will set it to Error if it's permanent
-        const currentStatus = get(clientConnectionStatusMapAtom).get(networkId);
-        if (currentStatus !== ClientConnectionStatus.Error) {
-          set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
-        }
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.NotConnected);
       });
 
       provider.on('error', (error: any) => {
-        // Check if this is a connection error that indicates max retries exceeded
-        // or other permanent failure
         console.error(`Provider error for network ${networkId}:`, error);
-        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Error);
+        
+        const currentStatus = get(clientConnectionStatusMapAtom).get(networkId);
+        if (currentStatus !== ClientConnectionStatus.Connected) {
+          set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Error);
+        }
       });
 
       // Check current status and update accordingly
