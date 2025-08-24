@@ -116,13 +116,13 @@ async function createClient(
     provider = new WsProvider({
       endpoint: network.providers,
       maxRetryAttempts: 5,
-      retryDelayMs: 2500,
+      retryDelayMs: 1500,
     });
   } else {
     provider = new WsProvider({
       endpoint: selectedProvider,
       maxRetryAttempts: 5,
-      retryDelayMs: 2500,
+      retryDelayMs: 1500,
     });
   }
 
@@ -244,7 +244,7 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
 
       provider.on('error', (error: any) => {
         console.error(`Provider error for network ${networkId}:`, error);
-        
+
         const currentStatus = get(clientConnectionStatusMapAtom).get(networkId);
         if (currentStatus !== ClientConnectionStatus.Connected) {
           set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Error);
