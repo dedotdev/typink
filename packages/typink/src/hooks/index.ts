@@ -2,6 +2,7 @@ export * from './internal/index.js';
 export * from './psp22/index.js';
 export * from './useBalance.js';
 export * from './useBalances.js';
+export * from './useBlockInfo.js';
 export * from './useCheckMappedAccount.js';
 export * from './usePolkadotClient.js';
 export * from './useContract.js';
