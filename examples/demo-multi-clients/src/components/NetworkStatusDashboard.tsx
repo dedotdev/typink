@@ -98,79 +98,59 @@ function NetworkCard({
       transition='all 0.2s'>
       <CardBody p={4}>
         <Flex
-          direction={{ base: 'column', md: 'row' }}
+          wrap={{ base: 'wrap', md: 'nowrap' }}
           gap={{ base: 3, md: 4 }}
           align={{ base: 'stretch', md: 'center' }}
         >
-          {/* Network info and status - always together */}
-          <Flex
-            justify='space-between'
-            align='center'
-            flex={{ base: '1', md: 'initial' }}
-            gap={3}
-            w={{ base: '100%', md: 'auto' }}
+          {/* Network info - Order 1 on both mobile and desktop */}
+          <HStack 
+            spacing={{ base: 2, md: 3 }} 
+            flex={{ base: 1, md: 1 }}
+            order={{ base: 1, md: 1 }}
           >
-            {/* Network info */}
-            <HStack spacing={{ base: 2, md: 3 }} flex={1}>
-              <Avatar 
-                size={{ base: 'sm', md: 'md' }} 
-                src={network.logo} 
-                name={network.name} 
-              />
-              <VStack spacing={{ base: 0, md: 1 }} align='start'>
-                <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight='semibold'>
-                  {network.name}
+            <Avatar 
+              size={{ base: 'sm', md: 'md' }} 
+              src={network.logo} 
+              name={network.name} 
+            />
+            <VStack spacing={{ base: 0, md: 1 }} align='start'>
+              <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight='semibold'>
+                {network.name}
+              </Text>
+              <HStack spacing={{ base: 1, md: 2 }} align='center'>
+                <Text fontSize={{ base: 'xs', md: 'sm' }} color='gray.600'>
+                  {network.symbol}
                 </Text>
-                <HStack spacing={{ base: 1, md: 2 }} align='center'>
-                  <Text fontSize={{ base: 'xs', md: 'sm' }} color='gray.600'>
-                    {network.symbol}
-                  </Text>
-                  <Badge
-                    colorScheme={getStatusColor()}
-                    variant={status === ClientConnectionStatus.Connected ? 'solid' : 'outline'}
-                    size='sm'
-                    fontSize={{ base: 'xs', md: 'sm' }}
-                  >
-                    <Text as='span' display={{ base: 'inline', md: 'none' }}>
-                      {status === ClientConnectionStatus.Connected
-                        ? 'Connected'
-                        : status === ClientConnectionStatus.Connecting
-                          ? 'Connecting'
-                          : status === ClientConnectionStatus.Error
-                            ? 'Failed'
-                            : 'Not Connected'}
-                    </Text>
-                    <Text as='span' display={{ base: 'none', md: 'inline' }}>
-                      {status === ClientConnectionStatus.Connected
-                        ? 'Connected'
-                        : status === ClientConnectionStatus.Connecting
-                          ? 'Connecting'
-                          : status === ClientConnectionStatus.Error
-                            ? 'Connection Failed'
-                            : 'Not Connected'}
-                    </Text>
-                  </Badge>
-                </HStack>
-              </VStack>
-            </HStack>
-
-            {/* Status icon and actions - stays on the right */}
-            <VStack spacing={{ base: 1, md: 2 }} align='center'>
-              <ConnectionStatusIcon status={status} />
-              {status === ClientConnectionStatus.Error && (
-                <Button 
-                  size='xs' 
-                  colorScheme='red' 
-                  variant='outline' 
-                  onClick={() => onRetry(network.id)}
+                <Badge
+                  colorScheme={getStatusColor()}
+                  variant={status === ClientConnectionStatus.Connected ? 'solid' : 'outline'}
+                  size='sm'
+                  fontSize={{ base: 'xs', md: 'sm' }}
                 >
-                  Retry
-                </Button>
-              )}
+                  <Text as='span' display={{ base: 'inline', md: 'none' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Failed'
+                          : 'Not Connected'}
+                  </Text>
+                  <Text as='span' display={{ base: 'none', md: 'inline' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Connection Failed'
+                          : 'Not Connected'}
+                  </Text>
+                </Badge>
+              </HStack>
             </VStack>
-          </Flex>
+          </HStack>
 
-          {/* Block information - goes below on mobile, inline on desktop */}
+          {/* Block information - Order 2 on desktop, 3 on mobile */}
           {status === ClientConnectionStatus.Connected && (
             <Box
               w={{ base: '100%', md: 'auto' }}
@@ -179,11 +159,32 @@ function NetworkCard({
               borderTopColor='gray.200'
               flex={{ base: 'initial', md: 1 }}
               display='flex'
-              justifyContent={{ base: 'center', md: 'center' }}
+              justifyContent='center'
+              order={{ base: 3, md: 2 }}
             >
               <NetworkBlockInfo networkId={network.id} isConnected={true} />
             </Box>
           )}
+
+          {/* Status icon and actions - Order 2 on mobile, 3 on desktop (always far right) */}
+          <VStack 
+            spacing={{ base: 1, md: 2 }} 
+            align='center'
+            flex='none'
+            order={{ base: 2, md: 3 }}
+          >
+            <ConnectionStatusIcon status={status} />
+            {status === ClientConnectionStatus.Error && (
+              <Button 
+                size='xs' 
+                colorScheme='red' 
+                variant='outline' 
+                onClick={() => onRetry(network.id)}
+              >
+                Retry
+              </Button>
+            )}
+          </VStack>
         </Flex>
       </CardBody>
     </Card>

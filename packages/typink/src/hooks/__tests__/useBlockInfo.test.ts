@@ -63,7 +63,7 @@ const createMockDedotClient = (overrides = {}): MockDedotClient => ({
   },
 });
 
-const createMockLegacyClient = (overrides = {}): MockLegacyClient => ({
+const createMockLegacyClient = (overrides: any = {}): MockLegacyClient => ({
   rpc: {
     chain_subscribeNewHeads: vi.fn().mockImplementation((callback) => Promise.resolve(vi.fn())),
     chain_subscribeFinalizedHeads: vi.fn().mockImplementation((callback) => Promise.resolve(vi.fn())),
@@ -99,8 +99,9 @@ describe('useBlockInfo', () => {
   describe('Initial State', () => {
     it('should return undefined blocks when no client is provided', () => {
       mockUsePolkadotClient.mockReturnValue({
-        client: null,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: null as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([null, JsonRpcApi.NEW]);
 
@@ -116,8 +117,9 @@ describe('useBlockInfo', () => {
       const client = createMockDedotClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -129,8 +131,9 @@ describe('useBlockInfo', () => {
 
       // Change to no client
       mockUsePolkadotClient.mockReturnValue({
-        client: null,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: null as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([null, JsonRpcApi.NEW]);
 
@@ -144,8 +147,9 @@ describe('useBlockInfo', () => {
 
     it('should handle undefined network options', () => {
       mockUsePolkadotClient.mockReturnValue({
-        client: null,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: null as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([null, JsonRpcApi.NEW]);
 
@@ -173,8 +177,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -204,8 +209,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -240,8 +246,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -276,8 +283,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -309,8 +317,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -337,8 +346,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -365,8 +375,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -389,8 +400,9 @@ describe('useBlockInfo', () => {
       const client = createMockLegacyClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -418,8 +430,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -453,8 +466,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -475,8 +489,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -506,8 +521,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -530,8 +546,9 @@ describe('useBlockInfo', () => {
       const client = createMockDedotClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -547,8 +564,9 @@ describe('useBlockInfo', () => {
       const client = createMockLegacyClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.LEGACY]);
 
@@ -564,8 +582,9 @@ describe('useBlockInfo', () => {
       const client = createMockDedotClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: {},
+        client: client as any,
+        network: {} as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, undefined]);
 
@@ -584,8 +603,9 @@ describe('useBlockInfo', () => {
 
       // Initial render
       mockUsePolkadotClient.mockReturnValue({
-        client: client1,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client1 as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client1, JsonRpcApi.NEW]);
 
@@ -597,8 +617,9 @@ describe('useBlockInfo', () => {
 
       // Change network
       mockUsePolkadotClient.mockReturnValue({
-        client: client2,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client2 as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client2, JsonRpcApi.NEW]);
 
@@ -615,8 +636,9 @@ describe('useBlockInfo', () => {
 
       // Start with NEW API
       mockUsePolkadotClient.mockReturnValue({
-        client: dedotClient,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: dedotClient as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([dedotClient, JsonRpcApi.NEW]);
 
@@ -628,8 +650,9 @@ describe('useBlockInfo', () => {
 
       // Switch to LEGACY API
       mockUsePolkadotClient.mockReturnValue({
-        client: legacyClient,
-        network: { jsonRpcApi: JsonRpcApi.LEGACY },
+        client: legacyClient as any,
+        network: { jsonRpcApi: JsonRpcApi.LEGACY } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([legacyClient, JsonRpcApi.LEGACY]);
 
@@ -643,7 +666,7 @@ describe('useBlockInfo', () => {
 
   describe('Race Conditions', () => {
     it('should handle unmount during async setup', async () => {
-      let resolvePromise: (value: any) => void;
+      let resolvePromise: (value: any) => void = () => {};
       const delayedPromise = new Promise((resolve) => {
         resolvePromise = resolve;
       });
@@ -653,8 +676,9 @@ describe('useBlockInfo', () => {
       });
 
       mockUsePolkadotClient.mockReturnValue({
-        client,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client, JsonRpcApi.NEW]);
 
@@ -676,8 +700,9 @@ describe('useBlockInfo', () => {
       const client3 = createMockDedotClient();
 
       mockUsePolkadotClient.mockReturnValue({
-        client: client1,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client1 as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client1, JsonRpcApi.NEW]);
 
@@ -685,16 +710,18 @@ describe('useBlockInfo', () => {
 
       // Rapid changes
       mockUsePolkadotClient.mockReturnValue({
-        client: client2,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client2 as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client2, JsonRpcApi.NEW]);
 
       rerender();
 
       mockUsePolkadotClient.mockReturnValue({
-        client: client3,
-        network: { jsonRpcApi: JsonRpcApi.NEW },
+        client: client3 as any,
+        network: { jsonRpcApi: JsonRpcApi.NEW } as any,
+        status: 'connected' as any,
       });
       mockUseDeepDeps.mockReturnValue([client3, JsonRpcApi.NEW]);
 
