@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
+import { ClientConnectionStatus, NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
@@ -9,6 +9,7 @@ import { development } from '../networks/index.js';
 import {
   cacheMetadataAtom,
   clientAtom,
+  clientConnectionStatusMapAtom,
   clientReadyAtom,
   clientsMapAtom,
   currentNetworkAtom,
@@ -43,6 +44,7 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   setNetworks: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
 
   clients: Map<NetworkId, CompatibleSubstrateApi<ChainApi> | undefined>; // client instance per network id
+  connectionStatus: Map<NetworkId, ClientConnectionStatus>; // connection status per network id
 
   getClient: (networkId?: NetworkId) => CompatibleSubstrateApi<ChainApi> | undefined;
   supportedNetworks: NetworkInfo[];
@@ -140,6 +142,7 @@ export function ClientProvider({
   const client = useAtomValue(clientAtom);
   const ready = useAtomValue(clientReadyAtom);
   const clients = useAtomValue(clientsMapAtom);
+  const connectionStatus = useAtomValue(clientConnectionStatusMapAtom);
   const network = useAtomValue(currentNetworkAtom);
   const networks = useAtomValue(currentNetworksAtom);
   const allSupportedNetworks = useAtomValue(supportedNetworksAtom);
@@ -205,6 +208,7 @@ export function ClientProvider({
         ready,
         client,
         clients,
+        connectionStatus,
         getClient,
         network,
         networkConnection: networkConnections[0],

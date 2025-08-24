@@ -5,6 +5,7 @@ import { ContractDeployer, LooseContractMetadata } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForNextUpdate } from './test-utils.js';
 import { useDeployer } from '../useDeployer.js';
+import { ClientConnectionStatus } from '../../types.js';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
@@ -44,6 +45,7 @@ describe('useDeployer', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.Connected,
     } as any);
     vi.mocked(ContractDeployer).mockImplementation(() => ({}) as any);
   });
@@ -76,6 +78,7 @@ describe('useDeployer', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: undefined,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.NotConnected,
     } as any);
 
     const { result } = renderHook(() => useDeployer(metadata, 'test-wasm'));
