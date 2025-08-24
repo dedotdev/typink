@@ -97,6 +97,7 @@ describe('useContract', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client,
       network: undefined,
+      status: ClientConnectionStatus.NotConnected,
     } as any);
 
     const { result } = renderHook(() => useContract('test-contract'));
