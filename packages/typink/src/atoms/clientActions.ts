@@ -1,7 +1,20 @@
 import { atom } from 'jotai';
-import { cacheMetadataAtom, clientConnectionStatusMapAtom, clientsMapAtom, networkConnectionsAtom, supportedNetworksAtom } from './clientAtoms.js';
+import {
+  cacheMetadataAtom,
+  clientConnectionStatusMapAtom,
+  clientsMapAtom,
+  networkConnectionsAtom,
+  supportedNetworksAtom,
+} from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
-import { ClientConnectionStatus, JsonRpcApi, NetworkConnection, NetworkId, NetworkInfo, validateProvider } from '../types.js';
+import {
+  ClientConnectionStatus,
+  JsonRpcApi,
+  NetworkConnection,
+  NetworkId,
+  NetworkInfo,
+  validateProvider,
+} from '../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, SmoldotProvider, WsProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
@@ -213,18 +226,18 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
 
     try {
       const client = await createClient(network, providerType, cacheMetadata, signer);
-      
+
       // Add provider event listeners
       const provider = client.provider;
-      
+
       provider.on('connected', () => {
         set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connected);
       });
-      
+
       provider.on('reconnecting', () => {
         set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
       });
-      
+
       provider.on('disconnected', () => {
         // Check if this is a permanent disconnection (after max retries)
         // For now, we'll treat disconnected as an intermediate state
@@ -234,7 +247,7 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
           set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
         }
       });
-      
+
       provider.on('error', (error: any) => {
         // Check if this is a connection error that indicates max retries exceeded
         // or other permanent failure
@@ -248,7 +261,7 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
       } else if (provider.status === 'reconnecting') {
         set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
       }
-      
+
       // Update client immediately (only add when successfully connected)
       set(setNetworkClientAtom, networkId, client);
     } catch (e) {
@@ -323,6 +336,11 @@ export const initializeCacheMetadataAtom = atom(null, (_get, set, cacheMetadata:
 export const updateClientConnectionStatusAtom = atom(
   null,
   (get, set, networkId: NetworkId, status: ClientConnectionStatus) => {
+    const currentConnections = get(networkConnectionsAtom);
+    const activeNetworkIds = new Set(currentConnections.map((conn) => conn.networkId));
+
+    if (!activeNetworkIds.has(networkId)) return;
+
     const statusMap = new Map(get(clientConnectionStatusMapAtom));
     statusMap.set(networkId, status);
     set(clientConnectionStatusMapAtom, statusMap);
