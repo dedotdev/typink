@@ -17,8 +17,6 @@ import { useMemo } from 'react';
 interface NetworkStatus {
   network: NetworkInfo;
   connection: NetworkConnection;
-  isReady: boolean;
-  isConnected: boolean;
   status: ClientConnectionStatus;
 }
 
@@ -196,8 +194,6 @@ export default function NetworkStatusDashboard() {
     const networkStatuses: NetworkStatus[] = networks.map((network) => {
       // Get real connection status from the connectionStatus Map
       const status = connectionStatus.get(network.id) || ClientConnectionStatus.NotConnected;
-      const isConnected = status === ClientConnectionStatus.Connected;
-      const isReady = isConnected;
 
       // Find the corresponding network connection
       const connection = networkConnections.find((conn) => conn.networkId === network.id) || { networkId: network.id };
@@ -205,8 +201,6 @@ export default function NetworkStatusDashboard() {
       return {
         network,
         connection,
-        isReady,
-        isConnected,
         status,
       };
     });
@@ -245,7 +239,7 @@ export default function NetworkStatusDashboard() {
               !n.network.id.includes('asset') && !n.network.id.includes('people') && !n.network.id.includes('bridge'),
           )?.network || networks[0].network;
 
-        const readyCount = networks.filter((n) => n.isReady).length;
+        const readyCount = networks.filter((n) => n.status === ClientConnectionStatus.Connected).length;
 
         return {
           name,
