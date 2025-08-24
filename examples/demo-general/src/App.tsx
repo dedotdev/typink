@@ -4,8 +4,12 @@ import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
 import RemarkTransactionExample from '@/components/RemarkTransactionExample';
 import TransferKeepAliveExample from '@/components/TransferKeepAliveExample';
+import { useTypink } from 'typink';
 
 function App() {
+  const { networkConnections } = useTypink();
+  console.log(networkConnections);
+
   return (
     <Flex direction='column' minHeight='100vh'>
       <MainHeader />
