@@ -9,9 +9,9 @@ import { usePolkadotClient, useTypink } from 'typink';
 function App() {
   const { networks } = useTypink();
   const [relay, assethub, people] = networks;
-  const { status: relayStatus } = usePolkadotClient(relay.id);
-  const { status: assetHubStatus } = usePolkadotClient(assethub.id);
-  const { status: peopleStatus } = usePolkadotClient(people.id);
+  const { status: relayStatus } = usePolkadotClient(relay?.id);
+  const { status: assetHubStatus } = usePolkadotClient(assethub?.id);
+  const { status: peopleStatus } = usePolkadotClient(people?.id);
 
   console.log('relayStatus', relayStatus);
   console.log('assetHubStatus', assetHubStatus);
