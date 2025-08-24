@@ -16,16 +16,6 @@ export interface UseBlockInfo {
   finalized?: BlockInfo;
 }
 
-/**
- * A custom React hook that subscribes to block information including best block and finalized block numbers.
- *
- * This hook automatically detects and uses the appropriate API:
- * - For networks with JsonRpcApi.NEW: Uses chainHead event listeners ('bestBlock', 'finalizedBlock') for better efficiency
- * - For networks with JsonRpcApi.LEGACY: Falls back to legacy chain subscription methods (chain_subscribeNewHeads, chain_subscribeFinalizedHeads)
- *
- * @param options - Optional network selection options containing networkId
- * @returns BlockInfo object containing bestBlock and finalizedBlock numbers
- */
 type UnsubscribeFn = () => void;
 
 const subscribeWithChainHead = async (
@@ -116,6 +106,30 @@ const subscribeWithLegacyAPI = (
   });
 };
 
+/**
+ * A React hook that subscribes to best and finalized block updates in real time.
+ *
+ * ## Usage Patterns
+ *
+ * **Basic Usage**: Real-time block tracking for UI updates
+ * ```typescript
+ * const { best, finalized } = useBlockInfo();
+ * // Initially: { best: undefined, finalized: undefined }
+ * // After connection: { best: { number: 1000, hash: "0x..." }, finalized: { number: 998, hash: "0x..." } }
+ * ```
+ *
+ * **Multi-Network**: Track blocks for specific networks
+ * ```typescript
+ * const polkadotBlocks = useBlockInfo({ networkId: 'polkadot' });
+ * const kusamaBlocks = useBlockInfo({ networkId: 'kusama' });
+ * ```
+ *
+ * @param options - Optional network selection options. If not provided, uses the default/primary network
+ * @param options.networkId - Specific network ID to track blocks for
+ * @returns Object containing current best and finalized block information
+ * @returns returns.best - Latest best block information (undefined until first block received)
+ * @returns returns.finalized - Latest finalized block information (undefined until first block received)
+ */
 export function useBlockInfo(options?: NetworkOptions): UseBlockInfo {
   const { client, network } = usePolkadotClient(options?.networkId);
   const [bestBlock, setBestBlock] = useState<BlockInfo>();
