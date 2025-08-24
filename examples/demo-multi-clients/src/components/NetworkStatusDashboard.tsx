@@ -13,6 +13,7 @@ import {
 import { CheckCircleIcon, WarningIcon, InfoIcon } from '@chakra-ui/icons';
 import { useTypink, NetworkInfo, ClientConnectionStatus, NetworkConnection } from 'typink';
 import { useMemo } from 'react';
+import NetworkBlockInfo from './NetworkBlockInfo';
 
 interface NetworkStatus {
   network: NetworkInfo;
@@ -122,6 +123,9 @@ function NetworkCard({
             </VStack>
           </HStack>
 
+          {/* Center - Block information */}
+          <NetworkBlockInfo networkId={network.id} isConnected={status === ClientConnectionStatus.Connected} />
+
           {/* Right side - Status icon and actions */}
           <VStack spacing={2} align='center'>
             <ConnectionStatusIcon status={status} />
@@ -176,7 +180,7 @@ function EcosystemSection({ ecosystem, onRetry }: { ecosystem: EcosystemGroup; o
 }
 
 export default function NetworkStatusDashboard() {
-  const { networks, clients, connectionStatus, setNetworks, networkConnections } = useTypink();
+  const { networks, connectionStatus, setNetworks, networkConnections } = useTypink();
 
   // Handle retry for failed connections
   const handleRetry = (networkId: string) => {
@@ -261,7 +265,7 @@ export default function NetworkStatusDashboard() {
         if (bIndex === -1) return -1;
         return aIndex - bIndex;
       });
-  }, [networks, clients, connectionStatus, networkConnections]);
+  }, [networks, connectionStatus, networkConnections]);
 
   if (networks.length === 0) {
     return (

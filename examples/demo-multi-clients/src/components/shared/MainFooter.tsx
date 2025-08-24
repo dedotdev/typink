@@ -1,6 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { FC } from 'react';
-import NetworkGroupSelector from '@/components/shared/NetworkGroupSelector.tsx';
 import { Props } from 'typink';
 
 const MainFooter: FC<Props> = () => {
@@ -49,7 +48,6 @@ const MainFooter: FC<Props> = () => {
             </svg>
           </a>
         </Flex>
-        <NetworkGroupSelector />
       </Flex>
     </Box>
   );

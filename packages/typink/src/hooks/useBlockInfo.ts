@@ -4,10 +4,16 @@ import { Unsub } from 'dedot/types';
 import { useDeepDeps } from './internal/index.js';
 import { usePolkadotClient } from './usePolkadotClient.js';
 import { DedotClient, LegacyClient, PinnedBlock } from 'dedot';
+import { $Header, Header } from 'dedot/codecs';
 
 export interface BlockInfo {
-  bestBlock?: number;
-  finalizedBlock?: number;
+  number: number;
+  hash: string;
+}
+
+export interface UseBlockInfo {
+  best?: BlockInfo;
+  finalized?: BlockInfo;
 }
 
 /**
@@ -22,17 +28,23 @@ export interface BlockInfo {
  */
 type UnsubscribeFn = () => void;
 
-const subscribeWithChainHead = (
+const subscribeWithChainHead = async (
   client: DedotClient,
-  setBestBlock: (block: number) => void,
-  setFinalizedBlock: (block: number) => void,
-): UnsubscribeFn => {
+  setBestBlock: (block: BlockInfo) => void,
+  setFinalizedBlock: (block: BlockInfo) => void,
+): Promise<UnsubscribeFn> => {
+  const best = await client.chainHead.bestBlock();
+  const finalized = await client.chainHead.finalizedBlock();
+
+  setBestBlock({ number: best.number, hash: best.hash });
+  setFinalizedBlock({ number: finalized.number, hash: finalized.hash });
+
   const unsubBest = client.chainHead.on('bestBlock', (block: PinnedBlock) => {
-    setBestBlock(block.number);
+    setBestBlock({ number: block.number, hash: block.hash });
   });
 
   const unsubFinalized = client.chainHead.on('finalizedBlock', (block: PinnedBlock) => {
-    setFinalizedBlock(block.number);
+    setFinalizedBlock({ number: block.number, hash: block.hash });
   });
 
   return () => {
@@ -47,8 +59,8 @@ const subscribeWithChainHead = (
 
 const subscribeWithLegacyAPI = (
   client: LegacyClient,
-  setBestBlock: (block: number) => void,
-  setFinalizedBlock: (block: number) => void,
+  setBestBlock: (block: BlockInfo) => void,
+  setFinalizedBlock: (block: BlockInfo) => void,
 ): Promise<UnsubscribeFn> => {
   return new Promise((resolve) => {
     let unsubBest: Unsub | undefined;
@@ -70,10 +82,14 @@ const subscribeWithLegacyAPI = (
       }
     };
 
+    const calculateBlockHash = (header: Header): string => {
+      return client.registry.hashAsHex($Header.tryEncode(header));
+    };
+
     // Subscribe to new heads (best blocks)
     client.rpc
-      .chain_subscribeNewHeads((newHead: { number: number }) => {
-        setBestBlock(newHead.number);
+      .chain_subscribeNewHeads((header: Header) => {
+        setBestBlock({ number: header.number, hash: calculateBlockHash(header) });
       })
       .then((unsub: Unsub) => {
         unsubBest = unsub;
@@ -86,8 +102,8 @@ const subscribeWithLegacyAPI = (
 
     // Subscribe to finalized heads
     client.rpc
-      .chain_subscribeFinalizedHeads((newHead: { number: number }) => {
-        setFinalizedBlock(newHead.number);
+      .chain_subscribeFinalizedHeads((header: Header) => {
+        setFinalizedBlock({ number: header.number, hash: calculateBlockHash(header) });
       })
       .then((unsub: Unsub) => {
         unsubFinalized = unsub;
@@ -100,10 +116,10 @@ const subscribeWithLegacyAPI = (
   });
 };
 
-export function useBlockInfo(options?: NetworkOptions): BlockInfo {
+export function useBlockInfo(options?: NetworkOptions): UseBlockInfo {
   const { client, network } = usePolkadotClient(options?.networkId);
-  const [bestBlock, setBestBlock] = useState<number>();
-  const [finalizedBlock, setFinalizedBlock] = useState<number>();
+  const [bestBlock, setBestBlock] = useState<BlockInfo>();
+  const [finalizedBlock, setFinalizedBlock] = useState<BlockInfo>();
 
   useEffect(
     () => {
@@ -113,7 +129,7 @@ export function useBlockInfo(options?: NetworkOptions): BlockInfo {
         return;
       }
 
-      const done = { current: false };
+      let done = false;
       let unsubscribe: UnsubscribeFn | undefined;
 
       const jsonRpcApi = network.jsonRpcApi || JsonRpcApi.NEW;
@@ -121,27 +137,38 @@ export function useBlockInfo(options?: NetworkOptions): BlockInfo {
       const setupSubscriptions = async () => {
         try {
           if (jsonRpcApi === JsonRpcApi.NEW) {
-            unsubscribe = subscribeWithChainHead(client as any, setBestBlock, setFinalizedBlock);
+            unsubscribe = await subscribeWithChainHead(client as any, setBestBlock, setFinalizedBlock);
           } else {
             unsubscribe = await subscribeWithLegacyAPI(client as any, setBestBlock, setFinalizedBlock);
           }
+
+          return unsubscribe;
         } catch (error) {
           console.error('Failed to setup block subscriptions:', error);
           throw error;
         }
       };
 
-      setupSubscriptions().catch((error) => {
-        console.error('Setup subscriptions failed:', error);
-      });
+      setupSubscriptions()
+        .then((unsub) => {
+          if (done) {
+            unsub();
+          }
+        })
+        .catch((error) => {
+          console.error('Setup subscriptions failed:', error);
+        });
 
       return () => {
-        done.current = true;
+        done = true;
         unsubscribe?.();
       };
     },
     useDeepDeps([client, network.jsonRpcApi]),
   );
 
-  return { bestBlock, finalizedBlock };
+  return {
+    best: bestBlock, // --
+    finalized: finalizedBlock,
+  };
 }
