@@ -194,54 +194,32 @@ export default function NetworkBlockInfo({ networkId, isConnected }: NetworkBloc
   }
 
   return (
-    <Box textAlign='center' minWidth={{ base: '200px', md: '240px' }} px={{ base: 2, md: 4 }}>
-      {/* Desktop Layout */}
-      <HStack spacing={{ base: 4, md: 8 }} align='center' display={{ base: 'none', md: 'flex' }}>
-        <BlockInfoItem
-          label='Best Block'
-          blockNumber={blockInfo.best?.number}
-          blockHash={blockInfo.best?.hash}
-          isHighlighted={bestHighlight}
-          isLoading={blockInfo.best === undefined}
-          formatBlockNumber={formatBlockNumber}
-          truncateHash={truncateHash}
-          onCopyHash={handleCopyHash}
-        />
-        <BlockInfoItem
-          label='Finalized'
-          blockNumber={blockInfo.finalized?.number}
-          blockHash={blockInfo.finalized?.hash}
-          isHighlighted={finalizedHighlight}
-          isLoading={blockInfo.finalized === undefined}
-          formatBlockNumber={formatBlockNumber}
-          truncateHash={truncateHash}
-          onCopyHash={handleCopyHash}
-        />
-      </HStack>
-
-      {/* Mobile Layout */}
-      <VStack spacing={2} align='center' display={{ base: 'flex', md: 'none' }}>
-        <BlockInfoItem
-          label='Best Block'
-          blockNumber={blockInfo.best?.number}
-          blockHash={blockInfo.best?.hash}
-          isHighlighted={bestHighlight}
-          isLoading={blockInfo.best === undefined}
-          formatBlockNumber={formatBlockNumber}
-          truncateHash={truncateHash}
-          onCopyHash={handleCopyHash}
-        />
-        <BlockInfoItem
-          label='Finalized'
-          blockNumber={blockInfo.finalized?.number}
-          blockHash={blockInfo.finalized?.hash}
-          isHighlighted={finalizedHighlight}
-          isLoading={blockInfo.finalized === undefined}
-          formatBlockNumber={formatBlockNumber}
-          truncateHash={truncateHash}
-          onCopyHash={handleCopyHash}
-        />
-      </VStack>
-    </Box>
+    <HStack 
+      spacing={{ base: 4, md: 8 }} 
+      align='center' 
+      justify={{ base: 'space-around', md: 'center' }}
+      w='100%'
+    >
+      <BlockInfoItem
+        label='Best Block'
+        blockNumber={blockInfo.best?.number}
+        blockHash={blockInfo.best?.hash}
+        isHighlighted={bestHighlight}
+        isLoading={blockInfo.best === undefined}
+        formatBlockNumber={formatBlockNumber}
+        truncateHash={truncateHash}
+        onCopyHash={handleCopyHash}
+      />
+      <BlockInfoItem
+        label='Finalized'
+        blockNumber={blockInfo.finalized?.number}
+        blockHash={blockInfo.finalized?.hash}
+        isHighlighted={finalizedHighlight}
+        isLoading={blockInfo.finalized === undefined}
+        formatBlockNumber={formatBlockNumber}
+        truncateHash={truncateHash}
+        onCopyHash={handleCopyHash}
+      />
+    </HStack>
   );
 }
