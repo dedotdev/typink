@@ -83,6 +83,13 @@ export interface NetworkInfo {
   relayChain?: NetworkInfo;
 }
 
+export enum ClientConnectionStatus {
+  NotConnected = 'NotConnected',
+  Connecting = 'Connecting',
+  Connected = 'Connected',
+  Error = 'Error',
+}
+
 export interface NetworkOptions {
   networkId?: NetworkId;
 }
