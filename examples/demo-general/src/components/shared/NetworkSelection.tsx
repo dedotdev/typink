@@ -324,7 +324,7 @@ function NetworkDetails({ network, selectedEndpoint, onEndpointChange }: Network
 }
 
 export default function NetworkSelection() {
-  const { network, setNetwork, supportedNetworks, selectedProvider } = useTypink();
+  const { network, setNetwork, supportedNetworks, networkConnection } = useTypink();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [smallest] = useMediaQuery('(max-width: 325px)');
   const [isMobile] = useMediaQuery('(max-width: 768px)');
@@ -382,8 +382,8 @@ export default function NetworkSelection() {
     if (networkInfo && networkInfo.providers.length > 0) {
       // If selecting the same network as currently connected, use the current provider
       // Otherwise, default to random selection for new networks
-      if (networkId === network.id && selectedProvider) {
-        setSelectedEndpoint(selectedProvider);
+      if (networkId === network.id && networkConnection) {
+        setSelectedEndpoint(networkConnection.provider!);
       } else {
         setSelectedEndpoint(''); // Always default to random RPC for new network selections
       }
@@ -432,6 +432,8 @@ export default function NetworkSelection() {
     // Initialize with current network
     setSelectedNetworkId(network.id);
     if (network.providers.length > 0) {
+      const selectedProvider = networkConnection.provider;
+
       // Check user's previous selection using explicit string types
       if (selectedProvider === 'light-client') {
         setSelectedEndpoint('light-client');

@@ -3,6 +3,8 @@ import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata } from 'dedot/contracts';
 import { useDeepDeps } from './internal/index.js';
 import { generateInstanceId } from '../utils/index.js';
+import { NetworkOptions } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 interface UseRawContract<T extends GenericContractApi = GenericContractApi> {
   contract: Contract<T> | undefined;
@@ -16,16 +18,17 @@ interface UseRawContract<T extends GenericContractApi = GenericContractApi> {
  *
  * @param {string | LooseContractMetadata} [metadata] - The contract metadata or its string representation
  * @param {string} [address] - The address of the contract
- * @param {ExecutionOptions} [options={}] - Additional execution options for the contract
+ * @param {ExecutionOptions & NetworkOptions} [options={}] - Additional execution options for the contract
  * @returns {UseRawContract<T>} An object containing the contract instance or undefined
  */
 export function useRawContract<T extends GenericContractApi = GenericContractApi>(
   metadata?: string | LooseContractMetadata,
   address?: string,
-  options: ExecutionOptions = {},
+  options: ExecutionOptions & NetworkOptions = {},
 ): UseRawContract<T> {
-  const { client, defaultCaller, connectedAccount } = useTypink();
+  const { defaultCaller, connectedAccount } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
+  const { client } = usePolkadotClient(options?.networkId);
 
   useEffect(
     () => {

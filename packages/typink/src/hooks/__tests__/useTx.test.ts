@@ -1,14 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { useTx, generalTx } from '../useTx.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+import { generalTx, useTx } from '../useTx.js';
 import { useTypink } from '../useTypink.js';
-import { sleep, waitForNextUpdate } from './test-utils.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { checkBalanceSufficiency } from '../../helpers/index.js';
 import { BalanceInsufficientError, withReadableErrorMessage } from '../../utils/index.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+// Mock the usePolkadotClient hook
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('../../helpers', () => ({
@@ -80,10 +85,18 @@ describe('useTx', () => {
 
     mockConnectedAccount = { address: 'mock-address' };
 
+    // Mock usePolkadotClient to return the client and network
+    (usePolkadotClient as any).mockReturnValue({
+      client: mockClient,
+      network: { id: 'test-network', name: 'Test Network' },
+    });
+
     // Ensure useTypink always returns valid account unless explicitly overridden
     (useTypink as any).mockReturnValue({
       client: mockClient,
       connectedAccount: mockConnectedAccount,
+      getClient: vi.fn().mockReturnValue(mockClient),
+      networks: [{ id: 'test-network', name: 'Test Network' }],
     });
 
     // Reset helper mocks to consistent state
@@ -104,9 +117,16 @@ describe('useTx', () => {
     });
 
     it('should handle undefined client gracefully in useTypink', () => {
+      (usePolkadotClient as any).mockReturnValue({
+        client: undefined,
+        network: { id: 'test-network', name: 'Test Network' },
+      });
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
+        getClient: vi.fn().mockReturnValue(undefined),
+        networks: [{ id: 'test-network', name: 'Test Network' }],
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
@@ -120,9 +140,16 @@ describe('useTx', () => {
 
   describe('Error Handling', () => {
     it('should throw an error if client is undefined', async () => {
+      (usePolkadotClient as any).mockReturnValue({
+        client: undefined,
+        network: { id: 'test-network', name: 'Test Network' },
+      });
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
+        getClient: vi.fn().mockReturnValue(undefined),
+        networks: [{ id: 'test-network', name: 'Test Network' }],
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
@@ -132,13 +159,17 @@ describe('useTx', () => {
 
     it('should throw an error if connectedAccount is undefined', async () => {
       (useTypink as any).mockReturnValue({
-        client: mockClient,
+        client: mockClient as any,
         connectedAccount: undefined,
+        getClient: vi.fn().mockReturnValue(mockClient),
+        networks: [{ id: 'test-network', name: 'Test Network' }],
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.signAndSend({ args: ['test'] })).rejects.toThrow(
+        'No connected account. Please connect your wallet.',
+      );
     });
 
     it('should handle balance check failure', async () => {
@@ -187,28 +218,41 @@ describe('useTx', () => {
 
   describe('Progress State Management', () => {
     it('should set inProgress and inBestBlockProgress to true on start', async () => {
+      let callbackFn: (result: any) => void;
+
       mockSignAndSend.mockImplementation((caller, txOptions, callback) => {
-        // Immediately call callback with Finalized to resolve the deferred promise
-        setTimeout(() => {
-          callback({ status: { type: 'Finalized' } });
-        }, 10);
+        callbackFn = callback;
+        // Don't call the callback immediately to keep the transaction in progress
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            callback({ status: { type: 'Finalized' } });
+            resolve(undefined);
+          }, 50);
+        });
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      // Start the transaction
+      // Start the transaction without awaiting
       const promise = result.current.signAndSend({ args: ['test'] });
-      
-      // Check initial progress state
+
+      // Give React time to update the state
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
-      
+
+      // Check that both states are true while transaction is in progress
       expect(result.current.inProgress).toBe(true);
       expect(result.current.inBestBlockProgress).toBe(true);
 
-      // Wait for completion
-      await promise;
+      // Wait for the transaction to complete
+      await act(async () => {
+        await promise;
+      });
+
+      // After completion, both should be false
+      expect(result.current.inProgress).toBe(false);
+      expect(result.current.inBestBlockProgress).toBe(false);
     });
 
     it('should set both states to false after completion', async () => {
@@ -229,7 +273,7 @@ describe('useTx', () => {
 
     it('should set inBestBlockProgress to false on BestChainBlockIncluded', async () => {
       let callbackFn: (result: any) => void;
-      
+
       mockSignAndSend.mockImplementation((caller, txOptions, callback) => {
         callbackFn = callback;
       });
@@ -238,12 +282,12 @@ describe('useTx', () => {
 
       // Start the transaction
       const signAndSendPromise = result.current.signAndSend({ args: ['test'] });
-      
+
       // Check initial progress state
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
-      
+
       expect(result.current.inProgress).toBe(true);
       expect(result.current.inBestBlockProgress).toBe(true);
 
@@ -388,9 +432,16 @@ describe('useTx', () => {
     });
 
     it('should throw error when client is not available', async () => {
+      (usePolkadotClient as any).mockReturnValue({
+        client: undefined,
+        network: { id: 'test-network', name: 'Test Network' },
+      });
+
       (useTypink as any).mockReturnValue({
         client: undefined,
         connectedAccount: mockConnectedAccount,
+        getClient: vi.fn().mockReturnValue(undefined),
+        networks: [{ id: 'test-network', name: 'Test Network' }],
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
@@ -400,20 +451,24 @@ describe('useTx', () => {
 
     it('should throw error when no connected account', async () => {
       (useTypink as any).mockReturnValue({
-        client: mockClient,
+        client: mockClient as any,
         connectedAccount: undefined,
+        getClient: vi.fn().mockReturnValue(mockClient),
+        networks: [{ id: 'test-network', name: 'Test Network' }],
       });
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
-      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow('No connected account. Please connect your wallet.');
+      await expect(result.current.getEstimatedFee({ args: ['test'] })).rejects.toThrow(
+        'No connected account. Please connect your wallet.',
+      );
     });
 
     it('should handle errors with readable message', async () => {
       const mockError = new Error('Transaction failed');
       mockPaymentInfo.mockRejectedValue(mockError);
 
-      (withReadableErrorMessage as any).mockImplementation((_, error) => error);
+      (withReadableErrorMessage as any).mockImplementation((_: any, error: any) => error);
 
       const { result } = renderHook(() => useTx((tx) => tx.system.remark));
 
@@ -427,12 +482,15 @@ describe('useTx', () => {
 describe('generalTx', () => {
   let mockClient: MockClient;
   let mockSignAndSend: ReturnType<typeof vi.fn>;
+  let mockPaymentInfo: ReturnType<typeof vi.fn>;
   let mockTx: MockTx;
 
   beforeEach(() => {
     mockSignAndSend = vi.fn();
+    mockPaymentInfo = vi.fn();
     mockTx = {
       signAndSend: mockSignAndSend,
+      paymentInfo: mockPaymentInfo,
     };
 
     mockClient = {
@@ -459,7 +517,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -477,7 +535,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -495,7 +553,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -510,7 +568,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -525,7 +583,7 @@ describe('generalTx', () => {
       });
 
       const promise = generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -540,7 +598,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',
@@ -556,7 +614,7 @@ describe('generalTx', () => {
       });
 
       await generalTx({
-        client: mockClient,
+        client: mockClient as any,
         txBuilder: (tx) => tx.system.remark,
         args: ['test'],
         caller: 'test-address',

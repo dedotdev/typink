@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import { Contract, ExecutionOptions, GenericContractApi } from 'dedot/contracts';
-import { TypinkError, generateInstanceId } from '../utils/index.js';
+import { generateInstanceId, TypinkError } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
+import { NetworkOptions } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 export type UseContract<T extends GenericContractApi = GenericContractApi> = {
   contract?: Contract<T>;
@@ -16,27 +18,28 @@ export type UseContract<T extends GenericContractApi = GenericContractApi> = {
  *
  * @template T - The type of the contract API, extending GenericContractApi
  * @param {string} contractId - The unique identifier of the contract deployment
- * @param {ExecutionOptions} [options={}] - Optional execution options for the contract
+ * @param {ExecutionOptions & NetworkOptions} [options={}] - Optional execution options and network selection for the contract
  * @returns {UseContract<T>} An object containing the contract instance, if successfully initialized
  * @throws {TypinkError} If the contract deployment is not found on the specified network
  */
 export function useContract<T extends GenericContractApi = GenericContractApi>(
   contractId: string,
-  options: ExecutionOptions = {},
+  options: ExecutionOptions & NetworkOptions = {},
 ): UseContract<T> {
-  const { deployments, client, networkId, connectedAccount, defaultCaller } = useTypink();
+  const { deployments, connectedAccount, defaultCaller } = useTypink();
   const [contract, setContract] = useState<Contract<T>>();
+  const { client, network } = usePolkadotClient(options?.networkId);
 
   useEffect(
     () => {
-      if (!client || !networkId) {
+      if (!client || !network) {
         setContract(undefined);
         return;
       }
 
-      const deployment = deployments.find((d) => d.id === contractId && d.network === networkId);
+      const deployment = deployments.find((d) => d.id === contractId && d.network === network.id);
       if (!deployment) {
-        throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${networkId}`);
+        throw new TypinkError(`Contract deployment with id: ${contractId} not found on network: ${network.id}`);
       }
 
       const contract = new Contract<T>(
@@ -54,7 +57,7 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
 
       setContract(contract);
     },
-    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+    useDeepDeps([client, network?.id, connectedAccount?.address, defaultCaller, options]),
   );
 
   return {

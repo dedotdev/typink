@@ -34,7 +34,7 @@ describe('usePSP22Balance', () => {
   const mockUseTypink = {
     deployments: [mockDeployment],
     client: mockClient,
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount: mockConnectedAccount,
     defaultCaller: mockDefaultCaller,
   };
@@ -56,6 +56,7 @@ describe('usePSP22Balance', () => {
         return { contract: undefined };
       }
     });
+    // @ts-ignore - contract property access on union type
     vi.mocked(useContractQuery).mockImplementation(({ contract }) => {
       if (contract) {
         return { data: 100n, refresh: vi.fn() } as any;

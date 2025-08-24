@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useTypink } from '../useTypink.js';
+import { usePolkadotClient } from '../usePolkadotClient.js';
 import { ContractDeployer, LooseContractMetadata } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForNextUpdate } from './test-utils.js';
@@ -7,6 +8,10 @@ import { useDeployer } from '../useDeployer.js';
 
 vi.mock('../useTypink', () => ({
   useTypink: vi.fn(),
+}));
+
+vi.mock('../usePolkadotClient', () => ({
+  usePolkadotClient: vi.fn(),
 }));
 
 vi.mock('dedot/contracts', () => ({
@@ -29,14 +34,17 @@ describe('useDeployer', () => {
   const mockedUseTypink = {
     deployments: [dummyDeployment],
     client,
-    // @ts-ignore
-    networkId: 'test-network',
+    network: { id: 'test-network' },
     connectedAccount,
     defaultCaller,
   };
 
   beforeEach(() => {
     vi.mocked(useTypink).mockReturnValue(mockedUseTypink as any);
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client,
+      network: { id: 'test-network' },
+    } as any);
     vi.mocked(ContractDeployer).mockImplementation(() => ({}) as any);
   });
 
@@ -63,6 +71,11 @@ describe('useDeployer', () => {
     vi.mocked(useTypink).mockReturnValue({
       ...mockedUseTypink,
       client: undefined,
+    } as any);
+
+    vi.mocked(usePolkadotClient).mockReturnValue({
+      client: undefined,
+      network: { id: 'test-network' },
     } as any);
 
     const { result } = renderHook(() => useDeployer(metadata, 'test-wasm'));

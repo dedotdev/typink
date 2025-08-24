@@ -2,7 +2,7 @@
 
 import type { GenericSubstrateApi } from 'dedot/types';
 import type { AccountId32 } from 'dedot/codecs';
-import type { GenericContractEvents, GenericContractEvent } from 'dedot/contracts';
+import type { GenericContractEvent, GenericContractEvents } from 'dedot/contracts';
 
 export interface ContractEvents<ChainApi extends GenericSubstrateApi> extends GenericContractEvents<ChainApi> {
   /**

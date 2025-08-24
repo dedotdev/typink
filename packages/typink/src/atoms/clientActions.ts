@@ -1,18 +1,11 @@
 import { atom } from 'jotai';
-import {
-  clientAtom,
-  clientReadyAtom,
-  currentNetworkAtom,
-  selectedProviderAtom,
-  cacheMetadataAtom,
-  supportedNetworksAtom,
-  defaultNetworkIdAtom,
-} from './clientAtoms.js';
+import { cacheMetadataAtom, clientsMapAtom, networkConnectionsAtom, supportedNetworksAtom } from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
-import { JsonRpcApi, NetworkInfo, validateProvider } from '../types.js';
-import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, WsProvider, SmoldotProvider } from 'dedot';
+import { JsonRpcApi, NetworkConnection, NetworkId, NetworkInfo, validateProvider } from '../types.js';
+import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, SmoldotProvider, WsProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
+import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Global smoldot instances
 let smoldotClient: Client | null = null;
@@ -88,93 +81,182 @@ async function removeSmoldotChain(networkId: string): Promise<void> {
   }
 }
 
-// Write-only atom for initializing/updating the client
-export const initializeClientAtom = atom(null, async (get, set) => {
-  const network = get(currentNetworkAtom);
-  const selectedProvider = validateProvider(get(selectedProviderAtom));
+/**
+ * Create a client for a specific network
+ */
+async function createClient(
+  network: NetworkInfo,
+  providerType: string | undefined,
+  cacheMetadata: boolean,
+  signer?: any,
+): Promise<CompatibleSubstrateApi> {
+  const selectedProvider = validateProvider(providerType);
+  let provider: JsonRpcProvider;
+
+  if (selectedProvider === 'light-client') {
+    if (!network.chainSpec) {
+      throw new TypeError('Network does not support light client - missing chainSpec');
+    }
+    const chain = await getOrCreateSmoldotChain(network);
+    provider = new SmoldotProvider(chain);
+  } else if (selectedProvider === 'random-rpc' || !selectedProvider) {
+    provider = new WsProvider(network.providers);
+  } else {
+    provider = new WsProvider(selectedProvider);
+  }
+
+  // Create client based on API type
+  let client: ISubstrateClient<any>;
+  if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
+    client = await LegacyClient.new({ provider, cacheMetadata });
+  } else {
+    client = await DedotClient.new({ provider, cacheMetadata });
+  }
+
+  // Set signer if available
+  if (signer) {
+    client.setSigner(signer);
+  }
+
+  return client;
+}
+
+/**
+ * Clean up a client and its resources
+ */
+async function cleanupClient(
+  client: CompatibleSubstrateApi | undefined,
+  networkId: NetworkId,
+  providerType?: string,
+): Promise<void> {
+  if (!client) return;
+
+  try {
+    await client.disconnect();
+
+    // Clean up smoldot chain if we were using light client
+    if (validateProvider(providerType) === 'light-client') {
+      await removeSmoldotChain(networkId);
+    }
+  } catch (e) {
+    console.error(`Error disconnecting client for network ${networkId}:`, e);
+  }
+}
+
+// Write-only atom for initializing all clients (merged from initializeClientAtom and initializeAdditionalClientsAtom)
+export const initializeClientsAtom = atom(null, async (get, set) => {
+  const connections = get(networkConnectionsAtom);
+  const supportedNetworks = get(supportedNetworksAtom);
   const cacheMetadata = get(cacheMetadataAtom);
   const signer = get(finalEffectiveSignerAtom);
 
-  // Clean up existing client
-  const existingClient = get(clientAtom);
-  if (existingClient) {
-    try {
-      await existingClient.disconnect();
-
-      // Clean up smoldot chain if we were using light client
-      if (selectedProvider === 'light-client' && network?.id) {
-        await removeSmoldotChain(network.id);
-      }
-    } catch (e) {
-      console.error('Error disconnecting client:', e);
-    }
-  }
-
-  if (!network) {
-    set(clientAtom, undefined);
-    set(clientReadyAtom, false);
+  if (connections.length === 0) {
+    console.warn('No network connections configured');
     return;
   }
 
-  set(clientReadyAtom, false);
+  const allNetworkIds = connections.map((conn) => conn.networkId);
+  const activeNetworkIds = new Set(allNetworkIds);
 
-  try {
-    // Determine which provider to use
-    let provider: JsonRpcProvider;
+  // Clean up ALL networks that aren't in the current connections list
+  // This ensures complete ecosystem switching cleanup
+  const currentClients = get(clientsMapAtom);
+  const currentNetworkIds = Array.from(currentClients.keys());
 
-    if (selectedProvider === 'light-client') {
-      if (!network.chainSpec) {
-        throw new TypeError('Network does not support light client - missing chainSpec');
+  // Clean up obsolete networks sequentially (cleanup needs to be sequential)
+  for (const networkId of currentNetworkIds) {
+    if (!activeNetworkIds.has(networkId)) {
+      // This network is no longer active, clean it up
+      const existingClient = currentClients.get(networkId);
+      if (existingClient) {
+        const connection = connections.find((conn) => conn.networkId === networkId);
+        await cleanupClient(existingClient, networkId, connection?.provider);
       }
-      const chain = await getOrCreateSmoldotChain(network);
-      provider = new SmoldotProvider(chain);
-    } else if (selectedProvider === 'random-rpc' || !selectedProvider) {
-      provider = new WsProvider(network.providers);
-    } else {
-      provider = new WsProvider(selectedProvider);
+      set(removeNetworkStateAtom, networkId);
     }
-
-    // Create client based on API type
-    let client: ISubstrateClient<any>;
-    if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
-      client = await LegacyClient.new({ provider, cacheMetadata });
-    } else {
-      client = await DedotClient.new({ provider, cacheMetadata });
-    }
-
-    // Set signer if available
-    if (signer) {
-      client.setSigner(signer);
-    }
-
-    set(clientAtom, client);
-    set(clientReadyAtom, true);
-  } catch (e) {
-    console.error('Error initializing client:', e);
-    set(clientAtom, undefined);
-    set(clientReadyAtom, false);
-    throw e;
   }
+
+  // Helper function to initialize a single network
+  const initializeNetwork = async (connection: NetworkConnection): Promise<void> => {
+    const { networkId, provider: providerType } = connection;
+    const network = supportedNetworks.find((n) => n.id === networkId);
+
+    if (!network) {
+      console.error(`Network with ID '${networkId}' not found in supported networks`);
+      return;
+    }
+
+    // Clean up existing client if any (for re-initialization)
+    const existingClient = get(clientsMapAtom).get(networkId);
+    if (existingClient) {
+      await cleanupClient(existingClient, networkId, providerType);
+      set(removeNetworkStateAtom, networkId);
+    }
+
+    try {
+      const client = await createClient(network, providerType, cacheMetadata, signer);
+      // Update client immediately (only add when successfully connected)
+      set(setNetworkClientAtom, networkId, client);
+    } catch (e) {
+      console.error(`Error initializing client for network ${networkId}:`, e);
+      throw e;
+    }
+  };
+
+  await Promise.all(connections.map((conn) => initializeNetwork(conn)));
 });
 
-// Write-only atom for updating signer on client
+// Write-only atom for cleaning up all clients
+export const cleanupAllClientsAtom = atom(null, async (get, set) => {
+  const clientsMap = get(clientsMapAtom);
+  const connections = get(networkConnectionsAtom);
+
+  // Clean up all clients
+  for (const [id, client] of clientsMap.entries()) {
+    const connection = connections.find((conn) => conn.networkId === id);
+    await cleanupClient(client, id, connection?.provider);
+  }
+
+  // Clear the map
+  set(clientsMapAtom, new Map());
+});
+
+// Atomic update functions to prevent race conditions
+export const setNetworkClientAtom = atom(
+  null,
+  (get, set, networkId: NetworkId, client: CompatibleSubstrateApi | undefined) => {
+    const clientsMap = new Map(get(clientsMapAtom));
+    if (client) {
+      clientsMap.set(networkId, client);
+    } else {
+      clientsMap.delete(networkId);
+    }
+    set(clientsMapAtom, clientsMap);
+  },
+);
+
+export const removeNetworkStateAtom = atom(null, (get, set, networkId: NetworkId) => {
+  const clientsMap = new Map(get(clientsMapAtom));
+  clientsMap.delete(networkId);
+  set(clientsMapAtom, clientsMap);
+});
+
+// Write-only atom for updating signer on all clients
 export const updateClientSignerAtom = atom(null, (get) => {
-  const client = get(clientAtom);
+  const clientsMap = get(clientsMapAtom);
   const signer = get(finalEffectiveSignerAtom);
 
-  if (client) {
-    client.setSigner(signer);
+  // Update signer for all clients
+  for (const client of clientsMap.values()) {
+    if (client) {
+      client.setSigner(signer);
+    }
   }
 });
 
 // Initialization atom for setting supported networks
 export const initializeSupportedNetworksAtom = atom(null, (_get, set, networks: NetworkInfo[]) => {
   set(supportedNetworksAtom, networks);
-});
-
-// Initialization atom for setting default network ID
-export const initializeDefaultNetworkIdAtom = atom(null, (_get, set, networkId: string | undefined) => {
-  set(defaultNetworkIdAtom, networkId);
 });
 
 // Initialization atom for setting cache metadata

@@ -4,6 +4,8 @@ import { ContractDeployer, ExecutionOptions, GenericContractApi, LooseContractMe
 import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 import { generateInstanceId } from '../utils/index.js';
+import { NetworkOptions } from '../types.js';
+import { usePolkadotClient } from './usePolkadotClient.js';
 
 export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
   deployer?: ContractDeployer<T>;
@@ -25,14 +27,15 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
 export function useDeployer<T extends GenericContractApi = GenericContractApi>(
   metadata: LooseContractMetadata | string,
   codeHashOrWasm: Hash | Uint8Array | string,
-  options: ExecutionOptions = {},
+  options: ExecutionOptions & NetworkOptions = {},
 ): UseDeployer<T> {
-  const { client, networkId, connectedAccount, defaultCaller } = useTypink();
+  const { connectedAccount, defaultCaller } = useTypink();
   const [deployer, setDeployer] = useState<ContractDeployer<T>>();
+  const { client, network } = usePolkadotClient(options?.networkId);
 
   useEffect(
     () => {
-      if (!client || !networkId) {
+      if (!client || !network) {
         setDeployer(undefined);
         return;
       }
@@ -51,7 +54,7 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 
       setDeployer(deployer);
     },
-    useDeepDeps([client, networkId, connectedAccount?.address, defaultCaller, options]),
+    useDeepDeps([client, network?.id, connectedAccount?.address, defaultCaller, options]),
   );
 
   return {
