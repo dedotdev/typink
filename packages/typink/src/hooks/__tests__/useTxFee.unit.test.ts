@@ -4,6 +4,7 @@ import { useTxFee } from '../useTxFee.js';
 import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
 import { withReadableErrorMessage } from '../../utils/index.js';
+import { ClientConnectionStatus } from '../../types.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
@@ -86,6 +87,7 @@ describe('useTxFee - Unit Tests', () => {
     (usePolkadotClient as any).mockReturnValue({
       client: mockClient,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.Connected,
     });
 
     (withReadableErrorMessage as any).mockImplementation((client: any, error: any) => error.message);
@@ -181,6 +183,7 @@ describe('useTxFee - Unit Tests', () => {
       (usePolkadotClient as any).mockReturnValue({
         client: null,
         network: { id: 'test-network' },
+        status: ClientConnectionStatus.NotConnected,
       });
 
       const { result } = renderHook(() =>
@@ -204,6 +207,7 @@ describe('useTxFee - Unit Tests', () => {
       (usePolkadotClient as any).mockReturnValue({
         client: mockClient,
         network: { id: 'test-network' },
+        status: ClientConnectionStatus.Connected,
       });
 
       const { result } = renderHook(() =>

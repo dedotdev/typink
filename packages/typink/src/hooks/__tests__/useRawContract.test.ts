@@ -4,6 +4,7 @@ import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
 import { Contract } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ClientConnectionStatus } from '../../types.js';
 
 // Mock dependencies
 vi.mock('../useTypink', () => ({
@@ -36,6 +37,7 @@ describe('useRawContract', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: mockClient,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.Connected,
     } as any);
 
     vi.mocked(Contract).mockImplementation(() => ({}) as any);
@@ -105,6 +107,7 @@ describe('useRawContract', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: undefined,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.NotConnected,
     } as any);
 
     rerender();

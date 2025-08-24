@@ -84,8 +84,8 @@ export interface NetworkInfo {
 }
 
 export enum ClientConnectionStatus {
-  NotConnected = 'NotConnected',
-  Connecting = 'Connecting',
+  NotConnected = 'NotConnected', // not yet connected or disconnected
+  Connecting = 'Connecting', // initial connecting or reconnecting
   Connected = 'Connected',
   Error = 'Error',
 }
