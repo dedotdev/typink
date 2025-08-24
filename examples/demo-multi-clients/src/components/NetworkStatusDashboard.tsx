@@ -9,10 +9,13 @@ import {
   Spinner,
   Button,
   useColorModeValue,
+  Box,
+  Flex,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, WarningIcon, InfoIcon } from '@chakra-ui/icons';
 import { useTypink, NetworkInfo, ClientConnectionStatus, NetworkConnection } from 'typink';
 import { useMemo } from 'react';
+import NetworkBlockInfo from './NetworkBlockInfo';
 
 interface NetworkStatus {
   network: NetworkInfo;
@@ -94,44 +97,95 @@ function NetworkCard({
       }}
       transition='all 0.2s'>
       <CardBody p={4}>
-        <HStack justify='space-between' align='center' spacing={4}>
-          {/* Left side - Network info */}
-          <HStack spacing={3} flex={1}>
-            <Avatar size='md' src={network.logo} name={network.name} />
-            <VStack spacing={1} align='start'>
-              <Text fontSize='md' fontWeight='semibold'>
+        <Flex
+          wrap={{ base: 'wrap', md: 'nowrap' }}
+          gap={{ base: 3, md: 4 }}
+          align={{ base: 'stretch', md: 'center' }}
+        >
+          {/* Network info - Order 1 on both mobile and desktop */}
+          <HStack 
+            spacing={{ base: 2, md: 3 }} 
+            flex={{ base: 1, md: 1 }}
+            order={{ base: 1, md: 1 }}
+          >
+            <Avatar 
+              size={{ base: 'sm', md: 'md' }} 
+              src={network.logo} 
+              name={network.name} 
+            />
+            <VStack spacing={{ base: 0, md: 1 }} align='start'>
+              <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight='semibold'>
                 {network.name}
               </Text>
-              <HStack spacing={2} align='center'>
-                <Text fontSize='sm' color='gray.600'>
+              <HStack spacing={{ base: 1, md: 2 }} align='center'>
+                <Text fontSize={{ base: 'xs', md: 'sm' }} color='gray.600'>
                   {network.symbol}
                 </Text>
                 <Badge
                   colorScheme={getStatusColor()}
                   variant={status === ClientConnectionStatus.Connected ? 'solid' : 'outline'}
-                  size='sm'>
-                  {status === ClientConnectionStatus.Connected
-                    ? 'Connected'
-                    : status === ClientConnectionStatus.Connecting
-                      ? 'Connecting'
-                      : status === ClientConnectionStatus.Error
-                        ? 'Connection Failed'
-                        : 'Not Connected'}
+                  size='sm'
+                  fontSize={{ base: 'xs', md: 'sm' }}
+                >
+                  <Text as='span' display={{ base: 'inline', md: 'none' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Failed'
+                          : 'Not Connected'}
+                  </Text>
+                  <Text as='span' display={{ base: 'none', md: 'inline' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Connection Failed'
+                          : 'Not Connected'}
+                  </Text>
                 </Badge>
               </HStack>
             </VStack>
           </HStack>
 
-          {/* Right side - Status icon and actions */}
-          <VStack spacing={2} align='center'>
+          {/* Block information - Order 2 on desktop, 3 on mobile */}
+          {status === ClientConnectionStatus.Connected && (
+            <Box
+              w={{ base: '100%', md: 'auto' }}
+              pt={{ base: 2, md: 0 }}
+              borderTopWidth={{ base: 1, md: 0 }}
+              borderTopColor='gray.200'
+              flex={{ base: 'initial', md: 1 }}
+              display='flex'
+              justifyContent='center'
+              order={{ base: 3, md: 2 }}
+            >
+              <NetworkBlockInfo networkId={network.id} isConnected={true} />
+            </Box>
+          )}
+
+          {/* Status icon and actions - Order 2 on mobile, 3 on desktop (always far right) */}
+          <VStack 
+            spacing={{ base: 1, md: 2 }} 
+            align='center'
+            flex='none'
+            order={{ base: 2, md: 3 }}
+          >
             <ConnectionStatusIcon status={status} />
             {status === ClientConnectionStatus.Error && (
-              <Button size='xs' colorScheme='red' variant='outline' onClick={() => onRetry(network.id)}>
+              <Button 
+                size='xs' 
+                colorScheme='red' 
+                variant='outline' 
+                onClick={() => onRetry(network.id)}
+              >
                 Retry
               </Button>
             )}
           </VStack>
-        </HStack>
+        </Flex>
       </CardBody>
     </Card>
   );
@@ -176,7 +230,7 @@ function EcosystemSection({ ecosystem, onRetry }: { ecosystem: EcosystemGroup; o
 }
 
 export default function NetworkStatusDashboard() {
-  const { networks, clients, connectionStatus, setNetworks, networkConnections } = useTypink();
+  const { networks, connectionStatus, setNetworks, networkConnections } = useTypink();
 
   // Handle retry for failed connections
   const handleRetry = (networkId: string) => {
@@ -261,7 +315,7 @@ export default function NetworkStatusDashboard() {
         if (bIndex === -1) return -1;
         return aIndex - bIndex;
       });
-  }, [networks, clients, connectionStatus, networkConnections]);
+  }, [networks, connectionStatus, networkConnections]);
 
   if (networks.length === 0) {
     return (
