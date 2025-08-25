@@ -1,0 +1,33 @@
+'use client'
+
+import "./globals.css";
+import { AppProvider } from "@/providers/app-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/providers/theme-provider";
+import MainHeader from "./header";
+import MainFooter from "./footer";
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class">
+          <AppProvider>
+            <div className="min-h-screen flex flex-col">
+              <MainHeader />
+              <main className="flex-1 flex flex-col">
+                {children}
+              </main>
+              <MainFooter />
+            </div>
+            <Toaster />
+          </AppProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

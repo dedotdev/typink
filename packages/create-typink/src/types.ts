@@ -28,5 +28,17 @@ export const TEMPLATES = [
   'legacy-default-default',
   'legacy-subconnectv2-default',
   'legacy-talisman-default',
+  // legacy nextjs UI
+  'legacy-default-nextjs',
+  'legacy-subconnectv2-nextjs',
+  'legacy-talisman-nextjs',
+  // v6 default UI
+  'v6-default-default',
+  'v6-subconnectv2-default',
+  'v6-talisman-default',
+  // v6 nextjs UI
+  'v6-default-nextjs',
+  'v6-subconnectv2-nextjs',
+  'v6-talisman-nextjs',
 ] as const;
 export type Template = (typeof TEMPLATES)[number];

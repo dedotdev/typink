@@ -31,12 +31,6 @@ export async function copyTemplateFiles(
 
   await fs.promises.cp(templatePathInRepo, targetDir, { recursive: true });
 
-  // Ensure .gitignore exists if template used 'gitignore'
-  const gitIgnore = path.join(targetDir, 'gitignore');
-  if (fs.existsSync(gitIgnore)) {
-    await fs.promises.rename(gitIgnore, path.join(targetDir, '.gitignore'));
-  }
-
   // Set package name
   const packageJsonPath = path.join(targetDir, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
