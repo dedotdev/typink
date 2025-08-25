@@ -1,0 +1,57 @@
+import { Box, Container, Flex, Image, useColorMode } from '@chakra-ui/react';
+import { useConnectWallet } from '@subwallet-connect/react';
+import React from 'react';
+import AccountSelection from '@/components/shared/AccountSelection.tsx';
+import NetworkSelection from '@/components/shared/NetworkSelection.tsx';
+import ThemeModeButton from '@/components/shared/ThemeModeButton.tsx';
+import WalletSelection from '@/components/shared/WalletSelection.tsx';
+import { RESOURCE_BASE_URL } from '@/components/shared/icons.tsx';
+
+export default function MainHeader() {
+  const [{ wallet }] = useConnectWallet();
+  const { colorMode } = useColorMode();
+
+  console.log(wallet);
+
+  return (
+    <Box borderBottom={1} borderStyle='solid' borderColor='var(--chakra-colors-chakra-border-color)'>
+      <Container
+        maxWidth='container.lg'
+        px={4}
+        mx='auto'
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
+        gap={4}
+        h={16}>
+        <a href='/'>
+          <Box>
+            <Image
+              h={6}
+              src={
+                colorMode === 'light'
+                  ? `${RESOURCE_BASE_URL}/typink-text-dark-logo.png`
+                  : `${RESOURCE_BASE_URL}/typink-text-light-logo.png`
+              }
+              display={{ base: 'none', md: 'block' }}
+            />
+            <Image
+              h={6}
+              src={
+                colorMode === 'light'
+                  ? `${RESOURCE_BASE_URL}/typink-dark-logo.png`
+                  : `${RESOURCE_BASE_URL}/typink-light-logo.png`
+              }
+              display={{ base: 'block', md: 'none' }}
+            />
+          </Box>
+        </a>
+        <Flex gap={2}>
+          <ThemeModeButton />
+          <NetworkSelection />
+          {wallet ? <AccountSelection /> : <WalletSelection />}
+        </Flex>
+      </Container>
+    </Box>
+  );
+}
