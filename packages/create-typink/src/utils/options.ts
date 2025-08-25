@@ -5,7 +5,7 @@ import validate from 'validate-npm-package-name';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
-  template: 'legacy-default-default',
+  template: 'legacy-typink-vite',
   skipInstall: false,
   pkgManager: { name: 'npm' },
   noGit: false,
@@ -88,7 +88,7 @@ export function parseArguments(): Options {
 
   return {
     projectName: args['--name'] || null,
-    template: args['--template'] || defaultOptions.template,
+    template: args['--template'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,
