@@ -7007,7 +7007,7 @@ __metadata:
     prettier: "npm:^3.6.2"
     validate-npm-package-name: "npm:^6.0.2"
   bin:
-    create-typink: ./dist/bin/create-typink.mjs
+    create-typink: ./bin/create-typink.mjs
   languageName: unknown
   linkType: soft
 
