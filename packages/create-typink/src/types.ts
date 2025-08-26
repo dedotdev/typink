@@ -19,24 +19,20 @@ export type RawOptions = {
 
 export type Options = BaseOptions & RawOptions;
 
-// New template naming convention: {inkVersion}-{walletConnector}-{nextjs|default}
+// Template naming convention: {inkVersion}-{walletConnector}-{nextjs|vite}
 // inkVersion: legacy | v6
-// walletConnector: default | subconnectv2 | talisman
-// ui: nextjs | default
+// walletConnector: typink | subconnectv2 | talisman
+// ui: nextjs | vite
 export const TEMPLATES = [
-  // legacy default UI only
   'legacy-typink-vite',
   'legacy-subconnectv2-vite',
   'legacy-talisman-vite',
-  // legacy nextjs UI
   'legacy-typink-nextjs',
   'legacy-subconnectv2-nextjs',
   'legacy-talisman-nextjs',
-  // v6 default UI
   'v6-typink-vite',
   'v6-subconnectv2-vite',
   'v6-talisman-vite',
-  // v6 nextjs UI
   'v6-typink-nextjs',
   'v6-subconnectv2-nextjs',
   'v6-talisman-nextjs',

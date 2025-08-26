@@ -2,13 +2,11 @@ import { execa } from 'execa';
 import { Options } from '../types.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import os from 'os';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
+import { downloadTemplate } from 'giget';
 
-// Download the template folder from the GitHub repo and set up the project
 export async function copyTemplateFiles(
   options: Options,
-  _templatesDir: string, // no longer used; templates are fetched remotely
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
@@ -19,17 +17,21 @@ export async function copyTemplateFiles(
   const repoUrl = process.env.TYPINK_TEMPLATE_REPO || 'https://github.com/dedotdev/typink.git';
   const repoBranch = process.env.TYPINK_TEMPLATE_BRANCH || 'main';
 
-  const tmpRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'create-typink-'));
-  const cloneDir = path.join(tmpRoot, 'repo');
+  try {
+    const ghMatch = /github\.com[/:]([^/]+)\/([^/.]+)(?:\.git)?/i.exec(repoUrl);
+    if (ghMatch && template) {
+      const owner = ghMatch[1];
+      const repo = ghMatch[2];
+      const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
 
-  await execa('git', ['clone', '--depth', '1', '--branch', repoBranch, repoUrl, cloneDir]);
-
-  const templatePathInRepo = path.join(cloneDir, 'packages', 'create-typink', 'templates', template!);
-  if (!fs.existsSync(templatePathInRepo)) {
-    throw new Error(`Template not found in repo: ${template}`);
+      // Download template directly into the project directory
+      await downloadTemplate(spec, { dir: targetDir, force: true });
+    }
+  } catch (e) {
+    throw new Error(
+      `[create-typink] giget download failed, falling back to git clone. Reason: ${(e as Error).message}`,
+    );
   }
-
-  await fs.promises.cp(templatePathInRepo, targetDir, { recursive: true });
 
   // Set package name
   const packageJsonPath = path.join(targetDir, 'package.json');
