@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { NetworkConnection, NetworkId, NetworkInfo } from '../types.js';
+import { ClientConnectionStatus, NetworkConnection, NetworkId, NetworkInfo } from '../types.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Persistent atom for all network connections (primary first, then secondary)
@@ -96,11 +96,13 @@ export const setNetworkAtom = atom(null, (get, set, connection: NetworkId | Netw
 
   // Update only the primary (first) connection, keep the rest
   const newConnections = [newPrimaryConnection, ...currentConnections.slice(1)];
-  set(networkConnectionsAtom, newConnections);
+  
+  // Reuse setNetworksAtom logic to handle connection status management
+  set(setNetworksAtom, newConnections);
 });
 
 // Write-only atom for updating all network connections at once
-export const setNetworksAtom = atom(null, (_get, set, networks: (NetworkId | NetworkConnection)[]) => {
+export const setNetworksAtom = atom(null, (get, set, networks: (NetworkId | NetworkConnection)[]) => {
   const connections: NetworkConnection[] = [];
 
   for (const network of networks) {
@@ -113,16 +115,29 @@ export const setNetworksAtom = atom(null, (_get, set, networks: (NetworkId | Net
     }
   }
 
+  // Clear connection status for networks that are no longer in the new connections
+  const currentStatusMap = get(clientConnectionStatusMapAtom);
+  const newStatusMap = new Map<NetworkId, ClientConnectionStatus>();
+  const newNetworkIds = new Set(connections.map(conn => conn.networkId));
+  
+  // Keep status for networks that are still active, remove others
+  for (const [networkId, status] of currentStatusMap.entries()) {
+    if (newNetworkIds.has(networkId)) {
+      newStatusMap.set(networkId, status);
+    }
+  }
+  
+  // Initialize new networks with NotConnected status
+  for (const conn of connections) {
+    if (!newStatusMap.has(conn.networkId)) {
+      newStatusMap.set(conn.networkId, ClientConnectionStatus.NotConnected);
+    }
+  }
+  
+  set(clientConnectionStatusMapAtom, newStatusMap);
   // Update all connections (primary is first, rest are secondary)
   set(networkConnectionsAtom, connections);
 });
 
-// Initialization atom for setting network IDs from provider props
-export const initializeNetworkIdsAtom = atom(null, (_get, set, networkIds: NetworkId[]) => {
-  // Initialize default connections for the network IDs
-  const defaultConnections: NetworkConnection[] = [];
-  for (const networkId of networkIds) {
-    defaultConnections.push({ networkId });
-  }
-  set(networkConnectionsAtom, defaultConnections);
-});
+// Atom for tracking connection status of each client
+export const clientConnectionStatusMapAtom = atom<Map<NetworkId, ClientConnectionStatus>>(new Map());

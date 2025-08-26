@@ -1,7 +1,20 @@
 import { atom } from 'jotai';
-import { cacheMetadataAtom, clientsMapAtom, networkConnectionsAtom, supportedNetworksAtom } from './clientAtoms.js';
+import {
+  cacheMetadataAtom,
+  clientConnectionStatusMapAtom,
+  clientsMapAtom,
+  networkConnectionsAtom,
+  supportedNetworksAtom,
+} from './clientAtoms.js';
 import { finalEffectiveSignerAtom } from './walletAtoms.js';
-import { JsonRpcApi, NetworkConnection, NetworkId, NetworkInfo, validateProvider } from '../types.js';
+import {
+  ClientConnectionStatus,
+  JsonRpcApi,
+  NetworkConnection,
+  NetworkId,
+  NetworkInfo,
+  validateProvider,
+} from '../types.js';
 import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, SmoldotProvider, WsProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
@@ -100,9 +113,17 @@ async function createClient(
     const chain = await getOrCreateSmoldotChain(network);
     provider = new SmoldotProvider(chain);
   } else if (selectedProvider === 'random-rpc' || !selectedProvider) {
-    provider = new WsProvider(network.providers);
+    provider = new WsProvider({
+      endpoint: network.providers,
+      maxRetryAttempts: 5,
+      retryDelayMs: 1500,
+    });
   } else {
-    provider = new WsProvider(selectedProvider);
+    provider = new WsProvider({
+      endpoint: selectedProvider,
+      maxRetryAttempts: 5,
+      retryDelayMs: 1500,
+    });
   }
 
   // Create client based on API type
@@ -158,6 +179,13 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
   const allNetworkIds = connections.map((conn) => conn.networkId);
   const activeNetworkIds = new Set(allNetworkIds);
 
+  // Reset connection status for all active networks
+  const newStatusMap = new Map<NetworkId, ClientConnectionStatus>();
+  for (const networkId of allNetworkIds) {
+    newStatusMap.set(networkId, ClientConnectionStatus.NotConnected);
+  }
+  set(clientConnectionStatusMapAtom, newStatusMap);
+
   // Clean up ALL networks that aren't in the current connections list
   // This ensures complete ecosystem switching cleanup
   const currentClients = get(clientsMapAtom);
@@ -186,6 +214,9 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
       return;
     }
 
+    // Set status to Connecting
+    set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
+
     // Clean up existing client if any (for re-initialization)
     const existingClient = get(clientsMapAtom).get(networkId);
     if (existingClient) {
@@ -195,10 +226,43 @@ export const initializeClientsAtom = atom(null, async (get, set) => {
 
     try {
       const client = await createClient(network, providerType, cacheMetadata, signer);
+
+      // Add provider event listeners
+      const provider = client.provider;
+
+      provider.on('connected', () => {
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connected);
+      });
+
+      provider.on('reconnecting', () => {
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
+      });
+
+      provider.on('disconnected', () => {
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.NotConnected);
+      });
+
+      provider.on('error', (error: any) => {
+        console.error(`Provider error for network ${networkId}:`, error);
+
+        const currentStatus = get(clientConnectionStatusMapAtom).get(networkId);
+        if (currentStatus !== ClientConnectionStatus.Connected) {
+          set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Error);
+        }
+      });
+
+      // Check current status and update accordingly
+      if (provider.status === 'connected') {
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connected);
+      } else if (provider.status === 'reconnecting') {
+        set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Connecting);
+      }
+
       // Update client immediately (only add when successfully connected)
       set(setNetworkClientAtom, networkId, client);
     } catch (e) {
       console.error(`Error initializing client for network ${networkId}:`, e);
+      set(updateClientConnectionStatusAtom, networkId, ClientConnectionStatus.Error);
       throw e;
     }
   };
@@ -263,3 +327,18 @@ export const initializeSupportedNetworksAtom = atom(null, (_get, set, networks: 
 export const initializeCacheMetadataAtom = atom(null, (_get, set, cacheMetadata: boolean) => {
   set(cacheMetadataAtom, cacheMetadata);
 });
+
+// Write-only atom for updating client connection status
+export const updateClientConnectionStatusAtom = atom(
+  null,
+  (get, set, networkId: NetworkId, status: ClientConnectionStatus) => {
+    const currentConnections = get(networkConnectionsAtom);
+    const activeNetworkIds = new Set(currentConnections.map((conn) => conn.networkId));
+
+    if (!activeNetworkIds.has(networkId)) return;
+
+    const statusMap = new Map(get(clientConnectionStatusMapAtom));
+    statusMap.set(networkId, status);
+    set(clientConnectionStatusMapAtom, statusMap);
+  },
+);

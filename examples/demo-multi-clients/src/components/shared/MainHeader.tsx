@@ -1,5 +1,6 @@
-import { Box, Container } from '@chakra-ui/react';
+import { Box, Container, Flex } from '@chakra-ui/react';
 import AccountManager from '@/components/AccountManager.tsx';
+import NetworkGroupSelector from '@/components/shared/NetworkGroupSelector.tsx';
 
 export default function MainHeader() {
   return (
@@ -13,12 +14,15 @@ export default function MainHeader() {
         alignItems='center'
         gap={4}
         h={16}>
-        <a href='/ui/public'>
+        <a href='/'>
           <Box w={8}>
             <img src='/typink-logo.png' />
           </Box>
         </a>
-        <AccountManager />
+        <Flex flexDirection='row' justifyContent='space-between' gap={2}>
+          <NetworkGroupSelector />
+          <AccountManager />
+        </Flex>
       </Container>
     </Box>
   );

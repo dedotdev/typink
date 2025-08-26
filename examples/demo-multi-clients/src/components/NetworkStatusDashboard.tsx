@@ -9,16 +9,18 @@ import {
   Spinner,
   Button,
   useColorModeValue,
+  Box,
+  Flex,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, WarningIcon, InfoIcon } from '@chakra-ui/icons';
-import { useTypink, NetworkInfo } from 'typink';
+import { useTypink, NetworkInfo, ClientConnectionStatus, NetworkConnection } from 'typink';
 import { useMemo } from 'react';
+import NetworkBlockInfo from './NetworkBlockInfo';
 
 interface NetworkStatus {
   network: NetworkInfo;
-  isReady: boolean;
-  isConnected: boolean;
-  status: 'connected' | 'connecting' | 'failed' | 'disconnected';
+  connection: NetworkConnection;
+  status: ClientConnectionStatus;
 }
 
 interface EcosystemGroup {
@@ -30,47 +32,55 @@ interface EcosystemGroup {
   totalCount: number;
 }
 
-function ConnectionStatusIcon({ status }: { status: NetworkStatus['status'] }) {
+function ConnectionStatusIcon({ status }: { status: ClientConnectionStatus }) {
   switch (status) {
-    case 'connected':
+    case ClientConnectionStatus.Connected:
       return <CheckCircleIcon color='green.500' boxSize={5} />;
-    case 'connecting':
+    case ClientConnectionStatus.Connecting:
       return <Spinner size='sm' color='orange.500' />;
-    case 'failed':
+    case ClientConnectionStatus.Error:
       return <WarningIcon color='red.500' boxSize={5} />;
+    case ClientConnectionStatus.NotConnected:
     default:
       return <InfoIcon color='gray.400' boxSize={5} />;
   }
 }
 
-function NetworkCard({ networkStatus }: { networkStatus: NetworkStatus }) {
+function NetworkCard({
+  networkStatus,
+  onRetry,
+}: {
+  networkStatus: NetworkStatus;
+  onRetry: (networkId: string) => void;
+}) {
   const { network, status } = networkStatus;
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue(
-    status === 'connected'
+    status === ClientConnectionStatus.Connected
       ? 'green.200'
-      : status === 'connecting'
+      : status === ClientConnectionStatus.Connecting
         ? 'orange.200'
-        : status === 'failed'
+        : status === ClientConnectionStatus.Error
           ? 'red.200'
           : 'gray.200',
-    status === 'connected'
+    status === ClientConnectionStatus.Connected
       ? 'green.600'
-      : status === 'connecting'
+      : status === ClientConnectionStatus.Connecting
         ? 'orange.600'
-        : status === 'failed'
+        : status === ClientConnectionStatus.Error
           ? 'red.600'
           : 'gray.600',
   );
 
   const getStatusColor = () => {
     switch (status) {
-      case 'connected':
+      case ClientConnectionStatus.Connected:
         return 'green';
-      case 'connecting':
+      case ClientConnectionStatus.Connecting:
         return 'orange';
-      case 'failed':
+      case ClientConnectionStatus.Error:
         return 'red';
+      case ClientConnectionStatus.NotConnected:
       default:
         return 'gray';
     }
@@ -87,41 +97,101 @@ function NetworkCard({ networkStatus }: { networkStatus: NetworkStatus }) {
       }}
       transition='all 0.2s'>
       <CardBody p={4}>
-        <HStack justify='space-between' align='center' spacing={4}>
-          {/* Left side - Network info */}
-          <HStack spacing={3} flex={1}>
-            <Avatar size='md' src={network.logo} name={network.name} />
-            <VStack spacing={1} align='start'>
-              <Text fontSize='md' fontWeight='semibold'>
+        <Flex
+          wrap={{ base: 'wrap', md: 'nowrap' }}
+          gap={{ base: 3, md: 4 }}
+          align={{ base: 'stretch', md: 'center' }}
+        >
+          {/* Network info - Order 1 on both mobile and desktop */}
+          <HStack 
+            spacing={{ base: 2, md: 3 }} 
+            flex={{ base: 1, md: 1 }}
+            order={{ base: 1, md: 1 }}
+          >
+            <Avatar 
+              size={{ base: 'sm', md: 'md' }} 
+              src={network.logo} 
+              name={network.name} 
+            />
+            <VStack spacing={{ base: 0, md: 1 }} align='start'>
+              <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight='semibold'>
                 {network.name}
               </Text>
-              <HStack spacing={2} align='center'>
-                <Text fontSize='sm' color='gray.600'>
+              <HStack spacing={{ base: 1, md: 2 }} align='center'>
+                <Text fontSize={{ base: 'xs', md: 'sm' }} color='gray.600'>
                   {network.symbol}
                 </Text>
-                <Badge colorScheme={getStatusColor()} variant={status === 'connected' ? 'solid' : 'outline'} size='sm'>
-                  {status === 'connected' ? 'Connected' : status === 'connecting' ? 'Connecting' : 'Failed'}
+                <Badge
+                  colorScheme={getStatusColor()}
+                  variant={status === ClientConnectionStatus.Connected ? 'solid' : 'outline'}
+                  size='sm'
+                  fontSize={{ base: 'xs', md: 'sm' }}
+                >
+                  <Text as='span' display={{ base: 'inline', md: 'none' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Failed'
+                          : 'Not Connected'}
+                  </Text>
+                  <Text as='span' display={{ base: 'none', md: 'inline' }}>
+                    {status === ClientConnectionStatus.Connected
+                      ? 'Connected'
+                      : status === ClientConnectionStatus.Connecting
+                        ? 'Connecting'
+                        : status === ClientConnectionStatus.Error
+                          ? 'Connection Failed'
+                          : 'Not Connected'}
+                  </Text>
                 </Badge>
               </HStack>
             </VStack>
           </HStack>
 
-          {/* Right side - Status icon and actions */}
-          <VStack spacing={2} align='center'>
+          {/* Block information - Order 2 on desktop, 3 on mobile */}
+          {status === ClientConnectionStatus.Connected && (
+            <Box
+              w={{ base: '100%', md: 'auto' }}
+              pt={{ base: 2, md: 0 }}
+              borderTopWidth={{ base: 1, md: 0 }}
+              borderTopColor='gray.200'
+              flex={{ base: 'initial', md: 1 }}
+              display='flex'
+              justifyContent='center'
+              order={{ base: 3, md: 2 }}
+            >
+              <NetworkBlockInfo networkId={network.id} isConnected={true} />
+            </Box>
+          )}
+
+          {/* Status icon and actions - Order 2 on mobile, 3 on desktop (always far right) */}
+          <VStack 
+            spacing={{ base: 1, md: 2 }} 
+            align='center'
+            flex='none'
+            order={{ base: 2, md: 3 }}
+          >
             <ConnectionStatusIcon status={status} />
-            {status === 'failed' && (
-              <Button size='xs' colorScheme='red' variant='outline'>
+            {status === ClientConnectionStatus.Error && (
+              <Button 
+                size='xs' 
+                colorScheme='red' 
+                variant='outline' 
+                onClick={() => onRetry(network.id)}
+              >
                 Retry
               </Button>
             )}
           </VStack>
-        </HStack>
+        </Flex>
       </CardBody>
     </Card>
   );
 }
 
-function EcosystemSection({ ecosystem }: { ecosystem: EcosystemGroup }) {
+function EcosystemSection({ ecosystem, onRetry }: { ecosystem: EcosystemGroup; onRetry: (networkId: string) => void }) {
   const readyPercentage =
     ecosystem.totalCount > 0 ? Math.round((ecosystem.readyCount / ecosystem.totalCount) * 100) : 0;
 
@@ -151,7 +221,7 @@ function EcosystemSection({ ecosystem }: { ecosystem: EcosystemGroup }) {
         {/* Network Cards - Each on separate row */}
         <VStack spacing={3} align='stretch'>
           {ecosystem.networks.map((networkStatus) => (
-            <NetworkCard key={networkStatus.network.id} networkStatus={networkStatus} />
+            <NetworkCard key={networkStatus.network.id} networkStatus={networkStatus} onRetry={onRetry} />
           ))}
         </VStack>
       </CardBody>
@@ -160,25 +230,31 @@ function EcosystemSection({ ecosystem }: { ecosystem: EcosystemGroup }) {
 }
 
 export default function NetworkStatusDashboard() {
-  const { networks, clients } = useTypink();
+  const { networks, connectionStatus, setNetworks, networkConnections } = useTypink();
+
+  // Handle retry for failed connections
+  const handleRetry = (networkId: string) => {
+    // Re-initialize the network connection by updating the connections list
+    // This will trigger the client to reconnect
+    const currentConnection = networkConnections.find((conn) => conn.networkId === networkId);
+    if (currentConnection) {
+      // Trigger reconnection by updating the networks list
+      setNetworks(networkConnections);
+    }
+  };
 
   // Process networks into ecosystems and status
   const ecosystems = useMemo((): EcosystemGroup[] => {
     const networkStatuses: NetworkStatus[] = networks.map((network) => {
-      const isConnected = clients.has(network.id);
-      const isReady = isConnected; // Simplified: if client exists, it's ready
+      // Get real connection status from the connectionStatus Map
+      const status = connectionStatus.get(network.id) || ClientConnectionStatus.NotConnected;
 
-      let status: NetworkStatus['status'];
-      if (isConnected) {
-        status = 'connected';
-      } else {
-        status = 'connecting'; // Or could be 'disconnected' since we lost the intermediate state
-      }
+      // Find the corresponding network connection
+      const connection = networkConnections.find((conn) => conn.networkId === network.id) || { networkId: network.id };
 
       return {
         network,
-        isReady,
-        isConnected,
+        connection,
         status,
       };
     });
@@ -217,7 +293,7 @@ export default function NetworkStatusDashboard() {
               !n.network.id.includes('asset') && !n.network.id.includes('people') && !n.network.id.includes('bridge'),
           )?.network || networks[0].network;
 
-        const readyCount = networks.filter((n) => n.isReady).length;
+        const readyCount = networks.filter((n) => n.status === ClientConnectionStatus.Connected).length;
 
         return {
           name,
@@ -239,7 +315,7 @@ export default function NetworkStatusDashboard() {
         if (bIndex === -1) return -1;
         return aIndex - bIndex;
       });
-  }, [networks, clients]);
+  }, [networks, connectionStatus, networkConnections]);
 
   if (networks.length === 0) {
     return (
@@ -263,7 +339,7 @@ export default function NetworkStatusDashboard() {
     <VStack spacing={4} align='stretch'>
       {/* Ecosystem Sections */}
       {ecosystems.map((ecosystem) => (
-        <EcosystemSection key={ecosystem.id} ecosystem={ecosystem} />
+        <EcosystemSection key={ecosystem.id} ecosystem={ecosystem} onRetry={handleRetry} />
       ))}
     </VStack>
   );

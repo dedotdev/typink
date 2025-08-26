@@ -5,6 +5,7 @@ import { usePolkadotClient } from '../usePolkadotClient.js';
 import { toEvmAddress } from 'dedot/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForNextUpdate } from './test-utils.js';
+import { ClientConnectionStatus } from '../../types.js';
 
 // Mock external dependencies
 vi.mock('../useTypink', () => ({
@@ -42,6 +43,7 @@ describe('useCheckMappedAccount', () => {
     vi.mocked(usePolkadotClient).mockReturnValue({
       client: mockClient,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.Connected,
     } as any);
     vi.mocked(toEvmAddress).mockReturnValue(evmAddress);
     mockClient.query.revive.originalAccount.mockResolvedValue(true);
@@ -61,6 +63,7 @@ describe('useCheckMappedAccount', () => {
       vi.mocked(usePolkadotClient).mockReturnValue({
         client: null,
         network: { id: 'test-network' },
+        status: ClientConnectionStatus.NotConnected,
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());
@@ -115,6 +118,7 @@ describe('useCheckMappedAccount', () => {
       vi.mocked(usePolkadotClient).mockReturnValue({
         client: clientWithoutRevive,
         network: { id: 'test-network' },
+        status: ClientConnectionStatus.Connected,
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());
@@ -135,6 +139,7 @@ describe('useCheckMappedAccount', () => {
       vi.mocked(usePolkadotClient).mockReturnValue({
         client: clientThatThrows,
         network: { id: 'test-network' },
+        status: ClientConnectionStatus.Connected,
       } as any);
 
       const { result } = renderHook(() => useCheckMappedAccount());

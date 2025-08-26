@@ -5,6 +5,7 @@ import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
 import { checkBalanceSufficiency } from '../../helpers/index.js';
 import { BalanceInsufficientError, withReadableErrorMessage } from '../../utils/index.js';
+import { ClientConnectionStatus } from '../../types.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
@@ -89,6 +90,7 @@ describe('useTx', () => {
     (usePolkadotClient as any).mockReturnValue({
       client: mockClient,
       network: { id: 'test-network', name: 'Test Network' },
+      status: ClientConnectionStatus.Connected,
     });
 
     // Ensure useTypink always returns valid account unless explicitly overridden
@@ -120,6 +122,7 @@ describe('useTx', () => {
       (usePolkadotClient as any).mockReturnValue({
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
+        status: ClientConnectionStatus.NotConnected,
       });
 
       (useTypink as any).mockReturnValue({
@@ -143,6 +146,7 @@ describe('useTx', () => {
       (usePolkadotClient as any).mockReturnValue({
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
+        status: ClientConnectionStatus.NotConnected,
       });
 
       (useTypink as any).mockReturnValue({
@@ -435,6 +439,7 @@ describe('useTx', () => {
       (usePolkadotClient as any).mockReturnValue({
         client: undefined,
         network: { id: 'test-network', name: 'Test Network' },
+        status: ClientConnectionStatus.NotConnected,
       });
 
       (useTypink as any).mockReturnValue({

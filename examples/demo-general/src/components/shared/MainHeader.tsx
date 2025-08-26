@@ -13,7 +13,7 @@ export default function MainHeader() {
         alignItems='center'
         gap={4}
         h={16}>
-        <a href='/ui/public'>
+        <a href='/'>
           <Box w={8}>
             <img src='/typink-logo.png' />
           </Box>

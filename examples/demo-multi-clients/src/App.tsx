@@ -4,8 +4,20 @@ import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
 import NetworkStatusDashboard from '@/components/NetworkStatusDashboard';
 import MultiNetworkBalanceDashboard from '@/components/MultiNetworkBalanceDashboard';
+import { usePolkadotClient, useTypink } from 'typink';
 
 function App() {
+  const { networks } = useTypink();
+  const [relay, assethub, people] = networks;
+  const { status: relayStatus } = usePolkadotClient(relay?.id);
+  const { status: assetHubStatus } = usePolkadotClient(assethub?.id);
+  const { status: peopleStatus } = usePolkadotClient(people?.id);
+
+  console.log('relayStatus', relayStatus);
+  console.log('assetHubStatus', assetHubStatus);
+  console.log('peopleStatus', peopleStatus);
+  console.log('=====');
+
   return (
     <Flex direction='column' minHeight='100vh'>
       <MainHeader />

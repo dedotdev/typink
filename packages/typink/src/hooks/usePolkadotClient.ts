@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTypink } from './useTypink.js';
-import { NetworkId, NetworkInfo } from '../types.js';
+import { ClientConnectionStatus, NetworkId, NetworkInfo } from '../types.js';
 import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { VersionedGenericSubstrateApi } from 'dedot/types';
@@ -8,6 +8,7 @@ import { assert } from 'dedot/utils';
 
 interface UsePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
   client?: CompatibleSubstrateApi<ChainApi> | undefined;
+  status: ClientConnectionStatus;
   network: NetworkInfo;
 }
 /**
@@ -20,14 +21,21 @@ interface UsePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = Subs
 export function usePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
   networkId?: NetworkId,
 ): UsePolkadotClient<ChainApi> {
-  const { getClient, networks } = useTypink<ChainApi>();
+  const { getClient, networks, connectionStatus } = useTypink<ChainApi>();
 
-  const network = networkId ? networks.find((n) => n.id === networkId) : networks?.[0];
+  const network = useMemo(() => {
+    return networkId ? networks.find((n) => n.id === networkId) : networks?.[0];
+  }, [networks, networkId]);
+
   assert(network, `Network not found with id ${networkId}`);
 
   const client = useMemo(() => {
     return getClient(networkId);
   }, [getClient, networkId]);
 
-  return { client, network };
+  const status = useMemo(() => {
+    return connectionStatus.get(networkId || '') || ClientConnectionStatus.NotConnected;
+  }, [connectionStatus, networkId]);
+
+  return { client, network, status };
 }

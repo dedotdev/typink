@@ -102,6 +102,10 @@ describe('Client Actions', () => {
       }
     }),
     setSigner: vi.fn(),
+    provider: {
+      on: vi.fn(),
+      status: 'connected', // Mock status
+    },
     _networkId: networkId, // For testing identification
   } as unknown as CompatibleSubstrateApi);
 
@@ -339,7 +343,11 @@ describe('Client Actions', () => {
 
       await store.set(initializeClientsAtom);
 
-      expect(WsProvider).toHaveBeenCalledWith(['wss://polkadot.api.test']);
+      expect(WsProvider).toHaveBeenCalledWith({
+        endpoint: ['wss://polkadot.api.test'],
+        maxRetryAttempts: 5,
+        retryDelayMs: 1500,
+      });
       expect(DedotClient.new).toHaveBeenCalledWith({
         provider: expect.anything(),
         cacheMetadata: false,
@@ -360,7 +368,11 @@ describe('Client Actions', () => {
 
       await store.set(initializeClientsAtom);
 
-      expect(WsProvider).toHaveBeenCalledWith('wss://custom.provider.test');
+      expect(WsProvider).toHaveBeenCalledWith({
+        endpoint: 'wss://custom.provider.test',
+        maxRetryAttempts: 5,
+        retryDelayMs: 1500,
+      });
     });
 
     it('should initialize legacy client when jsonRpcApi is LEGACY', async () => {

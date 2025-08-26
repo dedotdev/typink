@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useBalances } from '../useBalances.js';
 import { useTypink } from '../useTypink.js';
 import { usePolkadotClient } from '../usePolkadotClient.js';
+import { ClientConnectionStatus } from '../../types.js';
 
 // Mock the useTypink hook
 vi.mock('../useTypink', () => ({
@@ -33,6 +34,7 @@ describe('useBalances', () => {
     (usePolkadotClient as any).mockReturnValue({
       client: mockClient,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.Connected,
     });
   });
 
@@ -42,6 +44,7 @@ describe('useBalances', () => {
     (usePolkadotClient as any).mockReturnValue({
       client: null,
       network: { id: 'test-network' },
+      status: ClientConnectionStatus.NotConnected,
     });
 
     const { result } = renderHook(() => useBalances(mockAddresses));
