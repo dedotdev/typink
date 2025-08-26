@@ -28,7 +28,7 @@ interface WalletButtonProps {
 
 const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   const { name, id, logo, ready, installed } = walletInfo;
-  const { connectWallet } = useTypink();
+  const { connectWallet, connectedWalletIds, disconnect } = useTypink();
 
   const doConnectWallet = () => {
     if (!installed) {
@@ -39,6 +39,7 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
       return;
     }
 
+    connectedWalletIds.length > 0 && disconnect(connectedWalletIds[0]);
     connectWallet(id);
     afterSelectWallet && afterSelectWallet();
   };

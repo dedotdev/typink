@@ -1,14 +1,8 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Loader2Icon } from 'lucide-react';
 import { ExtensionWallet, useTypink, Wallet } from 'typink';
@@ -40,12 +34,11 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
     <Button
       onClick={doConnectWallet}
       disabled={!installed}
-      size="lg"
-      variant="outline"
-      className="w-full justify-start items-center gap-4"
-    >
+      size='lg'
+      variant='outline'
+      className='w-full justify-start items-center gap-4'>
       {installed && !ready ? (
-        <Loader2Icon className="w-6 h-6 animate-spin" />
+        <Loader2Icon className='w-6 h-6 animate-spin' />
       ) : (
         <img src={logo} alt={`${name}`} width={24} height={24} />
       )}
@@ -63,14 +56,12 @@ interface WalletSelectionProps {
   buttonStyle?: ButtonStyle;
   buttonLabel?: string;
   buttonProps?: React.ComponentProps<typeof Button> | React.ComponentProps<typeof DropdownMenuItem>;
-  onDialogClose?: () => void; // New prop for external control
 }
 
 export default function WalletSelection({
   buttonStyle = ButtonStyle.BUTTON,
   buttonLabel = 'Connect Wallet',
   buttonProps,
-  onDialogClose,
 }: WalletSelectionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { wallets } = useTypink();
@@ -83,21 +74,17 @@ export default function WalletSelection({
             {buttonLabel}
           </DropdownMenuItem>
         ) : (
-          <Button
-            size="default"
-            variant="outline"
-            {...(buttonProps as React.ComponentProps<typeof Button>)}
-          >
+          <Button size='default' variant='outline' {...(buttonProps as React.ComponentProps<typeof Button>)}>
             {buttonLabel}
           </Button>
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>Select Wallet to Connect</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-3 mt-4">
+        <div className='flex flex-col gap-3 mt-4'>
           {wallets.map((one) => (
             <WalletButton key={one.id} walletInfo={one} afterSelectWallet={() => setIsOpen(false)} />
           ))}

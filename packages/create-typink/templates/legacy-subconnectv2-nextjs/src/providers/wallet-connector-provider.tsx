@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useConnectWallet, Web3OnboardProvider } from '@subwallet-connect/react';
 import { init } from '@subwallet-connect/react';
@@ -24,7 +24,7 @@ export const useWalletConnector = () => {
   return useContext(WalletConnectorContext);
 };
 
-interface WalletConnectorProviderProps extends Props { }
+interface WalletConnectorProviderProps extends Props {}
 
 export const WalletConnectorProvider = ({ children }: WalletConnectorProviderProps) => {
   return (

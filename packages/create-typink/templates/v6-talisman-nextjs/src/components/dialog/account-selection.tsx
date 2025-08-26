@@ -1,29 +1,21 @@
-"use client"
+'use client';
 
-import { useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { shortenAddress } from "@/lib/utils";
-import { formatBalance, useBalances, useTypink } from "typink";
-import { LogOutIcon } from "lucide-react";
-import { useWalletConnector } from "@/providers/wallet-connector-provider";
+import { useEffect, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { shortenAddress } from '@/lib/utils';
+import { formatBalance, useBalances, useTypink } from 'typink';
+import { LogOutIcon } from 'lucide-react';
+import { useWalletConnector } from '@/providers/wallet-connector-provider';
 
 function ConnectedWallet() {
   const { wallet } = useWalletConnector();
   if (!wallet) return null;
 
   return (
-    <div className="flex items-center gap-3 justify-center pb-2">
+    <div className='flex items-center gap-3 justify-center pb-2'>
       <img src={wallet.logo.src} alt={wallet.logo.alt} width={16} />
-      <span className="font-semibold text-sm">
-        {wallet?.title}
-      </span>
+      <span className='font-semibold text-sm'>{wallet?.title}</span>
     </div>
   );
 }
@@ -50,39 +42,34 @@ export default function AccountSelection() {
   const { name, address } = connectedAccount;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className='flex items-center gap-2'>
       {/* Account Selection */}
       <Select
         value={address}
         onValueChange={(selectedAddress) => {
-          const selectedAccount = accounts.find(acc => acc.address === selectedAddress);
+          const selectedAccount = accounts.find((acc) => acc.address === selectedAddress);
           if (selectedAccount) {
             setConnectedAccount(selectedAccount);
           }
-        }}
-      >
-        <SelectTrigger className="w-fit min-w-[180px]">
+        }}>
+        <SelectTrigger className='w-fit min-w-[180px]'>
           <SelectValue>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm">{name}</span>
-              <span className="text-sm font-normal text-muted-foreground">
-                ({shortenAddress(address)})
-              </span>
+            <div className='flex items-center gap-2'>
+              <span className='font-semibold text-sm'>{name}</span>
+              <span className='text-sm font-normal text-muted-foreground'>({shortenAddress(address)})</span>
             </div>
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="w-64">
-          <div className="p-2 border-b">
+        <SelectContent className='w-64'>
+          <div className='p-2 border-b'>
             <ConnectedWallet />
           </div>
           {accounts.map((one) => (
             <SelectItem key={one.address} value={one.address}>
-              <div className="flex flex-col items-start gap-1 py-1">
-                <span className="font-medium">{one.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  Address: {shortenAddress(one.address)}
-                </span>
-                <span className="text-xs text-muted-foreground">
+              <div className='flex flex-col items-start gap-1 py-1'>
+                <span className='font-medium'>{one.name}</span>
+                <span className='text-xs text-muted-foreground'>Address: {shortenAddress(one.address)}</span>
+                <span className='text-xs text-muted-foreground'>
                   Balance: {formatBalance(balances[one.address]?.free, network)}
                 </span>
               </div>
@@ -91,7 +78,7 @@ export default function AccountSelection() {
         </SelectContent>
       </Select>
 
-      <Button variant="outline" size="icon" onClick={signOut}>
+      <Button variant='outline' size='icon' onClick={signOut}>
         <LogOutIcon />
       </Button>
     </div>

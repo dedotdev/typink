@@ -10,10 +10,6 @@ export type TxToaster = {
 
 /**
  * Creates a toast notification for transaction progress and manages its updates (sonner).
- *
- * Mount <Toaster /> once in your app root:
- *   import { Toaster } from 'sonner';
- *   <Toaster richColors />
  */
 export function txToaster(initialMessage: string = 'Signing Transaction...'): TxToaster {
   // Create a persistent loading toast; we’ll update it by reusing the same id.
@@ -34,7 +30,6 @@ export function txToaster(initialMessage: string = 'Signing Transaction...'): Tx
       message = 'Transaction Failed';
     }
 
-    // Compose the body using our component so we keep explorer links & details.
     const body = <TxProgress message={message} status={status} />;
 
     if (terminal) {
@@ -42,7 +37,6 @@ export function txToaster(initialMessage: string = 'Signing Transaction...'): Tx
       if (succeeded) {
         toast.success(body, { id: toastId, duration: 5000 });
       } else {
-        // TODO: surface dispatchError details if available
         toast.error(body, { id: toastId, duration: 5000 });
       }
     } else {
@@ -112,12 +106,7 @@ function TxProgress({ message, status }: TxProgressProps) {
 
       {viewOnExplorer && (
         <p style={{ fontSize: 12, marginTop: '0.5rem' }}>
-          <a
-            style={{ textDecoration: 'underline' }}
-            href={explorerUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a style={{ textDecoration: 'underline' }} href={explorerUrl} target='_blank' rel='noreferrer'>
             👉 {viewOnExplorer}
           </a>
         </p>
@@ -125,4 +114,3 @@ function TxProgress({ message, status }: TxProgressProps) {
     </div>
   );
 }
-

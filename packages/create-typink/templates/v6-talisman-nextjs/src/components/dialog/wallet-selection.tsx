@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { useWalletConnector } from '@/providers/wallet-connector-provider';
 import { Button } from '@/components/ui/button';
@@ -15,16 +15,10 @@ export default function WalletSelection() {
     <WalletSelect
       dappName={appName}
       open={open}
-      triggerComponent={
-        <Button onClick={() => setOpen(true)}>
-          Connect Wallet
-        </Button>
-      }
+      triggerComponent={<Button onClick={() => setOpen(true)}>Connect Wallet</Button>}
       header={<p>Connect to your wallet</p>}
       showAccountsList={true}
       onWalletSelected={connectWallet}
     />
   );
 }
-
-
