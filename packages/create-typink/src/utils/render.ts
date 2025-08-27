@@ -17,10 +17,9 @@ export function renderHelpMessage() {
 `);
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
-    ${chalk.gray('-t, --template')}                   Template {ink}-{wallet}-{ui} (e.g. legacy-default-default)
+    ${chalk.gray('-t, --template')}                   Template {inkVersion}-{walletConnector}-{ui} [inkVersion: <legacy|v6>, walletConnector: <typink|subconnectv2|talisman>, ui: <nextjs|vite>] (e.g. legacy-typink-vite) 
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
     ${chalk.gray('--no-git')}                         Skip git initialization
-    ${chalk.gray('-v, --version')}                    Show version
     ${chalk.gray('-h, --help')}                       Show help
     `);
 }

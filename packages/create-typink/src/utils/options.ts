@@ -90,9 +90,6 @@ export function parseArguments(): Options {
 
       '--help': Boolean,
       '-h': '--help',
-
-      '--version': Boolean,
-      '-v': '--version',
     },
     {
       argv: process.argv.slice(2),
@@ -126,6 +123,5 @@ export function parseArguments(): Options {
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,
-    version: args['--version'] || false,
   } as Options;
 }

@@ -20,16 +20,6 @@ export async function createTypink() {
       renderHelpMessage();
       return;
     }
-    if (args.version) {
-      // Lazy read package.json to print version
-      try {
-        const pkg = (await import('../package.json', { with: { type: 'json' } })) as any;
-        console.log(pkg.default?.version || pkg.version || 'unknown');
-      } catch {
-        console.log('unknown');
-      }
-      return;
-    }
 
     const pkgManager = pkgFromUserAgent(process.env.npm_config_user_agent);
     const options = await promptMissingOptions(args);
