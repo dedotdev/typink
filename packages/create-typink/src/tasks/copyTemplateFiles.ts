@@ -10,7 +10,9 @@ export async function copyTemplateFiles(
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, template } = options;
+  const { projectName, noGit, inkVersion, walletConnector, ui } = options;
+  const template = `${inkVersion}-${walletConnector}-${ui}`;
+
   task.title = `🚀 Initializing new Typink dApp`;
 
   // Repo to pull templates from, can be overridden by env
