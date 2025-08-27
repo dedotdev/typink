@@ -2,9 +2,9 @@
 
 - Start the application by running:
 ```shell
-# From examples/dapp folder
+# From examples/demo-multi-clients folder
 yarn dev
 
 # From the project root folder
-yarn workspace demo dev
+yarn workspace demo-multi-clients dev
 ```

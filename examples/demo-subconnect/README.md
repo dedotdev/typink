@@ -2,7 +2,7 @@
 
 - Start the application by running:
 ```shell
-# From examples/dapp folder
+# From examples/demo-subconnect folder
 yarn dev
 
 # From the project root folder
