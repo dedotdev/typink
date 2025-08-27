@@ -8,7 +8,6 @@ import { GreeterContractApi } from "@/contracts/types/greeter";
 import { useContract } from "typink";
 import { ContractId, deployments } from "@/contracts/deployments";
 import {
-  alephZeroTestnet,
   development,
   popTestnet,
   TypinkProvider,
@@ -17,10 +16,11 @@ import {
 const DEFAULT_CALLER = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"; // Alice
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = [popTestnet, alephZeroTestnet];
-if (process.env.NODE_ENV === "development") {
-  SUPPORTED_NETWORKS.push(development);
-}
+const SUPPORTED_NETWORKS = [popTestnet];
+// Uncomment the following lines to enable the development network: https://github.com/paritytech/substrate-contracts-node
+// if (process.env.NODE_ENV === "development") {
+//   SUPPORTED_NETWORKS.push(development);
+// }
 
 interface AppContextProps {
   greeterContract?: Contract<GreeterContractApi>;

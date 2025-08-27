@@ -6,15 +6,16 @@ import { GreeterContractApi } from '@/contracts/types/greeter';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
 import { useContract } from 'typink';
-import { alephZeroTestnet, development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider } from 'typink';
+import { development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider } from 'typink';
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = [popTestnet, alephZeroTestnet];
-if (process.env.NODE_ENV === 'development') {
-  SUPPORTED_NETWORKS.push(development);
-}
+const SUPPORTED_NETWORKS = [popTestnet];
+// Uncomment the following lines to enable the development network: https://github.com/paritytech/substrate-contracts-node
+// if (process.env.NODE_ENV === "development") {
+//   SUPPORTED_NETWORKS.push(development);
+// }
 
 // Supported wallets
 const SUPPORTED_WALLETS = [subwallet, talisman, polkadotjs];

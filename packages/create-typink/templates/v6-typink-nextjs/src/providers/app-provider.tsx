@@ -12,9 +12,10 @@ const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Al
 
 // Supported networks configuration
 const SUPPORTED_NETWORKS = [popTestnet];
-if (process.env.NODE_ENV === 'development') {
-  SUPPORTED_NETWORKS.push(development);
-}
+// Uncomment the following lines to enable the development network: https://github.com/use-ink/ink-node
+// if (process.env.NODE_ENV === "development") {
+//   SUPPORTED_NETWORKS.push(development);
+// }
 
 // Supported wallets
 const SUPPORTED_WALLETS = [subwallet, talisman, polkadotjs];

@@ -1,26 +1,22 @@
-"use client";
+'use client';
 
 import { useWalletConnector } from '@/providers/wallet-connector-provider';
-import { createContext, useContext } from "react";
-import { Props } from "@/lib/types";
-import { Contract } from "dedot/contracts";
-import { GreeterContractApi } from "@/contracts/types/greeter";
-import { useContract } from "typink";
-import { ContractId, deployments } from "@/contracts/deployments";
-import {
-  alephZeroTestnet,
-  development,
-  popTestnet,
-  TypinkProvider,
-} from "typink";
+import { createContext, useContext } from 'react';
+import { Props } from '@/lib/types';
+import { Contract } from 'dedot/contracts';
+import { GreeterContractApi } from '@/contracts/types/greeter';
+import { useContract } from 'typink';
+import { ContractId, deployments } from '@/contracts/deployments';
+import { development, popTestnet, TypinkProvider } from 'typink';
 
-const DEFAULT_CALLER = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"; // Alice
+const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = [popTestnet, alephZeroTestnet];
-if (process.env.NODE_ENV === "development") {
-  SUPPORTED_NETWORKS.push(development);
-}
+const SUPPORTED_NETWORKS = [popTestnet];
+// Uncomment the following lines to enable the development network: https://github.com/paritytech/substrate-contracts-node
+// if (process.env.NODE_ENV === "development") {
+//   SUPPORTED_NETWORKS.push(development);
+// }
 
 interface AppContextProps {
   greeterContract?: Contract<GreeterContractApi>;
@@ -33,15 +29,9 @@ export const useApp = () => {
 };
 
 function AppContextProvider({ children }: Props) {
-  const { contract: greeterContract } = useContract<GreeterContractApi>(
-    ContractId.GREETER
-  );
+  const { contract: greeterContract } = useContract<GreeterContractApi>(ContractId.GREETER);
 
-  return (
-    <AppContext.Provider value={{ greeterContract }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ greeterContract }}>{children}</AppContext.Provider>;
 }
 
 export function AppProvider({ children }: Props) {
@@ -49,15 +39,14 @@ export function AppProvider({ children }: Props) {
 
   return (
     <TypinkProvider
-      appName="Typink Template"
+      appName='Typink Template'
       deployments={deployments}
       defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORKS}
       defaultNetworkId={popTestnet.id}
       signer={wallet?.signer}
-      connectedAccount={connectedAccount}
-    >
+      connectedAccount={connectedAccount}>
       <AppContextProvider>{children}</AppContextProvider>
-    </TypinkProvider >
+    </TypinkProvider>
   );
 }
