@@ -1,10 +1,23 @@
 import inquirer from 'inquirer';
 import arg from 'arg';
-import { BaseOptions, Options, TEMPLATES } from '../types.js';
+import {
+  BaseOptions,
+  INK_VERSIONS_CHOICES,
+  InkVersion,
+  Options,
+  TEMPLATES,
+  UI,
+  UI_CHOICES,
+  WALLET_CONNECTORS_CHOICES,
+  WalletConnector,
+} from '../types.js';
 import validate from 'validate-npm-package-name';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
+  inkVersion: InkVersion.InkV6,
+  walletConnector: WalletConnector.Typink,
+  ui: UI.Vite,
   template: 'legacy-typink-vite',
   skipInstall: false,
   pkgManager: { name: 'npm' },
@@ -30,10 +43,24 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     },
     {
       type: 'list',
-      name: 'template',
-      message: 'Which template do you want to use? (format: {inkVersion}-{wallet}-{ui})',
-      choices: TEMPLATES,
-      default: defaultOptions.template,
+      name: 'inkVersion',
+      message: 'Which ink version do you want to use?',
+      choices: INK_VERSIONS_CHOICES,
+      default: defaultOptions.inkVersion,
+    },
+    {
+      type: 'list',
+      name: 'walletConnector',
+      message: 'Which wallet connector do you want to use?',
+      choices: WALLET_CONNECTORS_CHOICES,
+      default: defaultOptions.walletConnector,
+    },
+    {
+      type: 'list',
+      name: 'ui',
+      message: 'Which ui do you want to use?',
+      choices: UI_CHOICES,
+      default: defaultOptions.ui,
     },
   ];
 
@@ -86,8 +113,15 @@ export function parseArguments(): Options {
     throw new Error(`Template ${args['--template']} is not supported. Please use a valid template.`);
   }
 
+  const [inkVersion, walletConnector, ui] = args['--template']
+    ? (args['--template'] as string).split('-')
+    : [null, null, null];
+
   return {
     projectName: args['--name'] || null,
+    inkVersion,
+    walletConnector,
+    ui,
     template: args['--template'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
