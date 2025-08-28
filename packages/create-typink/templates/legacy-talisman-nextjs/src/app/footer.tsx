@@ -1,6 +1,6 @@
 "use client";
 
-import NetworkSelection from "@/components/network-selection";
+import NetworkSelection from "@/components/dialog/network-selection";
 import { GithubSvgIcon, XSvgIcon } from "@/components/icons";
 import NoSsr from "@/components/no-ssr";
 

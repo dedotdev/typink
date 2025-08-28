@@ -23,7 +23,7 @@ export default function RootLayout({
           <AppProvider>
             <div className='min-h-screen flex flex-col'>
               <MainHeader />
-              <main className='flex-1 flex flex-col mt-32'>{children}</main>
+              <main className='flex-1 flex flex-col'>{children}</main>
               <MainFooter />
             </div>
             <Toaster />

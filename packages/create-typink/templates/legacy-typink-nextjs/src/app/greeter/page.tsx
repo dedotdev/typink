@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
+import BalanceInsufficientAlert from '@/components/balance-insufficient-alert';
 
 export default function GreetBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
@@ -101,6 +102,8 @@ export default function GreetBoard() {
           <h1 className='text-3xl font-bold'>Greeter Contract</h1>
           <p className='text-muted-foreground'>Interact with the Greeter smart contract on Polkadot</p>
         </div>
+
+        <BalanceInsufficientAlert />
 
         <div className='bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border rounded-xl p-8 shadow-lg space-y-8'>
           <div className='bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg p-6 min-h-[80px] flex items-center justify-center'>
