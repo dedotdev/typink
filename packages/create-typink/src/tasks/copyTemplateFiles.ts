@@ -24,9 +24,11 @@ export async function copyTemplateFiles(
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
+      const baseSpec = `github:${owner}/${repo}/packages/create-typink/templates/${ui}#${repoBranch}`;
       const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
 
       // Download template directly into the project directory
+      await downloadTemplate(baseSpec, { dir: targetDir, force: true });
       await downloadTemplate(spec, { dir: targetDir, force: true });
     }
   } catch (e) {

@@ -39,7 +39,7 @@ export async function createProject(options: Options) {
         skip: noGit,
       },
     ],
-    { rendererOptions: { suffixSkips: true }, exitOnError: true },
+    { rendererOptions: { suffixSkips: true }, exitOnError: false },
   );
 
   await tasks.run();
