@@ -9,10 +9,12 @@ import { AppProvider } from '@/providers/AppProvider.tsx';
 import { WalletConnectorProvider, useWalletConnector } from '@/providers/WalletConnectorProvider.tsx';
 import { theme } from '@/theme';
 import { TypinkProvider, development, popTestnet } from 'typink';
+{{NETWORK_IMPORTS}}
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
-const SUPPORTED_NETWORKS = [popTestnet];
 
+// Supported networks configuration
+const SUPPORTED_NETWORKS = {{SUPPORTED_NETWORKS}};
 // Uncomment to add support for development contracts node: https://github.com/paritytech/substrate-contracts-node
 // if (process.env.NODE_ENV === 'development') {
 //   SUPPORTED_NETWORKS.push(development);

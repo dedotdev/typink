@@ -1,9 +1,10 @@
 import { execa } from 'execa';
-import { Options } from '../types.js';
+import { InkVersion, Options } from '../types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
 import { downloadTemplate } from 'giget';
+import { getNetworkConfig } from '../utils/networks.js';
 
 export async function copyTemplateFiles(
   options: Options,
@@ -45,6 +46,11 @@ export async function copyTemplateFiles(
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
 
+  // Process network configurations
+  if (options.networks && options.networks.length > 0) {
+    await processNetworkPlaceholders(targetDir, options);
+  }
+
   // Initialize git if requested
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -52,4 +58,35 @@ export async function copyTemplateFiles(
   }
 
   task.title = `🚀 Initialized new Typink dApp`;
+}
+
+async function processNetworkPlaceholders(targetDir: string, options: Options) {
+  const { inkVersion, networks } = options;
+
+  if (!inkVersion || !networks) return;
+
+  const networkConfig = getNetworkConfig(inkVersion as InkVersion, networks);
+
+  // Files to process
+  const filesToProcess = [
+    'src/providers/app-provider.tsx', // NextJS
+    'src/providers/AppProvider.tsx', // Vite
+    'src/contracts/deployments.ts',
+  ];
+
+  for (const filePath of filesToProcess) {
+    const fullPath = path.join(targetDir, filePath);
+    if (fs.existsSync(fullPath)) {
+      let content = await fs.promises.readFile(fullPath, 'utf-8');
+
+      // Replace placeholders
+      content = content
+        .replace(/{{NETWORK_IMPORTS}}/g, networkConfig.imports)
+        .replace(/{{SUPPORTED_NETWORKS}}/g, networkConfig.supportedNetworks)
+        .replace(/{{DEFAULT_NETWORK_ID}}/g, networkConfig.defaultNetworkId)
+        .replace(/{{DEPLOYMENTS}}/g, networkConfig.deployments);
+
+      await fs.promises.writeFile(fullPath, content);
+    }
+  }
 }

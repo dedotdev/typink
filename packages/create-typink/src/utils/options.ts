@@ -1,13 +1,15 @@
-import inquirer from 'inquirer';
+import inquirer, { Answers } from 'inquirer';
 import arg from 'arg';
 import {
   BaseOptions,
   INK_VERSIONS_CHOICES,
   InkVersion,
+  LEGACY_NETWORKS,
   Options,
   TEMPLATES,
   UI,
   UI_CHOICES,
+  V6_NETWORKS,
   WALLET_CONNECTORS_CHOICES,
   WalletConnector,
 } from '../types.js';
@@ -19,6 +21,7 @@ const defaultOptions: BaseOptions = {
   walletConnector: WalletConnector.Typink,
   ui: UI.Vite,
   template: 'legacy-typink-vite',
+  networks: ['popTestnet'],
   skipInstall: false,
   pkgManager: { name: 'npm' },
   noGit: false,
@@ -38,7 +41,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
           return true;
         }
 
-        return `Project ${name} is not a valid package name with errors: ${result.errors?.join(', ')}.\nPlease use a valid package name.`;
+        return `Project ${name} is not a valid package name with errors: ${result.errors?.join(', ')}.\\nPlease use a valid package name.`;
       },
     },
     {
@@ -62,6 +65,23 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
       choices: UI_CHOICES,
       default: defaultOptions.ui,
     },
+    {
+      type: 'checkbox',
+      name: 'networks',
+      message: 'Which networks do you want to support?',
+      choices: (answers: Answers) =>
+        answers.inkVersion === InkVersion.InkV6
+          ? V6_NETWORKS // prettier-ignore
+          : LEGACY_NETWORKS,
+      default: defaultOptions.networks,
+      validate: (networks: string[]) => {
+        if (networks.length === 0) {
+          return 'Please select at least one network.';
+        }
+
+        return true;
+      },
+    },
   ];
 
   // @ts-ignore
@@ -82,6 +102,9 @@ export function parseArguments(): Options {
 
       '--template': String,
       '-t': '--template',
+
+      '--networks': [String],
+      '-N': '--networks',
 
       '--no-git': Boolean,
 
@@ -114,12 +137,31 @@ export function parseArguments(): Options {
     ? (args['--template'] as string).split('-')
     : [null, null, null];
 
+  if (args['--networks'] && args['--networks'].length > 0) {
+    if (!inkVersion) {
+      // TODO: Default to ink v6 if not provided?
+      throw new Error(`If you provide networks, you must also provide a template to determine the ink version.`);
+    } else {
+      // If args['networks'] is provided, we check if it supports the networks or examples
+      args['--networks'].forEach((network: string) => {
+        if (
+          inkVersion === InkVersion.InkV6
+            ? !V6_NETWORKS.map((o) => o.name).includes(network as any)
+            : !LEGACY_NETWORKS.map((o) => o.name).includes(network as any)
+        ) {
+          throw new Error(`Network ${network} is not !ink ${inkVersion} supported. Please use supported network.`);
+        }
+      });
+    }
+  }
+
   return {
     projectName: args['--name'] || null,
     inkVersion,
     walletConnector,
     ui,
     template: args['--template'] || null,
+    networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,
