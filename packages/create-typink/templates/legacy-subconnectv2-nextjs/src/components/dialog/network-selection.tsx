@@ -21,10 +21,10 @@ function NetworkStatusIndicator() {
 }
 
 export default function NetworkSelection() {
-  const { network, setNetworkId, supportedNetworks } = useTypink();
+  const { network, setNetwork, supportedNetworks } = useTypink();
 
   return (
-    <Select value={network.id} onValueChange={setNetworkId}>
+    <Select value={network.id} onValueChange={setNetwork}>
       <SelectTrigger className="w-fit min-w-[120px]">
         <SelectValue>
           <div className="flex items-center gap-2">

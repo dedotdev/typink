@@ -24,7 +24,7 @@ function NetworkStatusIndicator() {
 }
 
 export default function NetworkSelection() {
-  const { network, setNetworkId, supportedNetworks } = useTypink();
+  const { network, setNetwork, supportedNetworks } = useTypink();
   const { colorMode } = useColorMode();
   const btnProps = colorMode === 'light' ? { color: 'primary.700', borderColor: '#EFA9D3', bgColor: '#FFF5F9' } : {};
   const colorScheme = colorMode === 'light' ? 'primary' : undefined;
@@ -47,7 +47,7 @@ export default function NetworkSelection() {
         {Object.values(supportedNetworks).map((one) => (
           <MenuItem
             key={one.id}
-            onClick={() => setNetworkId(one.id as NetworkId)}
+            onClick={() => setNetwork(one.id as NetworkId)}
             backgroundColor={one.id === network.id ? 'gray.200' : ''}>
             <Flex direction='row' align='center' gap={2}>
               <Image rounded='full' src={one.logo} alt={one.name} width={18} />
