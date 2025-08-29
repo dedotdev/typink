@@ -18,7 +18,7 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
   const networkImports = selectedNetworkConfigs.map((network) => network.value).join(', ');
   const imports = `import { ${networkImports} } from 'typink';`;
   const supportedNetworks = `[${selectedNetworkConfigs.map((network) => network.value).join(', ')}]`;
-  const defaultNetworkId = `${selectedNetworkConfigs[0].value}.id`;
+  const defaultNetworkId = `{${selectedNetworkConfigs[0].value}.id}`;
 
   const deployments = generateDeployments(selectedNetworkConfigs, inkVersion);
 
@@ -32,7 +32,7 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
 
 function generateDeployments(networkConfigs: NetworkConfig[], inkVersion: InkVersion): string {
   const contractName = inkVersion === InkVersion.InkV6 ? 'flipper' : 'greeter';
-  const metadataName = inkVersion === InkVersion.InkV6 ? 'flipper6Metadata' : 'greeterMetadata';
+  const metadataName = inkVersion === InkVersion.InkV6 ? 'flipperMetadata' : 'greeterMetadata';
 
   const deploymentEntries = networkConfigs
     .map(

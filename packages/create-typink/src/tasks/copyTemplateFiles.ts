@@ -29,8 +29,8 @@ export async function copyTemplateFiles(
       const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
 
       // Download template directly into the project directory
-      await downloadTemplate(baseSpec, { dir: targetDir, force: true, preferOffline: true });
-      await downloadTemplate(spec, { dir: targetDir, force: true, preferOffline: true });
+      await downloadTemplate(baseSpec, { dir: targetDir, force: true });
+      await downloadTemplate(spec, { dir: targetDir, force: true });
     }
   } catch (e) {
     throw new Error(

@@ -1,7 +1,7 @@
 import { ContractDeployment } from 'typink';
 {{NETWORK_IMPORTS}}
 
-import flipper6Metadata from './artifacts/flipper/flipper6.json';
+import flipperMetadata from './artifacts/flipper/flipper.json';
 
 export enum ContractId {
   FLIPPER = 'flipper',
