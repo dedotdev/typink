@@ -2,13 +2,6 @@ name: Create-Typink Template Tests
 
 on:
   push:
-    paths:
-      - 'packages/create-typink/**'
-      - '.github/workflows/create-typink-template-tests.yml'
-  pull_request:
-    paths:
-      - 'packages/create-typink/**'
-      - '.github/workflows/create-typink-template-tests.yml'
   workflow_dispatch:
   merge_group:
 
