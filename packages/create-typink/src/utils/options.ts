@@ -44,7 +44,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     {
       type: 'list',
       name: 'inkVersion',
-      message: 'Which ink version do you want to use?',
+      message: 'Which ink! version do you want to use?',
       choices: INK_VERSIONS_CHOICES,
       default: defaultOptions.inkVersion,
     },
@@ -58,7 +58,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     {
       type: 'list',
       name: 'ui',
-      message: 'Which ui do you want to use?',
+      message: 'Which UI template do you want to use?',
       choices: UI_CHOICES,
       default: defaultOptions.ui,
     },
