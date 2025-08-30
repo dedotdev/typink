@@ -1,0 +1,160 @@
+# This workflow tests all create-typink templates by creating projects and building them
+name: Create-Typink Template Tests
+
+on:
+  push:
+    paths:
+      - 'packages/create-typink/**'
+      - '.github/workflows/create-typink-template-tests.yml'
+  pull_request:
+    paths:
+      - 'packages/create-typink/**'
+      - '.github/workflows/create-typink-template-tests.yml'
+  workflow_dispatch:
+  merge_group:
+
+env:
+  TYPINK_BRANCH_NAME: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+
+jobs:
+  test-templates:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        template: [
+          'legacy-typink-vite',
+          'legacy-subconnectv2-vite', 
+          'legacy-talisman-vite',
+          'legacy-typink-nextjs',
+          'legacy-subconnectv2-nextjs',
+          'legacy-talisman-nextjs',
+          'v6-typink-vite',
+          'v6-subconnectv2-vite',
+          'v6-talisman-vite', 
+          'v6-typink-nextjs',
+          'v6-subconnectv2-nextjs',
+          'v6-talisman-nextjs'
+        ]
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install --immutable
+
+    - name: Build create-typink CLI
+      run: |
+        yarn workspace create-typink build
+        
+    - name: Create test project with template ${{ matrix.template }}
+      run: |
+        # Create a temporary directory for testing
+        mkdir -p /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
+        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
+        
+        # Use the built create-typink CLI to create a project
+        node ${{ github.workspace }}/packages/create-typink/dist/index.js \
+          --name "test-app-${{ matrix.template }}" \
+          --template "${{ matrix.template }}" \
+          --skip-install \
+          --no-git
+
+    - name: Install dependencies in generated project
+      run: |
+        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
+        npm install
+
+    - name: Build generated project
+      run: |
+        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
+        npm run build
+
+    - name: Verify build artifacts
+      run: |
+        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
+        
+        # Check if build directory exists (different for Vite vs Next.js)
+        if [[ "${{ matrix.template }}" == *"nextjs"* ]]; then
+          # Next.js creates .next directory
+          if [ ! -d ".next" ]; then
+            echo "❌ Next.js build failed - .next directory not found"
+            exit 1
+          fi
+          echo "✅ Next.js build successful - .next directory found"
+        else
+          # Vite creates dist directory
+          if [ ! -d "dist" ]; then
+            echo "❌ Vite build failed - dist directory not found"
+            exit 1
+          fi
+          echo "✅ Vite build successful - dist directory found"
+        fi
+
+    - name: Test TypeScript compilation (if applicable)
+      run: |
+        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
+        
+        # Check if project has TypeScript and run type check
+        if [ -f "tsconfig.json" ]; then
+          npx tsc --noEmit
+          echo "✅ TypeScript compilation successful"
+        fi
+
+    - name: Clean up test directory
+      if: always()
+      run: |
+        rm -rf /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
+
+  test-cli-help:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install --immutable
+
+    - name: Build create-typink CLI
+      run: yarn workspace create-typink build
+
+    - name: Test CLI help command
+      run: |
+        node packages/create-typink/dist/index.js --help
+
+    - name: Test CLI with invalid template
+      run: |
+        # This should fail with an error message
+        if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" 2>&1 | grep -q "not supported"; then
+          echo "✅ CLI correctly rejects invalid template"
+        else
+          echo "❌ CLI should reject invalid template"
+          exit 1
+        fi
+
+    - name: Test CLI with invalid project name
+      run: |
+        # This should fail with an error message
+        if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-typink-vite" 2>&1 | grep -q "not a valid package name"; then
+          echo "✅ CLI correctly rejects invalid project name"
+        else
+          echo "❌ CLI should reject invalid project name"
+          exit 1
+        fi
