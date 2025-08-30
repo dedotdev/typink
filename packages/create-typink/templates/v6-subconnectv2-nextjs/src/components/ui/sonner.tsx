@@ -15,17 +15,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--description-text": "hsl(var(--muted-foreground))",
         } as React.CSSProperties
       }
-      toastOptions={{
-        style: {
-          "--description-text": "hsl(215 25% 45%)", // darker description for light mode
-        },
-        classNames: {
-          description: "!text-gray-600 dark:!text-gray-400",
-        },
-      }}
       {...props}
     />
   )
