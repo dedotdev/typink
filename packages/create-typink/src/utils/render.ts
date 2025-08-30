@@ -17,14 +17,9 @@ export function renderHelpMessage() {
 `);
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
-    ${chalk.gray('-w, --wallet')}                     Wallet connector <Default|Subconnect|Talisman Connect>
-    ${chalk.gray('-i, --ink-version')}                Ink version <legacy|v6> (legacy: v4 & v5) (default: v6)
-    ${chalk.gray('-t, --template')}                   Template <default> (default: default)
-    ${chalk.gray('-e, --example')}                    Example contract [legacy: <psp22|greeter>, v6: <psp22|flipper>]
-    ${chalk.gray('-N, --network')}                    Network [legacy: <Pop Testnet|Aleph Zero Testnet|Aleph Zero Mainnet|Astar|Shiden|Shibuya>, v6: <Pop Testnet>]
+    ${chalk.gray('-t, --template')}                   Template {inkVersion}-{walletConnector}-{ui} [inkVersion: <legacy|v6>, walletConnector: <typink|subconnectv2|talisman>, ui: <nextjs|vite>] (e.g. legacy-typink-vite) 
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
     ${chalk.gray('--no-git')}                         Skip git initialization
-    ${chalk.gray('-v, --version')}                    Show Typink version
     ${chalk.gray('-h, --help')}                       Show help
     `);
 }
