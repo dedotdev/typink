@@ -163,6 +163,18 @@ export function ClientProvider({
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
+    } else if (networkConnections.length > 0) {
+      // Check if all existing connections are in the supported networks list
+      const hasInvalidNetwork = networkConnections.some(
+        (conn) => !supportedNetworks.find((n) => n.id === conn.networkId),
+      );
+
+      if (hasInvalidNetwork) {
+        console.warn(
+          'Some persisted network connections are not in the supported networks list. Resetting to default networks.',
+        );
+        setNetworkConnections(initialConnections);
+      }
     }
   }, []); // Empty deps - only runs once on mount
 
