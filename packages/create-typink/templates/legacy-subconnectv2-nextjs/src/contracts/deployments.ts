@@ -1,8 +1,8 @@
-import { ContractDeployment, popTestnet } from 'typink';
+import { ContractDeployment, alephZeroTestnet } from 'typink';
 import greeterMetadata from './artifacts/greeter/greeter.json';
 
 export enum ContractId {
-  GREETER = 'greeter'  
+  GREETER = 'greeter',
 }
 
 export { greeterMetadata };
@@ -11,8 +11,8 @@ export const greeterDeployments: ContractDeployment[] = [
   {
     id: ContractId.GREETER,
     metadata: greeterMetadata,
-    network: popTestnet.id,
-    address: '5HJ2XLhBuoLkoJT5G2MfMWVpsybUtcqRGWe29Fo26JVvDCZG',
+    network: alephZeroTestnet.id,
+    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
   },
 ];
 

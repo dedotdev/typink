@@ -6,12 +6,12 @@ import { FlipperContractApi } from '@/contracts/types/flipper';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
 import { useContract } from 'typink';
-import { development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider } from 'typink';
+import { development, polkadotjs, passetHub, subwallet, talisman, TypinkProvider } from 'typink';
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = [popTestnet];
+const SUPPORTED_NETWORKS = [passetHub];
 // Uncomment the following lines to enable the development network: https://github.com/use-ink/ink-node
 // if (process.env.NODE_ENV === "development") {
 //   SUPPORTED_NETWORKS.push(development);
@@ -43,7 +43,7 @@ export function AppProvider({ children }: Props) {
       deployments={deployments}
       defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORKS}
-      defaultNetworkId={popTestnet.id}
+      defaultNetworkId={passetHub.id}
       cacheMetadata={true}
       wallets={SUPPORTED_WALLETS}>
       <AppContextProvider>{children}</AppContextProvider>
