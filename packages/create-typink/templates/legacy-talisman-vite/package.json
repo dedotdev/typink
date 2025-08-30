@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite --port 8080",
+    "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
