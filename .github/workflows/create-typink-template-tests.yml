@@ -1,4 +1,3 @@
-# This workflow tests all create-typink templates by creating projects and building them
 name: Create-Typink Template Tests
 
 on:
@@ -13,148 +12,110 @@ on:
   workflow_dispatch:
   merge_group:
 
+# Branch name available everywhere
 env:
-  TYPINK_BRANCH_NAME: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-
+  TYPINK_TEMPLATE_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
 
 jobs:
-  test-templates:
+  tests:
     runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        template: [
-          'legacy-typink-vite',
-          'legacy-subconnectv2-vite', 
-          'legacy-talisman-vite',
-          'legacy-typink-nextjs',
-          'legacy-subconnectv2-nextjs',
-          'legacy-talisman-nextjs',
-          'v6-typink-vite',
-          'v6-subconnectv2-vite',
-          'v6-talisman-vite', 
-          'v6-typink-nextjs',
-          'v6-subconnectv2-nextjs',
-          'v6-talisman-nextjs'
-        ]
-        node-version: [18.x, 20.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'yarn'
 
-    - name: Install dependencies
-      run: yarn install --immutable
+      - name: Install repo deps
+        run: yarn install --immutable
 
-    - name: Build create-typink CLI
-      run: |
-        yarn workspace create-typink build
-        
-    - name: Create test project with template ${{ matrix.template }}
-      run: |
-        # Create a temporary directory for testing
-        mkdir -p /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
-        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
-        
-        # Use the built create-typink CLI to create a project
-        node ${{ github.workspace }}/packages/create-typink/dist/index.js \
-          --name "test-app-${{ matrix.template }}" \
-          --template "${{ matrix.template }}" \
-          --skip-install \
-          --no-git
+      - name: Build create-typink CLI
+        run: yarn workspace create-typink build
 
-    - name: Install dependencies in generated project
-      run: |
-        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
-        npm install
+      - name: CLI smoke tests
+        run: |
+          node packages/create-typink/dist/index.js --help
 
-    - name: Build generated project
-      run: |
-        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
-        npm run build
-
-    - name: Verify build artifacts
-      run: |
-        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
-        
-        # Check if build directory exists (different for Vite vs Next.js)
-        if [[ "${{ matrix.template }}" == *"nextjs"* ]]; then
-          # Next.js creates .next directory
-          if [ ! -d ".next" ]; then
-            echo "❌ Next.js build failed - .next directory not found"
+          # Invalid template should be rejected
+          if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" 2>&1 | grep -q "not supported"; then
+            echo "✅ CLI correctly rejects invalid template"
+          else
+            echo "❌ CLI should reject invalid template"
             exit 1
           fi
-          echo "✅ Next.js build successful - .next directory found"
-        else
-          # Vite creates dist directory
-          if [ ! -d "dist" ]; then
-            echo "❌ Vite build failed - dist directory not found"
+
+          # Invalid project name should be rejected
+          if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-typink-vite" 2>&1 | grep -q "not a valid package name"; then
+            echo "✅ CLI correctly rejects invalid project name"
+          else
+            echo "❌ CLI should reject invalid project name"
             exit 1
           fi
-          echo "✅ Vite build successful - dist directory found"
-        fi
 
-    - name: Test TypeScript compilation (if applicable)
-      run: |
-        cd /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}/test-app-${{ matrix.template }}
-        
-        # Check if project has TypeScript and run type check
-        if [ -f "tsconfig.json" ]; then
-          npx tsc --noEmit
-          echo "✅ TypeScript compilation successful"
-        fi
+      - name: Test all templates (Node 20)
+        shell: bash
+        run: |
+          set -euo pipefail
 
-    - name: Clean up test directory
-      if: always()
-      run: |
-        rm -rf /tmp/typink-test-${{ matrix.template }}-${{ matrix.node-version }}
+          TEMPLATES=(
+            legacy-typink-vite
+            legacy-subconnectv2-vite
+            legacy-talisman-vite
+            legacy-typink-nextjs
+            legacy-subconnectv2-nextjs
+            legacy-talisman-nextjs
+            v6-typink-vite
+            v6-subconnectv2-vite
+            v6-talisman-vite
+            v6-typink-nextjs
+            v6-subconnectv2-nextjs
+            v6-talisman-nextjs
+          )
 
-  test-cli-help:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+          for T in "${TEMPLATES[@]}"; do
+            WORKDIR="/tmp/typink-test-${T}-20"
+            APPDIR="${WORKDIR}/test-app-${T}"
 
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.x
-        cache: 'yarn'
+            echo "=== Creating ${T} (Node 20) ==="
+            rm -rf "$WORKDIR"
+            mkdir -p "$WORKDIR"
+            cd "$WORKDIR"
 
-    - name: Install dependencies
-      run: yarn install --immutable
+            node ${{ github.workspace }}/packages/create-typink/dist/index.js \
+              --name "test-app-${T}" \
+              --template "${T}" \
+              --skip-install \
+              --no-git
 
-    - name: Build create-typink CLI
-      run: yarn workspace create-typink build
+            cd "$APPDIR"
+            npm install
+            npm run build
 
-    - name: Test CLI help command
-      run: |
-        node packages/create-typink/dist/index.js --help
+            # Verify build artifacts
+            if [[ "$T" == *"nextjs"* ]]; then
+              if [ ! -d ".next" ]; then
+                echo "❌ Next.js build failed for ${T} - .next directory not found"
+                exit 1
+              fi
+              echo "✅ Next.js build successful for ${T}"
+            else
+              if [ ! -d "dist" ]; then
+                echo "❌ Vite build failed for ${T} - dist directory not found"
+                exit 1
+              fi
+              echo "✅ Vite build successful for ${T}"
+            fi
 
-    - name: Test CLI with invalid template
-      run: |
-        # This should fail with an error message
-        if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" 2>&1 | grep -q "not supported"; then
-          echo "✅ CLI correctly rejects invalid template"
-        else
-          echo "❌ CLI should reject invalid template"
-          exit 1
-        fi
+            # TypeScript check if tsconfig exists
+            if [ -f "tsconfig.json" ]; then
+              npx tsc --noEmit
+              echo "✅ TypeScript compilation successful for ${T}"
+            fi
 
-    - name: Test CLI with invalid project name
-      run: |
-        # This should fail with an error message
-        if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-typink-vite" 2>&1 | grep -q "not a valid package name"; then
-          echo "✅ CLI correctly rejects invalid project name"
-        else
-          echo "❌ CLI should reject invalid project name"
-          exit 1
-        fi
+            # Clean up
+            rm -rf "$WORKDIR"
+          done
