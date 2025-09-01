@@ -99,7 +99,6 @@ export const UI_CHOICES = [
 ] as const;
 
 export const LEGACY_NETWORKS = [
-  { name: 'Pop Testnet', value: 'popTestnet', address: '5HJ2XLhBuoLkoJT5G2MfMWVpsybUtcqRGWe29Fo26JVvDCZG' },
   {
     name: 'Aleph Zero Testnet',
     value: 'alephZeroTestnet',
@@ -110,7 +109,6 @@ export const LEGACY_NETWORKS = [
 ] as const;
 
 export const V6_NETWORKS = [
-  { name: 'Pop Testnet', value: 'popTestnet', address: '0x8036a0ff5670f418FB382cA8a2367A35970C9cdc' },
   { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
   { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
   { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },

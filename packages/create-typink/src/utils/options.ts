@@ -21,7 +21,7 @@ const defaultOptions: BaseOptions = {
   walletConnector: WalletConnector.Typink,
   ui: UI.Vite,
   template: 'legacy-typink-vite',
-  networks: ['popTestnet'],
+  networks: [],
   skipInstall: false,
   pkgManager: { name: 'npm' },
   noGit: false,
@@ -161,7 +161,11 @@ export function parseArguments(): Options {
     walletConnector,
     ui,
     template: args['--template'] || null,
-    networks: args['--networks'] || null,
+    networks:
+      args['--networks'] ||
+      // If no networks are provided, we default to the first network of the selected ink version
+      (inkVersion === InkVersion.InkV6 ? [V6_NETWORKS.at(0)!.value] : [LEGACY_NETWORKS.at(0)!.value]) ||
+      null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,

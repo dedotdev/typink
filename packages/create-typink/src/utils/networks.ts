@@ -1,3 +1,4 @@
+import { stringCamelCase } from '@dedot/utils';
 import { InkVersion, LEGACY_NETWORKS, V6_NETWORKS, NetworkConfig } from '../types.js';
 
 export interface NetworkTemplateConfig {
@@ -9,7 +10,9 @@ export interface NetworkTemplateConfig {
 
 export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: string[]): NetworkTemplateConfig {
   const availableNetworks = inkVersion === InkVersion.InkV6 ? V6_NETWORKS : LEGACY_NETWORKS;
-  const selectedNetworkConfigs = availableNetworks.filter((network) => selectedNetworks.includes(network.value));
+  const selectedNetworkConfigs = availableNetworks.filter((network) =>
+    selectedNetworks.map((one) => stringCamelCase(one)).includes(network.value),
+  );
 
   if (selectedNetworkConfigs.length === 0) {
     throw new Error('No valid networks selected');
