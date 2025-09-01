@@ -70,7 +70,7 @@ async function processNetworkPlaceholders(targetDir: string, options: Options) {
   // Files to process
   const filesToProcess = [
     'src/providers/app-provider.tsx', // NextJS
-    'src/providers/AppProvider.tsx', // Vite
+    'src/main.tsx', // Vite
     'src/contracts/deployments.ts',
   ];
 
