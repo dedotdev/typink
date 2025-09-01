@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, HStack, Text } from '@chakra-ui/react';
-import { useCheckMappedAccount } from '@/hooks/useCheckedMapAccount';
+import { useCheckMappedAccount } from 'typink';
 import MapAccountButton from './MapAccountButton';
 
 export default function NonMappedAccountAlert() {

@@ -1,0 +1,122 @@
+name: Create-Typink Template Tests
+
+on:
+  push:
+  workflow_dispatch:
+  merge_group:
+
+env:
+  TYPINK_TEMPLATE_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'yarn'
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install repo deps
+        run: yarn install --immutable
+
+      - name: Build create-typink CLI
+        run: yarn workspace create-typink build
+
+      - name: CLI smoke tests
+        run: |
+          node packages/create-typink/dist/index.js --help
+
+          # Invalid template should be rejected
+          if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" 2>&1 | grep -q "not supported"; then
+            echo "✅ CLI correctly rejects invalid template"
+          else
+            echo "❌ CLI should reject invalid template"
+            exit 1
+          fi
+
+          # Invalid project name should be rejected
+          if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-typink-vite" 2>&1 | grep -q "not a valid package name"; then
+            echo "✅ CLI correctly rejects invalid project name"
+          else
+            echo "❌ CLI should reject invalid project name"
+            exit 1
+          fi
+
+      - name: Test all templates (Node 20 + Bun)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TEMPLATES=(
+            legacy-typink-vite
+            legacy-subconnectv2-vite
+            legacy-talisman-vite
+            legacy-typink-nextjs
+            legacy-subconnectv2-nextjs
+            legacy-talisman-nextjs
+            v6-typink-vite
+            v6-subconnectv2-vite
+            v6-talisman-vite
+            v6-typink-nextjs
+            v6-subconnectv2-nextjs
+            v6-talisman-nextjs
+          )
+
+          for T in "${TEMPLATES[@]}"; do
+            WORKDIR="/tmp/typink-test-${T}-20"
+            APPDIR="${WORKDIR}/test-app-${T}"
+
+            echo "=== Creating ${T} (Node 20 + Bun) ==="
+            rm -rf "$WORKDIR"
+            mkdir -p "$WORKDIR"
+            cd "$WORKDIR"
+
+            node ${{ github.workspace }}/packages/create-typink/dist/index.js \
+              --name "test-app-${T}" \
+              --template "${T}" \
+              --skip-install \
+              --no-git
+
+            cd "$APPDIR"
+
+            # Install deps with Bun
+            bun install --no-progress
+
+            # Build with Bun (runs package.json "build" script)
+            bun run build
+
+            # Verify build artifacts
+            if [[ "$T" == *"nextjs"* ]]; then
+              if [ ! -d ".next" ]; then
+                echo "❌ Next.js build failed for ${T} - .next directory not found"
+                exit 1
+              fi
+              echo "✅ Next.js build successful for ${T}"
+            else
+              if [ ! -d "dist" ]; then
+                echo "❌ Vite build failed for ${T} - dist directory not found"
+                exit 1
+              fi
+              echo "✅ Vite build successful for ${T}"
+            fi
+
+            # TypeScript check if tsconfig exists
+            if [ -f "tsconfig.json" ]; then
+              bun x tsc --noEmit
+              echo "✅ TypeScript compilation successful for ${T}"
+            fi
+
+            # Clean up
+            rm -rf "$WORKDIR"
+          done

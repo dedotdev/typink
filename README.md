@@ -82,7 +82,7 @@ Check out Typink documentation on our website: https://typink.dev
 
 ### Example Dapps
 
-- [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo) (https://typink-demo.netlify.app/)
+- [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo-inkv5) (https://typink-demo.netlify.app/)
 - [Demo with SubConnect](https://github.com/dedotdev/typink/tree/main/examples/demo-subconnect) (https://typink-subconnect.netlify.app/)
 
 ### License
