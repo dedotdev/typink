@@ -25,17 +25,23 @@ export async function copyTemplateFiles(
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
-      const baseSpec = `github:${owner}/${repo}/packages/create-typink/templates/${ui}#${repoBranch}`;
-      const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
+      const templatesSpec = `github:${owner}/${repo}/packages/create-typink/templates#${repoBranch}`;
 
-      // Download template directly into the project directory
-      await downloadTemplate(baseSpec, { dir: targetDir, force: true });
-      await downloadTemplate(spec, { dir: targetDir, force: true });
+      const tempDir = path.join(targetDir, '.temp');
+      const baseDir = path.join(tempDir, ui!);
+      const specDir = path.join(tempDir, template);
+
+      fs.mkdirSync(tempDir, { recursive: true });
+
+      await downloadTemplate(templatesSpec, { dir: tempDir, force: true });
+
+      fs.cpSync(baseDir, targetDir, { recursive: true });
+      fs.cpSync(specDir, targetDir, { recursive: true });
+
+      fs.rmSync(tempDir, { recursive: true, force: true });
     }
   } catch (e) {
-    throw new Error(
-      `[create-typink] giget download failed, falling back to git clone. Reason: ${(e as Error).message}`,
-    );
+    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
   }
 
   // Set package name
