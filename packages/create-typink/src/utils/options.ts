@@ -161,11 +161,7 @@ export function parseArguments(): Options {
     walletConnector,
     ui,
     template: args['--template'] || null,
-    networks:
-      args['--networks'] ||
-      // If no networks are provided, we default to the first network of the selected ink version
-      (inkVersion === InkVersion.InkV6 ? [V6_NETWORKS.at(0)!.value] : [LEGACY_NETWORKS.at(0)!.value]) ||
-      null,
+    networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
     noGit: !!args['--no-git'],
     help: args['--help'] || false,
