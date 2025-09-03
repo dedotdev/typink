@@ -2,7 +2,6 @@ import { stringCamelCase } from '@dedot/utils';
 import { InkVersion, LEGACY_NETWORKS, V6_NETWORKS, NetworkConfig } from '../types.js';
 
 export interface NetworkTemplateConfig {
-  imports: string;
   supportedNetworks: string;
   defaultNetworkId: string;
   deployments: string;
@@ -18,15 +17,12 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
     throw new Error('No valid networks selected');
   }
 
-  const networkImports = selectedNetworkConfigs.map((network) => network.value).join(', ');
-  const imports = `import { ${networkImports} } from 'typink';`;
-  const supportedNetworks = `[${selectedNetworkConfigs.map((network) => network.value).join(', ')}]`;
-  const defaultNetworkId = `{${selectedNetworkConfigs[0].value}.id}`;
+  const supportedNetworks = selectedNetworkConfigs.map((network) => network.value).join(', ');
+  const defaultNetworkId = `${selectedNetworkConfigs[0].value}.id`;
 
   const deployments = generateDeployments(selectedNetworkConfigs, inkVersion);
 
   return {
-    imports,
     supportedNetworks,
     defaultNetworkId,
     deployments,

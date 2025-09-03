@@ -1,5 +1,4 @@
-import { ContractDeployment } from 'typink';
-{{NETWORK_IMPORTS}}
+import { ContractDeployment, {{ SUPPORTED_NETWORKS }} } from 'typink';
 
 import flipperMetadata from './artifacts/flipper/flipper.json';
 
@@ -7,4 +6,4 @@ export enum ContractId {
   FLIPPER = 'flipper',
 }
 
-{{DEPLOYMENTS}}
+{{ DEPLOYMENTS }}

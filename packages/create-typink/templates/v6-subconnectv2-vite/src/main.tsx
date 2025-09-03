@@ -8,13 +8,12 @@ import { deployments } from '@/contracts/deployments';
 import { AppProvider } from '@/providers/AppProvider.tsx';
 import { WalletConnectorProvider, useWalletConnector } from '@/providers/WalletConnectorProvider.tsx';
 import { theme } from '@/theme';
-import { TypinkProvider, development, popTestnet } from 'typink';
-{{NETWORK_IMPORTS}}
+import { TypinkProvider, {{ SUPPORTED_NETWORKS }} } from 'typink';
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = {{SUPPORTED_NETWORKS}};
+const SUPPORTED_NETWORKS = [ {{ SUPPORTED_NETWORKS }} ];
 // Uncomment to add support for development contracts node: https://github.com/paritytech/substrate-contracts-node
 // if (process.env.NODE_ENV === 'development') {
 //   SUPPORTED_NETWORKS.push(development);
@@ -31,7 +30,7 @@ function TypinkApp() {
         appName='Typink Dapp'
         deployments={deployments}
         defaultCaller={DEFAULT_CALLER}
-        defaultNetworkId={popTestnet.id}
+        defaultNetworkId={ {{ DEFAULT_NETWORK_ID }} }
         supportedNetworks={SUPPORTED_NETWORKS}
         signer={wallet?.signer}
         connectedAccount={connectedAccount}>
