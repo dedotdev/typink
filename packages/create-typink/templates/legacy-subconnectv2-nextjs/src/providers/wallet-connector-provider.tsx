@@ -24,7 +24,7 @@ export const useWalletConnector = () => {
   return useContext(WalletConnectorContext);
 };
 
-interface WalletConnectorProviderProps extends Props {}
+interface WalletConnectorProviderProps extends Props {} // eslint-disable-line
 
 export const WalletConnectorProvider = ({ children }: WalletConnectorProviderProps) => {
   return (

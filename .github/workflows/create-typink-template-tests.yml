@@ -101,6 +101,9 @@ jobs:
             # Install deps with Bun
             bun install --no-progress
 
+            # Lint with Bun (runs package.json "lint" script)
+            bun run lint
+
             # Build with Bun (runs package.json "build" script)
             bun run build
 

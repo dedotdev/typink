@@ -5,9 +5,9 @@ import { createContext, useContext } from "react";
 import { Props } from "@/lib/types";
 import { Contract } from "dedot/contracts";
 import { GreeterContractApi } from "@/contracts/types/greeter";
-import { useContract } from "typink";
 import { ContractId, deployments } from "@/contracts/deployments";
 import {
+  useContract,
   TypinkProvider,
   {{ SUPPORTED_NETWORKS }}
 } from "typink";

@@ -5,9 +5,8 @@ import { createContext, useContext } from 'react';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
 import { GreeterContractApi } from '@/contracts/types/greeter';
-import { useContract } from 'typink';
 import { ContractId, deployments } from '@/contracts/deployments';
-import { TypinkProvider, {{ SUPPORTED_NETWORKS }} } from 'typink';
+import { useContract, TypinkProvider, {{ SUPPORTED_NETWORKS }} } from 'typink';
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 
