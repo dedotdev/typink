@@ -32,6 +32,11 @@
     "react-use": "^17.6.0"
   },
   "devDependencies": {
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "eslint-plugin-import": "^2.32.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18",
