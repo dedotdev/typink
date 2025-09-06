@@ -1,7 +1,6 @@
 'use client';
 
-import { useConnectWallet, Web3OnboardProvider } from '@subwallet-connect/react';
-import { init } from '@subwallet-connect/react';
+import { init, useConnectWallet, Web3OnboardProvider } from '@subwallet-connect/react';
 import { createContext, useContext } from 'react';
 import { useLocalStorage } from 'react-use';
 import type { WalletState } from '@subwallet-connect/core';

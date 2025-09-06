@@ -1,6 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
@@ -19,7 +18,7 @@ const SUPPORTED_NETWORKS = [ {{ SUPPORTED_NETWORKS }} ];
 //   SUPPORTED_NETWORKS.push(development);
 // }
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const root = createRoot(document.getElementById('root') as HTMLElement);
 
 function TypinkApp() {
   const { wallet, connectedAccount } = useWalletConnector();
