@@ -1,16 +1,17 @@
-import { execa } from 'execa';
-import { Options } from '../types.js';
+import {execa} from 'execa';
+import {InkVersion, Options} from '../types.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
-import { downloadTemplate } from 'giget';
+import {DefaultRenderer, ListrTaskWrapper, SimpleRenderer} from 'listr2';
+import {downloadTemplate} from 'giget';
+import {getNetworkConfig} from '../utils/networks.js';
 
 export async function copyTemplateFiles(
-  options: Options,
-  targetDir: string,
-  task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
+    options: Options,
+    targetDir: string,
+    task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, inkVersion, walletConnector, ui } = options;
+  const {projectName, noGit, inkVersion, walletConnector, ui} = options;
   const template = `${inkVersion}-${walletConnector}-${ui}`;
 
   task.title = `🚀 Initializing new Typink dApp`;
@@ -24,15 +25,23 @@ export async function copyTemplateFiles(
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
-      const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
+      const templatesSpec = `github:${owner}/${repo}/packages/create-typink/templates#${repoBranch}`;
 
-      // Download template directly into the project directory
-      await downloadTemplate(spec, { dir: targetDir, force: true });
+      const tempDir = path.join(targetDir, '.temp');
+      const baseDir = path.join(tempDir, ui!);
+      const specDir = path.join(tempDir, template);
+
+      fs.mkdirSync(tempDir, {recursive: true});
+
+      await downloadTemplate(templatesSpec, {dir: tempDir, force: true});
+
+      fs.cpSync(baseDir, targetDir, {recursive: true});
+      fs.cpSync(specDir, targetDir, {recursive: true});
+
+      fs.rmSync(tempDir, {recursive: true, force: true});
     }
   } catch (e) {
-    throw new Error(
-      `[create-typink] giget download failed, falling back to git clone. Reason: ${(e as Error).message}`,
-    );
+    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
   }
 
   // Set package name
@@ -43,11 +52,46 @@ export async function copyTemplateFiles(
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
 
+  // Process network configurations
+  if (options.networks && options.networks.length > 0) {
+    await processNetworkPlaceholders(targetDir, options);
+  }
+
   // Initialize git if requested
   if (!noGit) {
-    await execa('git', ['init'], { cwd: targetDir });
-    await execa('git', ['checkout', '-b', 'main'], { cwd: targetDir });
+    await execa('git', ['init'], {cwd: targetDir});
+    await execa('git', ['checkout', '-b', 'main'], {cwd: targetDir});
   }
 
   task.title = `🚀 Initialized new Typink dApp`;
+}
+
+async function processNetworkPlaceholders(targetDir: string, options: Options) {
+  const {inkVersion, networks} = options;
+
+  if (!inkVersion || !networks) return;
+
+  const networkConfig = getNetworkConfig(inkVersion as InkVersion, networks);
+
+  // Files to process
+  const filesToProcess = [
+    'src/providers/app-provider.tsx', // NextJS
+    'src/main.tsx', // Vite
+    'src/contracts/deployments.ts',
+  ];
+
+  for (const filePath of filesToProcess) {
+    const fullPath = path.join(targetDir, filePath);
+    if (fs.existsSync(fullPath)) {
+      let content = await fs.promises.readFile(fullPath, 'utf-8');
+
+      // Replace placeholders
+      content = content
+          .replace(/{{\s*SUPPORTED_NETWORKS\s*}}/g, networkConfig.supportedNetworks)
+          .replace(/{{\s*DEFAULT_NETWORK_ID\s*}}/g, networkConfig.defaultNetworkId)
+          .replace(/{{\s*DEPLOYMENTS\s*}}/g, networkConfig.deployments);
+
+      await fs.promises.writeFile(fullPath, content);
+    }
+  }
 }

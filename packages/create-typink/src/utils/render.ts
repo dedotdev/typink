@@ -18,6 +18,7 @@ export function renderHelpMessage() {
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
     ${chalk.gray('-t, --template')}                   Template {inkVersion}-{walletConnector}-{ui} [inkVersion: <legacy|v6>, walletConnector: <typink|subconnectv2|talisman>, ui: <nextjs|vite>] (e.g. legacy-typink-vite) 
+    ${chalk.gray('--networks')}                       Comma-separated list of networks (e.g. popTestnet,alephZeroTestnet)
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
     ${chalk.gray('--no-git')}                         Skip git initialization
     ${chalk.gray('-h, --help')}                       Show help

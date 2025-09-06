@@ -20,6 +20,7 @@ import {
 import { GithubSvgIcon, RESOURCE_BASE_URL } from '@/components/shared/icons.tsx';
 import { DownloadIcon } from '@chakra-ui/icons';
 import { ExtensionWallet, useTypink, Wallet } from 'typink';
+import { ButtonStyle } from '@/types.ts';
 
 interface WalletButtonProps {
   walletInfo: Wallet;
@@ -65,11 +66,6 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
     </Button>
   );
 };
-
-export enum ButtonStyle {
-  BUTTON,
-  MENU_ITEM,
-}
 
 interface WalletSelectionProps {
   buttonStyle?: ButtonStyle;

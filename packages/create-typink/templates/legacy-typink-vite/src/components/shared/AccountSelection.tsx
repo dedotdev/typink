@@ -1,9 +1,10 @@
 import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import { useEffect, useMemo } from 'react';
-import WalletSelection, { ButtonStyle } from '@/components/shared/WalletSelection.tsx';
+import WalletSelection from '@/components/shared/WalletSelection.tsx';
 import { shortenAddress } from '@/utils/string.ts';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { formatBalance, useBalances, useTypink } from 'typink';
+import { ButtonStyle } from '@/types.ts';
 
 function ConnectedWallet() {
   const { connectedWallets } = useTypink();
