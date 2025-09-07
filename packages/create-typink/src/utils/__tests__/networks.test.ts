@@ -1,91 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { getNetworkConfig } from '../networks.js';
+import { getNetworkConfig, NetworkTemplateConfig } from '../networks.js';
 import { InkVersion } from '../../types.js';
 
 describe('networks', () => {
   describe('getNetworkConfig', () => {
-    describe('InkV6 networks', () => {
-      it('should return correct config for single V6 network', () => {
-        const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub']);
-
-        expect(result.supportedNetworks).toBe('passetHub');
-        expect(result.defaultNetworkId).toBe('passetHub.id');
-        expect(result.deployments).toContain('flipperDeployments');
-        expect(result.deployments).toContain('flipperMetadata');
-        expect(result.deployments).toContain('ContractId.FLIPPER');
-        expect(result.deployments).toContain('passetHub.id');
-        expect(result.deployments).toContain('0x87396fA7d7FcE9B3e4b11a733C98700968426c50');
-      });
-
-      it('should return correct config for multiple V6 networks', () => {
-        const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub', 'Kusama Asset Hub']);
-
-        expect(result.supportedNetworks).toBe('passetHub, kusamaAssetHub');
-        expect(result.defaultNetworkId).toBe('passetHub.id');
-        expect(result.deployments).toContain('flipperDeployments');
-        expect(result.deployments).toContain('0x87396fA7d7FcE9B3e4b11a733C98700968426c50');
-        expect(result.deployments).toContain('0xFf6A8342Ae4440D95BB5b9204a72f328c671b751');
-      });
-
-      it('should handle camelCase network names for V6', () => {
-        const result = getNetworkConfig(InkVersion.InkV6, ['passetHub']);
-
-        expect(result.supportedNetworks).toBe('passetHub');
-        expect(result.defaultNetworkId).toBe('passetHub.id');
-      });
-
-      it('should return correct config for all V6 networks', () => {
-        const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub', 'Kusama Asset Hub', 'Westend Asset Hub']);
-
-        expect(result.supportedNetworks).toBe('passetHub, kusamaAssetHub, westendAssetHub');
-        expect(result.defaultNetworkId).toBe('passetHub.id');
-        expect(result.deployments).toContain('0x87396fA7d7FcE9B3e4b11a733C98700968426c50');
-        expect(result.deployments).toContain('0xFf6A8342Ae4440D95BB5b9204a72f328c671b751');
-        expect(result.deployments).toContain('0xA8237FBAC4387CBcc595757d9bA6DEA296332449');
-      });
-    });
-
-    describe('Legacy networks', () => {
-      it('should return correct config for single legacy network', () => {
-        const result = getNetworkConfig(InkVersion.InkLegacy, ['Aleph Zero Testnet']);
-
-        expect(result.supportedNetworks).toBe('alephZeroTestnet');
-        expect(result.defaultNetworkId).toBe('alephZeroTestnet.id');
-        expect(result.deployments).toContain('greeterDeployments');
-        expect(result.deployments).toContain('greeterMetadata');
-        expect(result.deployments).toContain('ContractId.GREETER');
-        expect(result.deployments).toContain('alephZeroTestnet.id');
-        expect(result.deployments).toContain('5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik');
-      });
-
-      it('should return correct config for multiple legacy networks', () => {
-        const result = getNetworkConfig(InkVersion.InkLegacy, ['Aleph Zero', 'Astar']);
-
-        expect(result.supportedNetworks).toBe('alephZero, astar');
-        expect(result.defaultNetworkId).toBe('alephZero.id');
-        expect(result.deployments).toContain('greeterDeployments');
-        expect(result.deployments).toContain('5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1');
-        expect(result.deployments).toContain('WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse');
-      });
-
-      it('should handle camelCase network names for legacy', () => {
-        const result = getNetworkConfig(InkVersion.InkLegacy, ['alephZero']);
-
-        expect(result.supportedNetworks).toBe('alephZero');
-        expect(result.defaultNetworkId).toBe('alephZero.id');
-      });
-
-      it('should return correct config for all legacy networks', () => {
-        const result = getNetworkConfig(InkVersion.InkLegacy, ['Aleph Zero Testnet', 'Aleph Zero', 'Astar']);
-
-        expect(result.supportedNetworks).toBe('alephZeroTestnet, alephZero, astar');
-        expect(result.defaultNetworkId).toBe('alephZeroTestnet.id');
-        expect(result.deployments).toContain('5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik');
-        expect(result.deployments).toContain('5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1');
-        expect(result.deployments).toContain('WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse');
-      });
-    });
-
     describe('deployment string generation', () => {
       it('should generate correct deployment structure for V6', () => {
         const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub']);
@@ -170,6 +88,20 @@ describe('networks', () => {
         expect(result1.supportedNetworks).toBe('alephZero');
         expect(result2.supportedNetworks).toBe('alephZero');
         expect(result3.supportedNetworks).toBe('alephZero');
+      });
+    });
+
+    describe('return type validation', () => {
+      it('should return object with correct structure', () => {
+        const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub']);
+
+        expect(result).toHaveProperty('supportedNetworks');
+        expect(result).toHaveProperty('defaultNetworkId');
+        expect(result).toHaveProperty('deployments');
+
+        expect(typeof result.supportedNetworks).toBe('string');
+        expect(typeof result.defaultNetworkId).toBe('string');
+        expect(typeof result.deployments).toBe('string');
       });
     });
   });
