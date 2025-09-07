@@ -139,7 +139,6 @@ export function parseArguments(): Options {
 
   if (args['--networks'] && args['--networks'].length > 0) {
     if (!inkVersion) {
-      // TODO: Default to ink v6 if not provided?
       throw new Error(`If you provide networks, you must also provide a template to determine the ink version.`);
     } else {
       // If args['networks'] is provided, we check if it supports the networks or examples
