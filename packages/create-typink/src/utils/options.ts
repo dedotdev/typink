@@ -42,7 +42,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
           return true;
         }
 
-        return `Project ${name} is not a valid package name with errors: ${result.errors?.join(', ')}.\\nPlease use a valid package name.`;
+        return `Project ${name} is not a valid package name with errors: ${result.errors?.join(', ')}.\nPlease use a valid package name.`;
       },
     },
     {
@@ -149,7 +149,7 @@ export function parseArguments(): Options {
             ? !V6_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
             : !LEGACY_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
         ) {
-          throw new Error(`Network ${network} is not !ink ${inkVersion} supported. Please use supported network.`);
+          throw new Error(`Network ${network} is not ink! ${inkVersion} supported. Please use supported network.`);
         }
       });
     }
