@@ -4,7 +4,7 @@ import { InkVersion, LEGACY_NETWORKS, V6_NETWORKS, NetworkConfig } from '../type
 export interface NetworkTemplateConfig {
   supportedNetworks: string;
   defaultNetworkId: string;
-  deployments: string;
+  deploymentEntries: string;
 }
 
 export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: string[]): NetworkTemplateConfig {
@@ -19,16 +19,16 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
 
   const supportedNetworks = selectedNetworkConfigs.map((network) => network.value).join(', ');
   const defaultNetworkId = `${selectedNetworkConfigs[0].value}.id`;
-  const deployments = generateDeployments(selectedNetworkConfigs, inkVersion);
+  const deploymentEntries = generateDeploymentEntries(selectedNetworkConfigs, inkVersion);
 
   return {
     supportedNetworks,
     defaultNetworkId,
-    deployments,
+    deploymentEntries,
   };
 }
 
-function generateDeployments(networkConfigs: NetworkConfig[], inkVersion: InkVersion): string {
+function generateDeploymentEntries(networkConfigs: NetworkConfig[], inkVersion: InkVersion): string {
   const contractName = inkVersion === InkVersion.InkV6 ? 'flipper' : 'greeter';
   const metadataName = inkVersion === InkVersion.InkV6 ? 'flipperMetadata' : 'greeterMetadata';
 
@@ -44,5 +44,5 @@ function generateDeployments(networkConfigs: NetworkConfig[], inkVersion: InkVer
     )
     .join(',\n');
 
-  return `export const ${contractName}Deployments: ContractDeployment[] = [${deploymentEntries}];`;
+  return deploymentEntries;
 }

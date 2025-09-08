@@ -5,9 +5,9 @@ import { createContext, useContext } from 'react';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
 import { FlipperContractApi } from '@/contracts/types/flipper';
-import { useContract } from 'typink';
 import { ContractId, deployments } from '@/contracts/deployments';
 import {
+  useContract,
   TypinkProvider,
   // -- START_SUPPORTED_NETWORKS --
   passetHub,

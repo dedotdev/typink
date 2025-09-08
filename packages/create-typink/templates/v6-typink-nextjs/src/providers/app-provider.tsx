@@ -5,8 +5,8 @@ import { ContractId, deployments } from '@/contracts/deployments';
 import { FlipperContractApi } from '@/contracts/types/flipper';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
-import { useContract } from 'typink';
 import {
+  useContract,
   polkadotjs,
   subwallet,
   talisman,
