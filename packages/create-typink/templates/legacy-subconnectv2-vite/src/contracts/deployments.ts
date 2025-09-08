@@ -15,7 +15,7 @@ export const greeterDeployments: ContractDeployment[] = [
   // -- START_DEPLOYMENTS --
   {
     id: ContractId.GREETER,
-    metadata: greeterMetadata as any,
+    metadata: greeterMetadata,
     network: alephZeroTestnet.id,
     address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
   },

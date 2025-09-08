@@ -14,7 +14,7 @@ export const flipperDeployments: ContractDeployment[] = [
   // -- START_DEPLOYMENTS --
   {
     id: ContractId.FLIPPER,
-    metadata: flipperMetadata as any,
+    metadata: flipperMetadata,
     network: passetHub.id,
     address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50',
   },
