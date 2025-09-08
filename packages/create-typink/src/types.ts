@@ -8,6 +8,7 @@ export type BaseOptions = {
   skipInstall: boolean;
   inkVersion: InkVersion | null;
   walletConnector: WalletConnector | null;
+  networks: string[] | null;
   ui: UI | null;
   template: Template | null;
   // This option will be determined by the user agent instead of being set by the user
@@ -96,3 +97,25 @@ export const UI_CHOICES = [
     value: UI.NextJS,
   },
 ] as const;
+
+export const LEGACY_NETWORKS = [
+  {
+    name: 'Aleph Zero Testnet',
+    value: 'alephZeroTestnet',
+    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
+  },
+  { name: 'Aleph Zero', value: 'alephZero', address: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1' },
+  { name: 'Astar', value: 'astar', address: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse' },
+] as const;
+
+export const V6_NETWORKS = [
+  { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
+  { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
+  { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },
+] as const;
+
+export type NetworkConfig = {
+  name: string;
+  value: string;
+  address: string;
+};
