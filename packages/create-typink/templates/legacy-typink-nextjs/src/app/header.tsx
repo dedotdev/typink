@@ -14,7 +14,7 @@ export default function MainHeader() {
   return (
     <div className='border-b border-gray-200 dark:border-gray-800'>
       <div className='max-w-4xl px-4 mx-auto flex justify-between items-center gap-4 h-16'>
-        <Link href='/' className='w-24'>
+        <Link href='/' className='w-8 md:w-24'>
           <NoSsr>
             <TypinkLogo />
           </NoSsr>
