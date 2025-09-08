@@ -4,8 +4,15 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { useContract, useContractTx, usePSP22Balance, useTypink, formatBalance, useRootStorage } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import {
+  useContract,
+  useContractTx,
+  usePSP22Balance,
+  useTypink,
+  formatBalance,
+  useRootStorage,
+  txToaster,
+} from 'typink';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
@@ -47,19 +54,20 @@ export default function Psp22Board() {
     try {
       await mintTx.signAndSend({
         args: [BigInt(100 * Math.pow(10, tokenDecimal))],
-        callback: ({ status }) => {
+        callback: (progress) => {
+          const { status } = progress;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
             refreshStorage().catch(console.error);
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
+      toaster.onTxError(e);
     } finally {
       refreshStorage().catch(console.error);
     }

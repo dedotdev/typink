@@ -14,11 +14,10 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { SubstrateAddress, useDeployer, useDeployerTx } from 'typink';
+import { SubstrateAddress, txToaster, useDeployer, useDeployerTx } from 'typink';
 import { greeterMetadata } from '@/contracts/deployments.ts';
 import { GreeterContractApi } from '@/contracts/types/greeter';
 import { useState } from 'react';
-import { txToaster } from '@/utils/txToaster.tsx';
 import { numberToHex } from 'dedot/utils';
 import { useLocalStorage } from 'react-use';
 
@@ -43,7 +42,8 @@ export function ContractDeployerBoard() {
       await newGreeterTx.signAndSend({
         args: [initMessage],
         txOptions: { salt },
-        callback: ({ status }, contractAddress) => {
+        callback: (progress, contractAddress) => {
+          const { status } = progress;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
@@ -56,12 +56,12 @@ export function ContractDeployerBoard() {
             setDeployedContracts((prev) => [{ address: contractAddress, at: Date.now() }, ...(prev || [])]);
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
+      toaster.onTxError(e);
     }
   };
 

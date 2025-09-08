@@ -7580,8 +7580,8 @@ __metadata:
     framer-motion: "npm:^10.18.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-toastify: "npm:^10.0.6"
     react-use: "npm:^17.6.0"
+    sonner: "npm:^2.0.7"
     svelte-qrcode: "npm:^1.0.1"
     typescript: "npm:^5.5.2"
     typink: "workspace:*"
@@ -13969,6 +13969,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sonner@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "sonner@npm:2.0.7"
+  peerDependencies:
+    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10/c80321646f7fe06f92f4c16da9d72a27aec34abbf41438f8d8e8292ba8546d6bb620c54a113928f049948db1ad29d0b2ad3e9cb29dd5802c30951b41c99f12c4
+  languageName: node
+  linkType: hard
+
 "sort-keys@npm:^2.0.0":
   version: 2.0.0
   resolution: "sort-keys@npm:2.0.0"
@@ -14911,6 +14921,13 @@ __metadata:
     "@dedot/chaintypes": ">=0.132.0"
     dedot: ">=0.15.0"
     react: ">=18.3.1"
+    react-toastify: ">=10.0.0"
+    sonner: ">=2.0.0"
+  peerDependenciesMeta:
+    react-toastify:
+      optional: true
+    sonner:
+      optional: true
   languageName: unknown
   linkType: soft
 
