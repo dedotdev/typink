@@ -14,6 +14,7 @@ import {
   WalletConnector,
 } from '../types.js';
 import validate from 'validate-npm-package-name';
+import { stringCamelCase } from '@dedot/utils';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
@@ -145,8 +146,8 @@ export function parseArguments(): Options {
       args['--networks'].forEach((network: string) => {
         if (
           inkVersion === InkVersion.InkV6
-            ? !V6_NETWORKS.map((o) => o.name).includes(network as any)
-            : !LEGACY_NETWORKS.map((o) => o.name).includes(network as any)
+            ? !V6_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
+            : !LEGACY_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
         ) {
           throw new Error(`Network ${network} is not !ink ${inkVersion} supported. Please use supported network.`);
         }
