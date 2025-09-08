@@ -77,16 +77,16 @@ async function processNetworkPlaceholders(targetDir: string, options: Options) {
       // Replace placeholders
       content = content
         .replace(
-          /\/\/ -- START_SUPPORTED_NETWORKS -- ([\s\S]*?) \/\/ -- END_SUPPORTED_NETWORKS --/g,
+          /\/\/ -- START_SUPPORTED_NETWORKS --([\s\S]*?)\/\/ -- END_SUPPORTED_NETWORKS --/g,
           networkConfig.supportedNetworks,
         )
         .replace(
-          /\/\/ -- START_DEFAULT_NETWORK_ID -- ([\s\S]*?) \/\/ -- END_DEFAULT_NETWORK_ID --/g,
+          /\/\/ -- START_DEFAULT_NETWORK_ID --([\s\S]*?)\/\/ -- END_DEFAULT_NETWORK_ID --/g,
           networkConfig.defaultNetworkId,
         )
         .replace(
-          /\/\/ -- START_DEPLOYMENTS -- ([\s\S]*?) \/\/ -- END_DEPLOYMENTS --/g, // prettier-ignore
-          networkConfig.deployments,
+          /\/\/ -- START_DEPLOYMENTS --([\s\S]*?)\/\/ -- END_DEPLOYMENTS --/g, // prettier-ignore
+          networkConfig.deploymentEntries,
         );
 
       await fs.promises.writeFile(fullPath, content);
