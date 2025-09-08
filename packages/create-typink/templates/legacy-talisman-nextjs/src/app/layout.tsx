@@ -28,8 +28,8 @@ export default function RootLayout({
                 <main className='flex-1 flex flex-col'>{children}</main>
                 <MainFooter />
               </div>
+              <Toaster />
             </AppProvider>
-            <Toaster />
           </ThemeProvider>
         </WalletConnectorProvider>
       </body>

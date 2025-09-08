@@ -37,7 +37,7 @@ function generateDeploymentEntries(networkConfigs: NetworkConfig[], inkVersion: 
       (network) =>
         `{
           id: ContractId.${contractName.toUpperCase()},
-          metadata: ${metadataName} as any,
+          metadata: ${metadataName},
           network: ${network.value}.id,
           address: '${network.address}',
         }`,

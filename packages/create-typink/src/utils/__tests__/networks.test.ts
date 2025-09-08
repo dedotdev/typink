@@ -18,7 +18,7 @@ describe('networks', () => {
         const result = getNetworkConfig(InkVersion.InkLegacy, ['Aleph Zero']);
 
         expect(result.deploymentEntries).toMatch(/id: ContractId\.GREETER,/);
-        expect(result.deploymentEntries).toMatch(/metadata: greeterMetadata as any,/);
+        expect(result.deploymentEntries).toMatch(/metadata: greeterMetadata,/);
         expect(result.deploymentEntries).toMatch(/network: alephZero\.id,/);
         expect(result.deploymentEntries).toMatch(/address: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1',/);
       });
