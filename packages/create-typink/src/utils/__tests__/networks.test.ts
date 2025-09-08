@@ -9,7 +9,7 @@ describe('networks', () => {
         const result = getNetworkConfig(InkVersion.InkV6, ['Passet Hub']);
 
         expect(result.deploymentEntries).toMatch(/id: ContractId\.FLIPPER,/);
-        expect(result.deploymentEntries).toMatch(/metadata: flipperMetadata as any,/);
+        expect(result.deploymentEntries).toMatch(/metadata: flipperMetadata,/);
         expect(result.deploymentEntries).toMatch(/network: passetHub\.id,/);
         expect(result.deploymentEntries).toMatch(/address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50',/);
       });
