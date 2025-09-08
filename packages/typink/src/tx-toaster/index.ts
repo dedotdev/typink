@@ -51,10 +51,11 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
   const toastId = toastAdapter.show(message, {
     type: 'loading',
     duration: Infinity,
+    isLoading: true,
   });
 
   const onTxProgress = (progress: ISubmittableResult) => {
-    let terminal = false;
+    let done = false;
     let toastMessage: string = 'Transaction In Progress...';
     let toastType: 'loading' | 'success' | 'error' = 'loading';
 
@@ -62,11 +63,11 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
     const succeeded = !dispatchError;
 
     if (status.type === 'Finalized') {
-      terminal = true;
+      done = true;
       toastType = succeeded ? 'success' : 'error';
       toastMessage = succeeded ? 'Transaction Successful' : 'Transaction Failed';
     } else if (status.type === 'Invalid' || status.type === 'Drop') {
-      terminal = true;
+      done = true;
       toastType = 'error';
       toastMessage = 'Transaction Failed';
     }
@@ -75,8 +76,8 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
 
     toastAdapter.update(toastId, body, {
       type: toastType,
-      duration: terminal ? autoCloseDelay : Infinity,
-      isLoading: !terminal,
+      duration: done ? autoCloseDelay : Infinity,
+      isLoading: !done,
     });
   };
 

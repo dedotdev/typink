@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import type { toast as toastifyToast, TypeOptions } from 'react-toastify';
+import type { toast as toastifyToast } from 'react-toastify';
 import { ToastAdapter, ToastOptions } from '../types.js';
 
 export class ReactToastifyAdapter implements ToastAdapter {
@@ -8,11 +8,10 @@ export class ReactToastifyAdapter implements ToastAdapter {
   show(content: ReactNode, options?: ToastOptions): string | number {
     const { type = 'info', duration, isLoading = false } = options || {};
 
-    const toastType = this.mapToastType(type);
     const autoClose = duration === Infinity ? false : duration;
 
     return this.toast(content, {
-      type: toastType,
+      type,
       autoClose,
       isLoading,
       closeOnClick: false,
@@ -22,12 +21,11 @@ export class ReactToastifyAdapter implements ToastAdapter {
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
     const { type = 'loading', duration, isLoading } = options || {};
 
-    const toastType = this.mapToastType(type);
     const autoClose = duration === Infinity ? false : duration;
 
     this.toast.update(id, {
       render: content,
-      type: toastType,
+      type,
       autoClose,
       isLoading: isLoading ?? type === 'loading',
       closeOnClick: false,
@@ -36,19 +34,5 @@ export class ReactToastifyAdapter implements ToastAdapter {
 
   dismiss(id: string | number): void {
     this.toast.dismiss(id);
-  }
-
-  private mapToastType(type: ToastOptions['type']): TypeOptions {
-    switch (type) {
-      case 'loading':
-        return 'default';
-      case 'success':
-        return 'success';
-      case 'error':
-        return 'error';
-      case 'info':
-      default:
-        return 'info';
-    }
   }
 }
