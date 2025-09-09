@@ -1,33 +1,45 @@
 import { ReactNode } from 'react';
-import type { toast as toastifyToast } from 'react-toastify';
-import { ToastAdapter, ToastOptions } from '../types.js';
+import type { toast as toastifyToast, TypeOptions } from 'react-toastify';
+import { ToastAdapter, ToastOptions, ToastType } from '../types.js';
 
 export class ReactToastifyAdapter implements ToastAdapter {
   constructor(private toast: typeof toastifyToast) {}
 
+  private toToastifyType(type: ToastType): TypeOptions {
+    switch (type) {
+      case 'success':
+      case 'error':
+        return type;
+      default:
+        return 'info';
+    }
+  }
+
   show(content: ReactNode, options?: ToastOptions): string | number {
-    const { type = 'loading', duration = Infinity, isLoading = false } = options || {};
+    const { type = 'loading', duration = Infinity } = options || {};
 
     const autoClose = duration === Infinity ? false : duration;
+    const toastifyType = this.toToastifyType(type);
 
     return this.toast(content, {
-      type,
+      type: toastifyType,
       autoClose,
-      isLoading: isLoading || type === 'loading',
+      isLoading: type === 'loading',
       closeOnClick: false,
     });
   }
 
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
-    const { type = 'loading', duration = Infinity, isLoading } = options || {};
+    const { type = 'loading', duration = Infinity } = options || {};
 
     const autoClose = duration === Infinity ? false : duration;
+    const toastifyType = this.toToastifyType(type);
 
     this.toast.update(id, {
       render: content,
-      type,
+      type: toastifyType,
       autoClose,
-      isLoading: isLoading || type === 'loading',
+      isLoading: type === 'loading',
       closeOnClick: false,
     });
   }

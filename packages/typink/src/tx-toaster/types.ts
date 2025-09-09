@@ -12,7 +12,6 @@ export interface ToastOptions {
   id?: string | number;
   duration?: number;
   type?: ToastType;
-  isLoading?: boolean;
 }
 
 export interface ToastAdapter {

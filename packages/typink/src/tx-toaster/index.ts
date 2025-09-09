@@ -52,7 +52,6 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
   const toastId = toastAdapter.show(message, {
     type: 'loading',
     duration: Infinity,
-    isLoading: true,
   });
 
   const onTxProgress = (progress: ISubmittableResult) => {
@@ -78,7 +77,6 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
     toastAdapter.update(toastId, body, {
       type: toastType,
       duration: done ? autoCloseDelay : Infinity,
-      isLoading: !done,
     });
   };
 
@@ -86,7 +84,6 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
     toastAdapter.update(toastId, React.createElement('p', null, e.message), {
       type: 'error',
       duration: autoCloseDelay,
-      isLoading: false,
     });
   };
 
