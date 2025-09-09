@@ -1,8 +1,8 @@
-import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex, Select } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { Box, Button, Flex, Heading, Input, Select, Spinner, Text, VStack } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
-import { useTypink, useTx, useTxFee, formatBalance, txToaster, setupTxToaster } from 'typink';
-import { toastLibraries, getToastAdapter, type ToastLibrary } from '@/utils/toastLibraries';
+import { formatBalance, setupTxToaster, txToaster, useTx, useTxFee, useTypink } from 'typink';
+import { getToastAdapter, toastLibraries, type ToastLibrary } from '@/utils/toastLibraries';
 import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
@@ -21,6 +21,11 @@ export default function RemarkTransactionExample() {
       adapter,
       initialMessage: 'Submitting transaction...',
       autoCloseDelay: 5000,
+      messages: {
+        inProgress: 'Transaction In Progress...',
+        successful: 'Transaction Successful',
+        failed: 'Transaction Failed',
+      },
     });
   }, [selectedLibrary]);
 

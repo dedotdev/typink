@@ -20,6 +20,12 @@ export interface ToastAdapter {
   dismiss(id: string | number): void;
 }
 
+export interface TxToasterMessages {
+  inProgress?: string;
+  successful?: string;
+  failed?: string;
+}
+
 export interface TxProgressProps {
   message: string;
   status: TxStatus;
@@ -30,9 +36,11 @@ export interface TxToasterConfig {
   adapter: ToastAdapter;
   initialMessage?: string;
   autoCloseDelay?: number;
+  messages?: TxToasterMessages;
 }
 
 export interface TxToasterOptions extends Partial<TxToasterConfig> {
   networkId?: string;
   adapter?: ToastAdapter;
+  messages?: TxToasterMessages;
 }

@@ -67,6 +67,67 @@ describe('txToaster', () => {
         duration: Infinity,
       });
     });
+
+    it('should configure global messages', () => {
+      const config = {
+        adapter: mockAdapter,
+        messages: {
+          inProgress: 'Custom in progress...',
+          successful: 'Custom success! 🎉',
+          failed: 'Custom failure 😞',
+        },
+      };
+
+      setupTxToaster(config);
+
+      const toaster = txToaster();
+
+      // Test in progress message
+      const progressResult: ISubmittableResult = {
+        status: { type: 'Ready' },
+        dispatchError: undefined,
+      } as any;
+
+      toaster.onTxProgress(progressResult);
+
+      // @ts-ignore
+      const updateCall = mockAdapter.update.mock.calls[0];
+      const reactElement = updateCall[1] as React.ReactElement;
+      // @ts-ignore
+      expect(reactElement.props.message).toBe('Custom in progress...');
+    });
+
+    it('should merge custom messages with defaults', () => {
+      setupTxToaster({
+        adapter: mockAdapter,
+        messages: {
+          successful: 'Global success message',
+        },
+      });
+
+      const toaster = txToaster();
+
+      // Test finalized success
+      const successResult: ISubmittableResult = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 0,
+          },
+        },
+        dispatchError: undefined,
+      } as any;
+
+      toaster.onTxProgress(successResult);
+
+      // @ts-ignore
+      const updateCall = mockAdapter.update.mock.calls[0];
+      const reactElement = updateCall[1] as React.ReactElement;
+      // @ts-ignore
+      expect(reactElement.props.message).toBe('Global success message');
+    });
   });
 
   describe('txToaster creation', () => {
@@ -133,6 +194,64 @@ describe('txToaster', () => {
 
       expect(localAdapter.show).toHaveBeenCalled();
       expect(mockAdapter.show).not.toHaveBeenCalled();
+    });
+
+    it('should support local message overrides', () => {
+      setupTxToaster({
+        adapter: mockAdapter,
+        messages: {
+          inProgress: 'Global in progress',
+          successful: 'Global success',
+          failed: 'Global failure',
+        },
+      });
+
+      const toaster = txToaster({
+        messages: {
+          successful: 'Local success override!',
+          failed: 'Local failure override!',
+        },
+      });
+
+      // Test that local override is used for success
+      const successResult: ISubmittableResult = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 0,
+          },
+        },
+        dispatchError: undefined,
+      } as any;
+
+      toaster.onTxProgress(successResult);
+
+      // @ts-ignore
+      const updateCall = mockAdapter.update.mock.calls[0];
+      const reactElement = updateCall[1] as React.ReactElement;
+      // @ts-ignore
+      expect(reactElement.props.message).toBe('Local success override!');
+    });
+
+    it('should fall back to default messages when not customized', () => {
+      setupTxToaster({ adapter: mockAdapter }); // No custom messages
+      const toaster = txToaster();
+
+      // Test that default messages are used
+      const progressResult: ISubmittableResult = {
+        status: { type: 'Ready' },
+        dispatchError: undefined,
+      } as any;
+
+      toaster.onTxProgress(progressResult);
+
+      // @ts-ignore
+      const updateCall = mockAdapter.update.mock.calls[0];
+      const reactElement = updateCall[1] as React.ReactElement;
+      // @ts-ignore
+      expect(reactElement.props.message).toBe('Transaction In Progress...');
     });
   });
 
@@ -254,6 +373,7 @@ describe('txToaster', () => {
       const updateCall = mockAdapter.update.mock.calls[0];
       const reactElement = updateCall[1] as React.ReactElement;
 
+      // @ts-ignore
       expect(reactElement.props.networkId).toBe('kusama');
     });
 
@@ -304,6 +424,7 @@ describe('txToaster', () => {
       const reactElement = updateCall[1] as React.ReactElement;
       expect(React.isValidElement(reactElement)).toBe(true);
       expect(reactElement.type).toBe('p');
+      // @ts-ignore
       expect(reactElement.props.children).toBe('Transaction failed');
     });
 

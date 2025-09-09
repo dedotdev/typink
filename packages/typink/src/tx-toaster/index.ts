@@ -1,6 +1,6 @@
 import React from 'react';
 import { ISubmittableResult } from 'dedot/types';
-import { TxToaster, ToastAdapter, TxToasterConfig, TxToasterOptions } from './types.js';
+import { TxToaster, ToastAdapter, TxToasterConfig, TxToasterOptions, TxToasterMessages } from './types.js';
 import { TxProgress } from './TxProgress.js';
 
 // Re-export types and components
@@ -14,7 +14,12 @@ let globalAdapter: ToastAdapter | null = null;
 let globalConfig: Partial<TxToasterConfig> = {
   initialMessage: 'Signing Transaction...',
   autoCloseDelay: 5000,
-};
+  messages: {
+    inProgress: 'Transaction In Progress...',
+    successful: 'Transaction Successful',
+    failed: 'Transaction Failed',
+  },
+} as Partial<TxToasterConfig>;
 
 /**
  * Setup the global toast adapter for transaction toasters
@@ -26,6 +31,9 @@ export function setupTxToaster(config: TxToasterConfig): void {
   }
   if (config.autoCloseDelay !== undefined) {
     globalConfig.autoCloseDelay = config.autoCloseDelay;
+  }
+  if (config.messages !== undefined) {
+    globalConfig.messages = { ...globalConfig.messages, ...config.messages };
   }
 }
 
@@ -43,6 +51,7 @@ export function txToaster(config?: string | TxToasterOptions): TxToaster {
   let adapter: ToastAdapter | undefined;
   let networkId: string | undefined;
   let autoCloseDelay: number | undefined;
+  let messages: TxToasterMessages | undefined;
 
   if (typeof config === 'string') {
     initialMessage = config;
@@ -51,16 +60,22 @@ export function txToaster(config?: string | TxToasterOptions): TxToaster {
     adapter = config.adapter;
     networkId = config.networkId;
     autoCloseDelay = config.autoCloseDelay;
+    messages = config.messages;
   }
 
   const toastAdapter = adapter || globalAdapter;
 
   if (!toastAdapter) {
-    throw new Error('No toast adapter configured. Please call setupTxToaster() first or provide an adapter.');
+    throw new TypeError('No toast adapter configured. Please call setupTxToaster() first or provide an adapter.');
   }
 
   const message = initialMessage || globalConfig.initialMessage || 'Signing Transaction...';
   const finalAutoCloseDelay = autoCloseDelay || globalConfig.autoCloseDelay || 5000;
+
+  const finalMessages: TxToasterMessages = {
+    ...globalConfig.messages,
+    ...messages,
+  };
 
   const toastId = toastAdapter.show(message, {
     type: 'loading',
@@ -69,7 +84,7 @@ export function txToaster(config?: string | TxToasterOptions): TxToaster {
 
   const onTxProgress = (progress: ISubmittableResult) => {
     let done = false;
-    let toastMessage: string = 'Transaction In Progress...';
+    let toastMessage: string = finalMessages.inProgress || 'Transaction In Progress...';
     let toastType: 'loading' | 'success' | 'error' = 'loading';
 
     const { status, dispatchError } = progress;
@@ -78,11 +93,13 @@ export function txToaster(config?: string | TxToasterOptions): TxToaster {
     if (status.type === 'Finalized') {
       done = true;
       toastType = succeeded ? 'success' : 'error';
-      toastMessage = succeeded ? 'Transaction Successful' : 'Transaction Failed';
+      toastMessage = succeeded
+        ? finalMessages.successful || 'Transaction Successful'
+        : finalMessages.failed || 'Transaction Failed';
     } else if (status.type === 'Invalid' || status.type === 'Drop') {
       done = true;
       toastType = 'error';
-      toastMessage = 'Transaction Failed';
+      toastMessage = finalMessages.failed || 'Transaction Failed';
     }
 
     const body = React.createElement(TxProgress, { message: toastMessage, status, networkId });
