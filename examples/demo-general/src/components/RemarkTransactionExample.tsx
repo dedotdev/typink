@@ -1,17 +1,28 @@
-import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex, Select, FormControl, FormLabel, Badge } from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
 import { useDebounce } from 'react-use';
-import { useTypink, useTx, useTxFee, formatBalance } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { useTypink, useTx, useTxFee, formatBalance, txToaster, setupTxToaster } from 'typink';
+import { toastLibraries, getToastAdapter, type ToastLibrary } from '@/utils/toastLibraries';
 import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
   const { client, connectedAccount, network } = useTypink<PolkadotApi>();
   const [message, setMessage] = useState('Hello from Typink!');
+  const [selectedLibrary, setSelectedLibrary] = useState<ToastLibrary>('sonner');
 
   // Debounce message changes to avoid excessive fee calculations
   const [debouncedMessage, setDebouncedMessage] = useState(message);
   useDebounce(() => setDebouncedMessage(message), 500, [message]);
+
+  // Setup the selected toast library whenever it changes
+  useEffect(() => {
+    const adapter = getToastAdapter(selectedLibrary);
+    setupTxToaster({
+      adapter,
+      initialMessage: 'Submitting transaction...',
+      autoCloseDelay: 5000,
+    });
+  }, [selectedLibrary]);
 
   // Create remarkTx for signing and sending
   const remarkTx = useTx((tx) => tx.system.remark);
@@ -48,12 +59,35 @@ export default function RemarkTransactionExample() {
     }
   };
 
+  const selectedLibraryConfig = toastLibraries.find(lib => lib.id === selectedLibrary)!;
+
   return (
-    <VStack spacing={4} align='stretch' maxW='400px' mx='auto'>
-      <Heading size='md'>Send System Remark</Heading>
+    <VStack spacing={4} align='stretch' maxW='500px' mx='auto'>
+      <Heading size='md'>Send System Remark with Toast Libraries</Heading>
       <Text fontSize='sm' color='gray.600'>
-        Submit a remark transaction to the blockchain with your custom message.
+        Submit a remark transaction and see toast notifications using different libraries.
       </Text>
+
+      {/* Toast Library Selector */}
+      <FormControl>
+        <FormLabel fontSize='sm' fontWeight='semibold'>
+          Toast Library
+          <Badge ml={2} colorScheme='blue' variant='subtle'>
+            {selectedLibraryConfig.name}
+          </Badge>
+        </FormLabel>
+        <Select
+          value={selectedLibrary}
+          onChange={(e) => setSelectedLibrary(e.target.value as ToastLibrary)}
+          size='sm'
+        >
+          {toastLibraries.map((lib) => (
+            <option key={lib.id} value={lib.id}>
+              {lib.name} - {lib.description}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
 
       <Input
         placeholder='Enter your remark message...'

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { TxStatus } from 'dedot/types';
 import { useTypink } from '../hooks/index.js';
 import { TxProgressProps } from './types.js';

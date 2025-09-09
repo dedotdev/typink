@@ -1,6 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
 import { ToastContainer } from 'react-toastify';
+import { Toaster as SonnerToaster } from 'sonner';
+import { Toaster as HotToastToaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
@@ -75,6 +77,8 @@ function Root() {
         cacheMetadata={true}
         wallets={[subwallet, talisman, polkadotjs]}>
         <App />
+
+        {/* Toast Providers for all libraries */}
         <ToastContainer
           position='top-right'
           closeOnClick
@@ -84,6 +88,10 @@ function Root() {
           hideProgressBar
           limit={10}
         />
+        {/* @ts-ignore */}
+        <SonnerToaster position='top-right' expand={false} richColors closeButton={true} />
+        {/* @ts-ignore */}
+        <HotToastToaster position='top-right' gutter={8} />
       </TypinkProvider>
     </ChakraProvider>
   );

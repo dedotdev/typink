@@ -20,8 +20,10 @@
     "framer-motion": "^10.18.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.6.0",
     "react-toastify": "^10.0.6",
     "react-use": "^17.6.0",
+    "sonner": "^2.0.0",
     "typink": "workspace:*"
   },
   "devDependencies": {
