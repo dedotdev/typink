@@ -6,7 +6,7 @@ export type TxToaster = {
   onTxError: (e: Error) => void;
 };
 
-export type ToastType = 'loading' | 'success' | 'error' | 'info';
+export type ToastType = 'loading' | 'success' | 'error';
 
 export interface ToastOptions {
   id?: string | number;

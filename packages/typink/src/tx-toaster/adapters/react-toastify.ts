@@ -6,20 +6,20 @@ export class ReactToastifyAdapter implements ToastAdapter {
   constructor(private toast: typeof toastifyToast) {}
 
   show(content: ReactNode, options?: ToastOptions): string | number {
-    const { type = 'info', duration, isLoading = false } = options || {};
+    const { type = 'loading', duration = Infinity, isLoading = false } = options || {};
 
     const autoClose = duration === Infinity ? false : duration;
 
     return this.toast(content, {
       type,
       autoClose,
-      isLoading,
+      isLoading: isLoading || type === 'loading',
       closeOnClick: false,
     });
   }
 
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
-    const { type = 'loading', duration, isLoading } = options || {};
+    const { type = 'loading', duration = Infinity, isLoading } = options || {};
 
     const autoClose = duration === Infinity ? false : duration;
 
@@ -27,7 +27,7 @@ export class ReactToastifyAdapter implements ToastAdapter {
       render: content,
       type,
       autoClose,
-      isLoading: isLoading ?? type === 'loading',
+      isLoading: isLoading || type === 'loading',
       closeOnClick: false,
     });
   }

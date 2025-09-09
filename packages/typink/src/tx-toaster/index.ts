@@ -8,6 +8,7 @@ export * from './types.js';
 export { TxProgress } from './TxProgress.js';
 export { SonnerAdapter } from './adapters/sonner.js';
 export { ReactToastifyAdapter } from './adapters/react-toastify.js';
+export { ReactHotToastAdapter } from './adapters/react-hot-toast.js';
 
 let globalAdapter: ToastAdapter | null = null;
 let globalConfig: Partial<TxToasterConfig> = {

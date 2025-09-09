@@ -1,18 +1,18 @@
 import { ReactNode } from 'react';
-import type { toast as sonnerToast } from 'sonner';
+import type { toast as hotToast } from 'react-hot-toast';
 import { ToastAdapter, ToastOptions } from '../types.js';
 import { assert } from 'dedot/utils';
 
-export class SonnerAdapter implements ToastAdapter {
-  constructor(private toast: typeof sonnerToast) {}
+export class ReactHotToastAdapter implements ToastAdapter {
+  constructor(private toast: typeof hotToast) {}
 
-  show(content: ReactNode, options?: ToastOptions): string | number {
-    const { type = 'loading', duration = Infinity, ...rest } = options || {};
+  show(content: ReactNode, options?: ToastOptions): string {
+    const { type = 'loading', duration = Infinity } = options || {};
 
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    return toastFn(content, { duration, ...rest });
+    return toastFn(content as string, { duration });
   }
 
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
@@ -21,10 +21,10 @@ export class SonnerAdapter implements ToastAdapter {
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    toastFn(content, { id, duration });
+    toastFn(content as string, { duration, id: id.toString() });
   }
 
   dismiss(id: string | number): void {
-    this.toast.dismiss(id);
+    this.toast.dismiss(id as string);
   }
 }
