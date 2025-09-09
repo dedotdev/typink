@@ -1,6 +1,6 @@
 import React from 'react';
 import { ISubmittableResult } from 'dedot/types';
-import { TxToaster, ToastAdapter, TxToasterConfig } from './types.js';
+import { TxToaster, ToastAdapter, TxToasterConfig, TxToasterOptions } from './types.js';
 import { TxProgress } from './TxProgress.js';
 
 // Re-export types and components
@@ -29,17 +29,30 @@ export function setupTxToaster(config: TxToasterConfig): void {
   }
 }
 
-// TODO customize networkId
 // TODO show dispatchError detailed error in failed case
 
 /**
  * Creates a toast notification for transaction progress and manages its updates.
  *
- * @param initialMessage - The initial message to display in the toast notification.
- * @param adapter - Optional adapter to use for this specific toaster instance.
+ * @param config - Either a string for the initial message, or a configuration object
  * @returns An object containing onTxProgress and onTxError methods.
  */
-export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxToaster {
+export function txToaster(config?: string | TxToasterOptions): TxToaster {
+  // Parse config parameter
+  let initialMessage: string | undefined;
+  let adapter: ToastAdapter | undefined;
+  let networkId: string | undefined;
+  let autoCloseDelay: number | undefined;
+
+  if (typeof config === 'string') {
+    initialMessage = config;
+  } else if (config) {
+    initialMessage = config.initialMessage;
+    adapter = config.adapter;
+    networkId = config.networkId;
+    autoCloseDelay = config.autoCloseDelay;
+  }
+
   const toastAdapter = adapter || globalAdapter;
 
   if (!toastAdapter) {
@@ -47,7 +60,7 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
   }
 
   const message = initialMessage || globalConfig.initialMessage || 'Signing Transaction...';
-  const autoCloseDelay = globalConfig.autoCloseDelay || 5000;
+  const finalAutoCloseDelay = autoCloseDelay || globalConfig.autoCloseDelay || 5000;
 
   const toastId = toastAdapter.show(message, {
     type: 'loading',
@@ -72,18 +85,18 @@ export function txToaster(initialMessage?: string, adapter?: ToastAdapter): TxTo
       toastMessage = 'Transaction Failed';
     }
 
-    const body = React.createElement(TxProgress, { message: toastMessage, status });
+    const body = React.createElement(TxProgress, { message: toastMessage, status, networkId });
 
     toastAdapter.update(toastId, body, {
       type: toastType,
-      duration: done ? autoCloseDelay : Infinity,
+      duration: done ? finalAutoCloseDelay : Infinity,
     });
   };
 
   const onTxError = (e: Error) => {
     toastAdapter.update(toastId, React.createElement('p', null, e.message), {
       type: 'error',
-      duration: autoCloseDelay,
+      duration: finalAutoCloseDelay,
     });
   };
 

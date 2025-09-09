@@ -23,10 +23,16 @@ export interface ToastAdapter {
 export interface TxProgressProps {
   message: string;
   status: TxStatus;
+  networkId?: string;
 }
 
 export interface TxToasterConfig {
   adapter: ToastAdapter;
   initialMessage?: string;
   autoCloseDelay?: number;
+}
+
+export interface TxToasterOptions extends Partial<TxToasterConfig> {
+  networkId?: string;
+  adapter?: ToastAdapter;
 }

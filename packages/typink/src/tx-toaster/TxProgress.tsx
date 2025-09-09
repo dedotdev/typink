@@ -15,12 +15,15 @@ const getBlockInfo = (status: TxStatus) => {
   return '';
 };
 
-export function TxProgress({ message, status }: TxProgressProps) {
-  const { network } = useTypink();
+export function TxProgress({ message, status, networkId }: TxProgressProps) {
+  const { network, networks } = useTypink();
+  
+  // Use the specified network if networkId is provided, otherwise use current network
+  const targetNetwork = networkId ? networks.find(n => n.id === networkId) || network : network;
 
   const { label: viewOnExplorer, url: explorerUrl } = useMemo(() => {
     if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
-      const { subscanUrl, pjsUrl } = network;
+      const { subscanUrl, pjsUrl } = targetNetwork;
 
       if (subscanUrl) {
         return {
@@ -38,7 +41,7 @@ export function TxProgress({ message, status }: TxProgressProps) {
     }
 
     return { label: null as string | null, url: '' };
-  }, [status, network]);
+  }, [status, targetNetwork]);
 
   return (
     <div>
