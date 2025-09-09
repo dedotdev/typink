@@ -1,4 +1,4 @@
-import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex, Select, FormControl, FormLabel, Badge } from '@chakra-ui/react';
+import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex, Select } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useDebounce } from 'react-use';
 import { useTypink, useTx, useTxFee, formatBalance, txToaster, setupTxToaster } from 'typink';
@@ -59,35 +59,12 @@ export default function RemarkTransactionExample() {
     }
   };
 
-  const selectedLibraryConfig = toastLibraries.find(lib => lib.id === selectedLibrary)!;
-
   return (
     <VStack spacing={4} align='stretch' maxW='500px' mx='auto'>
       <Heading size='md'>Send System Remark with Toast Libraries</Heading>
       <Text fontSize='sm' color='gray.600'>
         Submit a remark transaction and see toast notifications using different libraries.
       </Text>
-
-      {/* Toast Library Selector */}
-      <FormControl>
-        <FormLabel fontSize='sm' fontWeight='semibold'>
-          Toast Library
-          <Badge ml={2} colorScheme='blue' variant='subtle'>
-            {selectedLibraryConfig.name}
-          </Badge>
-        </FormLabel>
-        <Select
-          value={selectedLibrary}
-          onChange={(e) => setSelectedLibrary(e.target.value as ToastLibrary)}
-          size='sm'
-        >
-          {toastLibraries.map((lib) => (
-            <option key={lib.id} value={lib.id}>
-              {lib.name} - {lib.description}
-            </option>
-          ))}
-        </Select>
-      </FormControl>
 
       <Input
         placeholder='Enter your remark message...'
@@ -128,14 +105,32 @@ export default function RemarkTransactionExample() {
         </Flex>
       )}
 
-      <Button
-        colorScheme='blue'
-        onClick={handleSendRemark}
-        isLoading={remarkTx.inBestBlockProgress}
-        isDisabled={!client || !connectedAccount || !message.trim() || remarkTx.inBestBlockProgress}
-        loadingText='Sending...'>
-        Send Remark Transaction
-      </Button>
+      {/* Toast Library Selector and Send Button Row */}
+      <Flex gap={3} align='center'>
+        <Select
+          value={selectedLibrary}
+          onChange={(e) => setSelectedLibrary(e.target.value as ToastLibrary)}
+          size='sm'
+          width='40%'
+          bg='white'>
+          {toastLibraries.map((lib) => (
+            <option key={lib.id} value={lib.id}>
+              {lib.name}
+            </option>
+          ))}
+        </Select>
+
+        <Button
+          colorScheme='blue'
+          onClick={handleSendRemark}
+          isLoading={remarkTx.inBestBlockProgress}
+          isDisabled={!client || !connectedAccount || !message.trim() || remarkTx.inBestBlockProgress}
+          loadingText='Sending...'
+          flex={1}
+          size='sm'>
+          Send Remark Transaction
+        </Button>
+      </Flex>
 
       {!connectedAccount && (
         <Text fontSize='sm' color='orange.600' textAlign='center'>

@@ -20,10 +20,7 @@
   "dependencies": {
     "@substrate/connect-known-chains": "^1.10.3",
     "fast-deep-equal": "^3.1.3",
-    "jotai": "^2.13.1",
-    "react-hot-toast": "^2.6.0",
-    "react-toastify": "^10.0.0",
-    "sonner": "^2.0.0"
+    "jotai": "^2.13.1"
   },
   "peerDependencies": {
     "@dedot/chaintypes": ">=0.132.0",
