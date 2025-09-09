@@ -116,6 +116,10 @@ export const V6_NETWORKS = [
 
 export type NetworkConfig = {
   name: string;
+  // The exported name of the network info in the typink package.
+  // This will be used when generating templates.
   value: string;
+  // Example contract address for each network:
+  // Flipper for ink! v6, Greeter for legacy.
   address: string;
 };
