@@ -3,8 +3,7 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from '@/contracts/deployments';
 import { Psp22ContractApi } from '@/contracts/types/psp22';
-import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { formatBalance, useContract, useContractQuery, useContractTx, useTypink, txToaster } from 'typink';
 import { toEvmAddress } from 'dedot/contracts';
 
 export default function Psp22Board() {
@@ -54,7 +53,8 @@ export default function Psp22Board() {
     try {
       await mintTx.signAndSend({
         args: [BigInt(100 * Math.pow(10, tokenDecimal))],
-        callback: ({ status }) => {
+        callback: (progress) => {
+          const { status } = progress;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
@@ -62,12 +62,12 @@ export default function Psp22Board() {
             void refreshMyBalance();
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
+      toaster.onTxError(e);
     } finally {
       void refreshTotalSupply();
       void refreshMyBalance();

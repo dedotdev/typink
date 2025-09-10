@@ -25,13 +25,32 @@
   "peerDependencies": {
     "@dedot/chaintypes": ">=0.132.0",
     "dedot": ">=0.15.0",
-    "react": ">=18.3.1"
+    "react": ">=18.3.1",
+    "react-hot-toast": ">=2.6.0",
+    "react-toastify": ">=10.0.0",
+    "sonner": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-hot-toast": {
+      "optional": true
+    },
+    "react-toastify": {
+      "optional": true
+    },
+    "sonner": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
-    "@types/react": "^18.3.18",
+    "@types/react": "^19.0.0",
     "@vitest/ui": "^2.1.8",
     "jsdom": "^26.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.6.0",
+    "react-toastify": "^10.0.6",
+    "react-use": "^17.6.0",
     "vitest": "^2.1.8"
   },
   "publishConfig": {

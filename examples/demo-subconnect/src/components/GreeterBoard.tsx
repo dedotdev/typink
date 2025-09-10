@@ -1,12 +1,11 @@
 import { Box, Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, Text } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { shortenAddress } from '@/utils/string.ts';
 import { ContractId } from 'contracts/deployments';
 import { GreeterContractApi } from 'contracts/types/greeter';
-import { useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { txToaster, useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
 
 export default function GreetBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
@@ -27,19 +26,20 @@ export default function GreetBoard() {
     try {
       await setMessageTx.signAndSend({
         args: [message],
-        callback: ({ status }) => {
+        callback: (progress) => {
+          const { status } = progress;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
             setMessage('');
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e, e.message);
-      toaster.onError(e);
+      toaster.onTxError(e);
     }
   };
 

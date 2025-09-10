@@ -1,7 +1,6 @@
 import { Box, Button, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import { SubstrateAddress, useDeployer, useDeployerTx } from 'typink';
+import { SubstrateAddress, useDeployer, useDeployerTx, txToaster } from 'typink';
 import { flipperMetadata } from '@/contracts/deployments.ts';
-import { txToaster } from '@/utils/txToaster.tsx';
 import { generateRandomHex } from 'dedot/utils';
 import { useLocalStorage } from 'react-use';
 import { Flipper6ContractApi } from '@/contracts/types/flipper6';
@@ -26,7 +25,8 @@ export function ContractDeployerBoard() {
       await newFlipperTx.signAndSend({
         args: [true],
         txOptions: { salt },
-        callback: ({ status }, contractAddress) => {
+        callback: (progress, contractAddress) => {
+          const { status } = progress;
           console.log(status);
 
           // TODO improve this?
@@ -35,12 +35,12 @@ export function ContractDeployerBoard() {
             setDeployedContracts((prev) => [{ address: contractAddress, at: Date.now() }, ...(prev || [])]);
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
+      toaster.onTxError(e);
     }
   };
 
