@@ -31,6 +31,9 @@
     "sonner": ">=2.0.0"
   },
   "peerDependenciesMeta": {
+    "react-hot-toast": {
+      "optional": true
+    },
     "react-toastify": {
       "optional": true
     },
@@ -45,6 +48,9 @@
     "jsdom": "^26.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.6.0",
+    "react-toastify": "^10.0.6",
+    "react-use": "^17.6.0",
     "vitest": "^2.1.8"
   },
   "publishConfig": {
