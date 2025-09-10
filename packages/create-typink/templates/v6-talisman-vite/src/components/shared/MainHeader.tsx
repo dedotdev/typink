@@ -1,5 +1,4 @@
 import { Box, Container, Flex, Image, useColorMode } from '@chakra-ui/react';
-import React from 'react';
 import AccountSelection from '@/components/shared/AccountSelection.tsx';
 import NetworkSelection from '@/components/shared/NetworkSelection.tsx';
 import ThemeModeButton from '@/components/shared/ThemeModeButton.tsx';

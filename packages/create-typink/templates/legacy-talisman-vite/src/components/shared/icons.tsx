@@ -1,5 +1,4 @@
 import { useColorMode } from '@chakra-ui/react';
-import React from 'react';
 import { Props } from '@/types.ts';
 
 export const RESOURCE_BASE_URL = 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/typink';
