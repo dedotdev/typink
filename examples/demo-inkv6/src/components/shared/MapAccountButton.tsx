@@ -1,7 +1,6 @@
 import { Button, ButtonProps } from '@chakra-ui/react';
 import { ReactNode, useState } from 'react';
-import { useTypink, checkBalanceSufficiency } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { useTypink, checkBalanceSufficiency, txToaster } from 'typink';
 
 export interface MapAccountButtonProps {
   onSuccess?: () => void;
@@ -33,9 +32,10 @@ export default function MapAccountButton({
 
       await client.tx.revive
         .mapAccount() // --
-        .signAndSend(connectedAccount.address, ({ status }) => {
+        .signAndSend(connectedAccount.address, (progress) => {
+          const { status } = progress;
           console.log(status);
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
 
           if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
             onSuccess?.();
@@ -44,7 +44,7 @@ export default function MapAccountButton({
         .untilFinalized();
     } catch (error: any) {
       console.error('Error mapping account:', error);
-      toaster.onError(error);
+      toaster.onTxError(error);
     } finally {
       setIsLoading(false);
     }

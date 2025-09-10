@@ -1,6 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
@@ -16,10 +16,16 @@ import {
   polkadotAssetHub,
   polkadotjs,
   polkadotPeople,
+  ReactToastifyAdapter,
+  setupTxToaster,
   subwallet,
   talisman,
   TypinkProvider,
 } from 'typink';
+
+setupTxToaster({
+  adapter: new ReactToastifyAdapter(toast),
+});
 
 // Define supported networks focusing on the three main ecosystems
 const SUPPORTED_NETWORK = [
