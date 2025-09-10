@@ -13,7 +13,6 @@ import {
   // -- END_SUPPORTED_NETWORKS --
 } from 'typink';
 
-const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 const SUPPORTED_NETWORKS = [
   // -- START_SUPPORTED_NETWORKS --
   passetHub,
@@ -31,7 +30,6 @@ root.render(
     <TypinkProvider
       appName='Typink Dapp'
       deployments={deployments}
-      defaultCaller={DEFAULT_CALLER}
       defaultNetworkId={
         // -- START_DEFAULT_NETWORK_ID --
         passetHub.id

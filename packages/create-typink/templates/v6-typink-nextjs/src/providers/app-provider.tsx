@@ -16,8 +16,6 @@ import {
   // -- END_SUPPORTED_NETWORKS --
 } from 'typink';
 
-const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
-
 // Supported networks configuration
 const SUPPORTED_NETWORKS = [
   // -- START_SUPPORTED_NETWORKS --
@@ -53,7 +51,6 @@ export function AppProvider({ children }: Props) {
     <TypinkProvider
       appName='Typink Template'
       deployments={deployments}
-      defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORKS}
       defaultNetworkId={
         // -- START_DEFAULT_NETWORK_ID --
