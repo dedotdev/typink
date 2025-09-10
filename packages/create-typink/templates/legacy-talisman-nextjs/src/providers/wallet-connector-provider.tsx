@@ -20,6 +20,7 @@ export const useWalletConnector = () => {
   return useContext(WalletConnectorContext);
 };
 
+// eslint-disable-next-line
 interface WalletConnectorProviderProps extends Props { }
 
 const SELECTED_WALLET_KEY = '@talisman-connect/selected-wallet-name';

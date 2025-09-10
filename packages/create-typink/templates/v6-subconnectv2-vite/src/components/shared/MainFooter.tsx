@@ -1,5 +1,4 @@
 import { Box, Flex, Image, Link, Text } from '@chakra-ui/react';
-import React from 'react';
 import { GithubSvgIcon, RESOURCE_BASE_URL, XSvgIcon } from '@/components/shared/icons.tsx';
 
 export default function MainFooter() {

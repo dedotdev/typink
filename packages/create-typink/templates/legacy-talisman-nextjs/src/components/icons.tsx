@@ -13,7 +13,7 @@ export default function TypinkLogo() {
   return (
     <>
       <Image
-        width={227}
+        width={128}
         height={64}
         src={
           theme === "light"
@@ -24,7 +24,7 @@ export default function TypinkLogo() {
         alt="Typink Logo"
       />
       <Image
-        width={227}
+        width={128}
         height={64}
         src={
           theme === "light"

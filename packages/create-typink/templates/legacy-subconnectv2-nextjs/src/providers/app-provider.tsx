@@ -5,14 +5,21 @@ import { createContext, useContext } from 'react';
 import { Props } from '@/lib/types';
 import { Contract } from 'dedot/contracts';
 import { GreeterContractApi } from '@/contracts/types/greeter';
-import { useContract } from 'typink';
 import { ContractId, deployments } from '@/contracts/deployments';
-import { development, alephZeroTestnet, TypinkProvider } from 'typink';
-
-const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
+import {
+  useContract,
+  TypinkProvider,
+  // -- START_SUPPORTED_NETWORKS --
+  alephZeroTestnet,
+  // -- END_SUPPORTED_NETWORKS --
+} from 'typink';
 
 // Supported networks configuration
-const SUPPORTED_NETWORKS = [alephZeroTestnet];
+const SUPPORTED_NETWORKS = [
+  // -- START_SUPPORTED_NETWORKS --
+  alephZeroTestnet,
+  // -- END_SUPPORTED_NETWORKS --
+];
 // Uncomment the following lines to enable the development network: https://github.com/paritytech/substrate-contracts-node
 // if (process.env.NODE_ENV === "development") {
 //   SUPPORTED_NETWORKS.push(development);
@@ -41,9 +48,12 @@ export function AppProvider({ children }: Props) {
     <TypinkProvider
       appName='Typink Template'
       deployments={deployments}
-      defaultCaller={DEFAULT_CALLER}
       supportedNetworks={SUPPORTED_NETWORKS}
-      defaultNetworkId={alephZeroTestnet.id}
+      defaultNetworkId={
+        // -- START_DEFAULT_NETWORK_ID --
+        alephZeroTestnet.id
+        // -- END_DEFAULT_NETWORK_ID --
+      }
       signer={wallet?.signer}
       connectedAccount={connectedAccount}>
       <AppContextProvider>{children}</AppContextProvider>

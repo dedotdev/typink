@@ -1,9 +1,10 @@
 import { execa } from 'execa';
-import { Options } from '../types.js';
+import { InkVersion, Options } from '../types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
 import { downloadTemplate } from 'giget';
+import { getNetworkConfig } from '../utils/networks.js';
 
 export async function copyTemplateFiles(
   options: Options,
@@ -30,9 +31,7 @@ export async function copyTemplateFiles(
       await downloadTemplate(spec, { dir: targetDir, force: true });
     }
   } catch (e) {
-    throw new Error(
-      `[create-typink] giget download failed, falling back to git clone. Reason: ${(e as Error).message}`,
-    );
+    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
   }
 
   // Set package name
@@ -43,6 +42,11 @@ export async function copyTemplateFiles(
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
 
+  // Process network configurations
+  if (options.networks && options.networks.length > 0) {
+    await processNetworkPlaceholders(targetDir, options);
+  }
+
   // Initialize git if requested
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
@@ -50,4 +54,42 @@ export async function copyTemplateFiles(
   }
 
   task.title = `🚀 Initialized new Typink dApp`;
+}
+
+async function processNetworkPlaceholders(targetDir: string, options: Options) {
+  const { inkVersion, networks } = options;
+
+  if (!inkVersion || !networks) return;
+
+  const networkConfig = getNetworkConfig(inkVersion as InkVersion, networks);
+
+  const filesToProcess = [
+    'src/providers/app-provider.tsx', // NextJS
+    'src/main.tsx', // Vite
+    'src/contracts/deployments.ts',
+  ];
+
+  for (const filePath of filesToProcess) {
+    const fullPath = path.join(targetDir, filePath);
+    if (fs.existsSync(fullPath)) {
+      let content = await fs.promises.readFile(fullPath, 'utf-8');
+
+      // Replace placeholders
+      content = content
+        .replace(
+          /\/\/ -- START_SUPPORTED_NETWORKS --([\s\S]*?)\/\/ -- END_SUPPORTED_NETWORKS --/g,
+          networkConfig.supportedNetworks,
+        )
+        .replace(
+          /\/\/ -- START_DEFAULT_NETWORK_ID --([\s\S]*?)\/\/ -- END_DEFAULT_NETWORK_ID --/g,
+          networkConfig.defaultNetworkId,
+        )
+        .replace(
+          /\/\/ -- START_DEPLOYMENTS --([\s\S]*?)\/\/ -- END_DEPLOYMENTS --/g, // prettier-ignore
+          networkConfig.deploymentEntries,
+        );
+
+      await fs.promises.writeFile(fullPath, content);
+    }
+  }
 }
