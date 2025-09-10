@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 setupTxToaster({
-  adapter: new SonnerAdapter(toast),
+  adapter: new SonnerAdapter(toast as any),
 });
 
 function TypinApp() {
