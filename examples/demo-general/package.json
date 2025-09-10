@@ -23,7 +23,7 @@
     "react-hot-toast": "^2.6.0",
     "react-toastify": "^10.0.6",
     "react-use": "^17.6.0",
-    "sonner": "^2.0.0",
+    "sonner": "^2.0.7",
     "typink": "workspace:*"
   },
   "devDependencies": {

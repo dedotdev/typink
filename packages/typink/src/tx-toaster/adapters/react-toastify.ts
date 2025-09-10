@@ -21,7 +21,7 @@ export class ReactToastifyAdapter implements ToastAdapter {
     const autoClose = duration === Infinity ? false : duration;
     const toastifyType = this.toToastifyType(type);
 
-    return this.toast(content, {
+    return this.toast(content as any, {
       type: toastifyType,
       autoClose,
       isLoading: type === 'loading',
@@ -36,7 +36,7 @@ export class ReactToastifyAdapter implements ToastAdapter {
     const toastifyType = this.toToastifyType(type);
 
     this.toast.update(id, {
-      render: content,
+      render: content as any,
       type: toastifyType,
       autoClose,
       isLoading: type === 'loading',

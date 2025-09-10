@@ -12,7 +12,7 @@ export class SonnerAdapter implements ToastAdapter {
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    return toastFn(content, { duration });
+    return toastFn(content as any, { duration });
   }
 
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
@@ -21,7 +21,7 @@ export class SonnerAdapter implements ToastAdapter {
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    toastFn(content, { id, duration });
+    toastFn(content as any, { id, duration });
   }
 
   dismiss(id: string | number): void {

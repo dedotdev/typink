@@ -12,7 +12,7 @@ export class ReactHotToastAdapter implements ToastAdapter {
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    return toastFn(content as string, { duration });
+    return toastFn(content as any, { duration });
   }
 
   update(id: string | number, content: ReactNode, options?: ToastOptions): void {
@@ -21,7 +21,7 @@ export class ReactHotToastAdapter implements ToastAdapter {
     const toastFn = this.toast[type];
     assert(toastFn, `Invalid toast type ${type}`);
 
-    toastFn(content as string, { duration, id: id.toString() });
+    toastFn(content as any, { duration, id: id.toString() });
   }
 
   dismiss(id: string | number): void {
