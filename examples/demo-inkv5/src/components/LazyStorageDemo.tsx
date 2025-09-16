@@ -35,11 +35,13 @@ export default function LazyStorageDemo() {
 
   // Example 2: Fetch user's balance using lazy mapping
   const { data: myBalance, isLoading: loadingMyBalance } = useLazyStorage(
-    !!connectedAccount?.address && {
-      contract,
-      accessor: (lazy) => lazy.data.balances.get(connectedAccount.address!),
-      watch: true, // Watch for changes
-    },
+    !!connectedAccount?.address
+      ? {
+          contract,
+          accessor: (lazy) => lazy.data.balances.get(connectedAccount.address!),
+          watch: true, // Watch for changes
+        }
+      : undefined,
   );
 
   // Example 3: Fetch specific address balance with manual control
@@ -48,11 +50,13 @@ export default function LazyStorageDemo() {
     isLoading: loadingTargetBalance,
     refresh: refreshTargetBalance,
   } = useLazyStorage(
-    !!targetAddress && {
-      contract,
-      accessor: (lazy) => lazy.data.balances.get(targetAddress),
-      watch: watchBalance,
-    },
+    !!targetAddress
+      ? {
+          contract,
+          accessor: (lazy) => lazy.data.balances.get(targetAddress),
+          watch: watchBalance,
+        }
+      : undefined,
   );
 
   const handleCheckBalance = () => {

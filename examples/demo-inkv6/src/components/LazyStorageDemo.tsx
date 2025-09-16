@@ -4,7 +4,16 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
-import { useContract, useLazyStorage, useRootStorage, useContractTx, useTypink, formatBalance, txToaster } from 'typink';
+import {
+  useContract,
+  useLazyStorage,
+  useRootStorage,
+  useContractTx,
+  useTypink,
+  formatBalance,
+  txToaster,
+} from 'typink';
+import type { H160 } from 'dedot/codecs';
 
 export default function LazyStorageDemo() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
@@ -29,11 +38,13 @@ export default function LazyStorageDemo() {
 
   // Example 2: Fetch user's balance using lazy mapping
   const { data: myBalance, isLoading: loadingMyBalance } = useLazyStorage(
-    !!connectedAccount?.address && {
-      contract,
-      accessor: (lazy) => lazy.data.balances.get(connectedAccount.address),
-      watch: true, // Watch for changes
-    },
+    !!connectedAccount?.address
+      ? {
+          contract,
+          accessor: (lazy) => lazy.data.balances.get(connectedAccount.address as H160),
+          watch: true, // Watch for changes
+        }
+      : undefined,
   );
 
   // Example 3: Fetch specific address balance with manual control
@@ -42,11 +53,13 @@ export default function LazyStorageDemo() {
     isLoading: loadingTargetBalance,
     refresh: refreshTargetBalance,
   } = useLazyStorage(
-    !!targetAddress && {
-      contract,
-      accessor: (lazy) => lazy.data.balances.get(targetAddress as any),
-      watch: watchBalance,
-    },
+    !!targetAddress
+      ? {
+          contract,
+          accessor: (lazy) => lazy.data.balances.get(targetAddress as any),
+          watch: watchBalance,
+        }
+      : undefined,
   );
 
   const handleCheckBalance = () => {
@@ -257,8 +270,7 @@ export default function LazyStorageDemo() {
                 onClick={handleMintTokens}
                 isLoading={mintTx.inBestBlockProgress}
                 isDisabled={!tokenDecimals}
-                colorScheme='green'
-              >
+                colorScheme='green'>
                 {mintTx.inBestBlockProgress ? 'Minting...' : `Mint 100 ${tokenSymbol || 'Tokens'}`}
               </Button>
               {mintTx.inBestBlockProgress && (
