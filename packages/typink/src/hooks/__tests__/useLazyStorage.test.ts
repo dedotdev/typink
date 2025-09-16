@@ -4,9 +4,33 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useLazyStorage } from '../useLazyStorage.js';
 
 // Mock the internal dependencies
-vi.mock('../internal/index.js', () => ({
-  useDeepDeps: vi.fn((deps) => deps),
-}));
+// vi.mock('../internal/index.js', () => {
+//   const { useRef } = require('react');
+//
+//   return {
+//     useDeepDeps: vi.fn((deps) => {
+//       // Create stable reference for deps to prevent infinite loops
+//       // Functions are compared by identity, other values by equality
+//       const ref = useRef();
+//
+//       const hasChanged =
+//         !ref.current ||
+//         deps.some((dep, i) => {
+//           if (typeof dep === 'function' && typeof ref.current?.[i] === 'function') {
+//             // For functions, use the string representation for comparison in tests
+//             return dep.toString() !== ref.current[i].toString();
+//           }
+//           return dep !== ref.current?.[i];
+//         });
+//
+//       if (hasChanged) {
+//         ref.current = deps;
+//       }
+//
+//       return ref.current;
+//     }),
+//   };
+// });
 
 // Mock contract interface for testing
 interface MockContractApi extends GenericContractApi {
@@ -72,7 +96,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        fn: (lazy) => lazy.data.balances.get(testAddress)
+        fn: (lazy) => lazy.data.balances.get(testAddress),
       }),
     );
 
@@ -100,10 +124,12 @@ describe('useLazyStorage', () => {
 
     const contract = createMockContract(mockLazyStorage);
 
-    const { result } = renderHook(() => useLazyStorage({
-      contract,
-      fn: (lazy) => lazy.data.totalSupply
-    }));
+    const { result } = renderHook(() =>
+      useLazyStorage({
+        contract,
+        fn: (lazy) => lazy.data.totalSupply,
+      }),
+    );
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -126,10 +152,12 @@ describe('useLazyStorage', () => {
     const contract = createMockContract(mockLazyStorage);
 
     // Test vector length
-    const { result: lengthResult } = renderHook(() => useLazyStorage({
-      contract,
-      fn: (lazy) => lazy.items.len()
-    }));
+    const { result: lengthResult } = renderHook(() =>
+      useLazyStorage({
+        contract,
+        fn: (lazy) => lazy.items.len(),
+      }),
+    );
 
     await waitFor(() => {
       expect(lengthResult.current.isLoading).toBe(false);
@@ -138,10 +166,12 @@ describe('useLazyStorage', () => {
     expect(lengthResult.current.data).toBe(mockLength);
 
     // Test vector item access
-    const { result: itemResult } = renderHook(() => useLazyStorage({
-      contract,
-      fn: (lazy) => lazy.items.get(5)
-    }));
+    const { result: itemResult } = renderHook(() =>
+      useLazyStorage({
+        contract,
+        fn: (lazy) => lazy.items.get(5),
+      }),
+    );
 
     await waitFor(() => {
       expect(itemResult.current.isLoading).toBe(false);
@@ -174,7 +204,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        fn: (lazy) => lazy.data.balances.get('test-address')
+        fn: (lazy) => lazy.data.balances.get('test-address'),
       }),
     );
 
@@ -204,7 +234,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        fn: (lazy) => lazy.data.balances.get('test-address')
+        fn: (lazy) => lazy.data.balances.get('test-address'),
       }),
     );
 
@@ -227,7 +257,6 @@ describe('useLazyStorage', () => {
     expect(callCount).toBe(2);
   });
 
-
   it('should handle contract without storage property', async () => {
     const contractWithoutStorage = {
       address: '0x1234567890123456789012345678901234567890',
@@ -237,7 +266,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract: contractWithoutStorage,
-        fn: (lazy) => lazy.data.totalSupply
+        fn: (lazy) => lazy.data.totalSupply,
       }),
     );
 
@@ -254,8 +283,9 @@ describe('useLazyStorage', () => {
     const mockLazyStorage = {
       data: {
         balances: {
-          get: vi.fn()
-            .mockResolvedValueOnce(1000n)  // First call for address1
+          get: vi
+            .fn()
+            .mockResolvedValueOnce(1000n) // First call for address1
             .mockResolvedValueOnce(2000n), // Second call for address2
         },
         totalSupply: 5000n,
@@ -265,10 +295,11 @@ describe('useLazyStorage', () => {
     const contract = createMockContract(mockLazyStorage);
 
     const { result, rerender } = renderHook(
-      ({ fn }) => useLazyStorage({
-        contract,
-        fn
-      }),
+      ({ fn }) =>
+        useLazyStorage({
+          contract,
+          fn,
+        }),
       {
         initialProps: {
           fn: (lazy: any) => lazy.data.balances.get('address1'),
@@ -298,7 +329,7 @@ describe('useLazyStorage', () => {
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledWith('address2');
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledTimes(2);
     expect(result.current.error).toBeUndefined();
-    
+
     // Now change to a completely different fn (non-promise)
     rerender({
       fn: (lazy: any) => lazy.data.totalSupply,
@@ -307,7 +338,7 @@ describe('useLazyStorage', () => {
     await waitFor(() => {
       expect(result.current.data).toBe(5000n);
     });
-    
+
     // Should not have called balances.get again
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledTimes(2);
   });
@@ -325,12 +356,15 @@ describe('useLazyStorage', () => {
     const contract = createMockContract(mockLazyStorage);
 
     const { result, rerender } = renderHook(
-      ({ shouldExecute }) => useLazyStorage(
-        shouldExecute ? {
-          contract,
-          fn: (lazy) => lazy.data.balances.get('test-address')
-        } : false
-      ),
+      ({ shouldExecute }) =>
+        useLazyStorage(
+          shouldExecute
+            ? {
+                contract,
+                fn: (lazy) => lazy.data.balances.get('test-address'),
+              }
+            : false,
+        ),
       {
         initialProps: { shouldExecute: false },
       },

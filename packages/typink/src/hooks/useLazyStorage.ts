@@ -124,18 +124,68 @@ export function useLazyStorage<
 
   // Track dependencies for re-execution
   const contractInstanceId = (contract as any)?._instanceId;
-  const fnString = fn?.toString();
-  const deps = useDeepDeps([contractInstanceId, fnString, watch]);
+  const deps = useDeepDeps([contractInstanceId, fn?.toString()]);
 
-  // Fetch lazy storage data
-  const fetchData = useCallback(async () => {
-    if (!contract || !fn) {
-      setData(undefined);
-      setIsLoading(true);
-      return;
-    }
+  // Initial data fetch
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      if (!contract || !fn) {
+        setData(undefined);
+        setIsLoading(true);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(undefined);
+
+        // Check if contract has storage property
+        if (!('storage' in contract)) {
+          throw new TypeError(
+            'Contract does not have storage property. Ensure you are using a valid Contract instance.',
+          );
+        }
+
+        // Get lazy storage object
+        const lazyStorage = (contract as Contract<T>).storage.lazy();
+
+        // Apply the function
+        const result = fn(lazyStorage as T['types']['LazyStorage']);
+
+        // Handle both Promise and non-Promise results
+        const finalResult = result instanceof Promise ? await result : result;
+
+        if (mounted) {
+          setData(finalResult);
+          setError(undefined);
+          setIsLoading(false);
+        }
+      } catch (err: any) {
+        console.error('Error fetching lazy storage data:', err);
+
+        if (mounted) {
+          setData(undefined);
+          setError(err);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData().catch(console.error);
+
+    return () => {
+      mounted = false;
+    };
+  }, deps);
+
+  // Manual refresh function
+  const refresh = useCallback(async () => {
+    if (!contract || !fn) return;
 
     try {
+      setIsRefreshing(true);
       setError(undefined);
 
       // Check if contract has storage property
@@ -154,45 +204,15 @@ export function useLazyStorage<
 
       setData(finalResult);
       setError(undefined);
+      setIsRefreshing(false);
     } catch (err: any) {
-      console.error('Error fetching lazy storage data:', err);
+      console.error('Error when refreshing lazy storage data:', err);
+
       setData(undefined);
       setError(err);
-    }
-  }, [contract, fn]);
-
-  // Initial data fetch
-  useEffect(() => {
-    let mounted = true;
-
-    const loadData = async () => {
-      if (mounted) {
-        setIsLoading(true);
-        await fetchData();
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadData().catch(console.error);
-
-    return () => {
-      mounted = false;
-    };
-  }, deps);
-
-  // Manual refresh function
-  const refresh = useCallback(async () => {
-    if (!contract || !fn) return;
-
-    try {
-      setIsRefreshing(true);
-      await fetchData();
-    } finally {
       setIsRefreshing(false);
     }
-  }, [contract, fn, fetchData]);
+  }, deps);
 
   // Watch for block changes and auto-refresh
   useEffect(
