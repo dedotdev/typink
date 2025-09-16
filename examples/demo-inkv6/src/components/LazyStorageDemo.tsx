@@ -41,7 +41,7 @@ export default function LazyStorageDemo() {
     !!connectedAccount?.address
       ? {
           contract,
-          accessor: (lazy) => lazy.data.balances.get(connectedAccount.address as H160),
+          fn: (lazy) => lazy.data.balances.get(connectedAccount.address as H160),
           watch: true, // Watch for changes
         }
       : undefined,
@@ -56,7 +56,7 @@ export default function LazyStorageDemo() {
     !!targetAddress
       ? {
           contract,
-          accessor: (lazy) => lazy.data.balances.get(targetAddress as any),
+          fn: (lazy) => lazy.data.balances.get(targetAddress as any),
           watch: watchBalance,
         }
       : undefined,

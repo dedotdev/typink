@@ -72,7 +72,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        accessor: (lazy) => lazy.data.balances.get(testAddress)
+        fn: (lazy) => lazy.data.balances.get(testAddress)
       }),
     );
 
@@ -102,7 +102,7 @@ describe('useLazyStorage', () => {
 
     const { result } = renderHook(() => useLazyStorage({
       contract,
-      accessor: (lazy) => lazy.data.totalSupply
+      fn: (lazy) => lazy.data.totalSupply
     }));
 
     await waitFor(() => {
@@ -128,7 +128,7 @@ describe('useLazyStorage', () => {
     // Test vector length
     const { result: lengthResult } = renderHook(() => useLazyStorage({
       contract,
-      accessor: (lazy) => lazy.items.len()
+      fn: (lazy) => lazy.items.len()
     }));
 
     await waitFor(() => {
@@ -140,7 +140,7 @@ describe('useLazyStorage', () => {
     // Test vector item access
     const { result: itemResult } = renderHook(() => useLazyStorage({
       contract,
-      accessor: (lazy) => lazy.items.get(5)
+      fn: (lazy) => lazy.items.get(5)
     }));
 
     await waitFor(() => {
@@ -174,7 +174,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        accessor: (lazy) => lazy.data.balances.get('test-address')
+        fn: (lazy) => lazy.data.balances.get('test-address')
       }),
     );
 
@@ -204,7 +204,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract,
-        accessor: (lazy) => lazy.data.balances.get('test-address')
+        fn: (lazy) => lazy.data.balances.get('test-address')
       }),
     );
 
@@ -237,7 +237,7 @@ describe('useLazyStorage', () => {
     const { result } = renderHook(() =>
       useLazyStorage({
         contract: contractWithoutStorage,
-        accessor: (lazy) => lazy.data.totalSupply
+        fn: (lazy) => lazy.data.totalSupply
       }),
     );
 
@@ -250,7 +250,7 @@ describe('useLazyStorage', () => {
     expect(result.current.error?.message).toContain('Contract does not have storage property');
   });
 
-  it('should re-fetch when accessor function changes', async () => {
+  it('should re-fetch when fn changes', async () => {
     const mockLazyStorage = {
       data: {
         balances: {
@@ -265,13 +265,13 @@ describe('useLazyStorage', () => {
     const contract = createMockContract(mockLazyStorage);
 
     const { result, rerender } = renderHook(
-      ({ accessor }) => useLazyStorage({
+      ({ fn }) => useLazyStorage({
         contract,
-        accessor
+        fn
       }),
       {
         initialProps: {
-          accessor: (lazy: any) => lazy.data.balances.get('address1'),
+          fn: (lazy: any) => lazy.data.balances.get('address1'),
         },
       },
     );
@@ -285,12 +285,12 @@ describe('useLazyStorage', () => {
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledWith('address1');
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledTimes(1);
 
-    // Change accessor function to fetch different address
+    // Change fn to fetch different address
     rerender({
-      accessor: (lazy: any) => lazy.data.balances.get('address2'),
+      fn: (lazy: any) => lazy.data.balances.get('address2'),
     });
 
-    // Wait for re-fetch with new accessor
+    // Wait for re-fetch with new fn
     await waitFor(() => {
       expect(result.current.data).toBe(2000n);
     });
@@ -299,9 +299,9 @@ describe('useLazyStorage', () => {
     expect(mockLazyStorage.data.balances.get).toHaveBeenCalledTimes(2);
     expect(result.current.error).toBeUndefined();
     
-    // Now change to a completely different accessor (non-promise)
+    // Now change to a completely different fn (non-promise)
     rerender({
-      accessor: (lazy: any) => lazy.data.totalSupply,
+      fn: (lazy: any) => lazy.data.totalSupply,
     });
 
     await waitFor(() => {
@@ -328,7 +328,7 @@ describe('useLazyStorage', () => {
       ({ shouldExecute }) => useLazyStorage(
         shouldExecute ? {
           contract,
-          accessor: (lazy) => lazy.data.balances.get('test-address')
+          fn: (lazy) => lazy.data.balances.get('test-address')
         } : false
       ),
       {

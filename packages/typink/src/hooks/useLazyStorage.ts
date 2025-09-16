@@ -24,11 +24,11 @@ export type UseLazyStorageParameters<
    */
   contract: Contract<T> | undefined;
   /**
-   * Accessor function that navigates the lazy storage structure
+   * Function that navigates the lazy storage structure
    * @param lazy - The lazy storage object with type-safe access
    * @returns The value to fetch (can be a Promise for .get() operations)
    */
-  accessor: F;
+  fn: F;
   /**
    * Whether to watch for block changes and automatically refresh the data
    * @default false
@@ -78,18 +78,9 @@ export type UseLazyStorageReturnType<
  * const { contract } = useContract<PSP22ContractApi>('psp22');
  * const { data: balance, isLoading } = useLazyStorage({
  *   contract,
- *   accessor: (lazy) => lazy.data.balances.get(accountAddress)
+ *   fn: (lazy) => lazy.data.balances.get(accountAddress)
  * });
  * // balance: bigint | undefined (fully typed)
- * ```
- *
- * @example
- * ```typescript
- * // Fetch simple lazy object value
- * const { data: totalSupply } = useLazyStorage({
- *   contract,
- *   accessor: (lazy) => lazy.data.totalSupply
- * });
  * ```
  *
  * @example
@@ -97,12 +88,12 @@ export type UseLazyStorageReturnType<
  * // Fetch from lazy storage vector
  * const { data: vectorLength } = useLazyStorage({
  *   contract,
- *   accessor: (lazy) => lazy.items.len()
+ *   fn: (lazy) => lazy.items.len()
  * });
  *
  * const { data: item } = useLazyStorage({
  *   contract,
- *   accessor: (lazy) => lazy.items.get(index)
+ *   fn: (lazy) => lazy.items.get(index)
  * });
  * ```
  *
@@ -112,7 +103,7 @@ export type UseLazyStorageReturnType<
  * const { data: balance } = useLazyStorage(
  *   addressReady ? {
  *     contract,
- *     accessor: (lazy) => lazy.data.balances.get(address)
+ *     fn: (lazy) => lazy.data.balances.get(address)
  *   } : undefined
  * );
  * ```
@@ -124,7 +115,7 @@ export function useLazyStorage<
   T extends GenericContractApi = GenericContractApi,
   F extends (lazy: T['types']['LazyStorage']) => any = (lazy: T['types']['LazyStorage']) => any,
 >(parameters: UseLazyStorageParameters<T, F> | undefined | false): UseLazyStorageReturnType<T, F> {
-  const { contract, accessor, watch = false } = parameters || {};
+  const { contract, fn, watch = false } = parameters || {};
 
   const [data, setData] = useState<LazyStorageAccessorResult<T, F>>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -133,12 +124,12 @@ export function useLazyStorage<
 
   // Track dependencies for re-execution
   const contractInstanceId = (contract as any)?._instanceId;
-  const accessorString = accessor?.toString();
-  const deps = useDeepDeps([contractInstanceId, accessorString, watch]);
+  const fnString = fn?.toString();
+  const deps = useDeepDeps([contractInstanceId, fnString, watch]);
 
   // Fetch lazy storage data
   const fetchData = useCallback(async () => {
-    if (!contract || !accessor) {
+    if (!contract || !fn) {
       setData(undefined);
       setIsLoading(true);
       return;
@@ -155,8 +146,8 @@ export function useLazyStorage<
       // Get lazy storage object
       const lazyStorage = (contract as Contract<T>).storage.lazy();
 
-      // Apply the accessor function
-      const result = accessor(lazyStorage as T['types']['LazyStorage']);
+      // Apply the function
+      const result = fn(lazyStorage as T['types']['LazyStorage']);
 
       // Handle both Promise and non-Promise results
       const finalResult = result instanceof Promise ? await result : result;
@@ -168,7 +159,7 @@ export function useLazyStorage<
       setData(undefined);
       setError(err);
     }
-  }, [contract, accessor]);
+  }, [contract, fn]);
 
   // Initial data fetch
   useEffect(() => {
@@ -193,7 +184,7 @@ export function useLazyStorage<
 
   // Manual refresh function
   const refresh = useCallback(async () => {
-    if (!contract || !accessor) return;
+    if (!contract || !fn) return;
 
     try {
       setIsRefreshing(true);
@@ -201,7 +192,7 @@ export function useLazyStorage<
     } finally {
       setIsRefreshing(false);
     }
-  }, [contract, accessor, fetchData]);
+  }, [contract, fn, fetchData]);
 
   // Watch for block changes and auto-refresh
   useEffect(
