@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Contract, GenericContractApi } from 'dedot/contracts';
 import { Unsub } from 'dedot/types';
 import { useDeepDeps } from './internal/index.js';
