@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Divider, Heading, Input, Text } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, Divider, Heading, Input, Text } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
@@ -26,6 +26,7 @@ export default function LazyStorageDemo() {
     storage: rootStorage,
     isLoading: loadingRootStorage,
     refresh: refreshRootStorage,
+    error: rootStorageError,
   } = useRootStorage({ contract });
 
   const totalSupply = rootStorage?.data?.totalSupply;
@@ -34,7 +35,7 @@ export default function LazyStorageDemo() {
   const tokenDecimals = rootStorage?.decimals;
 
   // Example 2: Fetch user's balance using lazy mapping
-  const { data: myBalance, isLoading: loadingMyBalance } = useLazyStorage(
+  const { data: myBalance, isLoading: loadingMyBalance, error: myBalanceError } = useLazyStorage(
     !!connectedAccount?.address
       ? {
           contract,
@@ -49,6 +50,7 @@ export default function LazyStorageDemo() {
     data: targetBalance,
     isLoading: loadingTargetBalance,
     refresh: refreshTargetBalance,
+    error: targetBalanceError,
   } = useLazyStorage(
     !!targetAddress
       ? {
@@ -108,6 +110,14 @@ export default function LazyStorageDemo() {
         <Heading size='sm' mb={3}>
           Token Information (Root Storage)
         </Heading>
+        {rootStorageError && (
+          <Alert status='error' mb={3}>
+            <AlertIcon />
+            <AlertDescription>
+              Error loading root storage: {rootStorageError.message || 'Unknown error'}
+            </AlertDescription>
+          </Alert>
+        )}
         <Box bg='gray.50' p={4} borderRadius='md'>
           <Text fontSize='xs' color='blue.600' mb={3}>
             💡 These fields are fetched using useRootStorage() - they're part of the contract's main storage structure
@@ -157,6 +167,14 @@ export default function LazyStorageDemo() {
         <Heading size='sm' mb={3}>
           My Balance (Lazy Mapping with Watch)
         </Heading>
+        {myBalanceError && (
+          <Alert status='error' mb={3}>
+            <AlertIcon />
+            <AlertDescription>
+              Error loading balance: {myBalanceError.message || 'Unknown error'}
+            </AlertDescription>
+          </Alert>
+        )}
         <Box bg='blue.50' p={4} borderRadius='md'>
           <Text fontSize='xs' color='blue.600' mb={3}>
             💡 This uses useLazyStorage() to fetch individual balance from the lazy mapping
@@ -227,6 +245,14 @@ export default function LazyStorageDemo() {
 
           {targetAddress && (
             <Box>
+              {targetBalanceError && (
+                <Alert status='error' mb={3}>
+                  <AlertIcon />
+                  <AlertDescription>
+                    Error loading balance: {targetBalanceError.message || 'Unknown error'}
+                  </AlertDescription>
+                </Alert>
+              )}
               <Text fontSize='sm' color='gray.600' mb={2}>
                 Address: {targetAddress}
               </Text>

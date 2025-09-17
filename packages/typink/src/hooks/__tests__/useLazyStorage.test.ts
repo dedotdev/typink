@@ -184,7 +184,7 @@ describe('useLazyStorage', () => {
   it('should handle undefined parameters gracefully', async () => {
     const { result } = renderHook(() => useLazyStorage(undefined));
 
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
     expect(result.current.error).toBeUndefined();
   });
@@ -371,7 +371,7 @@ describe('useLazyStorage', () => {
     );
 
     // Should not execute when false
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
     expect(mockLazyStorage.data.balances.get).not.toHaveBeenCalled();
 

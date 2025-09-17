@@ -1,11 +1,11 @@
 {
   "source": {
-    "hash": "0xe79c68f6aa8ae5f6687487a833cbd83dd9bcae26b25e949ae538e75918bea139",
-    "language": "ink! 6.0.0-alpha",
+    "hash": "0xb0ea7f80241b57dc30b449839effe1e3a297cab5424dff35c3bd49ca39938fca",
+    "language": "ink! 6.0.0-alpha.3",
     "compiler": "rustc 1.88.0",
     "build_info": {
       "build_mode": "Release",
-      "cargo_contract_version": "6.0.0-alpha",
+      "cargo_contract_version": "6.0.0-alpha.1",
       "rust_toolchain": "stable-aarch64-apple-darwin"
     }
   },
@@ -96,19 +96,13 @@
         ],
         "type": 31
       },
-      "chainExtension": {
-        "displayName": [
-          "ChainExtension"
-        ],
-        "type": 32
-      },
       "hash": {
         "displayName": [
           "Hash"
         ],
         "type": 29
       },
-      "maxEventTopics": 4,
+      "nativeToEthRatio": 100000000,
       "staticBufferSize": 16384,
       "timestamp": {
         "displayName": [
@@ -1467,19 +1461,6 @@
         "def": {
           "primitive": "u32"
         }
-      }
-    },
-    {
-      "id": 32,
-      "type": {
-        "def": {
-          "variant": {}
-        },
-        "path": [
-          "ink_primitives",
-          "types",
-          "NoChainExtension"
-        ]
       }
     }
   ],

@@ -133,7 +133,7 @@ export function useLazyStorage<
     const fetchData = async () => {
       if (!contract || !fn) {
         setData(undefined);
-        setIsLoading(true);
+        setIsLoading(false);
         return;
       }
 

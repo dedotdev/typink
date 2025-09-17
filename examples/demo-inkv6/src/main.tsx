@@ -7,8 +7,8 @@ import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
 import {
   development,
+  passetHub,
   polkadotjs,
-  popTestnet,
   ReactToastifyAdapter,
   setupTxToaster,
   subwallet,
@@ -21,7 +21,7 @@ setupTxToaster({
   adapter: new ReactToastifyAdapter(toast),
 });
 
-const SUPPORTED_NETWORK = [popTestnet, westendAssetHub];
+const SUPPORTED_NETWORK = [passetHub, westendAssetHub];
 if (process.env.NODE_ENV === 'development') {
   SUPPORTED_NETWORK.push(development);
 }
@@ -32,7 +32,7 @@ function Root() {
       <TypinkProvider
         deployments={deployments}
         supportedNetworks={SUPPORTED_NETWORK}
-        defaultNetworkId={popTestnet.id}
+        defaultNetworkId={passetHub.id}
         cacheMetadata={true}
         wallets={[subwallet, talisman, polkadotjs]}>
         <App />
