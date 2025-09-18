@@ -46,7 +46,7 @@ jobs:
           fi
 
           # Invalid project name should be rejected
-          if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-typink-vite" -N "Aleph Zero Testnet" 2>&1 | grep -q "not a valid package name"; then
+          if node packages/create-typink/dist/index.js --name "Invalid Name With Spaces" --template "legacy-nextjs" -N "Aleph Zero Testnet" 2>&1 | grep -q "not a valid package name"; then
             echo "✅ CLI correctly rejects invalid project name"
           else
             echo "❌ CLI should reject invalid project name"
@@ -59,18 +59,8 @@ jobs:
           set -euo pipefail
 
           TEMPLATES=(
-            legacy-typink-vite
-            legacy-subconnectv2-vite
-            legacy-talisman-vite
-            legacy-typink-nextjs
-            legacy-subconnectv2-nextjs
-            legacy-talisman-nextjs
-            v6-typink-vite
-            v6-subconnectv2-vite
-            v6-talisman-vite
-            v6-typink-nextjs
-            v6-subconnectv2-nextjs
-            v6-talisman-nextjs
+            legacy-nextjs
+            v6-nextjs
           )
 
           for T in "${TEMPLATES[@]}"; do
