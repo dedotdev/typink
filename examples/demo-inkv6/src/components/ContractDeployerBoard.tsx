@@ -29,7 +29,6 @@ export function ContractDeployerBoard() {
           const { status } = progress;
           console.log(status);
 
-          // TODO improve this?
           if (contractAddress) {
             console.log('Contract is deployed at address', contractAddress);
             setDeployedContracts((prev) => [{ address: contractAddress, at: Date.now() }, ...(prev || [])]);

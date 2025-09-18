@@ -26,7 +26,7 @@ type UseDeployerTxReturnType<
     parameters: {
       txOptions?: Partial<ConstructorTxOptions>;
       callback?: (
-        result: ISubmittableResult,
+        result: IContractInstantiateSubmittableResult<T>,
         // deployed contract address, TODO we should have a more straight forward way to access this
         contractAddress?: SubstrateAddress,
       ) => void;
@@ -78,7 +78,7 @@ export function useDeployerTx<
         try {
           const { args = [], txOptions, callback: optionalCallback } = o;
 
-          const callback = async (result: IContractInstantiateSubmittableResult) => {
+          const callback = async (result: IContractInstantiateSubmittableResult<T>) => {
             const { status } = result;
             if (status.type === 'BestChainBlockIncluded') {
               setInBestBlockProgress(false);
