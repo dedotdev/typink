@@ -16,15 +16,15 @@ import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from 'contracts/deployments';
 import { Psp22ContractApi } from 'contracts/types/psp22';
 import {
-  useContract,
-  useLazyStorage,
-  useRootStorage,
-  useContractTx,
-  useTypink,
   formatBalance,
   txToaster,
+  useContract,
+  useContractTx,
+  useLazyStorage,
+  useRootStorage,
+  useTypink,
 } from 'typink';
-import type { H160 } from 'dedot/codecs';
+import { toEvmAddress } from 'dedot/contracts';
 
 export default function LazyStorageDemo() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
@@ -55,7 +55,7 @@ export default function LazyStorageDemo() {
     !!connectedAccount?.address
       ? {
           contract,
-          fn: (lazy) => lazy.data.balances.get(connectedAccount.address as H160),
+          fn: (lazy) => lazy.data.balances.get(toEvmAddress(connectedAccount.address)),
           watch: true,
         }
       : undefined,
@@ -71,7 +71,7 @@ export default function LazyStorageDemo() {
     !!targetAddress
       ? {
           contract,
-          fn: (lazy) => lazy.data.balances.get(targetAddress as any),
+          fn: (lazy) => lazy.data.balances.get(toEvmAddress(targetAddress)),
           watch: watchBalance,
         }
       : undefined,

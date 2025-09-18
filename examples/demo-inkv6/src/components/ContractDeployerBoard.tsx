@@ -25,7 +25,7 @@ export function ContractDeployerBoard() {
       await newFlipperTx.signAndSend({
         args: [true],
         txOptions: { salt },
-        callback: (progress, contractAddress) => {
+        callback: async (progress, contractAddress) => {
           const { status } = progress;
           console.log(status);
 
