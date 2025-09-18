@@ -7,11 +7,7 @@ import {
   LEGACY_NETWORKS,
   Options,
   TEMPLATES,
-  UI,
-  UI_CHOICES,
   V6_NETWORKS,
-  WALLET_CONNECTORS_CHOICES,
-  WalletConnector,
 } from '../types.js';
 import validate from 'validate-npm-package-name';
 import { stringCamelCase } from '@dedot/utils';
@@ -19,9 +15,7 @@ import { stringCamelCase } from '@dedot/utils';
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
   inkVersion: InkVersion.InkV6,
-  walletConnector: WalletConnector.Typink,
-  ui: UI.Vite,
-  template: 'legacy-typink-vite',
+  template: 'v6-nextjs',
   networks: [],
   skipInstall: false,
   pkgManager: { name: 'npm' },
@@ -51,20 +45,6 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
       message: 'Which ink! version do you want to use?',
       choices: INK_VERSIONS_CHOICES,
       default: defaultOptions.inkVersion,
-    },
-    {
-      type: 'list',
-      name: 'walletConnector',
-      message: 'Which wallet connector do you want to use?',
-      choices: WALLET_CONNECTORS_CHOICES,
-      default: defaultOptions.walletConnector,
-    },
-    {
-      type: 'list',
-      name: 'ui',
-      message: 'Which UI template do you want to use?',
-      choices: UI_CHOICES,
-      default: defaultOptions.ui,
     },
     {
       type: 'checkbox',
@@ -158,8 +138,6 @@ export function parseArguments(): Options {
   return {
     projectName: args['--name'] || null,
     inkVersion,
-    walletConnector,
-    ui,
     template: args['--template'] || null,
     networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],

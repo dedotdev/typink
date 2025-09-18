@@ -2,7 +2,6 @@ import * as prettier from 'prettier';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { Options } from '../types.js';
-import { execa } from 'execa';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
 
 export async function prettierFormat(
@@ -12,15 +11,8 @@ export async function prettierFormat(
 ) {
   task.title = '🎨 Prettifying the codebase';
 
-  const { pkgManager } = options;
-
-  if (!options.skipInstall) {
-    await execa(pkgManager.name, ['run', 'prettify'], { cwd: targetDir });
-  } else {
-    const prettierConfig = await prettier.resolveConfig(path.resolve(targetDir, './.prettierrc.js'));
-
-    await prettierFormatRecursive(targetDir, prettierConfig);
-  }
+  const prettierConfig = await prettier.resolveConfig(path.resolve(targetDir, './.prettierrc.js'));
+  await prettierFormatRecursive(targetDir, prettierConfig);
 
   task.title = '🎨 Prettified the codebase';
 }

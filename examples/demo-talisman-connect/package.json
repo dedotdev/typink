@@ -2,13 +2,13 @@
   "name": "demo-talisman-connect",
   "private": true,
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
-    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
-    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
+    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\""
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.5",
@@ -25,27 +25,27 @@
     "react-dom": "^18.3.1",
     "react-toastify": "^10.0.6",
     "react-use": "^17.6.0",
-    "typink": "^0.4.0"
+    "typink": "workspace:*"
   },
   "devDependencies": {
-    "@dedot/chaintypes": "^0.132.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@dedot/chaintypes": "^0.155.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.35.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
-    "prettier": "^2.8.8",
-    "prettier-plugin-organize-imports": "^3.2.4",
-    "serve": "^14.2.4",
-    "typescript": "5.4.5",
-    "vite": "^5.4.19",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "serve": "^14.2.5",
+    "typescript": "5.9.2",
+    "vite": "^7.1.6",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^0.34.6"
+    "vitest": "^3.2.4"
   }
 }

@@ -11,8 +11,8 @@ export async function copyTemplateFiles(
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, inkVersion, walletConnector, ui } = options;
-  const template = `${inkVersion}-${walletConnector}-${ui}`;
+  const { projectName, noGit, inkVersion } = options;
+  const template = `${inkVersion}-nextjs`;
 
   task.title = `🚀 Initializing new Typink dApp`;
 

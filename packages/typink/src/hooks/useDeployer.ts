@@ -41,6 +41,7 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
       }
 
       const deployer = new ContractDeployer<T>(
+        // @ts-ignore
         client,
         metadata,
         codeHashOrWasm, // prettier-end-here
