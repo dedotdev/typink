@@ -2,13 +2,13 @@
   "name": "demo-talisman-connect",
   "private": true,
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
-    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\"",
-    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
+    "prettify": "npx prettier --write \"./{**/*,*}.{js,ts,jsx,tsx,json}\""
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.5",
@@ -25,7 +25,7 @@
     "react-dom": "^18.3.1",
     "react-toastify": "^10.0.6",
     "react-use": "^17.6.0",
-    "typink": "^0.4.0"
+    "typink": "workspace:*"
   },
   "devDependencies": {
     "@dedot/chaintypes": "^0.155.0",

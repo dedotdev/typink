@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ClientConnectionStatus, NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
 import { ISubstrateClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
-import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
+import { RpcLegacy, RpcV2, VersionedGenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import {
@@ -29,7 +29,7 @@ import {
 import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
-  ISubstrateClient<ChainApi[RpcVersion]>;
+  ISubstrateClient<ChainApi[RpcV2]> | ISubstrateClient<ChainApi[RpcLegacy]>;
 
 export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
   ready: boolean; // aggregated ready state when all clients are connected

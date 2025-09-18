@@ -106,6 +106,7 @@ export function useTx<
           };
 
           await generalTx({
+            // @ts-ignore
             client,
             txBuilder,
             args,
