@@ -41,7 +41,6 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
       }
 
       const newContract = new Contract<T>(
-        // @ts-ignore
         client,
         metadata as any,
         address, // prettier-end-here

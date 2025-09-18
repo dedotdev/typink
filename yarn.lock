@@ -822,18 +822,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/api@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/api@npm:0.16.0"
+"@dedot/api@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/api@npm:0.17.0"
   dependencies:
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/providers": "npm:0.16.0"
-    "@dedot/runtime-specs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/storage": "npm:0.16.0"
-    "@dedot/types": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
-  checksum: 10/46925e35a35fc6ca88ea94acb66a3557b16a8603ac26180d35ae94c273c2693c516e109ec199ed27fc31d2a1d9f7e4436bd4133335f06ff28dcb9bce3584136c
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/providers": "npm:0.17.0"
+    "@dedot/runtime-specs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/storage": "npm:0.17.0"
+    "@dedot/types": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
+  checksum: 10/415ed3b18926b1e11f35491cb3771d8e1a5e31cfccbd9a665239a950ab575493612f3e88d0b89fd444633a23328ff3bdad1a8a7188b2d7172145f38ea9d5fdc7
   languageName: node
   linkType: hard
 
@@ -846,13 +846,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/cli@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/cli@npm:0.16.0"
+"@dedot/cli@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/cli@npm:0.17.0"
   dependencies:
-    "@dedot/api": "npm:0.16.0"
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/codegen": "npm:0.16.0"
+    "@dedot/api": "npm:0.17.0"
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/codegen": "npm:0.17.0"
     "@polkadot-api/wasm-executor": "npm:^0.1.2"
     "@polkadot/types-support": "npm:^16.4.6"
     ora: "npm:^8.2.0"
@@ -860,69 +860,69 @@ __metadata:
   bin:
     dedot: bin/dedot.mjs
     djs: bin/dedot.mjs
-  checksum: 10/895842a07d19730b21ab39e487f5160c44a2ddf0d9df77feafa3460f1d895082a0b09a38d9d87c647fe6de6a18bdd7d063ce5d41a432df00df94beeaf22f08dd
+  checksum: 10/0ded3dcb639b6cd9d79626e7ddb98bef157d18d3e137aa43f8760c56f0fe75766e6cb2ccafb970ca4cbe3752d3d54c29e9c82e417e78b7737e7e5b46ad56162e
   languageName: node
   linkType: hard
 
-"@dedot/codecs@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/codecs@npm:0.16.0"
+"@dedot/codecs@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/codecs@npm:0.17.0"
   dependencies:
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
-  checksum: 10/72e20553c2df341914ec21acb234ab7cd0327f72c04347647acc7c6ed361f12c5f7d3146dd1b3c2f6a5e8e1456b87dcd47743a06c3826e2af304a2d3c2de45bc
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
+  checksum: 10/bcdb5498cea88ead7439c185c8d37a1f3dd90569165906bae939cedbd51b09d547fcced05f273423d0a57d989b9d454836055acfac6ea9c36c5183ce599ed173
   languageName: node
   linkType: hard
 
-"@dedot/codegen@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/codegen@npm:0.16.0"
+"@dedot/codegen@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/codegen@npm:0.17.0"
   dependencies:
-    "@dedot/api": "npm:0.16.0"
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/contracts": "npm:0.16.0"
-    "@dedot/providers": "npm:0.16.0"
-    "@dedot/runtime-specs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/types": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
+    "@dedot/api": "npm:0.17.0"
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/contracts": "npm:0.17.0"
+    "@dedot/providers": "npm:0.17.0"
+    "@dedot/runtime-specs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/types": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
     handlebars: "npm:^4.7.8"
     prettier: "npm:^3.6.2"
-  checksum: 10/93ffdbbc300f63db20b6fd176d2215bc3ce3418dbc9ddd4d2f3a24460335279edadf5e9c541a6aca6f4662e83fe50a3945cd40aa937910bf00ded03c8ccc491d
+  checksum: 10/2a2f94c30f91b8a72c94e975d910092e17a89f37c504317f93fe060d610ede1d20b45ebdc521926b464f3018aef91e84c1ec7c4e44ff68348725b1e66aa6c93c
   languageName: node
   linkType: hard
 
-"@dedot/contracts@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/contracts@npm:0.16.0"
+"@dedot/contracts@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/contracts@npm:0.17.0"
   dependencies:
-    "@dedot/api": "npm:0.16.0"
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/types": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
+    "@dedot/api": "npm:0.17.0"
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/types": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
     "@ethereumjs/rlp": "npm:^10.0.0"
-  checksum: 10/67664fb0b9d6fe6d3891cf37931635d6ff5b636a29517e9bc28818476c0a80d52b30ba3347c4fbc4349b130d0acaf72e5db3517067d0e434cf4decdef356368e
+  checksum: 10/52605ebdd97bfcbc4a84030146c8ac7599fc8c110b00d86007dc2a176bd01878d45cc244aa07a6684176c8ecff6169d92be23e16912b97518e6fbbcf642fc93e
   languageName: node
   linkType: hard
 
-"@dedot/merkleized-metadata@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/merkleized-metadata@npm:0.16.0"
+"@dedot/merkleized-metadata@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/merkleized-metadata@npm:0.17.0"
   dependencies:
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
-  checksum: 10/3d17d21fd6adab01738aa37cdc76d741f2de39e7b0b5ceaa831912c530278e0e8d178e222e2bc5946fcdc1e65b7b05a37f53343114167d4772ccfd367fd34481
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
+  checksum: 10/bfbbd7f561527a8a9c9494881012053c84c3ae02524e71f6a88d2b2b43c08c3bb217ef6b649a31155c62761b50f420368492fd36d9c85878fc470b0ac059f9b9
   languageName: node
   linkType: hard
 
-"@dedot/providers@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/providers@npm:0.16.0"
+"@dedot/providers@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/providers@npm:0.17.0"
   dependencies:
-    "@dedot/utils": "npm:0.16.0"
+    "@dedot/utils": "npm:0.17.0"
     "@polkadot/x-ws": "npm:^13.5.6"
-  checksum: 10/42123a6e2d23d3bf95f03be3b7a91a89f0e258e33e3e0ec241e0b22312b217067a96ec2ee0246544bdfb8833989905760e52345e86d8eaf53a97b521a9654d52
+  checksum: 10/ec274d9736a5645db9275832959a921abe71e4a1e3f6c9ffaa2de2149a6f0b866a2fa98a41f080a3303a311db09e1f2eb1da6a76e79112d468bc2f87b284347d
   languageName: node
   linkType: hard
 
@@ -940,62 +940,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/runtime-specs@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/runtime-specs@npm:0.16.0"
+"@dedot/runtime-specs@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/runtime-specs@npm:0.17.0"
   dependencies:
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/types": "npm:0.16.0"
-  checksum: 10/5ea90ae4f8d5fcafc5ab66835d194ae561e508ec43d52da450f3f972b51d305c1b635e8c8fb28836256705f2ce8c09728de03974e71cc015660824ed3832d11a
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/types": "npm:0.17.0"
+  checksum: 10/c733258e017d780bc1dbd59507a05191669376012266df0c4539a3ca5dd42f0f6b3f9f8f87cd982ddc62d7f5125a4b340b6a970b85945bfaa5c334081153d4f0
   languageName: node
   linkType: hard
 
-"@dedot/shape@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/shape@npm:0.16.0"
+"@dedot/shape@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/shape@npm:0.17.0"
   dependencies:
-    "@dedot/utils": "npm:0.16.0"
+    "@dedot/utils": "npm:0.17.0"
     deshape: "npm:^0.1.0"
-  checksum: 10/3eddbc3a18fe414496021d8e865397b112d04a6ca595ef07fb62ef3fb3d8ad6455075770d2e4e9a7deedbc9fca08dab41c8201ceae6aa2cd81c70893335c87bb
+  checksum: 10/d159efcf99768d24dec90d34bfe912698414dcd4171fc0b2e9af83d67b3ff0e5756edebdfd3d819ee7717275bbf6bb1af7b4c430d78d236d77fcdff27d8d28f6
   languageName: node
   linkType: hard
 
-"@dedot/smoldot@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/smoldot@npm:0.16.0"
+"@dedot/smoldot@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/smoldot@npm:0.17.0"
   dependencies:
-    smoldot: "npm:^2.0.38"
-  checksum: 10/c985907b276d752cf3625eb71130558e7fb8d3ac78cacbefc33b262bbf97adea0e573c10aa65a5e30353d25864350c45af5dc008f299c4fe3cb92424c2241b5b
+    smoldot: "npm:^2.0.39"
+  checksum: 10/89774ec8c6d8a0bb8c52ce550c5f0a89452e2132c60eb1f29e23d6c996afd06489e0964d2c5c1bed76c1ab430a6a1d11f7d7e652b01c2e7e10b66c04b2b487f9
   languageName: node
   linkType: hard
 
-"@dedot/storage@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/storage@npm:0.16.0"
-  checksum: 10/abf9d3014503c00e13082155beef5b106cc2b3424c850ebf59514147e6ed8875a52d55703c1e9502b27843328ba66d31e1e232282e6d444d0cb5b9a49ea61bfc
+"@dedot/storage@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/storage@npm:0.17.0"
+  checksum: 10/e2309f62a17b7625370816fd364564ca96a13bbe3fefd4682f351b6d571919b3d0cab78825fcfbd842a1213875fd4b5846f1a939e78be695a45f9d78f727a173
   languageName: node
   linkType: hard
 
-"@dedot/types@npm:0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/types@npm:0.16.0"
+"@dedot/types@npm:0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/types@npm:0.17.0"
   dependencies:
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
-  checksum: 10/523d02378c3bca79954617fdc7f2e1ddc7c0afc37f01715707b035c99530cfaadcae0d4d715ddddd275add5055b8838c260c7fa5b1266919f8e96693b3b822ff
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
+  checksum: 10/87ec3ecfd645cbe7ec299124e278d61d7a97532a37f3a1deee65883bfdbce04bb6ddde9d52d697bef330be64dc1f9c4aadc445cf27c15de79b2f780f59c06572
   languageName: node
   linkType: hard
 
-"@dedot/utils@npm:0.16.0, @dedot/utils@npm:^0.16.0":
-  version: 0.16.0
-  resolution: "@dedot/utils@npm:0.16.0"
+"@dedot/utils@npm:0.17.0, @dedot/utils@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "@dedot/utils@npm:0.17.0"
   dependencies:
     "@noble/hashes": "npm:^1.8.0"
     "@scure/base": "npm:^1.2.6"
     eventemitter3: "npm:^5.0.1"
-  checksum: 10/330a1978abc0ae1c0d79ff7f04f2e60aef100f37b8971872d2c256ba96098c31a4692874be3f2e3e2209c1af53fd0bc4c98101ce6b9399d6822e55dc4d1dd8b5
+  checksum: 10/e046e6b096491920e8c70877ab5a66fd4d70c2b0ea9ef03a6216784524700af26a05053a54fcb80946983f77bc83ce3424781f99b87a7f9ecba09123ed12278d
   languageName: node
   linkType: hard
 
@@ -7841,7 +7841,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-typink@workspace:packages/create-typink"
   dependencies:
-    "@dedot/utils": "npm:^0.16.0"
+    "@dedot/utils": "npm:^0.17.0"
     "@types/ejs": "npm:^3.1.5"
     "@types/validate-npm-package-name": "npm:^4.0.2"
     arg: "npm:^5.0.2"
@@ -8092,26 +8092,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dedot@npm:^0.16.0":
-  version: 0.16.0
-  resolution: "dedot@npm:0.16.0"
+"dedot@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "dedot@npm:0.17.0"
   dependencies:
-    "@dedot/api": "npm:0.16.0"
-    "@dedot/cli": "npm:0.16.0"
-    "@dedot/codecs": "npm:0.16.0"
-    "@dedot/contracts": "npm:0.16.0"
-    "@dedot/merkleized-metadata": "npm:0.16.0"
-    "@dedot/providers": "npm:0.16.0"
-    "@dedot/runtime-specs": "npm:0.16.0"
-    "@dedot/shape": "npm:0.16.0"
-    "@dedot/smoldot": "npm:0.16.0"
-    "@dedot/types": "npm:0.16.0"
-    "@dedot/utils": "npm:0.16.0"
-    smoldot: "npm:^2.0.38"
+    "@dedot/api": "npm:0.17.0"
+    "@dedot/cli": "npm:0.17.0"
+    "@dedot/codecs": "npm:0.17.0"
+    "@dedot/contracts": "npm:0.17.0"
+    "@dedot/merkleized-metadata": "npm:0.17.0"
+    "@dedot/providers": "npm:0.17.0"
+    "@dedot/runtime-specs": "npm:0.17.0"
+    "@dedot/shape": "npm:0.17.0"
+    "@dedot/smoldot": "npm:0.17.0"
+    "@dedot/types": "npm:0.17.0"
+    "@dedot/utils": "npm:0.17.0"
+    smoldot: "npm:^2.0.39"
   bin:
     dedot: bin/dedot.mjs
     djs: bin/dedot.mjs
-  checksum: 10/ff34bbee0b427afcc35a85e2649d89c8413b673570034a26a2c667496b49ce93f0347815dc04c071276e14437c67d555d48f7eb3e576a5df5ad124157ca497c5
+  checksum: 10/572635a1dc2ccd913516eb2bc4b357c65565895713fad046f7e8f9676102df4f308e593e66c5933f819b2e417058365cc2fecb06a388ccca9c93d01ed1dc09f1
   languageName: node
   linkType: hard
 
@@ -8218,7 +8218,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -8251,7 +8251,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -8282,7 +8282,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -8314,7 +8314,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -8350,7 +8350,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -8386,7 +8386,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
     "@typescript-eslint/parser": "npm:^8.44.0"
     "@vitejs/plugin-react": "npm:^4.7.0"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     eslint: "npm:^9.35.0"
     eslint-import-resolver-typescript: "npm:^4.4.4"
     eslint-plugin-import: "npm:^2.32.0"
@@ -15599,7 +15599,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"smoldot@npm:^2.0.38":
+"smoldot@npm:^2.0.39":
   version: 2.0.39
   resolution: "smoldot@npm:2.0.39"
   dependencies:
@@ -17924,7 +17924,7 @@ __metadata:
     "@polkadot/keyring": "npm:^13.5.5"
     "@polkadot/types": "npm:^16.4.4"
     "@polkadot/util-crypto": "npm:^13.5.6"
-    dedot: "npm:^0.16.0"
+    dedot: "npm:^0.17.0"
     happy-dom: "npm:^15.11.7"
     typink: "workspace:*"
   languageName: unknown

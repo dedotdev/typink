@@ -8,7 +8,7 @@ import { toEvmAddress } from 'dedot/contracts';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { connectedAccount, network } = useTypink();
+  const { connectedAccount } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
     contract,
@@ -74,6 +74,8 @@ export default function Psp22Board() {
     }
   };
 
+  const tokenFormatOptions = { symbol: tokenSymbol, decimals: tokenDecimal };
+
   return (
     <Box>
       <Heading size='md'>PSP22 Contract</Heading>
@@ -99,7 +101,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, network)}
+            {formatBalance(totalSupply, tokenFormatOptions)}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -107,7 +109,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, network)}
+              {formatBalance(myBalance, tokenFormatOptions)}
             </PendingText>
           ) : (
             <WalletSelection buttonProps={{ size: 'xs' }} />

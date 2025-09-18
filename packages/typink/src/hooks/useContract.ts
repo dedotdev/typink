@@ -43,7 +43,6 @@ export function useContract<T extends GenericContractApi = GenericContractApi>(
       }
 
       const contract = new Contract<T>(
-        // @ts-ignore
         client,
         deployment.metadata,
         deployment.address, // prettier-end-here
