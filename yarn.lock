@@ -8449,7 +8449,7 @@ __metadata:
     react-use: "npm:^17.6.0"
     serve: "npm:^14.2.5"
     typescript: "npm:5.9.2"
-    typink: "npm:^0.4.0"
+    typink: "workspace:*"
     vite: "npm:^7.1.6"
     vite-tsconfig-paths: "npm:^4.3.2"
     vitest: "npm:^3.2.4"
@@ -16790,7 +16790,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"typink@npm:^0.4.0, typink@workspace:*, typink@workspace:packages/typink":
+"typink@workspace:*, typink@workspace:packages/typink":
   version: 0.0.0-use.local
   resolution: "typink@workspace:packages/typink"
   dependencies:
