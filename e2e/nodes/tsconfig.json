@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "paths": {
+      "typink": ["../../packages/typink/src"],
+      "typink/*": ["../../packages/typink/src/*"]
+    }
+  },
+  "include": ["src/**/*", "src/**/*.json"],
+  "references": [
+    {
+      "path": "../../packages/typink/tsconfig.json"
+    }
+  ]
+}

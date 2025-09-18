@@ -1,0 +1,16 @@
+{
+  "name": "e2e-nodes",
+  "author": "Thang Vu <thang@dedot.dev>",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e:test": "npx vitest --watch=false --no-file-parallelism"
+  },
+  "dependencies": {
+    "@dedot/chaintypes": "^0.155.0",
+    "@polkadot/keyring": "^13.5.6",
+    "dedot": "^0.17.0",
+    "typink": "workspace:*"
+  },
+  "license": "MIT"
+}

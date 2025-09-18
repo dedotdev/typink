@@ -2,8 +2,10 @@ name: Create-Typink Template Tests
 
 on:
   push:
+    branches: [ main ]
   workflow_dispatch:
   merge_group:
+  pull_request:
 
 env:
   TYPINK_TEMPLATE_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
