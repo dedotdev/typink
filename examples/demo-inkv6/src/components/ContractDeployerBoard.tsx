@@ -25,11 +25,10 @@ export function ContractDeployerBoard() {
       await newFlipperTx.signAndSend({
         args: [true],
         txOptions: { salt },
-        callback: async (progress, contractAddress) => {
+        callback: (progress, contractAddress) => {
           const { status } = progress;
           console.log(status);
 
-          // TODO improve this?
           if (contractAddress) {
             console.log('Contract is deployed at address', contractAddress);
             setDeployedContracts((prev) => [{ address: contractAddress, at: Date.now() }, ...(prev || [])]);
