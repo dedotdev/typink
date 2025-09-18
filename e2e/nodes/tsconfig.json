@@ -10,7 +10,9 @@
     "paths": {
       "typink": ["../../packages/typink/src"],
       "typink/*": ["../../packages/typink/src/*"]
-    }
+    },
+    "types": [],
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*", "src/**/*.json"],
   "references": [
