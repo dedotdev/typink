@@ -140,7 +140,6 @@ export async function deployerTx<
       const dryRunOptions: ConstructorCallOptions = { caller };
 
       const dryRun = await deployer.query[fn](...args, dryRunOptions);
-      console.log('Dry run result:', dryRun);
 
       const { data } = dryRun;
 

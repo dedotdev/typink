@@ -1,15 +1,14 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { deployPsp22Contract, psp22Metadata, wrapper } from '../../utils.js';
-import { numberToHex } from 'dedot/utils';
+import { deployPsp22Contract, psp22Metadata, wrapper } from './utils.js';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useRawContract } from 'typink';
-import { Psp22ContractApi } from '../../contracts/psp22';
+import { Psp22ContractApi } from './contracts/psp22';
+import { toEvmAddress } from 'dedot/contracts';
 
 describe('useRawContract', () => {
   let contractAddress: string;
   beforeAll(async () => {
-    const randomSalt = numberToHex(Date.now());
-    contractAddress = await deployPsp22Contract(randomSalt);
+    contractAddress = await deployPsp22Contract();
     console.log('Deployed contract address', contractAddress);
   });
 
@@ -51,7 +50,7 @@ describe('useRawContract', () => {
       expect(result.current.contract?.address).toEqual(contractAddress);
     });
 
-    const newAddress = '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM';
+    const newAddress = toEvmAddress('5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM');
     rerender({ address: newAddress });
 
     await waitFor(() => {

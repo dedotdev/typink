@@ -1,16 +1,17 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { BOB, deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from '../../utils.js';
+import { deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from './utils.js';
+import { BOB } from '../shared';
 import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractTx, useRawContract } from 'typink';
-import { Psp22ContractApi } from '../../contracts/psp22';
-import { FlipperContractApi } from '../../contracts/flipper';
+import { Psp22ContractApi } from './contracts/psp22';
+import { FlipperContractApi } from './contracts/flipper';
+import { toEvmAddress } from 'dedot/contracts';
 
 describe('useContractTx', () => {
   let contractAddress: string;
   beforeAll(async () => {
-    const randomSalt = numberToHex(Date.now());
-    contractAddress = await deployPsp22Contract(randomSalt);
+    contractAddress = await deployPsp22Contract();
     console.log('Deployed contract address', contractAddress);
   });
 
@@ -37,7 +38,7 @@ describe('useContractTx', () => {
     // Wait for the contract to be deployed
     await new Promise<void>((resolve) => {
       result.current.signAndSend({
-        args: [BOB, BigInt(1e12), '0x'],
+        args: [toEvmAddress(BOB), BigInt(1e12), '0x'],
         callback: ({ status }) => {
           if (status.type === 'BestChainBlockIncluded') {
             expect(result.current.inProgress).toEqual(true);
@@ -80,7 +81,7 @@ describe('useContractTx', () => {
 
     expect(
       result.current.signAndSend({
-        args: [BOB, BigInt(1e30), '0x'],
+        args: [toEvmAddress(BOB), BigInt(1e30), '0x'],
       }),
     ).rejects.toThrowError('Contract Message Error: InsufficientBalance');
   });

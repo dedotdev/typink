@@ -1,16 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import {
-  ALICE,
-  BOB,
-  ContractId,
-  deployFlipperContract,
-  flipperMetadata,
-  newDeployment,
-  wrapperFn,
-} from '../../utils.js';
+import { ContractId, deployFlipperContract, flipperMetadata, newDeployment, wrapperFn } from './utils.js';
 import { numberToHex } from 'dedot/utils';
+import { ALICE, BOB } from '../shared';
 import { Contract } from 'dedot/contracts';
-import { FlipperContractApi } from '../../contracts/flipper';
+import { FlipperContractApi } from './contracts/flipper';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContract } from 'typink';
 
