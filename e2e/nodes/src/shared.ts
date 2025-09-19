@@ -6,7 +6,6 @@ import { TypeRegistry } from '@polkadot/types';
 await cryptoWaitReady();
 export const KEYRING = new Keyring({ type: 'sr25519' });
 
-
 export const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
 export const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
 export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
@@ -14,9 +13,9 @@ export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
 export const devPairs = () => {
   const alice = KEYRING.addFromUri('//Alice');
   const bob = KEYRING.addFromUri('//Bob');
-  return { alice, bob };
+  const charlie = KEYRING.addFromUri('//Charlie');
+  return { alice, bob, charlie };
 };
-
 
 export const mockSigner = {
   signPayload: async (payloadJSON: SignerPayloadJSON) => {

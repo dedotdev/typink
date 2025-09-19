@@ -1,0 +1,51 @@
+import { describe, expect, it } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useDeployer } from 'typink';
+import { flipperMetadata, wrapper } from './utils.js';
+import { ALICE, BOB } from '../shared';
+import { FlipperContractApi } from './contracts/flipper';
+import { generateRandomHex } from 'dedot/utils';
+
+describe('useDeployer', () => {
+  it('should load deployer properly', async () => {
+    const { result } = renderHook(
+      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.contract_binary!),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.deployer).toBeDefined();
+    });
+
+    const salt = generateRandomHex();
+    const dryRunResult = await result.current.deployer!.query.new(false, { salt });
+
+    expect(dryRunResult.address).toBeDefined();
+    expect(dryRunResult.raw.gasRequired).toBeDefined();
+  });
+
+  it('should update deployer when defaultCaller changes', async () => {
+    const { result, rerender } = renderHook(
+      ({ address }) => useDeployer(flipperMetadata, flipperMetadata.source.hash, { defaultCaller: address }),
+      {
+        wrapper,
+        initialProps: { address: ALICE },
+      },
+    );
+
+    await waitFor(() => {
+      expect(result.current.deployer).toBeDefined();
+    });
+
+    const aliceDeployer = result.current.deployer;
+
+    rerender({ address: BOB });
+
+    await waitFor(() => {
+      expect(result.current.deployer).toBeDefined();
+    });
+
+    // Check if the deployer has been updated
+    expect(result.current.deployer?.options?.defaultCaller).not.toEqual(aliceDeployer?.options?.defaultCaller);
+  });
+});
