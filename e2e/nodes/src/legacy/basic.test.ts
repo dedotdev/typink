@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { devPairs } from '../utils.js';
+import { devPairs } from '../shared';
 
 describe('basic client operations', () => {
   it('should get current block number', async () => {

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer } from 'typink';
-import { ALICE, BOB, flipperMetadata, wrapper } from '../../utils.js';
-import { FlipperContractApi } from '../../contracts/flipper';
+import { flipperMetadata, wrapper } from './utils.js';
+import { ALICE, BOB } from '../shared';
+import { FlipperContractApi } from './contracts/flipper';
 
 describe('useDeployer', () => {
   it('should load deployer properly', async () => {

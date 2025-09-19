@@ -1,41 +1,18 @@
-import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Contract, ContractAddress, ContractDeployer } from 'dedot/contracts';
 import { assert, deferred, generateRandomHex } from 'dedot/utils';
 import { FlipperContractApi } from './contracts/flipper';
 import flipperV5 from './contracts/flipper_v5.json';
 import flipperV6 from './contracts/flipper_v6.json';
-import {
-  ContractDeployment,
-  development,
-  InjectedSigner,
-  JsonRpcApi,
-  Props,
-  SignerPayloadJSON,
-  TypinkProvider,
-} from 'typink';
+import { ContractDeployment, development, JsonRpcApi, Props, TypinkProvider } from 'typink';
 import { Psp22ContractApi } from './contracts/psp22/index.js';
 import psp22Metadata from './contracts/psp22.json';
-import { TypeRegistry } from '@polkadot/types';
-
-await cryptoWaitReady();
-export const KEYRING = new Keyring({ type: 'sr25519' });
+import { ALICE, devPairs, mockSigner } from '../shared';
 
 export const flipperV5Metadata = flipperV5;
 export const flipperMetadata = flipperV5Metadata;
 export const flipperV6Metadata = flipperV6;
 export { psp22Metadata };
-
-export const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
-export const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
-export const CHARLIE = '5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y';
-
-export const devPairs = () => {
-  const alice = KEYRING.addFromUri('//Alice');
-  const bob = KEYRING.addFromUri('//Bob');
-  return { alice, bob };
-};
 
 export const deployFlipperV5 = async (signer: KeyringPair): Promise<ContractAddress> => {
   const deployer = new ContractDeployer<FlipperContractApi>(
@@ -70,24 +47,6 @@ export const deployFlipperV6 = async (signer: KeyringPair): Promise<ContractAddr
 
   return await txResult.contractAddress();
 };
-
-export const mockSigner = {
-  signPayload: async (payloadJSON: SignerPayloadJSON) => {
-    const { alice } = devPairs();
-
-    const registry = new TypeRegistry();
-    registry.setSignedExtensions(payloadJSON.signedExtensions);
-
-    // https://github.com/polkadot-js/extension/blob/master/packages/extension-base/src/background/RequestExtrinsicSign.ts#L18-L22
-    const payload = registry.createType('ExtrinsicPayload', payloadJSON, { version: payloadJSON.version });
-    const result = payload.sign(alice);
-
-    return {
-      id: Date.now(),
-      ...result,
-    };
-  },
-} as InjectedSigner;
 
 export const Wrapper = ({ children, deployments = [] }: Props) => (
   <TypinkProvider

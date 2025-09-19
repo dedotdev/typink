@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer, useDeployerTx } from 'typink';
-import { flipperMetadata, wrapper } from '../../utils.js';
-import { FlipperContractApi } from '../../contracts/flipper';
+import { flipperMetadata, wrapper } from './utils.js';
+import { FlipperContractApi } from './contracts/flipper';
 import { numberToHex } from 'dedot/utils';
 
 describe('useDeployerTx', () => {

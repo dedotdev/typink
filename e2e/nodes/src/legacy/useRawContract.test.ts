@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { deployPsp22Contract, psp22Metadata, wrapper } from '../../utils.js';
+import { deployPsp22Contract, psp22Metadata, wrapper } from './utils.js';
 import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useRawContract } from 'typink';
-import { Psp22ContractApi } from '../../contracts/psp22';
+import { Psp22ContractApi } from './contracts/psp22';
 
 describe('useRawContract', () => {
   let contractAddress: string;

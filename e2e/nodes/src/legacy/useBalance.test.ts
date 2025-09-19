@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useBalance, useBalances } from 'typink';
-import { ALICE, BOB, CHARLIE, wrapper } from '../../utils';
+import { wrapper } from './utils';
+import { ALICE, BOB, CHARLIE } from '../shared';
 
 describe('useBalance', () => {
   it('should load balance properly', async () => {

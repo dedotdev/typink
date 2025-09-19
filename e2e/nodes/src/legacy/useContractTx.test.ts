@@ -1,10 +1,11 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { BOB, deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from '../../utils.js';
+import { deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from './utils.js';
+import { BOB } from '../shared';
 import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractTx, useRawContract } from 'typink';
-import { Psp22ContractApi } from '../../contracts/psp22';
-import { FlipperContractApi } from '../../contracts/flipper';
+import { Psp22ContractApi } from './contracts/psp22';
+import { FlipperContractApi } from './contracts/flipper';
 
 describe('useContractTx', () => {
   let contractAddress: string;
