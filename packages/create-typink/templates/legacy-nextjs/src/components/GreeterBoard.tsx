@@ -14,7 +14,7 @@ import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
 import BalanceInsufficientAlert from '@/components/balance-insufficient-alert';
 
-export default function GreetBoard() {
+export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
   const setMessageTx = useContractTx(contract, 'setMessage');
   const [message, setMessage] = useState('');
@@ -29,7 +29,7 @@ export default function GreetBoard() {
   const handleUpdateGreeting = async () => {
     if (!contract || !message) return;
 
-    const toaster = txToaster('Sigining transaction...');
+    const toaster = txToaster('Signing transaction...');
 
     try {
       await setMessageTx.signAndSend({
