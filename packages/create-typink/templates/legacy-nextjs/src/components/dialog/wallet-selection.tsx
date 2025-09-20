@@ -40,7 +40,7 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
       {installed && !ready ? (
         <Loader2Icon className='w-6 h-6 animate-spin' />
       ) : (
-        <img src={logo} alt={`${name}`} width={24} height={24} />
+        <img className='rounded-md' src={logo} alt={`${name}`} width={20} height={20} />
       )}
       <span>{name}</span>
     </Button>

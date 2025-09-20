@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { shortenAddress } from '@/lib/utils';
 import { formatBalance, useBalances, useTypink } from 'typink';
+import { AccountAvatar } from '@/components/AccountAvatar';
 import { LogOutIcon } from 'lucide-react';
 
 function ConnectedWallet() {
@@ -14,11 +14,9 @@ function ConnectedWallet() {
   if (!connectedWallet) return null;
 
   return (
-    <div className='flex items-center gap-3 justify-center pb-2'>
-      <img src={connectedWallet?.logo} alt={connectedWallet?.name} width={24} height={24} />
-      <span className='font-semibold text-sm'>
-        {connectedWallet?.name} - v{connectedWallet?.version}
-      </span>
+    <div className='flex items-center gap-2 justify-center pb-2'>
+      <img className='rounded-md' src={connectedWallet.logo} alt={connectedWallet.name} width={20} height={20} />
+      <span className='font-semibold text-sm'>{connectedWallet.name}</span>
     </div>
   );
 }
@@ -47,40 +45,54 @@ export default function AccountSelection() {
       <Select
         value={address}
         onValueChange={(selectedAddress) => {
+          if (selectedAddress === 'logout') {
+            disconnect();
+            return;
+          }
+
           const selectedAccount = accounts.find((acc) => acc.address === selectedAddress);
           if (selectedAccount) {
             setConnectedAccount(selectedAccount);
           }
         }}>
-        <SelectTrigger className='w-fit min-w-[180px]'>
+        <SelectTrigger className='min-w-[180px]'>
           <SelectValue>
             <div className='flex items-center gap-2'>
+              <AccountAvatar account={connectedAccount} className='mt-1' />
               <span className='font-semibold text-sm'>{name}</span>
               <span className='text-sm font-normal text-muted-foreground'>({shortenAddress(address)})</span>
             </div>
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className='w-64'>
+        <SelectContent className='w-80'>
           <div className='p-2 border-b'>
             <ConnectedWallet />
           </div>
           {accounts.map((one) => (
             <SelectItem key={one.address} value={one.address}>
-              <div className='flex flex-col items-start gap-1 py-1'>
-                <span className='font-medium'>{one.name}</span>
-                <span className='text-xs text-muted-foreground'>Address: {shortenAddress(one.address)}</span>
-                <span className='text-xs text-muted-foreground'>
-                  Balance: {formatBalance(balances[one.address]?.free, network)}
-                </span>
+              <div className='flex items-start w-full gap-3 py-1'>
+                <AccountAvatar account={one} size={32} className='mt-1' />
+                <div className='w-full flex flex-col gap-1'>
+                  <div className='flex justify-between items-center gap-2'>
+                    <span className='font-medium'>{one.name}</span>
+                    <span className='text-xs text-muted-foreground'>{shortenAddress(one.address)}</span>
+                  </div>
+                  <span className='text-xs text-muted-foreground'>
+                    Balance: {formatBalance(balances[one.address]?.free, network)}
+                  </span>
+                </div>
               </div>
             </SelectItem>
           ))}
+          <SelectSeparator />
+          <SelectItem key='logout' value='logout' className='py-2'>
+            <div className='flex items-center gap-2'>
+              <LogOutIcon className='w-4 h-4' />
+              <span>Logout</span>
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
-
-      <Button variant='outline' size='icon' onClick={() => disconnect()}>
-        <LogOutIcon />
-      </Button>
     </div>
   );
 }
