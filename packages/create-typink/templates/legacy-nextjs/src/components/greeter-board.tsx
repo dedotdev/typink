@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
-import { BalanceInsufficientAlert } from '@/components/shared/balance-insufficient-alert';
 
 export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
@@ -90,52 +89,53 @@ export function GreeterBoard() {
   );
 
   return (
-    <Card className='bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800'>
+    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none'>
       <CardHeader>
-        <CardTitle className='text-lg font-medium'>Greeter Contract</CardTitle>
+        <CardTitle className='text-2xl font-medium'>Greeter Contract</CardTitle>
       </CardHeader>
 
-      <CardContent className='space-y-4'>
-        {/* Current Message Display */}
-        <div className='space-y-2'>
-          <div className='text-sm text-muted-foreground'>Message:</div>
-          <PendingText isLoading={isLoading} className='text-2xl font-semibold text-pink-500'>
-            {greet}
-          </PendingText>
-        </div>
+      <CardContent>
+        <div className='space-y-4 bg-white/40 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden p-6'>
+          {/* Current Message Display */}
+          <div className='space-y-2'>
+            <div className='text-sm text-muted-foreground'>Message:</div>
+            <PendingText isLoading={isLoading} className='text-xl font-semibold text-pink-500'>
+              {greet}
+            </PendingText>
+          </div>
 
-        {/* Update Message Form */}
-        <div className='space-y-3'>
-          <Label htmlFor='greeting' className='text-sm text-muted-foreground'>
-            Update message
-          </Label>
-          <Input
-            id='greeting'
-            type='text'
-            maxLength={50}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            disabled={setMessageTx.inBestBlockProgress}
-            placeholder='Hello world!'
-            className='h-10'
-          />
-          <div className='text-xs text-muted-foreground'>Max {50 - message.length} characters</div>
+          {/* Update Message Form */}
+          <div className='space-y-3'>
+            <Label htmlFor='greeting' className='text-sm text-muted-foreground'>
+              Update message:
+            </Label>
+            <Input
+              id='greeting'
+              type='text'
+              maxLength={50}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              disabled={setMessageTx.inBestBlockProgress}
+              placeholder='Hello world!'
+              className='h-10 bg-white placeholder:text-muted-foreground/50'
+            />
+            <div className='text-xs text-muted-foreground'>Max {50 - message.length} characters</div>
 
-          <Button
-            type='button'
-            size='default'
-            disabled={!message.trim() || setMessageTx.inBestBlockProgress}
-            onClick={handleUpdateGreeting}
-            className='w-full'>
-            {setMessageTx.inBestBlockProgress ? (
-              <>
-                <Loader2Icon className='animate-spin mr-2 h-4 w-4' />
-                Updating...
-              </>
-            ) : (
-              'Update message'
-            )}
-          </Button>
+            <Button
+              type='button'
+              size='default'
+              disabled={!message.trim() || setMessageTx.inBestBlockProgress}
+              onClick={handleUpdateGreeting}>
+              {setMessageTx.inBestBlockProgress ? (
+                <>
+                  <Loader2Icon className='animate-spin mr-2 h-4 w-4' />
+                  Updating...
+                </>
+              ) : (
+                'Update message'
+              )}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -6,7 +6,7 @@ import { BalanceInsufficientAlert } from '@/components/shared/balance-insufficie
 
 export default function Home() {
   return (
-    <div className='space-y-10'>
+    <div className=''>
       <TypinkIntro />
 
       <div className='mx-auto px-4 pb-16'>

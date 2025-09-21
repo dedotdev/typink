@@ -1,4 +1,4 @@
-import { ArrowUpRight, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GithubSvgIcon } from '@/components/shared/icons';
 

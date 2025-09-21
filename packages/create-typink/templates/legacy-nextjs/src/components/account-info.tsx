@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowUpRight, Copy } from 'lucide-react';
+import { ArrowUpRight, Copy, Send } from 'lucide-react';
 import { useTypink, useBalances, formatBalance } from 'typink';
 import { useEffect, useState, useMemo } from 'react';
 import { toast } from 'sonner';
@@ -27,13 +27,19 @@ export function AccountInfo() {
   const formattedBalance = balance ? formatBalance(balance.free, network) : '0';
 
   return (
-    <Card className='bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800'>
-      <CardHeader className='pb-4'>
+    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none'>
+      <CardHeader>
         <div className='flex items-center justify-between'>
-          <CardTitle className='text-lg font-medium'>Account Info</CardTitle>
-          <Button variant='outline' size='sm' onClick={handleSelectAccount}>
-            Select Account
-            <ArrowUpRight className='ml-1 h-3 w-3' />
+          <CardTitle className='text-2xl font-medium'>Account Info</CardTitle>
+          <Button variant='outline' size='sm' onClick={handleSelectAccount} className='w-[160px'>
+            {connectedAccount ? (
+              <>
+                Switch Account
+                <Send className='ml-1 h-2 w-2' />
+              </>
+            ) : (
+              <>Connect Wallet</>
+            )}
           </Button>
         </div>
         <p className='text-sm text-muted-foreground'>
@@ -41,41 +47,41 @@ export function AccountInfo() {
         </p>
       </CardHeader>
 
-      <CardContent className='space-y-4'>
+      <CardContent>
         {connectedAccount ? (
-          <>
+          <div className='bg-white/40 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden'>
             {/* Account Name */}
-            <div className='space-y-3'>
-              <div className='flex justify-between items-center py-2'>
-                <span className='text-sm text-muted-foreground'>Name</span>
-                <span className='text-sm font-medium'>{connectedAccount.name}</span>
-              </div>
+            <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
+              <span className='text-sm font-semibold'>Name</span>
+              <span className='text-sm font-medium'>{connectedAccount.name}</span>
+            </div>
 
-              {/* Account Address */}
-              <div className='flex justify-between items-center py-2'>
-                <span className='text-sm text-muted-foreground'>Address</span>
-                <div className='flex items-center gap-2'>
-                  <span className='text-sm font-mono'>{shortenAddress(connectedAccount.address)}</span>
-                  <button
-                    onClick={copyAddress}
-                    className='p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors'>
-                    <Copy className='h-3 w-3 text-muted-foreground' />
-                  </button>
-                </div>
-              </div>
-
-              {/* Balance */}
-              <div className='flex justify-between items-center py-2'>
-                <span className='text-sm text-muted-foreground'>Balance</span>
-                <div className='flex items-center gap-1'>
-                  <span className='text-sm font-mono'>{formattedBalance.split(' ')[0]}</span>
-                  <span className='text-sm font-medium text-pink-500'>{network.symbol}</span>
-                </div>
+            {/* Account Address */}
+            <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
+              <span className='text-sm font-semibold'>Address</span>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm font-mono'>{shortenAddress(connectedAccount.address)}</span>
+                <button
+                  onClick={copyAddress}
+                  className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors cursor-pointer'>
+                  <Copy className='h-3.5 w-3.5 text-muted-foreground hover:text-foreground' />
+                </button>
               </div>
             </div>
-          </>
+
+            {/* Balance */}
+            <div className='flex justify-between items-center px-6 py-4'>
+              <span className='text-sm font-semibold'>Balance</span>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm font-medium'>{formattedBalance.split(' ')[0]}</span>
+                <span className='text-sm font-semibold text-green-600 dark:text-green-500'>{network.symbol}</span>
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className='text-center py-8 text-sm text-muted-foreground'>No account connected</div>
+          <div className='bg-white/40 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-8'>
+            <div className='text-center text-sm text-muted-foreground'>No account connected</div>
+          </div>
         )}
       </CardContent>
     </Card>
