@@ -14,7 +14,7 @@ export default function Home() {
 
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mx-auto'>
           <div>
-            <ChainInfo />
+            <ChainInfo className='h-full' />
           </div>
 
           <div className='flex flex-col gap-6'>

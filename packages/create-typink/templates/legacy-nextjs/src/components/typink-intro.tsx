@@ -1,4 +1,4 @@
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GithubSvgIcon } from '@/components/shared/icons';
 
@@ -16,7 +16,7 @@ export function TypinkIntro() {
 
         {/* Action Buttons */}
         <div className='flex flex-col sm:flex-row gap-4 justify-center items-center pt-8'>
-          <Button variant='outline' size='lg' className='min-w-[180px] rounded-[14px]' asChild>
+          <Button variant='outline' size='xl' className='min-w-[184px] rounded-[14px]' asChild>
             <a
               href='https://github.com/dedotdev/typink'
               target='_blank'
@@ -28,8 +28,8 @@ export function TypinkIntro() {
           </Button>
 
           <Button
-            size='lg'
-            className='min-w-[180px] rounded-[14px] bg-gradient-to-r from-[#DE21A6] to-[#FD6F8E] hover:from-[#DE21A6]/90 hover:to-[#FD6F8E]/90 text-white border-0'
+            size='xl'
+            className='min-w-[184px] rounded-[14px] bg-gradient-to-r from-[#DE21A6] to-[#FD6F8E] hover:from-[#DE21A6]/90 hover:to-[#FD6F8E]/90 text-white border-0'
             asChild>
             <a
               href='https://docs.dedot.dev/typink/getting-started'
@@ -37,7 +37,7 @@ export function TypinkIntro() {
               rel='noopener noreferrer'
               className='flex items-center gap-2'>
               Getting Started
-              <ArrowUpRight className='h-5 w-5' />
+              <Send className='h-5 w-5' />
             </a>
           </Button>
         </div>

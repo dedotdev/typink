@@ -19,7 +19,7 @@ export function NetworkSelection() {
 
   return (
     <Select value={network.id} onValueChange={setNetwork}>
-      <SelectTrigger className='w-fit min-w-[120px]'>
+      <SelectTrigger className='w-fit min-w-[120px] bg-white'>
         <SelectValue>
           <div className='flex items-center gap-2'>
             <img src={network.logo} alt={network.name} width={22} height={22} className='rounded' />

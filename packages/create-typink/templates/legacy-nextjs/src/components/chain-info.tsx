@@ -2,13 +2,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useBlockInfo, useTypink } from 'typink';
+import { Props } from '@/lib/types';
 
-export function ChainInfo() {
+export function ChainInfo({ className = '' }: Props) {
   const { network, ready, networkConnection } = useTypink();
   const { best } = useBlockInfo();
 
   return (
-    <Card className='bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800'>
+    <Card className={`bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 ${className}`}>
       <CardHeader className='pb-4'>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-lg font-medium'>Chain Info</CardTitle>
