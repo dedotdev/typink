@@ -59,7 +59,7 @@ export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassNam
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size='default' variant='outline' className={buttonClassName}>
+        <Button size='default' variant='outline' className={`${buttonClassName}`}>
           {buttonLabel}
         </Button>
       </DialogTrigger>

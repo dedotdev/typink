@@ -1,8 +1,8 @@
 'use client';
 
 import PendingText from '@/components/shared/pending-text';
-import { useCallback, useEffect, useState } from 'react';
-import { useContract, useContractQuery, useContractTx, useTypink, useWatchContractEvent } from 'typink';
+import { useCallback, useState } from 'react';
+import { useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
 import { GreeterContractApi } from '@/contracts/types/greeter';
 import { ContractId } from '@/contracts/deployments';
 import { toast } from 'sonner';
@@ -10,17 +10,15 @@ import { shortenAddress } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
 import { BalanceInsufficientAlert } from '@/components/shared/balance-insufficient-alert';
-import { AccountAvatar } from '@/components/shared/account-avatar';
 
 export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
   const setMessageTx = useContractTx(contract, 'setMessage');
   const [message, setMessage] = useState('');
-  const [mounted, setMounted] = useState(false);
 
   const { data: greet, isLoading } = useContractQuery({
     contract,
@@ -91,71 +89,55 @@ export function GreeterBoard() {
     }, []),
   );
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const { connectedAccount } = useTypink();
-
-  if (!mounted) return null;
-
   return (
-    <div className='space-y-6'>
-      {connectedAccount && <AccountAvatar account={connectedAccount} size={32} />}
+    <Card className='bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-800'>
+      <CardHeader>
+        <CardTitle className='text-lg font-medium'>Greeter Contract</CardTitle>
+      </CardHeader>
 
-      <BalanceInsufficientAlert />
+      <CardContent className='space-y-4'>
+        {/* Current Message Display */}
+        <div className='space-y-2'>
+          <div className='text-sm text-muted-foreground'>Message:</div>
+          <PendingText isLoading={isLoading} className='text-2xl font-semibold text-pink-500'>
+            {greet}
+          </PendingText>
+        </div>
 
-      <Card className='shadow-lg'>
-        <CardHeader>
-          <CardTitle>Greeter Contract</CardTitle>
-          <CardDescription>Interact with the Greeter smart contract on Polkadot</CardDescription>
-        </CardHeader>
+        {/* Update Message Form */}
+        <div className='space-y-3'>
+          <Label htmlFor='greeting' className='text-sm text-muted-foreground'>
+            Update message
+          </Label>
+          <Input
+            id='greeting'
+            type='text'
+            maxLength={50}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            disabled={setMessageTx.inBestBlockProgress}
+            placeholder='Hello world!'
+            className='h-10'
+          />
+          <div className='text-xs text-muted-foreground'>Max {50 - message.length} characters</div>
 
-        <CardContent className='space-y-8'>
-          <div className='bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg p-6 min-h-[80px] flex items-center justify-center'>
-            <PendingText isLoading={isLoading} className='text-xl font-medium text-center'>
-              {greet}
-            </PendingText>
-          </div>
-
-          <div className='border-t pt-8'>
-            <form className='space-y-6'>
-              <div className='space-y-3'>
-                <Label htmlFor='greeting' className='text-base font-medium'>
-                  Update greeting message
-                </Label>
-                <Input
-                  id='greeting'
-                  type='text'
-                  maxLength={50}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  disabled={setMessageTx.inBestBlockProgress}
-                  placeholder='Enter your greeting message...'
-                  className='h-12'
-                />
-                <div className='text-xs text-muted-foreground text-right'>{message.length}/50 characters</div>
-              </div>
-
-              <Button
-                type='button'
-                size='lg'
-                disabled={!message.trim() || setMessageTx.inBestBlockProgress}
-                onClick={handleUpdateGreeting}
-                className='w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-white'>
-                {setMessageTx.inBestBlockProgress ? (
-                  <>
-                    <Loader2Icon className='animate-spin mr-2' />
-                    Updating...
-                  </>
-                ) : (
-                  'Update Greeting'
-                )}
-              </Button>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          <Button
+            type='button'
+            size='default'
+            disabled={!message.trim() || setMessageTx.inBestBlockProgress}
+            onClick={handleUpdateGreeting}
+            className='w-full'>
+            {setMessageTx.inBestBlockProgress ? (
+              <>
+                <Loader2Icon className='animate-spin mr-2 h-4 w-4' />
+                Updating...
+              </>
+            ) : (
+              'Update message'
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
