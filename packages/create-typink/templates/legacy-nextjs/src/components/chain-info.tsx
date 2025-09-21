@@ -14,7 +14,7 @@ export function ChainInfo() {
           <CardTitle className='text-lg font-medium'>Chain Info</CardTitle>
         </div>
         <p className='text-sm text-muted-foreground'>
-          {ready ? `Connected to ${network.name}` : 'Connect a network to use'}
+          {ready ? `Connected to ${network.name}` : `Connecting to ${network.name}`}
         </p>
       </CardHeader>
 

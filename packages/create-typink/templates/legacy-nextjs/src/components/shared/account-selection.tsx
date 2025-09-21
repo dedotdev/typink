@@ -55,7 +55,7 @@ export function AccountSelection() {
             setConnectedAccount(selectedAccount);
           }
         }}>
-        <SelectTrigger>
+        <SelectTrigger className='bg-white'>
           <SelectValue>
             <div className='flex items-center gap-2'>
               <AccountAvatar account={connectedAccount} className='mt-1' />

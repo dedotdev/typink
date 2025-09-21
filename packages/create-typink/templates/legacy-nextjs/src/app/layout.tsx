@@ -26,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppProvider>
             <div className='min-h-screen flex flex-col'>
               <MainHeader />
-              <main className='flex-1 flex flex-col max-w-4xl mx-auto'>{children}</main>
+              <main className='max-w-5xl mx-auto w-full'>{children}</main>
               <MainFooter />
             </div>
             <Toaster />

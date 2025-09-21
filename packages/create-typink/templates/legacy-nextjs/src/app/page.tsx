@@ -9,7 +9,7 @@ export default function Home() {
     <div className='space-y-10'>
       <TypinkIntro />
 
-      <div className='container mx-auto px-4 pb-16'>
+      <div className='mx-auto px-4 pb-16'>
         <BalanceInsufficientAlert />
 
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mx-auto'>
