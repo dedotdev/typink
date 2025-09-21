@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { shortenAddress } from '@/lib/utils';
 import { formatBalance, useBalances, useTypink } from 'typink';
-import { AccountAvatar } from '@/components/account-avatar';
+import { AccountAvatar } from '@/components/shared/account-avatar';
 import { LogOutIcon } from 'lucide-react';
 
 function ConnectedWallet() {

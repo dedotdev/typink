@@ -1,6 +1,6 @@
 'use client';
 
-import PendingText from '@/components/pending-text';
+import PendingText from '@/components/shared/pending-text';
 import { useCallback, useEffect, useState } from 'react';
 import { useContract, useContractQuery, useContractTx, useTypink, useWatchContractEvent } from 'typink';
 import { GreeterContractApi } from '@/contracts/types/greeter';
@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
-import { BalanceInsufficientAlert } from '@/components/dialog/balance-insufficient-alert';
-import { AccountAvatar } from '@/components/account-avatar';
+import { BalanceInsufficientAlert } from '@/components/shared/balance-insufficient-alert';
+import { AccountAvatar } from '@/components/shared/account-avatar';
 
 export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);

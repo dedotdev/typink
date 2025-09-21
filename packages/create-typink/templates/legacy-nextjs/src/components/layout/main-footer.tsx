@@ -1,7 +1,7 @@
 'use client';
 
-import { NetworkSelection } from '@/components/dialog/network-selection';
-import { GithubSvgIcon, XSvgIcon } from '@/components/icons';
+import { NetworkSelection } from '@/components/shared/network-selection';
+import { GithubSvgIcon, XSvgIcon } from '@/components/shared/icons';
 
 export function MainFooter() {
   return (

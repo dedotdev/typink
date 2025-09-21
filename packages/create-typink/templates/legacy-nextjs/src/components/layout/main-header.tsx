@@ -1,11 +1,11 @@
 'use client';
 
-import { AccountSelection } from '@/components/dialog/account-selection';
-import { WalletSelection } from '@/components/dialog/wallet-selection';
+import { AccountSelection } from '@/components/shared/account-selection';
+import { WalletSelection } from '@/components/shared/wallet-selection';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { useTypink } from 'typink';
 import Link from 'next/link';
-import TypinkLogo from '@/components/icons';
+import TypinkLogo from '@/components/shared/icons';
 
 export function MainHeader() {
   const { accounts } = useTypink();

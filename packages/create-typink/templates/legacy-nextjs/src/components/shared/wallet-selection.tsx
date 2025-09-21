@@ -47,37 +47,21 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   );
 };
 
-export enum ButtonStyle {
-  BUTTON,
-  MENU_ITEM,
-}
-
 interface WalletSelectionProps {
-  buttonStyle?: ButtonStyle;
   buttonLabel?: string;
-  buttonProps?: React.ComponentProps<typeof Button> | React.ComponentProps<typeof DropdownMenuItem>;
+  buttonClassName?: string;
 }
 
-export function WalletSelection({
-  buttonStyle = ButtonStyle.BUTTON,
-  buttonLabel = 'Connect Wallet',
-  buttonProps,
-}: WalletSelectionProps) {
+export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassName = '' }: WalletSelectionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { wallets } = useTypink();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {buttonStyle === ButtonStyle.MENU_ITEM ? (
-          <DropdownMenuItem {...(buttonProps as React.ComponentProps<typeof DropdownMenuItem>)}>
-            {buttonLabel}
-          </DropdownMenuItem>
-        ) : (
-          <Button size='default' variant='outline' {...(buttonProps as React.ComponentProps<typeof Button>)}>
-            {buttonLabel}
-          </Button>
-        )}
+        <Button size='default' variant='outline' className={buttonClassName}>
+          {buttonLabel}
+        </Button>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>

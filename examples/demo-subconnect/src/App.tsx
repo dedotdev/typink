@@ -1,7 +1,7 @@
 import { Box, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useSearchParam } from 'react-use';
-import GreetBoard from '@/components/GreeterBoard.tsx';
+import GreetBoard from 'packages/create-typink/templates/legacy-nextjs/src/components/greeter-board.tsx';
 import Psp22Board from '@/components/Psp22Board.tsx';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
