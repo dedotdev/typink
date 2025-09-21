@@ -2,7 +2,7 @@
 
 import PendingText from '@/components/pending-text';
 import { useCallback, useEffect, useState } from 'react';
-import { useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
+import { useContract, useContractQuery, useContractTx, useTypink, useWatchContractEvent } from 'typink';
 import { GreeterContractApi } from '@/contracts/types/greeter';
 import { ContractId } from '@/contracts/deployments';
 import { toast } from 'sonner';
@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
 import { txToaster } from '@/components/tx-toaster';
-import BalanceInsufficientAlert from '@/components/balance-insufficient-alert';
+import { BalanceInsufficientAlert } from '@/components/dialog/balance-insufficient-alert';
+import { AccountAvatar } from '@/components/account-avatar';
 
 export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);
@@ -94,10 +95,14 @@ export function GreeterBoard() {
     setMounted(true);
   }, []);
 
+  const { connectedAccount } = useTypink();
+
   if (!mounted) return null;
 
   return (
     <div className='space-y-6'>
+      {connectedAccount && <AccountAvatar account={connectedAccount} size={32} />}
+
       <BalanceInsufficientAlert />
 
       <Card className='shadow-lg'>

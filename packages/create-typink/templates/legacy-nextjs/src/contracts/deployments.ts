@@ -12,7 +12,7 @@ export enum ContractId {
 
 export { greeterMetadata };
 
-export const greeterDeployments: ContractDeployment[] = [
+export const deployments: ContractDeployment[] = [
   // -- START_DEPLOYMENTS --
   {
     id: ContractId.GREETER,
@@ -22,5 +22,3 @@ export const greeterDeployments: ContractDeployment[] = [
   },
   // -- END_DEPLOYMENTS --
 ];
-
-export const deployments = [...greeterDeployments];

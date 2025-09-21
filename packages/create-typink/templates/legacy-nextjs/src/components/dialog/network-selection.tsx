@@ -14,7 +14,7 @@ function NetworkStatusIndicator() {
   }
 }
 
-export default function NetworkSelection() {
+export function NetworkSelection() {
   const { network, setNetwork, supportedNetworks } = useTypink();
 
   return (

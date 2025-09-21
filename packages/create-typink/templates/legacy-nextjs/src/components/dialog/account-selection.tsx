@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { shortenAddress } from '@/lib/utils';
 import { formatBalance, useBalances, useTypink } from 'typink';
-import { AccountAvatar } from '@/components/AccountAvatar';
+import { AccountAvatar } from '@/components/account-avatar';
 import { LogOutIcon } from 'lucide-react';
 
 function ConnectedWallet() {
@@ -21,7 +21,7 @@ function ConnectedWallet() {
   );
 }
 
-export default function AccountSelection() {
+export function AccountSelection() {
   const { accounts, connectedAccount, setConnectedAccount, disconnect, network } = useTypink();
   const addresses = useMemo(() => accounts.map((a) => a.address), [accounts]);
   const balances = useBalances(addresses);
@@ -55,12 +55,14 @@ export default function AccountSelection() {
             setConnectedAccount(selectedAccount);
           }
         }}>
-        <SelectTrigger className='min-w-[180px]'>
+        <SelectTrigger>
           <SelectValue>
             <div className='flex items-center gap-2'>
               <AccountAvatar account={connectedAccount} className='mt-1' />
               <span className='font-semibold text-sm'>{name}</span>
-              <span className='text-sm font-normal text-muted-foreground'>({shortenAddress(address)})</span>
+              <span className='text-sm font-normal text-muted-foreground hidden sm:inline'>
+                ({shortenAddress(address)})
+              </span>
             </div>
           </SelectValue>
         </SelectTrigger>

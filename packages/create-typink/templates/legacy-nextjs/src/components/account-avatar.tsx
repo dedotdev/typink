@@ -20,7 +20,7 @@ export function AccountAvatar({ account, size = 32, showWalletIndicator = true, 
   const wallet = getWalletBySource(account.source);
 
   // Calculate wallet indicator size based on avatar size
-  const indicatorSize = Math.max(8, Math.round(size * 0.2));
+  const indicatorSize = Math.max(8, Math.round(size * 0.3));
   const indicatorIconSize = Math.max(4, Math.round(indicatorSize * 0.75));
 
   return (

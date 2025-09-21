@@ -58,7 +58,7 @@ interface WalletSelectionProps {
   buttonProps?: React.ComponentProps<typeof Button> | React.ComponentProps<typeof DropdownMenuItem>;
 }
 
-export default function WalletSelection({
+export function WalletSelection({
   buttonStyle = ButtonStyle.BUTTON,
   buttonLabel = 'Connect Wallet',
   buttonProps,

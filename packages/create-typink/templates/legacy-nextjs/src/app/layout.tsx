@@ -1,21 +1,17 @@
 import './globals.css';
 import { AppProvider } from '@/providers/app-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { ThemeProvider } from '@/providers/theme-provider';
-import MainHeader from './header';
-import MainFooter from './footer';
 import type { Metadata } from 'next';
+import { MainHeader } from '@/components/layout/main-header';
+import { MainFooter } from '@/components/layout/main-footer';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
   title: 'Typink Template',
   description: 'Next.js template with ShadCN UI and Typink integration',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang='en' suppressHydrationWarning>
       <body>

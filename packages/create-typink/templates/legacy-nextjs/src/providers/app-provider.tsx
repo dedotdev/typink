@@ -1,20 +1,8 @@
 'use client';
 
-import { createContext, useContext } from 'react';
-import { ContractId, deployments } from '@/contracts/deployments';
-import { GreeterContractApi } from '@/contracts/types/greeter';
+import { deployments } from '@/contracts/deployments';
 import { Props } from '@/lib/types';
-import { Contract } from 'dedot/contracts';
-import {
-  useContract,
-  polkadotjs,
-  subwallet,
-  talisman,
-  TypinkProvider,
-  // -- START_SUPPORTED_NETWORKS --
-  alephZeroTestnet,
-  // -- END_SUPPORTED_NETWORKS --
-} from 'typink';
+import { alephZeroTestnet, polkadotjs, subwallet, talisman, TypinkProvider } from 'typink';
 
 // Supported networks configuration
 const SUPPORTED_NETWORKS = [
@@ -30,22 +18,6 @@ const SUPPORTED_NETWORKS = [
 // Supported wallets
 const SUPPORTED_WALLETS = [subwallet, talisman, polkadotjs];
 
-interface AppContextProps {
-  greeterContract?: Contract<GreeterContractApi>;
-}
-
-const AppContext = createContext<AppContextProps>(null as any);
-
-export const useApp = () => {
-  return useContext(AppContext);
-};
-
-function AppContextProvider({ children }: Props) {
-  const { contract: greeterContract } = useContract<GreeterContractApi>(ContractId.GREETER);
-
-  return <AppContext.Provider value={{ greeterContract }}>{children}</AppContext.Provider>;
-}
-
 export function AppProvider({ children }: Props) {
   return (
     <TypinkProvider
@@ -59,7 +31,7 @@ export function AppProvider({ children }: Props) {
       }
       cacheMetadata={true}
       wallets={SUPPORTED_WALLETS}>
-      <AppContextProvider>{children}</AppContextProvider>
+      {children}
     </TypinkProvider>
   );
 }
