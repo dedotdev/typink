@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LooseContractMetadata } from 'dedot/contracts';
+import { LooseContractMetadata, SolAbi } from 'dedot/contracts';
 
 export * from './pjs-types.js';
 
@@ -24,7 +24,7 @@ export type SubstrateAddress = string;
 
 export interface ContractDeployment {
   id: string;
-  metadata: LooseContractMetadata | string;
+  metadata: LooseContractMetadata | SolAbi | string | any[]; // TODO fix this
   address: SubstrateAddress;
   network: string;
 }
