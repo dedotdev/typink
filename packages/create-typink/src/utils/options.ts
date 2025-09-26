@@ -16,7 +16,7 @@ const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
   inkVersion: InkVersion.InkV6,
   template: 'v6-nextjs',
-  networks: [],
+  networks: ['popTestnet'],
   skipInstall: false,
   pkgManager: { name: 'npm' },
   noGit: false,
