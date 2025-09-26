@@ -31,19 +31,9 @@ export function AccountInfo() {
       <CardHeader className='pb-4'>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-2xl font-medium'>Account Info</CardTitle>
-          <Button variant='outline' size='sm' onClick={handleSelectAccount} className='w-[160px]'>
-            {connectedAccount ? (
-              <>
-                Switch Account
-                <Send className='ml-1 h-2 w-2' />
-              </>
-            ) : (
-              <>Connect Wallet</>
-            )}
-          </Button>
         </div>
         <p className='text-sm text-muted-foreground'>
-          {connectedAccount ? 'Account connected' : 'Select an account to use'}
+          {connectedAccount ? 'Account connected' : 'Connect to your wallet and select an account'}
         </p>
       </CardHeader>
 

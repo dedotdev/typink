@@ -126,7 +126,9 @@ export function GreeterBoard() {
               placeholder='Hello world!'
               className='h-10 bg-white placeholder:text-muted-foreground/50'
             />
-            <div className='text-xs text-muted-foreground'>Max {50 - message.length} characters</div>
+            <div className='text-xs text-muted-foreground'>
+              {message.length == 0 ? `Max 50 characters` : `${50 - message.length} characters left`}
+            </div>
 
             <Button
               type='button'
