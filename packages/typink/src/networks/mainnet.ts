@@ -42,7 +42,6 @@ export const polkadot: NetworkInfo = {
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/polkadot.png`,
   providers: [
     'wss://polkadot-rpc.dwellir.com',
-    'wss://polkadot.public.curie.radiumblock.co/ws',
     'wss://dot-rpc.stakeworld.io',
     'wss://rpc-polkadot.luckyfriday.io',
     'wss://polkadot-rpc-tn.dwellir.com',
@@ -96,7 +95,6 @@ export const polkadotPeople: NetworkInfo = {
   providers: [
     'wss://polkadot-people-rpc.polkadot.io',
     'wss://rpc-people-polkadot.luckyfriday.io',
-    'wss://people-polkadot.public.curie.radiumblock.co/ws',
     'wss://sys.ibp.network/people-polkadot',
     'wss://sys.dotters.network/people-polkadot',
     'wss://people-polkadot.dotters.network',
@@ -116,7 +114,6 @@ export const kusama: NetworkInfo = {
   name: 'Kusama',
   logo: `${CHAIN_ASSETS_BASE_URL}/assets/chains/kusama.png`,
   providers: [
-    'wss://kusama.public.curie.radiumblock.co/ws',
     'wss://kusama-rpc-tn.dwellir.com',
     'wss://rpc-kusama.luckyfriday.io',
     'wss://ksm-rpc.stakeworld.io',
@@ -148,7 +145,6 @@ export const kusamaAssetHub: NetworkInfo = {
     'wss://rpc-asset-hub-kusama.luckyfriday.io',
     'wss://assethub-kusama.api.onfinality.io/public-ws',
     'wss://kusama-asset-hub-rpc.polkadot.io',
-    'wss://statemine.public.curie.radiumblock.co/ws',
     'wss://ksm-rpc.stakeworld.io/assethub',
   ],
   symbol: 'KSM',
