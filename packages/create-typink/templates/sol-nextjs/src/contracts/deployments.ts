@@ -16,7 +16,7 @@ export const storageDeployments: ContractDeployment[] = [
     id: ContractId.STORAGE,
     metadata: storeAbi,
     network: passetHub.id,
-    address: '0x0F96195B74599bbD51925bcE776923E2DA5c0235',
+    address: '0x5153977aAbd805E5E93d7d0D1a6A6f3179f90Da8',
   },
   // -- END_DEPLOYMENTS --
 ];
