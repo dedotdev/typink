@@ -8,8 +8,8 @@ import { usePolkadotClient, useTypink } from 'typink';
 
 function App() {
   const { networks } = useTypink();
-  const [relay, assethub, people] = networks;
-  const { status: relayStatus } = usePolkadotClient(relay?.id);
+  const [assethub, people] = networks;
+  const { status: relayStatus } = usePolkadotClient();
   const { status: assetHubStatus } = usePolkadotClient(assethub?.id);
   const { status: peopleStatus } = usePolkadotClient(people?.id);
 
