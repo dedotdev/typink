@@ -157,18 +157,16 @@ export function ClientProvider({
   const [networkConnections, setNetworkConnections] = useAtom(networkConnectionsAtom);
 
   // Initialize network connections and default network ID properly
-  useMemo(() => {
+  useEffect(() => {
     if (supportedNetworks.length === 0) return;
 
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
     } else if (networkConnections.length > 0) {
-      // Check if all existing connections are in the supported networks or default networks list
+      // Check if all existing connections are in the supported networks list
       const hasInvalidNetwork = networkConnections.some(
-        (conn) =>
-          !supportedNetworks.find((n) => n.id === conn.networkId) ||
-          !initialConnections.find((n) => n.networkId === conn.networkId),
+        (conn) => !supportedNetworks.find((n) => n.id === conn.networkId),
       );
 
       if (hasInvalidNetwork) {

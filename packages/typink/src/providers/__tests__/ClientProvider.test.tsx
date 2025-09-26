@@ -106,31 +106,14 @@ describe('ClientProvider localStorage validation', () => {
   });
 
   describe('Valid persisted connections', () => {
-    it('should preserve valid networkConnections from localStorage when they match defaults', () => {
-      // Use connections that match the default networks
-      const matchingConnections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama', provider: 'wss://custom.kusama.provider' },
-      ];
-      const wrapper = createWrapper(['polkadot', 'kusama'], matchingConnections);
-
-      const { result } = renderHook(() => useClient(), { wrapper });
-
-      // Should keep the persisted connections since they match defaults
-      expect(result.current.networkConnections).toEqual(matchingConnections);
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-    });
-
-    it('should reset when persisted connections don\'t match defaults', () => {
+    it('should preserve valid networkConnections from localStorage', () => {
       const wrapper = createWrapper(['polkadot'], validConnections);
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset to default because kusama is not in defaultNetworkIds
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should keep the persisted connections since they're all valid
+      expect(result.current.networkConnections).toEqual(validConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should preserve connections when all networks exist in supportedNetworks', () => {
@@ -143,11 +126,8 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama and westend are not in defaultNetworkIds
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      expect(result.current.networkConnections).toEqual(persistedConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should preserve empty array if that is what was persisted', () => {
@@ -314,16 +294,10 @@ describe('ClientProvider localStorage validation', () => {
     });
 
     it('should not warn when no invalid networks exist', () => {
-      // Use connections that match defaults
-      const matchingConnections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
-      const wrapper = createWrapper(['polkadot', 'kusama'], matchingConnections);
+      const wrapper = createWrapper(['polkadot'], validConnections);
 
       renderHook(() => useClient(), { wrapper });
 
-      // Should not warn when connections match defaults
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
@@ -362,14 +336,9 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([
-        { networkId: 'polkadot' },
-        { networkId: 'westend' },
-      ]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should keep localStorage since kusama is valid, even though it's different from defaults
+      expect(result.current.networkConnections).toEqual(subsetConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -392,17 +361,15 @@ describe('ClientProvider localStorage validation', () => {
 
     it('should follow correct branching: populated localStorage with valid networks -> preserve', () => {
       const defaultNetworks = ['polkadot']; // Different from what's in localStorage
-
+      
       // Start with valid connections in localStorage
       const wrapper = createWrapper(defaultNetworks, validConnections);
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should enter second branch: networkConnections.length > 0, but hasInvalidNetwork = false
+      expect(result.current.networkConnections).toEqual(validConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should follow correct branching: populated localStorage with invalid networks -> reset', () => {
@@ -524,12 +491,11 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-
-      // The atom should be updated with the reset value
+      expect(result.current.networkConnections).toEqual(validConnections);
+      
+      // The atom should retain the original valid connections
       const currentStoredValue = store.get(networkConnectionsAtom);
-      expect(currentStoredValue).toEqual([{ networkId: 'polkadot' }]);
+      expect(currentStoredValue).toEqual(validConnections);
     });
   });
 });
