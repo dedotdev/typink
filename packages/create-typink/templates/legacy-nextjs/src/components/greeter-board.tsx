@@ -4,7 +4,7 @@ import PendingText from '@/components/shared/pending-text';
 import { useCallback, useState } from 'react';
 import { useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
 import { GreeterContractApi } from '@/contracts/types/greeter';
-import { ContractId } from '@/contracts/deployments';
+import { ContractId, greeterMetadata } from '@/contracts/deployments';
 import { toast } from 'sonner';
 import { shortenAddress } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
@@ -89,9 +89,16 @@ export function GreeterBoard() {
   );
 
   return (
-    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none'>
+    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none gap-4'>
       <CardHeader>
-        <CardTitle className='text-2xl font-medium'>Greeter Contract</CardTitle>
+        <div className='flex items-center justify-between'>
+          <CardTitle className='text-2xl font-medium'>Greeter Contract</CardTitle>
+          {contract && (
+            <div className='text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full'>
+              {contract.metadata.source.language}
+            </div>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent>

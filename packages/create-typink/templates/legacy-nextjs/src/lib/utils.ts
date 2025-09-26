@@ -5,10 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const trimTrailingSlash = (input: string): string => {
-  return input.endsWith('/') ? trimTrailingSlash(input.slice(0, -1)) : input;
-};
-
 export const shortenAddress = (address?: string): string => {
   if (!address) {
     return '';

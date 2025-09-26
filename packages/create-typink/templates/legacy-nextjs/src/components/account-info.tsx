@@ -27,11 +27,11 @@ export function AccountInfo() {
   const formattedBalance = balance ? formatBalance(balance.free, network) : '0';
 
   return (
-    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none'>
-      <CardHeader>
+    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none gap-4'>
+      <CardHeader className='pb-4'>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-2xl font-medium'>Account Info</CardTitle>
-          <Button variant='outline' size='sm' onClick={handleSelectAccount} className='w-[160px'>
+          <Button variant='outline' size='sm' onClick={handleSelectAccount} className='w-[160px]'>
             {connectedAccount ? (
               <>
                 Switch Account
@@ -51,14 +51,14 @@ export function AccountInfo() {
         {connectedAccount ? (
           <div className='bg-white/40 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden'>
             {/* Account Name */}
-            <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
-              <span className='text-sm font-semibold'>Name</span>
+            <div className='flex justify-between items-center px-6 py-3 border-b border-gray-200 dark:border-gray-800'>
+              <span className='text-sm text-muted-foreground'>Name</span>
               <span className='text-sm font-medium'>{connectedAccount.name}</span>
             </div>
 
             {/* Account Address */}
-            <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
-              <span className='text-sm font-semibold'>Address</span>
+            <div className='flex justify-between items-center px-6 py-3 border-b border-gray-200 dark:border-gray-800'>
+              <span className='text-sm text-muted-foreground'>Address</span>
               <div className='flex items-center gap-2'>
                 <span className='text-sm font-mono'>{shortenAddress(connectedAccount.address)}</span>
                 <button
@@ -70,8 +70,8 @@ export function AccountInfo() {
             </div>
 
             {/* Balance */}
-            <div className='flex justify-between items-center px-6 py-4'>
-              <span className='text-sm font-semibold'>Balance</span>
+            <div className='flex justify-between items-center px-6 py-3'>
+              <span className='text-sm text-muted-foreground'>Balance</span>
               <div className='flex items-center gap-2'>
                 <span className='text-sm font-medium'>{formattedBalance.split(' ')[0]}</span>
                 <span className='text-sm font-semibold text-green-600 dark:text-green-500'>{network.symbol}</span>
