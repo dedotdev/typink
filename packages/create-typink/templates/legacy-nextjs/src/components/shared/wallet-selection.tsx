@@ -19,10 +19,10 @@ interface WalletButtonProps {
 }
 
 const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
-  const { name, id, logo, ready, installed } = walletInfo;
+  const { name, id, logo, installed } = walletInfo;
   const { connectWallet, connectedWalletIds, disconnect } = useTypink();
 
-  const doConnectWallet = () => {
+  const doConnectWallet = async () => {
     if (!installed) {
       if (walletInfo instanceof ExtensionWallet) {
         window.open(walletInfo.installUrl);
@@ -32,27 +32,41 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
     }
 
     connectedWalletIds.length > 0 && disconnect(connectedWalletIds[0]);
-    connectWallet(id);
+    await connectWallet(id);
     afterSelectWallet && afterSelectWallet();
   };
 
+  const getStatusText = () => {
+    if (!installed) return 'Not Installed';
+  };
+
+  const getActionText = () => {
+    if (!installed) return 'Install';
+    return 'Connect';
+  };
+
   return (
-    <Button
-      onClick={doConnectWallet}
-      size='lg'
-      variant='outline'
-      className='w-full justify-start items-center gap-4 h-14'>
-      <img className='rounded-sm' src={logo} alt={`${name}`} width={20} height={20} />
-      {installed ? (
-        <>
-          <span>{name}</span>
-        </>
-      ) : (
-        <>
-          <span>Install {name}</span>
-        </>
-      )}
-    </Button>
+    <div
+      className='flex items-center justify-between p-4 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group'
+      onClick={doConnectWallet}>
+      <div className='flex items-center gap-3'>
+        <img className='rounded-sm' src={logo} alt={`${name}`} width={32} height={32} />
+        <div className='flex flex-col'>
+          <span className='font-medium text-sm'>{name}</span>
+          <span className='text-xs text-red-500'>{getStatusText()}</span>
+        </div>
+      </div>
+      <Button
+        size='sm'
+        variant='ghost'
+        className='text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 font-medium'
+        onClick={(e) => {
+          e.stopPropagation();
+          doConnectWallet();
+        }}>
+        {getActionText()}
+      </Button>
+    </div>
   );
 };
 
@@ -61,9 +75,35 @@ interface WalletSelectionProps {
   buttonClassName?: string;
 }
 
+// Categorize wallets based on their name and type
+const categorizeWallets = (wallets: Wallet[]) => {
+  const categories = {
+    Hardware: [] as Wallet[],
+    Remote: [] as Wallet[],
+    'Web Signer': [] as Wallet[],
+    Extensions: [] as Wallet[],
+  };
+
+  wallets.forEach((wallet) => {
+    const name = wallet.name.toLowerCase();
+    if (name.includes('ledger')) {
+      categories.Hardware.push(wallet);
+    } else if (name.includes('walletconnect')) {
+      categories.Remote.push(wallet);
+    } else if (name.includes('signer') || name.includes('dedot')) {
+      categories['Web Signer'].push(wallet);
+    } else {
+      categories.Extensions.push(wallet);
+    }
+  });
+
+  return categories;
+};
+
 export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassName = '' }: WalletSelectionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { wallets } = useTypink();
+  const categorizedWallets = categorizeWallets(wallets);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -73,7 +113,7 @@ export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassNam
         </Button>
       </DialogTrigger>
 
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent className='sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle>Connect Wallet</DialogTitle>
           <DialogDescription>Select a wallet to connect</DialogDescription>
