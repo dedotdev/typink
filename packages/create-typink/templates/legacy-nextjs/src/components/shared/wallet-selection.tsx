@@ -2,9 +2,15 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { Loader2Icon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Link2 } from 'lucide-react';
 import { ExtensionWallet, useTypink, Wallet } from 'typink';
 
 interface WalletButtonProps {
@@ -33,16 +39,19 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
   return (
     <Button
       onClick={doConnectWallet}
-      disabled={!installed}
       size='lg'
       variant='outline'
-      className='w-full justify-start items-center gap-4'>
-      {installed && !ready ? (
-        <Loader2Icon className='w-6 h-6 animate-spin' />
+      className='w-full justify-start items-center gap-4 h-14'>
+      <img className='rounded-sm' src={logo} alt={`${name}`} width={20} height={20} />
+      {installed ? (
+        <>
+          <span>{name}</span>
+        </>
       ) : (
-        <img className='rounded-md' src={logo} alt={`${name}`} width={20} height={20} />
+        <>
+          <span>Install {name}</span>
+        </>
       )}
-      <span>{name}</span>
     </Button>
   );
 };
@@ -60,15 +69,16 @@ export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassNam
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button size='default' variant='outline' className={`${buttonClassName}`}>
-          {buttonLabel}
+          {buttonLabel} <Link2 />
         </Button>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>Select Wallet to Connect</DialogTitle>
+          <DialogTitle>Connect Wallet</DialogTitle>
+          <DialogDescription>Select a wallet to connect</DialogDescription>
         </DialogHeader>
-        <div className='flex flex-col gap-3 mt-4'>
+        <div className='flex flex-col gap-3'>
           {wallets.map((one) => (
             <WalletButton key={one.id} walletInfo={one} afterSelectWallet={() => setIsOpen(false)} />
           ))}

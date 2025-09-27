@@ -1,7 +1,7 @@
 import {
   ContractDeployment,
   // -- START_SUPPORTED_NETWORKS --
-  alephZeroTestnet,
+  popTestnet,
   // -- END_SUPPORTED_NETWORKS --
 } from 'typink';
 import greeterMetadata from './artifacts/greeter/greeter.json';
@@ -17,8 +17,8 @@ export const deployments: ContractDeployment[] = [
   {
     id: ContractId.GREETER,
     metadata: greeterMetadata,
-    network: alephZeroTestnet.id,
-    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
+    network: popTestnet.id,
+    address: '12L4yRvLh5qWSgS5ty5X7gPoL5UjUTpQvM81jioo1L48gkS5',
   },
   // -- END_DEPLOYMENTS --
 ];

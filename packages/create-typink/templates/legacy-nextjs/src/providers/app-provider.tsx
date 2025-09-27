@@ -2,12 +2,12 @@
 
 import { deployments } from '@/contracts/deployments';
 import { Props } from '@/lib/types';
-import { alephZeroTestnet, polkadotjs, subwallet, talisman, TypinkProvider } from 'typink';
+import { popTestnet, polkadotjs, subwallet, talisman, TypinkProvider } from 'typink';
 
 // Supported networks configuration
 const SUPPORTED_NETWORKS = [
   // -- START_SUPPORTED_NETWORKS --
-  alephZeroTestnet,
+  popTestnet,
   // -- END_SUPPORTED_NETWORKS --
 ];
 // Uncomment the following lines to enable the development network: https://github.com/paritytech/substrate-contracts-node
@@ -26,7 +26,7 @@ export function AppProvider({ children }: Props) {
       supportedNetworks={SUPPORTED_NETWORKS}
       defaultNetworkId={
         // -- START_DEFAULT_NETWORK_ID --
-        alephZeroTestnet.id
+        popTestnet.id
         // -- END_DEFAULT_NETWORK_ID --
       }
       cacheMetadata={true}

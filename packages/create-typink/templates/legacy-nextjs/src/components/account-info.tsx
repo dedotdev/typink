@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowUpRight, Copy, Send } from 'lucide-react';
-import { useTypink, useBalances, formatBalance } from 'typink';
-import { useEffect, useState, useMemo } from 'react';
+import { Copy } from 'lucide-react';
+import { formatBalance, useBalances, useTypink } from 'typink';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { shortenAddress } from '@/lib/utils';
+import { AccountAvatar } from '@/components/shared/account-avatar';
 
 export function AccountInfo() {
   const { connectedAccount, network } = useTypink();
@@ -43,7 +43,10 @@ export function AccountInfo() {
             {/* Account Name */}
             <div className='flex justify-between items-center px-6 py-3 border-b border-gray-200 dark:border-gray-800'>
               <span className='text-sm text-muted-foreground'>Name</span>
-              <span className='text-sm font-medium'>{connectedAccount.name}</span>
+              <div className='text-sm font-medium flex items-center gap-2'>
+                <AccountAvatar account={connectedAccount} size={20} className='mt-1' />
+                {connectedAccount.name}
+              </div>
             </div>
 
             {/* Account Address */}

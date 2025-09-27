@@ -14,7 +14,7 @@ function ConnectedWallet() {
   if (!connectedWallet) return null;
 
   return (
-    <div className='flex items-center gap-2 justify-center pb-2'>
+    <div className='flex items-center gap-2 justify-center pb-1'>
       <img className='rounded-md' src={connectedWallet.logo} alt={connectedWallet.name} width={20} height={20} />
       <span className='font-semibold text-sm'>{connectedWallet.name}</span>
     </div>
@@ -67,15 +67,19 @@ export function AccountSelection() {
           </SelectValue>
         </SelectTrigger>
         <SelectContent className='w-80'>
-          <div className='p-2 border-b'>
+          <div className='p-2'>
             <ConnectedWallet />
           </div>
+          <SelectSeparator />
           {accounts.map((one) => (
-            <SelectItem key={one.address} value={one.address}>
+            <SelectItem
+              key={one.address}
+              value={one.address}
+              className='*:[span]:first:hidden *:[span]:last:block *:[span]:last:w-full data-[state=checked]:bg-green-200/30 pr-2'>
               <div className='flex items-start w-full gap-3 py-1'>
                 <AccountAvatar account={one} size={32} className='mt-1' />
                 <div className='w-full flex flex-col gap-1'>
-                  <div className='flex justify-between items-center gap-2'>
+                  <div className='flex justify-between items-center gap-2 w-full'>
                     <span className='font-medium'>{one.name}</span>
                     <span className='text-xs text-muted-foreground'>{shortenAddress(one.address)}</span>
                   </div>
