@@ -3,9 +3,9 @@ import { renderHook } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import React from 'react';
 import { ClientProvider, useClient } from '../ClientProvider.js';
-import { networkConnectionsAtom } from '../../atoms/clientAtoms.js';
+import { networkConnectionsAtom, persistedDefaultNetworkIdsAtom } from '../../atoms/clientAtoms.js';
 import { NetworkConnection, NetworkInfo } from '../../types.js';
-import { createMockNetworkInfo, TEST_NETWORKS } from '../../atoms/__tests__/test-utils.js';
+import { TEST_NETWORKS } from '../../atoms/__tests__/test-utils.js';
 
 describe('ClientProvider localStorage validation', () => {
   let store: ReturnType<typeof createStore>;
@@ -121,16 +121,14 @@ describe('ClientProvider localStorage validation', () => {
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
-    it('should reset when persisted connections don\'t match defaults', () => {
+    it('should preserve connections even when they don\'t match current defaults', () => {
       const wrapper = createWrapper(['polkadot'], validConnections);
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset to default because kusama is not in defaultNetworkIds
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should preserve existing connections since they're in supported networks
+      expect(result.current.networkConnections).toEqual(validConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should preserve connections when all networks exist in supportedNetworks', () => {
@@ -143,11 +141,9 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama and westend are not in defaultNetworkIds
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should preserve because all networks are in supported networks
+      expect(result.current.networkConnections).toEqual(persistedConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should preserve empty array if that is what was persisted', () => {
@@ -362,14 +358,9 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([
-        { networkId: 'polkadot' },
-        { networkId: 'westend' },
-      ]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should preserve because kusama is in supported networks
+      expect(result.current.networkConnections).toEqual(subsetConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -398,11 +389,9 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Some persisted network connections are not in the supported networks list. Resetting to default networks.'
-      );
+      // Should preserve because all networks are in supported networks
+      expect(result.current.networkConnections).toEqual(validConnections);
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should follow correct branching: populated localStorage with invalid networks -> reset', () => {
@@ -524,12 +513,189 @@ describe('ClientProvider localStorage validation', () => {
 
       const { result } = renderHook(() => useClient(), { wrapper });
 
-      // Should reset because kusama is not in defaultNetworks
-      expect(result.current.networkConnections).toEqual([{ networkId: 'polkadot' }]);
+      // Should preserve valid connections
+      expect(result.current.networkConnections).toEqual(validConnections);
 
-      // The atom should be updated with the reset value
+      // The atom should preserve the original value
       const currentStoredValue = store.get(networkConnectionsAtom);
-      expect(currentStoredValue).toEqual([{ networkId: 'polkadot' }]);
+      expect(currentStoredValue).toEqual(validConnections);
+    });
+  });
+
+  describe('Default network change detection', () => {
+    let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleLogSpy.mockRestore();
+    });
+
+    it('should reset when defaultNetworkIds change from previous app session', () => {
+      // Simulate previous app session with different default networks
+      store.set(networkConnectionsAtom, [{ networkId: 'kusama' }, { networkId: 'westend' }]);
+      store.set(persistedDefaultNetworkIdsAtom, JSON.stringify([{ networkId: 'kusama' }, { networkId: 'westend' }]));
+
+      // Now app starts with different defaultNetworkIds
+      const newDefaultNetworks = ['polkadot', 'kusama'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={newDefaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      // Should reset to new default networks
+      expect(result.current.networkConnections).toEqual([
+        { networkId: 'polkadot' },
+        { networkId: 'kusama' },
+      ]);
+
+      // Should log the change
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Default network configuration changed. Resetting to new default networks.'
+      );
+
+      // Should update persisted default network IDs
+      expect(store.get(persistedDefaultNetworkIdsAtom)).toEqual(JSON.stringify([{ networkId: 'polkadot' }, { networkId: 'kusama' }]));
+    });
+
+    it('should reset when changing from defaultNetworkId to defaultNetworkIds', () => {
+      // Previous session used defaultNetworkId='polkadot'
+      store.set(networkConnectionsAtom, [{ networkId: 'polkadot' }]);
+      store.set(persistedDefaultNetworkIdsAtom, JSON.stringify([{ networkId: 'polkadot' }]));
+
+      // Now using defaultNetworkIds with multiple networks
+      const newDefaultNetworks = ['kusama', 'westend'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={newDefaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      expect(result.current.networkConnections).toEqual([
+        { networkId: 'kusama' },
+        { networkId: 'westend' },
+      ]);
+
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Default network configuration changed. Resetting to new default networks.'
+      );
+    });
+
+    it('should reset when order of defaultNetworkIds changes', () => {
+      // Previous session had networks in different order
+      store.set(networkConnectionsAtom, [{ networkId: 'kusama' }, { networkId: 'polkadot' }]);
+      store.set(persistedDefaultNetworkIdsAtom, JSON.stringify([{ networkId: 'kusama' }, { networkId: 'polkadot' }]));
+
+      // Same networks but different order (primary network changed)
+      const newDefaultNetworks = ['polkadot', 'kusama'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={newDefaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      expect(result.current.networkConnections).toEqual([
+        { networkId: 'polkadot' },
+        { networkId: 'kusama' },
+      ]);
+
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Default network configuration changed. Resetting to new default networks.'
+      );
+    });
+
+    it('should not reset when defaultNetworkIds remain the same', () => {
+      // Previous session with same default networks
+      const existingConnections = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
+      store.set(networkConnectionsAtom, existingConnections);
+      store.set(persistedDefaultNetworkIdsAtom, JSON.stringify([{ networkId: 'polkadot' }, { networkId: 'kusama' }]));
+
+      // Same defaultNetworkIds as previous session
+      const sameDefaultNetworks = ['polkadot', 'kusama'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={sameDefaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      // Should preserve existing connections
+      expect(result.current.networkConnections).toEqual(existingConnections);
+
+      // Should not log any change
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle empty persisted default network IDs on first run', () => {
+      // Simulate first app run - no persisted default network IDs
+      store.set(networkConnectionsAtom, []);
+      store.set(persistedDefaultNetworkIdsAtom, '');
+
+      const defaultNetworks = ['westend'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={defaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      // Should set initial connections
+      expect(result.current.networkConnections).toEqual([{ networkId: 'westend' }]);
+
+      // Should not log change (first run)
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+
+      // Should store the default network IDs for future comparison
+      expect(store.get(persistedDefaultNetworkIdsAtom)).toEqual(JSON.stringify([{ networkId: 'westend' }]));
+    });
+
+    it('should reset for default network changes but skip invalid network validation', () => {
+      // Set up previous session with valid but different default networks
+      store.set(networkConnectionsAtom, [{ networkId: 'polkadot' }]);
+      store.set(persistedDefaultNetworkIdsAtom, JSON.stringify([{ networkId: 'polkadot' }]));
+
+      // Change to kusama (valid network but different from previous)
+      const newDefaultNetworks = ['kusama'];
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <Provider store={store}>
+          <ClientProvider defaultNetworkIds={newDefaultNetworks} supportedNetworks={supportedNetworks}>
+            {children}
+          </ClientProvider>
+        </Provider>
+      );
+
+      const { result } = renderHook(() => useClient(), { wrapper });
+
+      expect(result.current.networkConnections).toEqual([{ networkId: 'kusama' }]);
+
+      // Should log default network change
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Default network configuration changed. Resetting to new default networks.'
+      );
+
+      // Should not log invalid network warning (since we skip that validation)
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
   });
 });
