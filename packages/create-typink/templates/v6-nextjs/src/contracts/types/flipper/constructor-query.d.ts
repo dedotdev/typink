@@ -8,10 +8,12 @@ import type {
   GenericConstructorCallResult,
   ConstructorCallOptions,
   ContractInstantiateResult,
+  MetadataType,
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends GenericConstructorQuery<ChainApi> {
+export interface ConstructorQuery<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
+  extends GenericConstructorQuery<ChainApi, Type> {
   /**
    * Constructor that initializes the `bool` value to the given `init_value`.
    *
@@ -25,20 +27,7 @@ export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends 
     (
       initValue: boolean,
       options?: ConstructorCallOptions,
-    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>
-  >;
-
-  /**
-   * Constructor that initializes the `bool` value to `false`.
-   *
-   * Constructors can delegate to other constructors.
-   *
-   * @param {ConstructorCallOptions} options
-   *
-   * @selector 0xed4b9d1b
-   **/
-  default: GenericConstructorQueryCall<
-    ChainApi,
-    (options?: ConstructorCallOptions) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>
+    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>,
+    Type
   >;
 }

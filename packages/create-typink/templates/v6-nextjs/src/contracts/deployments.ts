@@ -1,7 +1,7 @@
 import {
   ContractDeployment,
   // -- START_SUPPORTED_NETWORKS --
-  passetHub,
+  popTestnet,
   // -- END_SUPPORTED_NETWORKS --
 } from 'typink';
 import flipperMetadata from './artifacts/flipper/flipper.json';
@@ -10,15 +10,15 @@ export enum ContractId {
   FLIPPER = 'flipper',
 }
 
-export const flipperDeployments: ContractDeployment[] = [
+export { flipperMetadata };
+
+export const deployments: ContractDeployment[] = [
   // -- START_DEPLOYMENTS --
   {
     id: ContractId.FLIPPER,
     metadata: flipperMetadata,
-    network: passetHub.id,
-    address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50',
+    network: popTestnet.id,
+    address: '12L4yRvLh5qWSgS5ty5X7gPoL5UjUTpQvM81jioo1L48gkS5',
   },
   // -- END_DEPLOYMENTS --
 ];
-
-export const deployments = [...flipperDeployments];

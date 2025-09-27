@@ -5,14 +5,16 @@ import type {
   GenericConstructorTx,
   GenericConstructorTxCall,
   ConstructorTxOptions,
-  GenericContractApi,
+  InkGenericContractApi,
   GenericInstantiateSubmittableExtrinsic,
+  MetadataType,
 } from 'dedot/contracts';
 
 export interface ConstructorTx<
   ChainApi extends GenericSubstrateApi,
-  ContractApi extends GenericContractApi = GenericContractApi,
-> extends GenericConstructorTx<ChainApi> {
+  ContractApi extends InkGenericContractApi,
+  Type extends MetadataType,
+> extends GenericConstructorTx<ChainApi, Type> {
   /**
    * Constructor that initializes the `bool` value to the given `init_value`.
    *
@@ -26,20 +28,7 @@ export interface ConstructorTx<
     (
       initValue: boolean,
       options?: ConstructorTxOptions,
-    ) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>
-  >;
-
-  /**
-   * Constructor that initializes the `bool` value to `false`.
-   *
-   * Constructors can delegate to other constructors.
-   *
-   * @param {ConstructorTxOptions} options
-   *
-   * @selector 0xed4b9d1b
-   **/
-  default: GenericConstructorTxCall<
-    ChainApi,
-    (options?: ConstructorTxOptions) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>
+    ) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>,
+    Type
   >;
 }

@@ -1,16 +1,16 @@
 {
   "source": {
-    "hash": "0xd84bac10d879bb0dc151d5a07c1e481406ecbba0eaf22e1dd5bbeb535dc92643",
-    "language": "ink! 6.0.0-alpha",
+    "hash": "0xfb97923a558f718694ca3591d00fbecd3a09b64bf223ac0a8e590932a5f24928",
+    "language": "ink! 6.0.0-alpha.4",
     "compiler": "rustc 1.88.0",
     "build_info": {
       "build_mode": "Release",
-      "cargo_contract_version": "6.0.0-alpha",
+      "cargo_contract_version": "6.0.0-alpha.4",
       "rust_toolchain": "stable-aarch64-apple-darwin"
     }
   },
   "contract": {
-    "name": "flipper6",
+    "name": "flipper",
     "version": "0.1.0",
     "authors": [
       "[your_name] <[your_email]>"
@@ -45,25 +45,6 @@
           "type": 2
         },
         "selector": "0x9bae9d5e"
-      },
-      {
-        "args": [],
-        "default": false,
-        "docs": [
-          "Constructor that initializes the `bool` value to `false`.",
-          "",
-          "Constructors can delegate to other constructors."
-        ],
-        "label": "default",
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink_primitives",
-            "ConstructorResult"
-          ],
-          "type": 2
-        },
-        "selector": "0xed4b9d1b"
       }
     ],
     "docs": [],
@@ -72,42 +53,86 @@
         "displayName": [
           "AccountId"
         ],
-        "type": 6
+        "type": 9
       },
       "balance": {
         "displayName": [
           "Balance"
         ],
-        "type": 9
+        "type": 11
       },
       "blockNumber": {
         "displayName": [
           "BlockNumber"
         ],
-        "type": 12
-      },
-      "chainExtension": {
-        "displayName": [
-          "ChainExtension"
-        ],
-        "type": 13
+        "type": 14
       },
       "hash": {
         "displayName": [
           "Hash"
         ],
-        "type": 10
+        "type": 12
       },
-      "maxEventTopics": 4,
+      "nativeToEthRatio": 100000000,
       "staticBufferSize": 16384,
       "timestamp": {
         "displayName": [
           "Timestamp"
         ],
-        "type": 11
+        "type": 13
       }
     },
-    "events": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [
+              "The old value before flipping"
+            ],
+            "indexed": false,
+            "label": "old_value",
+            "type": {
+              "displayName": [
+                "bool"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [
+              "The new value after flipping"
+            ],
+            "indexed": false,
+            "label": "new_value",
+            "type": {
+              "displayName": [
+                "bool"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [
+              "The account that triggered the flip"
+            ],
+            "indexed": true,
+            "label": "caller",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 6
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when the flipper value is flipped"
+        ],
+        "label": "Flipped",
+        "module_path": "flipper::flipper",
+        "signature_topic": "0x421bb88e176318757af0b18da6cc8957e199260e021cd8da7b4c92242216d7db"
+      }
+    ],
     "lang_error": {
       "displayName": [
         "ink",
@@ -171,7 +196,7 @@
               "name": "value"
             }
           ],
-          "name": "Flipper6"
+          "name": "Flipper"
         }
       },
       "root_key": "0x00000000",
@@ -196,15 +221,15 @@
               {
                 "name": "value",
                 "type": 0,
-                "typeName": "<bool as::ink::storage::traits::AutoStorableHint<::ink::storage\n::traits::ManualKey<2137511608u32, ()>,>>::Type"
+                "typeName": "<bool as::ink::storage::traits::AutoStorableHint<::ink::storage\n::traits::ManualKey<2054318728u32, ()>,>>::Type"
               }
             ]
           }
         },
         "path": [
-          "flipper6",
-          "flipper6",
-          "Flipper6"
+          "flipper",
+          "flipper",
+          "Flipper"
         ]
       }
     },
@@ -327,15 +352,14 @@
             "fields": [
               {
                 "type": 7,
-                "typeName": "[u8; 32]"
+                "typeName": "[u8; 20]"
               }
             ]
           }
         },
         "path": [
-          "ink_primitives",
-          "types",
-          "AccountId"
+          "primitive_types",
+          "H160"
         ]
       }
     },
@@ -344,7 +368,7 @@
       "type": {
         "def": {
           "array": {
-            "len": 32,
+            "len": 20,
             "type": 8
           }
         }
@@ -362,18 +386,49 @@
       "id": 9,
       "type": {
         "def": {
-          "primitive": "u128"
-        }
+          "composite": {
+            "fields": [
+              {
+                "type": 10,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
       }
     },
     {
       "id": 10,
       "type": {
         "def": {
+          "array": {
+            "len": 32,
+            "type": 8
+          }
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
           "composite": {
             "fields": [
               {
-                "type": 7,
+                "type": 10,
                 "typeName": "[u8; 32]"
               }
             ]
@@ -387,7 +442,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 13,
       "type": {
         "def": {
           "primitive": "u64"
@@ -395,26 +450,13 @@
       }
     },
     {
-      "id": 12,
+      "id": 14,
       "type": {
         "def": {
           "primitive": "u32"
         }
       }
-    },
-    {
-      "id": 13,
-      "type": {
-        "def": {
-          "variant": {}
-        },
-        "path": [
-          "ink_primitives",
-          "types",
-          "NoChainExtension"
-        ]
-      }
     }
   ],
-  "version": 5
+  "version": 6
 }
