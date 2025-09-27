@@ -10,8 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Link2 } from 'lucide-react';
+import { Link2, Download } from 'lucide-react';
 import { ExtensionWallet, useTypink, Wallet } from 'typink';
+import { cn } from '@/lib/utils';
 
 interface WalletButtonProps {
   walletInfo: Wallet;
@@ -58,13 +59,26 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
       </div>
       <Button
         size='sm'
-        variant='ghost'
-        className='text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 font-medium'
+        className={cn(
+          installed
+            ? 'bg-green-50 dark:bg-green-900/20 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-xl w-28'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl w-28',
+        )}
         onClick={(e) => {
           e.stopPropagation();
           doConnectWallet();
         }}>
-        {getActionText()}
+        {installed ? (
+          <>
+            Connect
+            <Link2 className='w-3 h-3' />
+          </>
+        ) : (
+          <>
+            Install
+            <Download className='w-3 h-3' />
+          </>
+        )}
       </Button>
     </div>
   );
