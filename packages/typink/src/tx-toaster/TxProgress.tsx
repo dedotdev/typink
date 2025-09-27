@@ -17,9 +17,9 @@ const getBlockInfo = (status: TxStatus) => {
 
 export function TxProgress({ message, status, networkId }: TxProgressProps) {
   const { network, networks } = useTypink();
-  
+
   // Use the specified network if networkId is provided, otherwise use current network
-  const targetNetwork = networkId ? networks.find(n => n.id === networkId) || network : network;
+  const targetNetwork = networkId ? networks.find((n) => n.id === networkId) || network : network;
 
   const { label: viewOnExplorer, url: explorerUrl } = useMemo(() => {
     if (status.type === 'BestChainBlockIncluded' || status.type === 'Finalized') {
@@ -44,15 +44,24 @@ export function TxProgress({ message, status, networkId }: TxProgressProps) {
   }, [status, targetNetwork]);
 
   return (
-    <div>
-      <p>{message}</p>
-      <p style={{ fontSize: 12 }}>
+    <div className='typink-tx-toaster'>
+      <p className='typink-tx-toaster-message' style={{ fontSize: '1em', margin: 0 }}>
+        {message}
+      </p>
+      <p
+        className='typink-tx-toaster-status'
+        style={{ fontSize: '0.85em', color: '#666', margin: 0, marginTop: '0.25rem' }}>
         {status.type} {getBlockInfo(status)}
       </p>
 
       {viewOnExplorer && (
-        <p style={{ fontSize: 12, marginTop: '0.5rem' }}>
-          <a style={{ textDecoration: 'underline' }} href={explorerUrl} target='_blank' rel='noreferrer'>
+        <p className='typink-tx-toaster-explorer' style={{ fontSize: '0.85em', margin: 0, marginTop: '0.5rem' }}>
+          <a
+            className='typink-tx-toaster-explorer-link'
+            style={{ textDecoration: 'underline', color: '#666' }}
+            href={explorerUrl}
+            target='_blank'
+            rel='noreferrer'>
             👉 {viewOnExplorer}
           </a>
         </p>
