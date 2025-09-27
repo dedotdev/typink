@@ -22,7 +22,7 @@ export function TypinkIntro() {
         <div className='flex flex-col sm:flex-row gap-4 justify-center items-center pt-8'>
           <Button
             size='xl'
-            className='min-w-[184px] rounded-[14px] bg-gradient-to-r from-[#DE21A6] to-[#FD6F8E] hover:from-[#DE21A6]/90 hover:to-[#FD6F8E]/90 text-white border-0'
+            className='min-w-[184px] rounded-[14px] bg-gradient-to-r from-[#DE21A6] to-[#FD6F8E] text-white border-0 transition-all hover:shadow-lg hover:shadow-pink-500/25'
             asChild>
             <a
               href='https://docs.dedot.dev/typink/getting-started'
@@ -34,7 +34,11 @@ export function TypinkIntro() {
             </a>
           </Button>
 
-          <Button variant='outline' size='xl' className='min-w-[184px] rounded-[14px]' asChild>
+          <Button
+            variant='outline'
+            size='xl'
+            className='min-w-[184px] rounded-[14px] transition-all hover:shadow-lg hover:shadow-pink-500/25'
+            asChild>
             <a
               href='https://github.com/dedotdev/typink'
               target='_blank'
