@@ -10,8 +10,14 @@ interface TypinkLogoProps {
   height?: number;
 }
 
-export function TypinkLogo({ width = 128, height = 64 }: TypinkLogoProps) {
-  return <Image width={width} height={height} src={`${RESOURCE_BASE_URL}/typink-pink.svg`} alt='Typink Logo' />;
+export function TypinkLogo({ width = 30, height = 33 }: TypinkLogoProps) {
+  return <Image width={width} height={height} src={`${RESOURCE_BASE_URL}/typink-pink-logo.svg`} alt='Typink Logo' />;
+}
+
+export function TypinkTextLogo({ width = 250, height = 70 }: TypinkLogoProps) {
+  return (
+    <Image width={width} height={height} src={`${RESOURCE_BASE_URL}/typink-text-pink-logo.svg`} alt='Typink Logo' />
+  );
 }
 
 export function XSvgIcon({ width = '20' }: Props) {

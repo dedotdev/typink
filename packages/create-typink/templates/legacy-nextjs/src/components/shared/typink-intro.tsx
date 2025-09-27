@@ -1,13 +1,13 @@
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TypinkLogo, GithubSvgIcon } from '@/components/shared/icons';
+import { GithubSvgIcon, TypinkTextLogo } from '@/components/shared/icons';
 
 export function TypinkIntro() {
   return (
     <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20'>
       <div className='text-center space-y-6'>
         <div className='flex items-center justify-center'>
-          <TypinkLogo width={250} />
+          <TypinkTextLogo width={250} />
         </div>
 
         <h1 className='text-4xl font-medium tracking-tight text-foreground'>
