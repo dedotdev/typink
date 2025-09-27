@@ -1,8 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from '@/contracts/deployments';
-import { useContract, useContractQuery, useContractTx } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { useContract, useContractQuery, useContractTx, txToaster } from 'typink';
 import { Flipper6ContractApi } from '@/contracts/types/flipper6';
 
 export default function FlipperBoard() {
@@ -22,15 +21,16 @@ export default function FlipperBoard() {
 
     try {
       await setMessageTx.signAndSend({
-        callback: ({ status }) => {
+        callback: (progress) => {
+          const { status } = progress;
           console.log(status);
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e, e.message);
-      toaster.onError(e);
+      toaster.onTxError(e);
     }
   };
 

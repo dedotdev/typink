@@ -11,10 +11,15 @@ import {
   ExtensionWallet,
   polkadotjs,
   popTestnet,
+  ReactToastifyAdapter,
+  setupTxToaster,
   subwallet,
   talisman,
   TypinkProvider,
 } from 'typink';
+import { toast } from 'react-toastify';
+
+setupTxToaster({ adapter: new ReactToastifyAdapter(toast) });
 
 const DEFAULT_CALLER = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'; // Alice
 const SUPPORTED_NETWORK = [popTestnet, alephZeroTestnet];

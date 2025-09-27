@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useSearchParam } from 'react-use';
 import GreetBoard from '@/components/GreeterBoard.tsx';
 import Psp22Board from '@/components/Psp22Board.tsx';
+import LazyStorageDemo from '@/components/LazyStorageDemo.tsx';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
@@ -27,6 +28,7 @@ function App() {
           <TabList>
             <Tab>Greeter Contract</Tab>
             <Tab>PSP22 Contract</Tab>
+            <Tab>Lazy Storage Demo</Tab>
             <Tab>Deploy Contracts</Tab>
           </TabList>
 
@@ -36,6 +38,9 @@ function App() {
             </TabPanel>
             <TabPanel>
               <Psp22Board />
+            </TabPanel>
+            <TabPanel>
+              <LazyStorageDemo />
             </TabPanel>
             <TabPanel>
               <ContractDeployerBoard />

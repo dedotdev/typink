@@ -1,40 +1,53 @@
 import { execa } from 'execa';
-import { Options } from '../types.js';
+import { InkVersion, Options } from '../types.js';
 import * as fs from 'fs';
-import * as ejs from 'ejs';
 import * as path from 'path';
-import { stringCamelCase } from '@dedot/utils';
-import { IS_IGNORE_FILES, IS_TEMPLATE_FILE } from '../utils/index.js';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
+import { downloadTemplate } from 'giget';
+import { getNetworkConfig } from '../utils/networks.js';
 
 export async function copyTemplateFiles(
   options: Options,
-  templatesDir: string,
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, template, inkVersion } = options;
+  const { projectName, noGit, inkVersion } = options;
+  const template = `${inkVersion}-nextjs`;
 
   task.title = `🚀 Initializing new Typink dApp`;
 
-  const templateDir = `${templatesDir}/${inkVersion}/${template}`;
+  // Repo to pull templates from, can be overridden by env
+  const repoUrl = process.env.TYPINK_TEMPLATE_REPO || 'https://github.com/dedotdev/typink.git';
+  const repoBranch = process.env.TYPINK_TEMPLATE_BRANCH || 'main';
 
-  if (!fs.existsSync(templateDir)) {
-    throw new Error(`Template directory not found: ${templateDir}`);
+  try {
+    const ghMatch = /github\.com[/:]([^/]+)\/([^/.]+)(?:\.git)?/i.exec(repoUrl);
+    if (ghMatch && template) {
+      const owner = ghMatch[1];
+      const repo = ghMatch[2];
+      const spec = `github:${owner}/${repo}/packages/create-typink/templates/${template}#${repoBranch}`;
+
+      // Download template directly into the project directory
+      await downloadTemplate(spec, { dir: targetDir, force: true });
+    }
+  } catch (e) {
+    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
   }
 
-  await fs.promises.cp(templateDir, targetDir, { recursive: true });
+  // Set package name
+  const packageJsonPath = path.join(targetDir, 'package.json');
+  if (fs.existsSync(packageJsonPath)) {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    packageJson.name = projectName;
+    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  }
 
-  await processPresetContract(options, targetDir);
-  await processTemplateFiles(options, targetDir);
-  await processGitignoreFile(targetDir);
+  // Process network configurations
+  if (options.networks && options.networks.length > 0) {
+    await processNetworkPlaceholders(targetDir, options);
+  }
 
-  const packageJsonPath = `${targetDir}/package.json`;
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-  packageJson.name = projectName;
-  await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
+  // Initialize git if requested
   if (!noGit) {
     await execa('git', ['init'], { cwd: targetDir });
     await execa('git', ['checkout', '-b', 'main'], { cwd: targetDir });
@@ -43,59 +56,40 @@ export async function copyTemplateFiles(
   task.title = `🚀 Initialized new Typink dApp`;
 }
 
-async function processPresetContract(options: Options, targetDir: string) {
-  const dirsToCheck = [`${targetDir}/src/contracts/artifacts`, `${targetDir}/src/contracts/types`];
+async function processNetworkPlaceholders(targetDir: string, options: Options) {
+  const { inkVersion, networks } = options;
 
-  dirsToCheck.forEach(async (dir) => {
-    for (const file of await fs.promises.readdir(dir, { withFileTypes: true })) {
-      if (file.name === options.presetContract) {
-        continue;
-      }
+  if (!inkVersion || !networks) return;
 
-      await fs.promises.rm(path.join(dir, file.name), { recursive: true });
-    }
-  });
-}
+  const networkConfig = getNetworkConfig(inkVersion as InkVersion, networks);
 
-async function processTemplateFiles(rawOptions: Options, targetDir: string) {
-  const options = {
-    ...rawOptions,
-    networks: rawOptions.networks?.map(stringCamelCase),
-  };
+  const filesToProcess = [
+    'src/providers/app-provider.tsx', // NextJS
+    'src/main.tsx', // Vite
+    'src/contracts/deployments.ts',
+  ];
 
-  await processTemplateFilesRecursive(options, targetDir);
-}
+  for (const filePath of filesToProcess) {
+    const fullPath = path.join(targetDir, filePath);
+    if (fs.existsSync(fullPath)) {
+      let content = await fs.promises.readFile(fullPath, 'utf-8');
 
-async function processTemplateFilesRecursive(options: any, dir: string) {
-  if (IS_IGNORE_FILES.test(dir)) {
-    return;
-  }
+      // Replace placeholders
+      content = content
+        .replace(
+          /\/\/ -- START_SUPPORTED_NETWORKS --([\s\S]*?)\/\/ -- END_SUPPORTED_NETWORKS --/g,
+          networkConfig.supportedNetworks,
+        )
+        .replace(
+          /\/\/ -- START_DEFAULT_NETWORK_ID --([\s\S]*?)\/\/ -- END_DEFAULT_NETWORK_ID --/g,
+          networkConfig.defaultNetworkId,
+        )
+        .replace(
+          /\/\/ -- START_DEPLOYMENTS --([\s\S]*?)\/\/ -- END_DEPLOYMENTS --/g, // prettier-ignore
+          networkConfig.deploymentEntries,
+        );
 
-  const files = await fs.promises.readdir(dir, { withFileTypes: true });
-
-  for (const file of files) {
-    const filePath = path.join(dir, file.name);
-
-    if (file.isDirectory()) {
-      await processTemplateFilesRecursive(options, filePath);
-    } else {
-      if (IS_TEMPLATE_FILE.test(filePath)) {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const result = ejs.render(content, { options });
-
-        if (result.trim() !== '') {
-          await fs.promises.writeFile(filePath.replace('.template.ejs', ''), result);
-        }
-
-        await fs.promises.rm(filePath);
-      }
+      await fs.promises.writeFile(fullPath, content);
     }
   }
-}
-
-async function processGitignoreFile(targetDir: string) {
-  await fs.promises.rename(
-    path.join(targetDir, 'gitignore'), // prettier-end-here
-    path.join(targetDir, '.gitignore'),
-  );
 }

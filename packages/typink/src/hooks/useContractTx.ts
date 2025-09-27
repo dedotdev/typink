@@ -127,7 +127,6 @@ export async function contractTx<
     try {
       const dryRunOptions: ContractCallOptions = { caller };
       const dryRun = await contract.query[fn](...args, dryRunOptions);
-      console.log('Dry run result:', dryRun);
 
       const { data } = dryRun;
 

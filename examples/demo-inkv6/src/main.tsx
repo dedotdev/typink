@@ -1,13 +1,27 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import App from '@/App';
 import { theme } from '@/theme';
 import { deployments } from '@/contracts/deployments';
-import { development, polkadotjs, popTestnet, subwallet, talisman, TypinkProvider, westendAssetHub } from 'typink';
+import {
+  development,
+  passetHub,
+  polkadotjs,
+  ReactToastifyAdapter,
+  setupTxToaster,
+  subwallet,
+  talisman,
+  TypinkProvider,
+  westendAssetHub,
+} from 'typink';
 
-const SUPPORTED_NETWORK = [popTestnet, westendAssetHub];
+setupTxToaster({
+  adapter: new ReactToastifyAdapter(toast),
+});
+
+const SUPPORTED_NETWORK = [passetHub, westendAssetHub];
 if (process.env.NODE_ENV === 'development') {
   SUPPORTED_NETWORK.push(development);
 }
@@ -18,7 +32,7 @@ function Root() {
       <TypinkProvider
         deployments={deployments}
         supportedNetworks={SUPPORTED_NETWORK}
-        defaultNetworkId={popTestnet.id}
+        defaultNetworkId={passetHub.id}
         cacheMetadata={true}
         wallets={[subwallet, talisman, polkadotjs]}>
         <App />

@@ -3,13 +3,12 @@ import WalletSelection from '@/components/dialog/WalletSelection.tsx';
 import PendingText from '@/components/shared/PendingText.tsx';
 import { ContractId } from '@/contracts/deployments';
 import { Psp22ContractApi } from '@/contracts/types/psp22';
-import { formatBalance, useContract, useContractQuery, useContractTx, useTypink } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { formatBalance, useContract, useContractQuery, useContractTx, useTypink, txToaster } from 'typink';
 import { toEvmAddress } from 'dedot/contracts';
 
 export default function Psp22Board() {
   const { contract } = useContract<Psp22ContractApi>(ContractId.PSP22);
-  const { connectedAccount, network } = useTypink();
+  const { connectedAccount } = useTypink();
   const mintTx = useContractTx(contract, 'psp22MintableMint');
   const { data: tokenName, isLoading: loadingTokenName } = useContractQuery({
     contract,
@@ -54,7 +53,8 @@ export default function Psp22Board() {
     try {
       await mintTx.signAndSend({
         args: [BigInt(100 * Math.pow(10, tokenDecimal))],
-        callback: ({ status }) => {
+        callback: (progress) => {
+          const { status } = progress;
           console.log(status);
 
           if (status.type === 'BestChainBlockIncluded') {
@@ -62,17 +62,19 @@ export default function Psp22Board() {
             void refreshMyBalance();
           }
 
-          toaster.updateTxStatus(status);
+          toaster.onTxProgress(progress);
         },
       });
     } catch (e: any) {
       console.error(e);
-      toaster.onError(e);
+      toaster.onTxError(e);
     } finally {
       void refreshTotalSupply();
       void refreshMyBalance();
     }
   };
+
+  const tokenFormatOptions = { symbol: tokenSymbol, decimals: tokenDecimal };
 
   return (
     <Box>
@@ -99,7 +101,7 @@ export default function Psp22Board() {
         <Box mb={2}>
           Total Supply:{' '}
           <PendingText fontWeight='600' isLoading={loadingTotalSupply}>
-            {formatBalance(totalSupply, network)}
+            {formatBalance(totalSupply, tokenFormatOptions)}
           </PendingText>
         </Box>
         <Divider my={4} />
@@ -107,7 +109,7 @@ export default function Psp22Board() {
           My Balance:{' '}
           {connectedAccount ? (
             <PendingText fontWeight='600' isLoading={loadingBalance}>
-              {formatBalance(myBalance, network)}
+              {formatBalance(myBalance, tokenFormatOptions)}
             </PendingText>
           ) : (
             <WalletSelection buttonProps={{ size: 'xs' }} />

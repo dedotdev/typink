@@ -9,6 +9,7 @@ import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import FlipperBoard from '@/components/FlipperBoard.tsx';
 import { ContractDeployerBoard } from '@/components/ContractDeployerBoard.tsx';
 import Psp22Board from '@/components/Psp22Board.tsx';
+import LazyStorageDemo from '@/components/LazyStorageDemo.tsx';
 
 function App() {
   const tab = useSearchParam('tab');
@@ -31,6 +32,7 @@ function App() {
             <TabList>
               <Tab>Flipper Contract</Tab>
               <Tab>PSP22 Contract</Tab>
+              <Tab>Lazy Storage Demo</Tab>
               <Tab>Deploy Flipper Contracts</Tab>
             </TabList>
 
@@ -40,6 +42,9 @@ function App() {
               </TabPanel>
               <TabPanel>
                 <Psp22Board />
+              </TabPanel>
+              <TabPanel>
+                <LazyStorageDemo />
               </TabPanel>
               <TabPanel>
                 <ContractDeployerBoard />

@@ -1,25 +1,35 @@
-export const WALLET_CONNECTORS = ['Default', 'SubConnect V2', 'Talisman Connect'] as const;
-export type WalletConnector = (typeof WALLET_CONNECTORS)[number];
+export interface PkgManagerInfo {
+  name: string;
+  version?: string;
+}
 
-export const PRESET_CONTRACTS_FOR_PALLET_CONTRACTS = ['greeter', 'psp22'] as const;
-export const PRESET_CONTRACTS_FOR_PALLET_REVIVE = ['flipper', 'psp22'] as const;
-export type PresetContract =
-  | (typeof PRESET_CONTRACTS_FOR_PALLET_CONTRACTS)[number]
-  | (typeof PRESET_CONTRACTS_FOR_PALLET_REVIVE)[number];
+export type BaseOptions = {
+  projectName: string | null;
+  skipInstall: boolean;
+  inkVersion: InkVersion | null;
+  networks: string[] | null;
+  template: Template | null;
+  // This option will be determined by the user agent instead of being set by the user
+  pkgManager: PkgManagerInfo;
+  noGit: boolean;
+};
 
-export const NETWORKS_FOR_PALLET_CONTRACTS = ['Pop Testnet', 'Aleph Zero Testnet', 'Aleph Zero', 'Astar'] as const;
-export const NETWORKS_FOR_PALLET_REVIVE = ['Pop Testnet'] as const;
-export type Network =
-  | (typeof NETWORKS_FOR_PALLET_CONTRACTS)[number] // prettier-ignore
-  | (typeof NETWORKS_FOR_PALLET_REVIVE)[number];
+export type RawOptions = {
+  help: boolean;
+  version: boolean;
+};
 
-export const TEMPLATES = ['default'] as const;
+export type Options = BaseOptions & RawOptions;
+
+export const TEMPLATES = ['legacy-nextjs', 'v6-nextjs'] as const;
+
 export type Template = (typeof TEMPLATES)[number];
 
 export enum InkVersion {
   InkLegacy = 'legacy',
   InkV6 = 'v6',
 }
+
 export const INK_VERSIONS_CHOICES = [
   {
     name: 'v6 (RISC-V, pallet-revive)',
@@ -33,27 +43,28 @@ export const INK_VERSIONS_CHOICES = [
   },
 ] as const;
 
-export interface PkgManagerInfo {
+export const LEGACY_NETWORKS = [
+  {
+    name: 'Aleph Zero Testnet',
+    value: 'alephZeroTestnet',
+    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
+  },
+  { name: 'Aleph Zero', value: 'alephZero', address: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1' },
+  { name: 'Astar', value: 'astar', address: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse' },
+] as const;
+
+export const V6_NETWORKS = [
+  { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
+  { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
+  { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },
+] as const;
+
+export type NetworkConfig = {
   name: string;
-  version?: string;
-}
-
-export type BaseOptions = {
-  projectName: string | null;
-  skipInstall: boolean;
-  presetContract: PresetContract | null;
-  networks: Network[] | null;
-  walletConnector: WalletConnector | null;
-  template: Template | null;
-  inkVersion: InkVersion | null;
-  // This option will be determined by the user agent instead of being set by the user
-  pkgManager: PkgManagerInfo;
-  noGit: boolean;
+  // The exported name of the network info in the typink package.
+  // This will be used when generating templates.
+  value: string;
+  // Example contract address for each network:
+  // Flipper for ink! v6, Greeter for legacy.
+  address: string;
 };
-
-export type RawOptions = {
-  help: boolean;
-  version: boolean;
-};
-
-export type Options = BaseOptions & RawOptions;

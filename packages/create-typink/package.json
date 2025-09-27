@@ -11,19 +11,19 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist && cp -R ./src/templates ./dist",
+    "build": "tsc --project tsconfig.build.json && cp -R ./bin ./dist",
     "clean": "rm -rf ./dist && rm -rf ./tsconfig.tsbuildinfo ./tsconfig.build.tsbuildinfo",
     "test": "npx vitest --watch=false"
   },
   "bin": "./bin/create-typink.mjs",
   "dependencies": {
-    "@dedot/utils": "^0.15.2",
+    "@dedot/utils": "^0.17.0",
     "arg": "^5.0.2",
-    "chalk": "^5.5.0",
-    "ejs": "^3.1.10",
-    "execa": "^9.5.2",
-    "inquirer": "^12.9.2",
-    "listr2": "^8.3.3",
+    "chalk": "^5.6.2",
+    "execa": "^9.6.0",
+    "giget": "^2.0.0",
+    "inquirer": "^12.9.6",
+    "listr2": "^9.0.4",
     "prettier": "^3.6.2",
     "validate-npm-package-name": "^6.0.2"
   },

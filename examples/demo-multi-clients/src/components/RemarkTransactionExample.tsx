@@ -1,8 +1,7 @@
 import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { useTypink, useTx, useTxFee, formatBalance } from 'typink';
-import { txToaster } from '@/utils/txToaster.tsx';
+import { useTypink, useTx, useTxFee, formatBalance, txToaster } from 'typink';
 import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {

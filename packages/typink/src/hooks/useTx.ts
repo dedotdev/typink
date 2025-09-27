@@ -157,12 +157,9 @@ export function useTx<
   };
 }
 
-export async function generalTx<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
-  TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any,
->(parameters: {
-  client: CompatibleSubstrateApi<ChainApi>;
-  txBuilder: TxBuilder<ChainApi, TxFn>;
+export async function generalTx(parameters: {
+  client: CompatibleSubstrateApi;
+  txBuilder: TxBuilder<any>;
   args?: any[];
   caller: string;
   txOptions?: Partial<SignerOptions>;

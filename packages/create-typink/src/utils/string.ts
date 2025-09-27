@@ -1,7 +1,5 @@
 import { PkgManagerInfo } from '../types.js';
 
-export const IS_TEMPLATE_FILE = /([^/\\]*?)\.template\./;
-export const IS_IGNORE_FILES = /[\\/]?(node_modules|dist|build|\.git|\.yarn)([\\/]|$)/;
 export const IS_SUPPORTED_USER_AGENT_PREFIX = /^(npm|yarn|pnpm|bun)\/(\d+\.\d+\.\d+)/;
 
 export function pkgFromUserAgent(userAgent: string | undefined): PkgManagerInfo | undefined {

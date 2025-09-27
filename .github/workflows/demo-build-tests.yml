@@ -5,8 +5,10 @@ name: Demo Build Tests
 
 on:
   push:
+    branches: [ main ]
   workflow_dispatch:
   merge_group:
+  pull_request:
 
 jobs:
   unit-tests:
@@ -14,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v3
