@@ -8,7 +8,7 @@ import MapAccountButton from './map-account-button';
 export function NonMappedAccountAlert() {
   const { isMapped, isLoading, refresh } = useCheckMappedAccount();
 
-  if (isLoading || isMapped) return null;
+  if (isLoading || isMapped !== false) return null;
 
   const handleMappingSuccess = async () => {
     await refresh();
