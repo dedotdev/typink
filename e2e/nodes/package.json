@@ -9,7 +9,7 @@
   "dependencies": {
     "@dedot/chaintypes": "^0.155.0",
     "@polkadot/keyring": "^13.5.6",
-    "dedot": "0.17.1-next.db98ff20.1",
+    "dedot": "0.17.1-next.9d03d21b.3",
     "typink": "workspace:*"
   },
   "license": "MIT"
