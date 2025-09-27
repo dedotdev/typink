@@ -34,8 +34,8 @@ export function usePolkadotClient<ChainApi extends VersionedGenericSubstrateApi 
   }, [getClient, networkId]);
 
   const status = useMemo(() => {
-    return connectionStatus.get(networkId || '') || ClientConnectionStatus.NotConnected;
-  }, [connectionStatus, networkId]);
+    return connectionStatus.get(network.id || '') || ClientConnectionStatus.NotConnected;
+  }, [connectionStatus, network]);
 
   return { client, network, status };
 }
