@@ -1,10 +1,11 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { NetworkType, useBlockInfo, useTypink } from 'typink';
+import { NetworkType, useBlockInfo, useTypink, usePolkadotClient } from 'typink';
 import { Props } from '@/lib/types';
+import { Loader2Icon } from 'lucide-react';
 
-const getNetworkTypeInfo = (type: NetworkType) => {
+const getNetworkType = (type: NetworkType) => {
   const normalizedType = type?.toLowerCase();
 
   switch (normalizedType) {
@@ -17,11 +18,27 @@ const getNetworkTypeInfo = (type: NetworkType) => {
   }
 };
 
-export function ChainInfo({ className = '' }: Props) {
-  const { network, ready, networkConnection } = useTypink();
-  const { best, finalized } = useBlockInfo();
+const getConnectionStatus = (status: string) => {
+  switch (status) {
+    case 'Connected':
+      return { color: 'bg-green-500', label: 'Connected' };
+    case 'Connecting':
+      return { color: 'bg-yellow-500', label: 'Connecting', isLoading: true };
+    case 'Error':
+      return { color: 'bg-red-500', label: 'Connection Error' };
+    case 'NotConnected':
+    default:
+      return { color: 'bg-gray-400', label: 'Not Connected' };
+  }
+};
 
-  const networkType = getNetworkTypeInfo(network.type || NetworkType.MAINNET);
+export function ChainInfo({ className = '' }: Props) {
+  const { network, networkConnection } = useTypink();
+  const { best, finalized } = useBlockInfo();
+  const { status } = usePolkadotClient();
+
+  const networkType = getNetworkType(network.type || NetworkType.MAINNET);
+  const connectionStatus = getConnectionStatus(status);
 
   return (
     <Card className={`bg-gray-200/70 dark:bg-white/5 border-none shadow-none gap-4 ${className}`}>
@@ -30,7 +47,13 @@ export function ChainInfo({ className = '' }: Props) {
           <CardTitle className='text-2xl font-medium'>Chain Info</CardTitle>
         </div>
         <p className='text-sm text-muted-foreground'>
-          {ready ? `Connected to ${network.name}` : `Connecting to ${network.name}`}
+          {status === 'Connected'
+            ? `Connected to ${network.name}`
+            : status === 'Connecting'
+              ? `Connecting to ${network.name}`
+              : status === 'Error'
+                ? `Failed to connect to ${network.name}`
+                : `Not connected to ${network.name}`}
         </p>
       </CardHeader>
 
@@ -59,8 +82,12 @@ export function ChainInfo({ className = '' }: Props) {
           <div className='flex justify-between items-center px-6 py-4'>
             <span className='text-sm text-muted-foreground'>Connection status</span>
             <div className='flex items-center gap-1.5'>
-              <div className={`w-2 h-2 rounded-full ${ready ? 'bg-green-500' : 'bg-gray-400'}`} />
-              <span className='text-sm font-medium'>{ready ? 'Connected' : 'Not Connected'}</span>
+              {connectionStatus.isLoading ? (
+                <Loader2Icon className='w-3 h-3 animate-spin text-yellow-500' />
+              ) : (
+                <div className={`w-2 h-2 rounded-full ${connectionStatus.color}`} />
+              )}
+              <span className='text-sm font-medium'>{connectionStatus.label}</span>
             </div>
           </div>
           <div className='flex justify-between items-center px-6 py-4'>
