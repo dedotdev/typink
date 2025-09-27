@@ -6,9 +6,11 @@ import type {
   GenericContractTxCall,
   ContractTxOptions,
   ContractSubmittableExtrinsic,
+  MetadataType,
 } from 'dedot/contracts';
 
-export interface ContractTx<ChainApi extends GenericSubstrateApi> extends GenericContractTx<ChainApi> {
+export interface ContractTx<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
+  extends GenericContractTx<ChainApi, Type> {
   /**
    * Sets `message` to the given value.
    *
@@ -19,6 +21,7 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi> extends Generi
    **/
   setMessage: GenericContractTxCall<
     ChainApi,
-    (newValue: string, options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
+    (newValue: string, options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>,
+    Type
   >;
 }

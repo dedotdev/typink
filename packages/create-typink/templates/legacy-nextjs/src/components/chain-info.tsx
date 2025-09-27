@@ -24,7 +24,7 @@ export function ChainInfo({ className = '' }: Props) {
   const networkType = getNetworkTypeInfo(network.type || NetworkType.MAINNET);
 
   return (
-    <Card className={`bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none gap-4 ${className}`}>
+    <Card className={`bg-gray-200/70 dark:bg-white/5 border-none shadow-none gap-4 ${className}`}>
       <CardHeader className='pb-4'>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-2xl font-medium'>Chain Info</CardTitle>

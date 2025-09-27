@@ -89,7 +89,7 @@ export function GreeterBoard() {
   );
 
   return (
-    <Card className='bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none gap-4'>
+    <Card className='bg-gray-200/70 dark:bg-white/5 border-none shadow-none gap-4'>
       <CardHeader>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-2xl font-medium'>Greeter Contract</CardTitle>
