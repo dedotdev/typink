@@ -11,6 +11,14 @@ export const networkConnectionsAtom = atomWithStorage<NetworkConnection[]>(
   { getOnInit: true },
 );
 
+// Persistent atom for storing the intended default network IDs as JSON string to detect changes
+export const persistedDefaultNetworkIdsAtom = atomWithStorage<string>(
+  'TYPINK::DEFAULT_NETWORK_IDS',
+  '',
+  undefined,
+  { getOnInit: true },
+);
+
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
 
