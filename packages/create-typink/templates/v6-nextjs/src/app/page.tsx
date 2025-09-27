@@ -1,6 +1,7 @@
 import { TypinkIntro } from '@/components/shared/typink-intro';
 import { ChainInfo } from '@/components/chain-info';
 import { AccountInfo } from '@/components/account-info';
+import { FlipperBoard } from '@/components/flipper-board';
 import { BalanceInsufficientAlert } from '@/components/shared/balance-insufficient-alert';
 import { NonMappedAccountAlert } from '@/components/shared/non-mapped-account-alert';
 
@@ -20,6 +21,7 @@ export default function Home() {
 
           <div className='flex flex-col gap-6'>
             <AccountInfo />
+            <FlipperBoard />
           </div>
         </div>
       </div>

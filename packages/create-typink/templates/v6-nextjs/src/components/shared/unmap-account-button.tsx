@@ -1,9 +1,11 @@
+'use client';
+
 import { ReactNode, useState } from 'react';
 import { useTypink, checkBalanceSufficiency } from 'typink';
 import { Button } from '@/components/ui/button';
 import { txToaster } from '@/components/tx-toaster';
 
-export interface MapAccountButtonProps {
+export interface UnmapAccountButtonProps {
   onSuccess?: () => void;
   size?: 'default' | 'sm' | 'lg' | 'icon';
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
@@ -11,16 +13,16 @@ export interface MapAccountButtonProps {
   refresh?: () => Promise<void>;
 }
 
-export default function MapAccountButton({
+export default function UnmapAccountButton({
   onSuccess,
   size = 'sm',
   variant = 'default',
-  children = 'Map Account',
-}: MapAccountButtonProps) {
+  children = 'Unmap Account',
+}: UnmapAccountButtonProps) {
   const { client, connectedAccount } = useTypink();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleMapAccount = async () => {
+  const handleUnmapAccount = async () => {
     const toaster = txToaster();
     try {
       setIsLoading(true);
@@ -32,7 +34,7 @@ export default function MapAccountButton({
       await checkBalanceSufficiency(client, connectedAccount.address);
 
       await client.tx.revive
-        .mapAccount() // --
+        .unmapAccount() // --
         .signAndSend(connectedAccount.address, (progress) => {
           toaster.onTxProgress(progress);
 
@@ -50,8 +52,8 @@ export default function MapAccountButton({
   };
 
   return (
-    <Button size={size} variant={variant} disabled={!connectedAccount || isLoading} onClick={handleMapAccount}>
-      {isLoading ? 'Mapping...' : children}
+    <Button size={size} variant={variant} disabled={!connectedAccount || isLoading} onClick={handleUnmapAccount}>
+      {isLoading ? 'Unmapping...' : children}
     </Button>
   );
 }
