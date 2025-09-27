@@ -1,4 +1,4 @@
-import { TypinkIntro } from '@/components/typink-intro';
+import { TypinkIntro } from '@/components/shared/typink-intro';
 import { ChainInfo } from '@/components/chain-info';
 import { AccountInfo } from '@/components/account-info';
 import { GreeterBoard } from '@/components/greeter-board';
