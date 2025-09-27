@@ -40,6 +40,7 @@ export function txToaster(initialMessage: string = 'Signing Transaction...'): Tx
         toast.error(body, { id: toastId, duration: 5000 });
       }
     } else {
+      // Still in-flight: keep it as loading and persist.
       toast.loading(body, { id: toastId, duration: Infinity });
     }
   };

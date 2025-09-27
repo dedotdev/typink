@@ -10,15 +10,13 @@ export enum ContractId {
   STORAGE = 'storage',
 }
 
-export const storageDeployments: ContractDeployment[] = [
+export const deployments: ContractDeployment[] = [
   // -- START_DEPLOYMENTS --
   {
     id: ContractId.STORAGE,
     metadata: storeAbi,
     network: passetHub.id,
-    address: '0x5153977aAbd805E5E93d7d0D1a6A6f3179f90Da8',
+    address: '0x5153977aabd805e5e93d7d0d1a6a6f3179f90da8',
   },
   // -- END_DEPLOYMENTS --
 ];
-
-export const deployments = [...storageDeployments];
