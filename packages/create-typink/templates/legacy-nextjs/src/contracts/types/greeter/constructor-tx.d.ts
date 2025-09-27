@@ -5,14 +5,16 @@ import type {
   GenericConstructorTx,
   GenericConstructorTxCall,
   ConstructorTxOptions,
-  GenericContractApi,
+  InkGenericContractApi,
   GenericInstantiateSubmittableExtrinsic,
+  MetadataType,
 } from 'dedot/contracts';
 
 export interface ConstructorTx<
   ChainApi extends GenericSubstrateApi,
-  ContractApi extends GenericContractApi = GenericContractApi,
-> extends GenericConstructorTx<ChainApi> {
+  ContractApi extends InkGenericContractApi,
+  Type extends MetadataType,
+> extends GenericConstructorTx<ChainApi, Type> {
   /**
    * Creates a new greeter contract initialized with the given value.
    *
@@ -23,7 +25,11 @@ export interface ConstructorTx<
    **/
   new: GenericConstructorTxCall<
     ChainApi,
-    (initValue: string, options?: ConstructorTxOptions) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>
+    (
+      initValue: string,
+      options?: ConstructorTxOptions,
+    ) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>,
+    Type
   >;
 
   /**
@@ -35,6 +41,7 @@ export interface ConstructorTx<
    **/
   default: GenericConstructorTxCall<
     ChainApi,
-    (options?: ConstructorTxOptions) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>
+    (options?: ConstructorTxOptions) => GenericInstantiateSubmittableExtrinsic<ChainApi, ContractApi>,
+    Type
   >;
 }

@@ -3,5 +3,3 @@
 export type Flipper = { value: boolean };
 
 export type InkPrimitivesLangError = 'CouldNotReadInput';
-
-export type InkPrimitivesNoChainExtension = null;

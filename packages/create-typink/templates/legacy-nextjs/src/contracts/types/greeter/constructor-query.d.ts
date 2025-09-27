@@ -8,10 +8,12 @@ import type {
   GenericConstructorCallResult,
   ConstructorCallOptions,
   ContractInstantiateResult,
+  MetadataType,
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends GenericConstructorQuery<ChainApi> {
+export interface ConstructorQuery<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
+  extends GenericConstructorQuery<ChainApi, Type> {
   /**
    * Creates a new greeter contract initialized with the given value.
    *
@@ -25,7 +27,8 @@ export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends 
     (
       initValue: string,
       options?: ConstructorCallOptions,
-    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>
+    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>,
+    Type
   >;
 
   /**
@@ -37,6 +40,9 @@ export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends 
    **/
   default: GenericConstructorQueryCall<
     ChainApi,
-    (options?: ConstructorCallOptions) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>
+    (
+      options?: ConstructorCallOptions,
+    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>,
+    Type
   >;
 }
