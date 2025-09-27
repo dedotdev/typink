@@ -5,8 +5,13 @@ import Image from 'next/image';
 
 export const RESOURCE_BASE_URL = 'https://raw.githubusercontent.com/dedotdev/typink/refs/heads/main/assets/typink';
 
-export default function TypinkLogo() {
-  return <Image width={128} height={64} src={`${RESOURCE_BASE_URL}/typink-pink.svg`} alt='Typink Logo' />;
+interface TypinkLogoProps {
+  width?: number;
+  height?: number;
+}
+
+export function TypinkLogo({ width = 128, height = 64 }: TypinkLogoProps) {
+  return <Image width={width} height={height} src={`${RESOURCE_BASE_URL}/typink-pink.svg`} alt='Typink Logo' />;
 }
 
 export function XSvgIcon({ width = '20' }: Props) {

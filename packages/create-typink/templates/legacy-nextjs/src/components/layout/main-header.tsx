@@ -5,7 +5,7 @@ import { WalletSelection } from '@/components/shared/wallet-selection';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { useTypink } from 'typink';
 import Link from 'next/link';
-import TypinkLogo from '@/components/shared/icons';
+import { TypinkLogo } from '@/components/shared/icons';
 
 export function MainHeader() {
   const { accounts } = useTypink();
