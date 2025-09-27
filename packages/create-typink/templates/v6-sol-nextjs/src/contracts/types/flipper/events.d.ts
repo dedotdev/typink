@@ -6,29 +6,18 @@ import type { GenericContractEvents, GenericContractEvent, MetadataType } from '
 
 export interface ContractEvents<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
   extends GenericContractEvents<ChainApi, Type> {
-  /**
-   * Event emitted when the flipper value is flipped
-   *
-   *
-   **/
   Flipped: GenericContractEvent<
     'Flipped',
     {
       /**
-       * The old value before flipping
-       *
        * @indexed: false
        **/
-      oldValue: boolean;
+      old_value: boolean;
       /**
-       * The new value after flipping
-       *
        * @indexed: false
        **/
-      newValue: boolean;
+      new_value: boolean;
       /**
-       * The account that triggered the flip
-       *
        * @indexed: true
        **/
       caller: H160;

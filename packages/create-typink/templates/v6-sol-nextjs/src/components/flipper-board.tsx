@@ -10,18 +10,18 @@ import { shortenAddress } from '@/lib/utils';
 import { ToggleLeftIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { useContract, useContractTx, useRootStorage, useWatchContractEvent } from 'typink';
+import { useCheckMappedAccount, useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
 
 export function FlipperBoard() {
   const { contract } = useContract<FlipperContractApi>(ContractId.FLIPPER);
   const flipTx = useContractTx(contract, 'flip');
+  const { isMapped } = useCheckMappedAccount();
 
-  const { storage, isLoading } = useRootStorage({
+  const { data: value, isLoading } = useContractQuery({
     contract,
+    fn: 'get',
     watch: true,
   });
-
-  const value = storage?.value;
 
   const handleFlip = async () => {
     if (!contract) return;
@@ -55,10 +55,10 @@ export function FlipperBoard() {
       events.forEach((flippedEvent) => {
         const {
           name,
-          data: { oldValue, newValue, caller },
+          data: { old_value, new_value, caller },
         } = flippedEvent;
 
-        console.log(`Found a ${name} event sent from: ${caller}, old: ${oldValue}, new: ${newValue}`);
+        console.log(`Found a ${name} event sent from: ${caller}, old: ${old_value}, new: ${new_value}`);
 
         toast.success(
           <div className='space-y-2'>
@@ -71,8 +71,8 @@ export function FlipperBoard() {
                 From: <span className='font-medium text-foreground'>{shortenAddress(caller)}</span>
               </p>
               <p>
-                Value: <span className='font-medium text-foreground'>{oldValue ? 'TRUE' : 'FALSE'}</span> →{' '}
-                <span className='font-medium text-foreground'>{newValue ? 'TRUE' : 'FALSE'}</span>
+                Value: <span className='font-medium text-foreground'>{old_value ? 'TRUE' : 'FALSE'}</span> →{' '}
+                <span className='font-medium text-foreground'>{new_value ? 'TRUE' : 'FALSE'}</span>
               </p>
             </div>
           </div>,
@@ -89,11 +89,9 @@ export function FlipperBoard() {
             <CardTitle className='text-2xl font-medium'>Flipper Contract</CardTitle>
             <p className='text-sm text-muted-foreground'>Flip a boolean value</p>
           </div>
-          {contract && (
-            <div className='text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full'>
-              {contract.metadata.source.language}
-            </div>
-          )}
+          <div className='text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full'>
+            ink! v6 via Sol ABI
+          </div>
         </div>
       </CardHeader>
 
@@ -117,6 +115,7 @@ export function FlipperBoard() {
             className='w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-white'>
             {flipTx.inBestBlockProgress ? 'Flipping...' : 'Flip Value!'}
           </Button>
+          {!isMapped && <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>}
         </div>
       </CardContent>
     </Card>

@@ -12,13 +12,7 @@ import type {
 export interface ContractTx<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
   extends GenericContractTx<ChainApi, Type> {
   /**
-   * A message that can be called on instantiated contracts.
-   * This one flips the value of the stored `bool` from `true`
-   * to `false` and vice versa.
-   *
    * @param {ContractTxOptions} options
-   *
-   * @selector 0x633aa551
    **/
   flip: GenericContractTxCall<ChainApi, (options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>, Type>;
 }

@@ -3,25 +3,21 @@
 import type { GenericSubstrateApi } from 'dedot/types';
 import type {
   GenericConstructorTx,
+  SolGenericContractApi,
   GenericConstructorTxCall,
   ConstructorTxOptions,
-  InkGenericContractApi,
   GenericInstantiateSubmittableExtrinsic,
   MetadataType,
 } from 'dedot/contracts';
 
 export interface ConstructorTx<
   ChainApi extends GenericSubstrateApi,
-  ContractApi extends InkGenericContractApi,
+  ContractApi extends SolGenericContractApi,
   Type extends MetadataType,
 > extends GenericConstructorTx<ChainApi, Type> {
   /**
-   * Constructor that initializes the `bool` value to the given `init_value`.
-   *
    * @param {boolean} initValue
    * @param {ConstructorTxOptions} options
-   *
-   * @selector 0x9bae9d5e
    **/
   new: GenericConstructorTxCall<
     ChainApi,
