@@ -19,7 +19,7 @@ const getNetworkTypeInfo = (type: NetworkType) => {
 
 export function ChainInfo({ className = '' }: Props) {
   const { network, ready, networkConnection } = useTypink();
-  const { best } = useBlockInfo();
+  const { best, finalized } = useBlockInfo();
 
   const networkType = getNetworkTypeInfo(network.type || NetworkType.MAINNET);
 
@@ -37,7 +37,7 @@ export function ChainInfo({ className = '' }: Props) {
       <CardContent>
         <div className='bg-white/40 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden'>
           {/* Network Header */}
-          <div className='flex justify-center items-center gap-3 p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800'>
+          <div className='flex justify-center items-center gap-3 p-3 bg-white dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-800'>
             <img src={network.logo} alt={network.name} width={32} height={32} className='rounded-full' />
             <div className='font-semibold text-lg'>{network.name}</div>
           </div>
@@ -71,9 +71,14 @@ export function ChainInfo({ className = '' }: Props) {
             </div>
           </div>
 
-          <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
+          <div className='flex justify-between items-center px-6 py-4'>
             <span className='text-sm text-muted-foreground'>Best block</span>
-            <span className='text-sm font-mono text-pink-500'>{best?.number}</span>
+            <span className='text-sm font-mono text-pink-500'>{best?.number?.toLocaleString()}</span>
+          </div>
+
+          <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
+            <span className='text-sm text-muted-foreground'>Finalized block</span>
+            <span className='text-sm font-mono text-green-500'>{finalized?.number?.toLocaleString()}</span>
           </div>
 
           {/* Token Section */}
