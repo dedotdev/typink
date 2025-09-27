@@ -1,12 +1,27 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBlockInfo, useTypink } from 'typink';
+import { NetworkType, useBlockInfo, useTypink } from 'typink';
 import { Props } from '@/lib/types';
+
+const getNetworkTypeInfo = (type: NetworkType) => {
+  const normalizedType = type?.toLowerCase();
+
+  switch (normalizedType) {
+    case 'testnet':
+      return { color: 'bg-orange-500', label: 'Testnet' };
+    case 'devnet':
+      return { color: 'bg-gray-500', label: 'Devnet' };
+    default:
+      return { color: 'bg-blue-500', label: 'Mainnet' }; // default to mainnet
+  }
+};
 
 export function ChainInfo({ className = '' }: Props) {
   const { network, ready, networkConnection } = useTypink();
   const { best } = useBlockInfo();
+
+  const networkType = getNetworkTypeInfo(network.type || NetworkType.MAINNET);
 
   return (
     <Card className={`bg-gray-200/70 dark:bg-gray-900/50 border-none shadow-none gap-4 ${className}`}>
@@ -35,8 +50,8 @@ export function ChainInfo({ className = '' }: Props) {
           <div className='flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-800'>
             <span className='text-sm text-muted-foreground'>Network type</span>
             <div className='flex items-center gap-1.5'>
-              <div className='w-2 h-2 bg-blue-500 rounded-full' />
-              <span className='text-sm font-medium'>Mainnet</span>
+              <div className={`w-2 h-2 ${networkType.color} rounded-full`} />
+              <span className='text-sm font-medium'>{networkType.label}</span>
             </div>
           </div>
 
