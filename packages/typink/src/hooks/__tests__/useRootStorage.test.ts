@@ -14,6 +14,10 @@ describe('useRootStorage', () => {
   let mockContract: any;
 
   beforeEach(() => {
+    // Mock console methods to suppress expected error messages
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     mockClient = {
       query: {
         system: {

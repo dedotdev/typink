@@ -26,7 +26,7 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
  * code hash or WASM, and options. It automatically updates when relevant context
  * (client, network, account) changes.
  *
- * @param {ContractMetadata | string} metadata - The contract metadata or its stringified version
+ * @param {LooseContractMetadata | LooseSolAbi | string} metadata - The contract metadata or its stringified version
  * @param {Hash | Uint8Array | string} codeHashOrWasm - The code hash or WASM of the contract
  * @param {ExecutionOptions} [options={}] - Additional execution options for the deployer
  * @returns {UseDeployer<T>} An object containing the deployer instance

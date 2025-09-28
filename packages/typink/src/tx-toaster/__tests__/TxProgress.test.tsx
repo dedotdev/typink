@@ -283,17 +283,27 @@ describe('TxProgress', () => {
       
       const mainDiv = container.firstChild as HTMLElement;
       expect(mainDiv.tagName).toBe('DIV');
-      
+      expect(mainDiv.className).toBe('typink-tx-toaster');
+
       const paragraphs = mainDiv.querySelectorAll('p');
       expect(paragraphs).toHaveLength(3); // message, status, explorer link
-      
+
+      // Check CSS classes
+      expect(paragraphs[0].className).toBe('typink-tx-toaster-message');
+      expect(paragraphs[1].className).toBe('typink-tx-toaster-status');
+      expect(paragraphs[2].className).toBe('typink-tx-toaster-explorer');
+
       // Check styles
-      expect(paragraphs[1].style.fontSize).toBe('12px');
-      expect(paragraphs[2].style.fontSize).toBe('12px');
+      expect(paragraphs[0].style.fontSize).toBe('1em');
+      expect(paragraphs[1].style.fontSize).toBe('0.85em');
+      expect(paragraphs[1].style.color).toBe('rgb(102, 102, 102)'); // #666 is converted to rgb
+      expect(paragraphs[2].style.fontSize).toBe('0.85em');
       expect(paragraphs[2].style.marginTop).toBe('0.5rem');
-      
+
       const link = paragraphs[2].querySelector('a');
+      expect(link?.className).toBe('typink-tx-toaster-explorer-link');
       expect(link?.style.textDecoration).toBe('underline');
+      expect(link?.style.color).toBe('rgb(102, 102, 102)'); // #666 is converted to rgb
     });
 
     it('should render without explorer link paragraph when no explorer available', () => {

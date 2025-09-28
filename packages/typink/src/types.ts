@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LooseContractMetadata } from 'dedot/contracts';
+import { LooseContractMetadata, LooseSolAbi } from 'dedot/contracts';
 
 export * from './pjs-types.js';
 

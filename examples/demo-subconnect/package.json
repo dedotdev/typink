@@ -31,7 +31,7 @@
     "typink": "workspace:*"
   },
   "devDependencies": {
-    "@dedot/chaintypes": "^0.155.0",
+    "@dedot/chaintypes": "^0.157.0",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.1",
     "@typescript-eslint/eslint-plugin": "^8.44.0",

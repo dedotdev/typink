@@ -15,6 +15,7 @@ import {
   currentNetworkAtom,
   currentNetworksAtom,
   networkConnectionsAtom,
+  persistedDefaultNetworkIdsAtom,
   setNetworkAtom,
   setNetworksAtom,
   supportedNetworksAtom,
@@ -156,19 +157,41 @@ export function ClientProvider({
   // Get network connections from localStorage (via atomWithStorage)
   const [networkConnections, setNetworkConnections] = useAtom(networkConnectionsAtom);
 
+  // Get persisted default network IDs from localStorage (as JSON string)
+  const [persistedDefaultNetworkIdsJson, setPersistedDefaultNetworkIdsJson] = useAtom(persistedDefaultNetworkIdsAtom);
+
   // Initialize network connections and default network ID properly
   useMemo(() => {
     if (supportedNetworks.length === 0) return;
 
+    // Extract current default network IDs from initialConnections
+    const currentDefaultNetworkIdsJson = JSON.stringify(initialConnections);
+
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
+      setPersistedDefaultNetworkIdsJson(currentDefaultNetworkIdsJson);
     } else if (networkConnections.length > 0) {
-      // Check if all existing connections are in the supported networks or default networks list
+      // Check if default network IDs have changed (simple string comparison)
+      const defaultNetworkIdsChanged =
+        !!persistedDefaultNetworkIdsJson && persistedDefaultNetworkIdsJson !== currentDefaultNetworkIdsJson;
+
+      // Check if default network IDs have changed (developer changed defaultNetworkIds/defaultNetworkId)
+      if (defaultNetworkIdsChanged) {
+        console.log(`Default network configuration changed. Resetting to new default networks.`);
+        setNetworkConnections(initialConnections);
+        setPersistedDefaultNetworkIdsJson(currentDefaultNetworkIdsJson);
+        return; // Skip further validation since we're resetting
+      }
+
+      // If we don't have persisted default network IDs yet (first run), store them
+      if (!persistedDefaultNetworkIdsJson) {
+        setPersistedDefaultNetworkIdsJson(currentDefaultNetworkIdsJson);
+      }
+
+      // Check if all existing connections are in the supported networks
       const hasInvalidNetwork = networkConnections.some(
-        (conn) =>
-          !supportedNetworks.find((n) => n.id === conn.networkId) ||
-          !initialConnections.find((n) => n.networkId === conn.networkId),
+        (conn) => !supportedNetworks.find((n) => n.id === conn.networkId),
       );
 
       if (hasInvalidNetwork) {
@@ -176,6 +199,7 @@ export function ClientProvider({
           'Some persisted network connections are not in the supported networks list. Resetting to default networks.',
         );
         setNetworkConnections(initialConnections);
+        setPersistedDefaultNetworkIdsJson(currentDefaultNetworkIdsJson);
       }
     }
   }, []); // Empty deps - only runs once on mount

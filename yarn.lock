@@ -844,12 +844,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/chaintypes@npm:^0.155.0":
-  version: 0.155.0
-  resolution: "@dedot/chaintypes@npm:0.155.0"
+"@dedot/chaintypes@npm:^0.157.0":
+  version: 0.157.0
+  resolution: "@dedot/chaintypes@npm:0.157.0"
   peerDependencies:
     dedot: ">=0.16.0"
-  checksum: 10/c774206d618b7739faa009e28bfb0cad8b5c33821ad0d28c4a93363fb80e3551140eac5061be1a6ea56146d3f76dd4469d3c7892f1b1f6b476b363f2924dc408
+  checksum: 10/8d81c8582e0a945b2d922a4a550d0bb4a14275a382acbd9301ce08e9c08681a249f8605189b6a6811dd7e53306ec5a7c45e91ea35998ab566aafc6a017c1cf3f
   languageName: node
   linkType: hard
 
@@ -8157,7 +8157,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@dedot/react-identicon": "npm:^0.1.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
@@ -8191,7 +8191,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.1.1"
@@ -8222,7 +8222,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.9"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@types/react": "npm:^19.1.1"
@@ -8253,7 +8253,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@dedot/react-identicon": "npm:^0.1.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
@@ -8285,7 +8285,7 @@ __metadata:
     "@chakra-ui/icons": "npm:2.2.5"
     "@chakra-ui/react": "npm:^2.10.5"
     "@chakra-ui/system": "npm:^2.6.2"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
@@ -8322,7 +8322,7 @@ __metadata:
     "@chakra-ui/icons": "npm:^2.2.5"
     "@chakra-ui/react": "npm:^2.10.4"
     "@chakra-ui/theme-tools": "npm:^2.2.5"
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
     "@talismn/connect-components": "npm:^1.1.9"
@@ -8517,7 +8517,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "e2e-nodes@workspace:e2e/nodes"
   dependencies:
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@polkadot/keyring": "npm:^13.5.6"
     dedot: "npm:^0.18.0"
     typink: "workspace:*"
@@ -11657,9 +11657,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "jotai@npm:2.14.0"
+"jotai@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "jotai@npm:2.15.0"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -11674,7 +11674,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/d9b614cf28ad8ab0c799bc97527440d22a40dcf5d6c12eeaa4dcf4a65d98896f402837a1a06eb5358004c0a4e3c7089bb114e4716bc38c158762919b05f98845
+  checksum: 10/d05469caf6b8e67110c835c1a4cade2e5b36c3b2baa7cbcbbff1fbdb6949c1a819d1d8bd77d47cf3d806ef3576324dc979bbd2589eee70a9f0d7c01145dcd0a1
   languageName: node
   linkType: hard
 
@@ -16719,7 +16719,7 @@ __metadata:
     "@types/react": "npm:^19.1.1"
     "@vitest/ui": "npm:^3.2.4"
     fast-deep-equal: "npm:^3.1.3"
-    jotai: "npm:^2.14.0"
+    jotai: "npm:^2.15.0"
     jsdom: "npm:^25.0.1"
     react: "npm:^19.1.1"
     react-dom: "npm:^19.1.1"
@@ -16729,7 +16729,7 @@ __metadata:
     vitest: "npm:^3.2.4"
   peerDependencies:
     "@dedot/chaintypes": ">=0.132.0"
-    dedot: ">=0.18.0"
+    dedot: ">=0.15.0"
     react: ">=19.0.0"
     react-hot-toast: ">=2.6.0"
     react-toastify: ">=10.0.0"
@@ -17200,8 +17200,8 @@ __metadata:
   linkType: hard
 
 "viem@npm:^2.37.7":
-  version: 2.37.8
-  resolution: "viem@npm:2.37.8"
+  version: 2.37.9
+  resolution: "viem@npm:2.37.9"
   dependencies:
     "@noble/curves": "npm:1.9.1"
     "@noble/hashes": "npm:1.8.0"
@@ -17216,7 +17216,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/678ac2009a3bc333ef5cdd8fa72d5f4dd5cd5d794dddd23b431d8782627c4819f98daba5961cc998b2cfa646a65315e0cdcc814057183cc333974b1b43940bc5
+  checksum: 10/92c00e9375506959f5b7ee4c0cbc80270197633eb4c53b8bf888f336621b5ccde476826c69b2e8cb0da155b1b58e511e3740e4659af7d97995e6c76ad72f93f7
   languageName: node
   linkType: hard
 
@@ -17923,7 +17923,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "zombienet@workspace:e2e/zombienet"
   dependencies:
-    "@dedot/chaintypes": "npm:^0.155.0"
+    "@dedot/chaintypes": "npm:^0.157.0"
     "@polkadot/keyring": "npm:^13.5.6"
     "@polkadot/types": "npm:^16.4.7"
     "@polkadot/util-crypto": "npm:^13.5.6"
