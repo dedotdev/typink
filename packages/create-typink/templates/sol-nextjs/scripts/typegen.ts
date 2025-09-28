@@ -1,20 +1,45 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { isInkAbi, isSolAbi } from 'dedot/contracts';
 
 const artifactsDir = path.join(__dirname, '../src/contracts/artifacts');
 const outputDir = path.join(__dirname, '../src/contracts/types');
 
-function findContractFiles(dir: string): string[] {
-  const contractFiles: string[] = [];
+interface ContractFile {
+  path: string;
+  type: 'ink' | 'solidity';
+}
+
+function findContractFiles(dir: string): ContractFile[] {
+  const contractFiles: ContractFile[] = [];
 
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
 
     for (const entry of entries) {
       if (entry.isFile()) {
+        // Check for contract-like file extensions
         if (entry.name.endsWith('.json') || entry.name.endsWith('.contract') || entry.name.endsWith('.abi')) {
-          contractFiles.push(path.join(dir, entry.name));
+          const filePath = path.join(dir, entry.name);
+
+          try {
+            // Read and parse the file content
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const parsed = JSON.parse(content);
+
+            // Detect the contract type based on content
+            if (isInkAbi(parsed)) {
+              contractFiles.push({ path: filePath, type: 'ink' });
+              console.log(`    Detected ink contract: ${entry.name}`);
+            } else if (isSolAbi(parsed)) {
+              contractFiles.push({ path: filePath, type: 'solidity' });
+              console.log(`    Detected solidity contract: ${entry.name}`);
+            }
+            // Silently skip files that don't match either format
+          } catch (parseError) {
+            // Silently skip files that can't be parsed as JSON
+          }
         }
       }
     }
@@ -60,15 +85,16 @@ function generateTypes() {
     const contractFiles = findContractFiles(contractDir);
 
     if (contractFiles.length === 0) {
-      console.log(`  ⚠ No .json or .contract files found in ${contractName}`);
+      console.log(`  ⚠ No valid contract files found in ${contractName}`);
       continue;
     }
 
+    // Use the first valid contract file found
     const contractFile = contractFiles[0];
-    console.log(`  Found contract file: ${path.basename(contractFile)}`);
+    console.log(`  Processing ${contractFile.type} contract: ${path.basename(contractFile.path)}`);
 
     try {
-      const command = `npx dedot typink -m "${contractFile}" -o "${outputDir}"`;
+      const command = `npx dedot typink -m "${contractFile.path}" -o "${outputDir}"`;
 
       execSync(command, { stdio: 'inherit' });
 
