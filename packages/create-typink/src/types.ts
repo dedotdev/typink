@@ -56,6 +56,7 @@ export const CONTRACT_TYPES_CHOICES = [
 ] as const;
 
 export const PALLET_CONTRACTS_NETWORKS = [
+  { name: 'Pop Testnet', value: 'popTestnet', address: '12L4yRvLh5qWSgS5ty5X7gPoL5UjUTpQvM81jioo1L48gkS5' },
   {
     name: 'Aleph Zero Testnet',
     value: 'alephZeroTestnet',
@@ -66,6 +67,7 @@ export const PALLET_CONTRACTS_NETWORKS = [
 ] as const;
 
 export const PALLET_REVIVE_NETWORKS = [
+  { name: 'Pop Testnet', value: 'popTestnet', address: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352' },
   { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
   { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
   { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },

@@ -74,7 +74,7 @@ jobs:
             # Pick one network based on template family
             NETWORK="Passet Hub"
             if [[ "$T" == inkv5-* ]]; then
-              NETWORK="Aleph Zero Testnet"
+              NETWORK="Pop Testnet"
             fi
 
             echo "=== Creating ${T} (Node 20 + Bun) ==="
