@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
-import { useTypink, checkBalanceSufficiency } from 'typink';
+import { txToaster, useTypink, checkBalanceSufficiency } from 'typink';
 import { Button } from '@/components/ui/button';
-import { txToaster } from '@/components/tx-toaster';
 
 export interface MapAccountButtonProps {
   onSuccess?: () => void;

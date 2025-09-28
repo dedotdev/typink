@@ -4,7 +4,7 @@ interface PendingTextProps extends React.ComponentProps<'span'> {
   isLoading: boolean;
 }
 
-export default function PendingText(props: PendingTextProps) {
+export function PendingText(props: PendingTextProps) {
   const { isLoading, children, className, ...rest } = props;
 
   if (isLoading) {

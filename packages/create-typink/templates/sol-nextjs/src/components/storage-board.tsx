@@ -1,7 +1,6 @@
 'use client';
 
-import PendingText from '@/components/shared/pending-text';
-import { txToaster } from '@/components/tx-toaster';
+import { PendingText } from '@/components/shared/pending-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,14 @@ import { shortenAddress } from '@/lib/utils';
 import { DatabaseIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { useContract, useContractQuery, useContractTx, useWatchContractEvent, useCheckMappedAccount } from 'typink';
+import {
+  useContract,
+  useContractQuery,
+  useContractTx,
+  useWatchContractEvent,
+  useCheckMappedAccount,
+  txToaster,
+} from 'typink';
 
 export function StorageBoard() {
   const { contract } = useContract<StorageContractApi>(ContractId.STORAGE);

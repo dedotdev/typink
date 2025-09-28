@@ -1,10 +1,10 @@
 'use client';
 
-import PendingText from '@/components/shared/pending-text';
+import { PendingText } from '@/components/shared/pending-text';
 import { useCallback, useState } from 'react';
-import { useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
+import { txToaster, useContract, useContractQuery, useContractTx, useWatchContractEvent } from 'typink';
 import { GreeterContractApi } from '@/contracts/types/greeter';
-import { ContractId, greeterMetadata } from '@/contracts/deployments';
+import { ContractId } from '@/contracts/deployments';
 import { toast } from 'sonner';
 import { shortenAddress } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2Icon, SparklesIcon } from 'lucide-react';
-import { txToaster } from '@/components/tx-toaster';
 
 export function GreeterBoard() {
   const { contract } = useContract<GreeterContractApi>(ContractId.GREETER);

@@ -1,7 +1,6 @@
 'use client';
 
-import PendingText from '@/components/shared/pending-text';
-import { txToaster } from '@/components/tx-toaster';
+import { PendingText } from '@/components/shared/pending-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContractId } from '@/contracts/deployments';
@@ -10,7 +9,7 @@ import { shortenAddress } from '@/lib/utils';
 import { ToggleLeftIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { useContract, useContractTx, useRootStorage, useWatchContractEvent } from 'typink';
+import { txToaster, useContract, useContractTx, useRootStorage, useWatchContractEvent } from 'typink';
 
 export function FlipperBoard() {
   const { contract } = useContract<FlipperContractApi>(ContractId.FLIPPER);

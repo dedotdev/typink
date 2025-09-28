@@ -2,7 +2,8 @@
 
 import { deployments } from '@/contracts/deployments';
 import { Props } from '@/lib/types';
-import { passetHub, polkadotjs, subwallet, talisman, TypinkProvider } from 'typink';
+import { passetHub, polkadotjs, setupTxToaster, SonnerAdapter, subwallet, talisman, TypinkProvider } from 'typink';
+import { toast } from 'sonner';
 
 // Supported networks configuration
 const SUPPORTED_NETWORKS = [
@@ -17,6 +18,10 @@ const SUPPORTED_NETWORKS = [
 
 // Supported wallets
 const SUPPORTED_WALLETS = [subwallet, talisman, polkadotjs];
+
+setupTxToaster({
+  adapter: new SonnerAdapter(toast),
+});
 
 export function AppProvider({ children }: Props) {
   return (

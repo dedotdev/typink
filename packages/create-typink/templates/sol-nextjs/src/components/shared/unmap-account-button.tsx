@@ -1,9 +1,8 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { useTypink, checkBalanceSufficiency } from 'typink';
+import { useTypink, checkBalanceSufficiency, txToaster } from 'typink';
 import { Button } from '@/components/ui/button';
-import { txToaster } from '@/components/tx-toaster';
 
 export interface UnmapAccountButtonProps {
   onSuccess?: () => void;
