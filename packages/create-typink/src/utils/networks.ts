@@ -1,5 +1,5 @@
 import { stringCamelCase } from '@dedot/utils';
-import { InkVersion, LEGACY_NETWORKS, V6_NETWORKS, NetworkConfig } from '../types.js';
+import { ContractType, PALLET_CONTRACTS_NETWORKS, PALLET_REVIVE_NETWORKS, NetworkConfig } from '../types.js';
 
 export interface NetworkTemplateConfig {
   supportedNetworks: string;
@@ -7,8 +7,8 @@ export interface NetworkTemplateConfig {
   deploymentEntries: string;
 }
 
-export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: string[]): NetworkTemplateConfig {
-  const availableNetworks = inkVersion === InkVersion.InkV6 ? V6_NETWORKS : LEGACY_NETWORKS;
+export function getNetworkConfig(contractType: ContractType, selectedNetworks: string[]): NetworkTemplateConfig {
+  const availableNetworks = contractType === ContractType.InkV6 ? PALLET_REVIVE_NETWORKS : PALLET_CONTRACTS_NETWORKS;
   const selectedNetworkConfigs = availableNetworks.filter((network) =>
     selectedNetworks.map((one) => stringCamelCase(one)).includes(network.value),
   );
@@ -19,7 +19,7 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
 
   const supportedNetworks = selectedNetworkConfigs.map((network) => network.value).join(', ');
   const defaultNetworkId = `${selectedNetworkConfigs[0].value}.id`;
-  const deploymentEntries = generateDeploymentEntries(selectedNetworkConfigs, inkVersion);
+  const deploymentEntries = generateDeploymentEntries(selectedNetworkConfigs, contractType);
 
   return {
     supportedNetworks,
@@ -28,9 +28,9 @@ export function getNetworkConfig(inkVersion: InkVersion, selectedNetworks: strin
   };
 }
 
-function generateDeploymentEntries(networkConfigs: NetworkConfig[], inkVersion: InkVersion): string {
-  const contractName = inkVersion === InkVersion.InkV6 ? 'flipper' : 'greeter';
-  const metadataName = inkVersion === InkVersion.InkV6 ? 'flipperMetadata' : 'greeterMetadata';
+function generateDeploymentEntries(networkConfigs: NetworkConfig[], contractType: ContractType): string {
+  const contractName = contractType === ContractType.InkV6 ? 'flipper' : 'greeter';
+  const metadataName = contractType === ContractType.InkV6 ? 'flipperMetadata' : 'greeterMetadata';
 
   const deploymentEntries = networkConfigs
     .map(

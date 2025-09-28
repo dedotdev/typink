@@ -6,7 +6,7 @@ export interface PkgManagerInfo {
 export type BaseOptions = {
   projectName: string | null;
   skipInstall: boolean;
-  inkVersion: InkVersion | null;
+  contractType: ContractType | null;
   networks: string[] | null;
   template: Template | null;
   // This option will be determined by the user agent instead of being set by the user
@@ -21,29 +21,41 @@ export type RawOptions = {
 
 export type Options = BaseOptions & RawOptions;
 
-export const TEMPLATES = ['legacy-nextjs', 'v6-nextjs'] as const;
+export const TEMPLATES = ['inkv6-nextjs', 'inkv6-sol-nextjs', 'sol-nextjs', 'inkv5-nextjs'] as const;
 
 export type Template = (typeof TEMPLATES)[number];
 
-export enum InkVersion {
-  InkLegacy = 'legacy',
-  InkV6 = 'v6',
+export enum ContractType {
+  InkV5 = 'inkv5',
+  InkV6 = 'inkv6',
+  InkV6Sol = 'inkv6-sol',
+  Sol = 'sol',
 }
 
-export const INK_VERSIONS_CHOICES = [
+export const CONTRACT_TYPES_CHOICES = [
   {
-    name: 'v6 (RISC-V, pallet-revive)',
-    value: InkVersion.InkV6,
+    name: 'Ink! v6 (PVM, pallet-revive)',
+    value: ContractType.InkV6,
     short: 'v6',
   },
   {
-    name: 'v5 & v4 (WASM, pallet-contracts)',
-    value: InkVersion.InkLegacy,
-    short: 'v5 & v4',
+    name: 'Ink! v6 using Sol ABI (PVM, pallet-revive)',
+    value: ContractType.InkV6Sol,
+    short: 'v6-sol',
+  },
+  {
+    name: 'Solidity (PVM, pallet-revive)',
+    value: ContractType.Sol,
+    short: 'sol',
+  },
+  {
+    name: 'Ink! v5 (WASM, pallet-contracts)',
+    value: ContractType.InkV5,
+    short: 'v5',
   },
 ] as const;
 
-export const LEGACY_NETWORKS = [
+export const PALLET_CONTRACTS_NETWORKS = [
   {
     name: 'Aleph Zero Testnet',
     value: 'alephZeroTestnet',
@@ -53,7 +65,7 @@ export const LEGACY_NETWORKS = [
   { name: 'Astar', value: 'astar', address: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse' },
 ] as const;
 
-export const V6_NETWORKS = [
+export const PALLET_REVIVE_NETWORKS = [
   { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
   { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
   { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },

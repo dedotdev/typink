@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import { InkVersion, Options } from '../types.js';
+import { ContractType, Options } from '../types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DefaultRenderer, ListrTaskWrapper, SimpleRenderer } from 'listr2';
@@ -11,8 +11,8 @@ export async function copyTemplateFiles(
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, inkVersion } = options;
-  const template = `${inkVersion}-nextjs`;
+  const { projectName, noGit, contractType } = options;
+  const template = `${contractType}-nextjs`;
 
   task.title = `🚀 Initializing new Typink dApp`;
 
@@ -22,6 +22,7 @@ export async function copyTemplateFiles(
 
   try {
     const ghMatch = /github\.com[/:]([^/]+)\/([^/.]+)(?:\.git)?/i.exec(repoUrl);
+    console.log('[SELECTED-TEMPLATE]', template);
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
@@ -57,11 +58,11 @@ export async function copyTemplateFiles(
 }
 
 async function processNetworkPlaceholders(targetDir: string, options: Options) {
-  const { inkVersion, networks } = options;
+  const { contractType, networks } = options;
 
-  if (!inkVersion || !networks) return;
+  if (!contractType || !networks) return;
 
-  const networkConfig = getNetworkConfig(inkVersion as InkVersion, networks);
+  const networkConfig = getNetworkConfig(contractType as ContractType, networks);
 
   const filesToProcess = [
     'src/providers/app-provider.tsx', // NextJS
