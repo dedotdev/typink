@@ -26,7 +26,7 @@ export type LooseSolAbi = Array<{ type: string; [prop: string]: any }>; // repla
 
 export interface ContractDeployment {
   id: string;
-  metadata: LooseContractMetadata | LooseSolAbi | string | unknown[];
+  metadata: LooseContractMetadata | LooseSolAbi | string;
   address: SubstrateAddress;
   network: string;
 }
