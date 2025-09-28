@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { ClientProvider, useClient } from '../ClientProvider.js';
 import { NetworkInfo } from '../../types.js';
@@ -30,10 +30,19 @@ describe('ClientProvider Integration Tests', () => {
   beforeEach(() => {
     // Create fresh store for each test
     store = createStore();
+
+    // Mock console methods to suppress expected error messages
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     // Clear localStorage to ensure clean state
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.clear();
     }
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Single Client Mode (Backward Compatibility)', () => {
