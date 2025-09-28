@@ -2,11 +2,11 @@
 
 import type { GenericSubstrateApi } from 'dedot/types';
 import type {
-  ConstructorCallOptions,
-  ContractInstantiateResult,
-  GenericConstructorCallResult,
   GenericConstructorQuery,
   GenericConstructorQueryCall,
+  GenericConstructorCallResult,
+  ConstructorCallOptions,
+  ContractInstantiateResult,
   MetadataType,
 } from 'dedot/contracts';
 

@@ -4,7 +4,7 @@ import {
   passetHub,
   // -- END_SUPPORTED_NETWORKS --
 } from 'typink';
-import storeAbi from './abi/storage.json';
+import storeAbi from './artifacts/storage.json';
 
 export enum ContractId {
   STORAGE = 'storage',

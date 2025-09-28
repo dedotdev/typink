@@ -2,10 +2,10 @@
 
 import type { GenericSubstrateApi } from 'dedot/types';
 import type {
-  ContractSubmittableExtrinsic,
-  ContractTxOptions,
   GenericContractTx,
   GenericContractTxCall,
+  ContractTxOptions,
+  ContractSubmittableExtrinsic,
   MetadataType,
 } from 'dedot/contracts';
 
