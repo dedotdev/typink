@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata, LooseSolAbi } from 'dedot/contracts';
+import { AB, Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata, LooseSolAbi } from 'dedot/contracts';
 import { useDeepDeps } from './internal/index.js';
 import { generateInstanceId } from '../utils/index.js';
 import { NetworkOptions } from '../types.js';
@@ -22,7 +22,7 @@ interface UseRawContract<T extends GenericContractApi = GenericContractApi> {
  * @returns {UseRawContract<T>} An object containing the contract instance or undefined
  */
 export function useRawContract<T extends GenericContractApi = GenericContractApi>(
-  metadata?: string | LooseContractMetadata | LooseSolAbi,
+  metadata?: string | AB<T['metadataType'], LooseContractMetadata, LooseSolAbi>,
   address?: string,
   options: ExecutionOptions & NetworkOptions = {},
 ): UseRawContract<T> {

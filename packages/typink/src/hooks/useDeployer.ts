@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import {
+  AB,
   ContractDeployer,
   ExecutionOptions,
   GenericContractApi,
@@ -31,7 +32,7 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
  * @returns {UseDeployer<T>} An object containing the deployer instance
  */
 export function useDeployer<T extends GenericContractApi = GenericContractApi>(
-  metadata: LooseContractMetadata | LooseSolAbi | string,
+  metadata: AB<T['metadataType'], LooseContractMetadata, LooseSolAbi> | string,
   codeHashOrWasm: Hash | Uint8Array | string,
   options: ExecutionOptions & NetworkOptions = {},
 ): UseDeployer<T> {
@@ -48,7 +49,6 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 
       const deployer = new ContractDeployer<T>(
         client,
-        // @ts-ignore
         metadata,
         codeHashOrWasm, // prettier-end-here
         {

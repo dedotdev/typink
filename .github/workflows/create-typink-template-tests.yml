@@ -61,8 +61,10 @@ jobs:
           set -euo pipefail
 
           TEMPLATES=(
-            legacy-nextjs
-            v6-nextjs
+            inkv6-nextjs
+            inkv6-sol-nextjs
+            sol-nextjs
+            inkv5-nextjs
           )
 
           for T in "${TEMPLATES[@]}"; do

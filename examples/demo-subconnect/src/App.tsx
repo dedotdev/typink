@@ -1,11 +1,11 @@
 import { Box, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useSearchParam } from 'react-use';
-import GreetBoard from '@/components/GreeterBoard.tsx';
 import Psp22Board from '@/components/Psp22Board.tsx';
 import BalanceInsufficientAlert from '@/components/shared/BalanceInsufficientAlert.tsx';
 import MainFooter from '@/components/shared/MainFooter';
 import MainHeader from '@/components/shared/MainHeader';
+import GreetBoard from '@/components/GreeterBoard.tsx';
 
 function App() {
   const tab = useSearchParam('tab');
