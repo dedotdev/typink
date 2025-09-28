@@ -167,15 +167,15 @@ export function ClientProvider({
     // Extract current default network IDs from initialConnections
     const currentDefaultNetworkIdsJson = JSON.stringify(initialConnections);
 
-    // Check if default network IDs have changed (simple string comparison)
-    const defaultNetworkIdsChanged =
-      persistedDefaultNetworkIdsJson && persistedDefaultNetworkIdsJson !== currentDefaultNetworkIdsJson;
-
     // Check if we have stored connections from localStorage
     if (networkConnections.length === 0 && initialConnections.length > 0) {
       setNetworkConnections(initialConnections);
       setPersistedDefaultNetworkIdsJson(currentDefaultNetworkIdsJson);
     } else if (networkConnections.length > 0) {
+      // Check if default network IDs have changed (simple string comparison)
+      const defaultNetworkIdsChanged =
+        !!persistedDefaultNetworkIdsJson && persistedDefaultNetworkIdsJson !== currentDefaultNetworkIdsJson;
+
       // Check if default network IDs have changed (developer changed defaultNetworkIds/defaultNetworkId)
       if (defaultNetworkIdsChanged) {
         console.log(`Default network configuration changed. Resetting to new default networks.`);
