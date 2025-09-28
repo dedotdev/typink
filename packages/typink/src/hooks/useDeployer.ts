@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import {
+  AB,
   ContractDeployer,
   ExecutionOptions,
   GenericContractApi,
   LooseContractMetadata,
-  AB,
-  SolAbi,
+  LooseSolAbi,
 } from 'dedot/contracts';
 import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
@@ -32,7 +32,7 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
  * @returns {UseDeployer<T>} An object containing the deployer instance
  */
 export function useDeployer<T extends GenericContractApi = GenericContractApi>(
-  metadata: AB<T['metadataType'], LooseContractMetadata, SolAbi> | string,
+  metadata: AB<T['metadataType'], LooseContractMetadata, LooseSolAbi> | string,
   codeHashOrWasm: Hash | Uint8Array | string,
   options: ExecutionOptions & NetworkOptions = {},
 ): UseDeployer<T> {

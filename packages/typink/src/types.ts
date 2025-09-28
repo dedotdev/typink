@@ -22,8 +22,6 @@ export interface Props {
 
 export type SubstrateAddress = string;
 
-export type LooseSolAbi = Array<{ type: string; [prop: string]: any }>; // replace with type from dedot
-
 export interface ContractDeployment {
   id: string;
   metadata: LooseContractMetadata | LooseSolAbi | string;
