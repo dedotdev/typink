@@ -72,9 +72,9 @@ jobs:
             APPDIR="${WORKDIR}/test-app-${T}"
 
             # Pick one network based on template family
-            NETWORK="Aleph Zero Testnet"
-            if [[ "$T" == v6-* ]]; then
-              NETWORK="Passet Hub"
+            NETWORK="Passet Hub"
+            if [[ "$T" == inkv5-* ]]; then
+              NETWORK="Pop Testnet"
             fi
 
             echo "=== Creating ${T} (Node 20 + Bun) ==="

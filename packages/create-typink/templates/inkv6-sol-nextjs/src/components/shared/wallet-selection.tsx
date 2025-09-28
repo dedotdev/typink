@@ -37,15 +37,6 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
     afterSelectWallet && afterSelectWallet();
   };
 
-  const getStatusText = () => {
-    if (!installed) return 'Not Installed';
-  };
-
-  const getActionText = () => {
-    if (!installed) return 'Install';
-    return 'Connect';
-  };
-
   return (
     <div
       className='flex items-center justify-between p-4 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group'
@@ -54,7 +45,7 @@ const WalletButton = ({ walletInfo, afterSelectWallet }: WalletButtonProps) => {
         <img className='rounded-sm' src={logo} alt={`${name}`} width={32} height={32} />
         <div className='flex flex-col'>
           <span className='font-medium text-sm'>{name}</span>
-          <span className='text-xs text-red-500'>{getStatusText()}</span>
+          {!installed && <span className='text-xs text-red-500'>Not Installed</span>}
         </div>
       </div>
       <Button
@@ -89,35 +80,9 @@ interface WalletSelectionProps {
   buttonClassName?: string;
 }
 
-// Categorize wallets based on their name and type
-const categorizeWallets = (wallets: Wallet[]) => {
-  const categories = {
-    Hardware: [] as Wallet[],
-    Remote: [] as Wallet[],
-    'Web Signer': [] as Wallet[],
-    Extensions: [] as Wallet[],
-  };
-
-  wallets.forEach((wallet) => {
-    const name = wallet.name.toLowerCase();
-    if (name.includes('ledger')) {
-      categories.Hardware.push(wallet);
-    } else if (name.includes('walletconnect')) {
-      categories.Remote.push(wallet);
-    } else if (name.includes('signer') || name.includes('dedot')) {
-      categories['Web Signer'].push(wallet);
-    } else {
-      categories.Extensions.push(wallet);
-    }
-  });
-
-  return categories;
-};
-
 export function WalletSelection({ buttonLabel = 'Connect Wallet', buttonClassName = '' }: WalletSelectionProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { wallets } = useTypink();
-  const categorizedWallets = categorizeWallets(wallets);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
