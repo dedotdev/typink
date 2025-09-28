@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import React from 'react';
 import { createStore, Provider as JotaiProvider } from 'jotai';
@@ -94,6 +94,10 @@ describe('WalletSetupProvider', () => {
     store = createStore();
     vi.clearAllMocks();
 
+    // Mock console methods to suppress expected error messages
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     // Setup mock hook implementations
     mockUseAtomValue.mockImplementation((atom) => {
       if (atom === 'connectedWalletIdsAtom') return mockConnectedWalletIds;
@@ -125,6 +129,10 @@ describe('WalletSetupProvider', () => {
       signer: mockFinalEffectiveSigner,
       connectedAccount: mockConnectedAccount,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Initialization', () => {

@@ -73,6 +73,10 @@ const createMockContract = (lazyStorageData: any): Contract<MockContractApi> => 
 
 describe('useLazyStorage', () => {
   beforeEach(() => {
+    // Mock console methods to suppress expected error messages
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     vi.clearAllMocks();
   });
 
@@ -247,7 +251,7 @@ describe('useLazyStorage', () => {
     expect(callCount).toBe(1);
 
     // Trigger refresh
-    result.current.refresh();
+    await result.current.refresh();
 
     await waitFor(() => {
       expect(result.current.isRefreshing).toBe(false);
