@@ -149,7 +149,7 @@ export function useLazyStorage<
         }
 
         // Get lazy storage object
-        const lazyStorage = (contract as Contract<T>).storage.lazy();
+        const lazyStorage = (contract as Contract<T>).storage!.lazy();
 
         // Apply the function
         const result = fn(lazyStorage as T['types']['LazyStorage']);
@@ -194,7 +194,7 @@ export function useLazyStorage<
       }
 
       // Get lazy storage object
-      const lazyStorage = (contract as Contract<T>).storage.lazy();
+      const lazyStorage = (contract as Contract<T>).storage!.lazy();
 
       // Apply the function
       const result = fn(lazyStorage as T['types']['LazyStorage']);

@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { ContractDeployer, ExecutionOptions, GenericContractApi, LooseContractMetadata } from 'dedot/contracts';
+import {
+  ContractDeployer,
+  ExecutionOptions,
+  GenericContractApi,
+  LooseContractMetadata,
+  LooseSolAbi,
+} from 'dedot/contracts';
 import { Hash } from 'dedot/codecs';
 import { useDeepDeps } from './internal/index.js';
 import { generateInstanceId } from '../utils/index.js';
@@ -19,13 +25,13 @@ export type UseDeployer<T extends GenericContractApi = GenericContractApi> = {
  * code hash or WASM, and options. It automatically updates when relevant context
  * (client, network, account) changes.
  *
- * @param {ContractMetadata | string} metadata - The contract metadata or its stringified version
+ * @param {LooseContractMetadata | LooseSolAbi | string} metadata - The contract metadata or its stringified version
  * @param {Hash | Uint8Array | string} codeHashOrWasm - The code hash or WASM of the contract
  * @param {ExecutionOptions} [options={}] - Additional execution options for the deployer
  * @returns {UseDeployer<T>} An object containing the deployer instance
  */
 export function useDeployer<T extends GenericContractApi = GenericContractApi>(
-  metadata: LooseContractMetadata | string,
+  metadata: LooseContractMetadata | LooseSolAbi | string,
   codeHashOrWasm: Hash | Uint8Array | string,
   options: ExecutionOptions & NetworkOptions = {},
 ): UseDeployer<T> {
@@ -42,6 +48,7 @@ export function useDeployer<T extends GenericContractApi = GenericContractApi>(
 
       const deployer = new ContractDeployer<T>(
         client,
+        // @ts-ignore
         metadata,
         codeHashOrWasm, // prettier-end-here
         {

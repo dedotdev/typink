@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTypink } from './useTypink.js';
-import { Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata } from 'dedot/contracts';
+import { Contract, ExecutionOptions, GenericContractApi, LooseContractMetadata, LooseSolAbi } from 'dedot/contracts';
 import { useDeepDeps } from './internal/index.js';
 import { generateInstanceId } from '../utils/index.js';
 import { NetworkOptions } from '../types.js';
@@ -16,13 +16,13 @@ interface UseRawContract<T extends GenericContractApi = GenericContractApi> {
  * This hook initializes a contract based on the provided metadata and address,
  * and updates it when relevant dependencies change.
  *
- * @param {string | LooseContractMetadata} [metadata] - The contract metadata or its string representation
+ * @param {string | LooseContractMetadata | LooseSolAbi} [metadata] - The contract metadata or its string representation
  * @param {string} [address] - The address of the contract
  * @param {ExecutionOptions & NetworkOptions} [options={}] - Additional execution options for the contract
  * @returns {UseRawContract<T>} An object containing the contract instance or undefined
  */
 export function useRawContract<T extends GenericContractApi = GenericContractApi>(
-  metadata?: string | LooseContractMetadata,
+  metadata?: string | LooseContractMetadata | LooseSolAbi,
   address?: string,
   options: ExecutionOptions & NetworkOptions = {},
 ): UseRawContract<T> {
@@ -42,7 +42,7 @@ export function useRawContract<T extends GenericContractApi = GenericContractApi
 
       const newContract = new Contract<T>(
         client,
-        metadata as any,
+        metadata,
         address, // prettier-end-here
         {
           defaultCaller: connectedAccount?.address || defaultCaller,

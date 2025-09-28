@@ -120,7 +120,7 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
         }
 
         // Fetch root storage
-        const rootStorage = await (contract as Contract<T>).storage.root();
+        const rootStorage = await (contract as Contract<T>).storage!.root();
 
         if (mounted) {
           setStorage(rootStorage as T['types']['RootStorage']);
@@ -159,7 +159,7 @@ export function useRootStorage<T extends GenericContractApi = GenericContractApi
       }
 
       // Fetch root storage
-      const rootStorage = await (contract as Contract<T>).storage.root();
+      const rootStorage = await (contract as Contract<T>).storage!.root();
 
       setStorage(rootStorage as T['types']['RootStorage']);
       setError(undefined);
