@@ -91,8 +91,8 @@ export const PALLET_REVIVE_NETWORKS: NetworkConfig[] = [
     name: 'Passet Hub',
     value: 'passetHub',
     contractAddresses: {
-      [ContractType.InkV6]: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50', // flipper
-      [ContractType.InkV6Sol]: '0xad70e3fa83a3d8340e87226c54f1ac6171cd0d85', // flipper
+      [ContractType.InkV6]: '0xad70e3fa83a3d8340e87226c54f1ac6171cd0d85', // flipper
+      [ContractType.InkV6Sol]: '0xbff0c319c037fe24476d0dece1713e4b05cf9541', // flipper
       [ContractType.Sol]: '0x5153977aabd805e5e93d7d0d1a6a6f3179f90da8', // storage
     },
   },
@@ -100,9 +100,9 @@ export const PALLET_REVIVE_NETWORKS: NetworkConfig[] = [
     name: 'Pop Testnet',
     value: 'popTestnet',
     contractAddresses: {
-      [ContractType.InkV6]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // flipper
-      [ContractType.InkV6Sol]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // TODO fix this
-      [ContractType.Sol]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // TODO fix this
+      [ContractType.InkV6]: '0x3ddc397c0350cbfb89d4f28d476073d6051067c4', // flipper
+      [ContractType.InkV6Sol]: '0xb8e3c219fecda5328539a228fe497b29c064c1a2', // flipper
+      [ContractType.Sol]: '0x403669f05ebb82378680ab00d8aa8a4e6aa6a89a', // storage
     },
   },
 ];
