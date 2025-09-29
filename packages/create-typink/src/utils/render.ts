@@ -17,8 +17,8 @@ export function renderHelpMessage() {
 `);
   console.log(` ${chalk.bold.blue('Options:')}
     ${chalk.gray('-n, --name')}                       Project name
-    ${chalk.gray('-t, --template')}                   Template to use (available template: v6-nextjs, legacy-nextjs) 
-    ${chalk.gray('-N, --networks')}                   Network [legacy: <Aleph Zero Testnet|Aleph Zero|Astar>, v6: <Passet Hub|Westend Asset Hub|Kusama Asset Hub>]
+    ${chalk.gray('-t, --template')}                   Template to use (available template: inkv6-nextjs, inkv6-sol-nextjs, sol-nextjs, inkv5-nextjs) 
+    ${chalk.gray('-N, --networks')}                   Supported networks [pallet-contracts: <Pop Testnet|Aleph Zero Testnet|Aleph Zero|Astar>, pallet-revive: <Passet Hub|Pop Testnet>]
     ${chalk.gray('--skip, --skip-install')}           Skip packages installation
     ${chalk.gray('--no-git')}                         Skip git initialization
     ${chalk.gray('-h, --help')}                       Show help

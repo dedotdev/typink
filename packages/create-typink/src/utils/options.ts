@@ -4,19 +4,18 @@ import {
   BaseOptions,
   CONTRACT_TYPES_CHOICES,
   ContractType,
-  PALLET_CONTRACTS_NETWORKS,
   Options,
-  TEMPLATES,
+  PALLET_CONTRACTS_NETWORKS,
   PALLET_REVIVE_NETWORKS,
+  TEMPLATES,
 } from '../types.js';
 import validate from 'validate-npm-package-name';
-import { stringCamelCase } from '@dedot/utils';
 
 const defaultOptions: BaseOptions = {
   projectName: 'my-typink-app',
   contractType: ContractType.InkV6,
   template: 'inkv6-nextjs',
-  networks: [],
+  networks: ['Pop Testnet'],
   skipInstall: false,
   pkgManager: { name: 'npm' },
   noGit: false,
@@ -28,7 +27,7 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     {
       type: 'input',
       name: 'projectName',
-      message: 'Your project name:',
+      message: 'Project name:',
       default: defaultOptions.projectName,
       validate: (name: string) => {
         const result = validate(name);
@@ -42,18 +41,18 @@ export async function promptMissingOptions(options: Options): Promise<Options> {
     {
       type: 'list',
       name: 'contractType',
-      message: 'What contract type to use?',
+      message: 'Select contract type:',
       choices: CONTRACT_TYPES_CHOICES,
       default: defaultOptions.contractType,
     },
     {
       type: 'checkbox',
       name: 'networks',
-      message: 'Which networks do you want to support?',
+      message: 'Select supported networks:',
       choices: (answers: Answers) =>
         answers.contractType === ContractType.InkV5
-          ? PALLET_CONTRACTS_NETWORKS // prettier-ignore
-          : PALLET_REVIVE_NETWORKS,
+          ? PALLET_CONTRACTS_NETWORKS.map(( {name, value}) => ({name, value})) // prettier-ignore
+          : PALLET_REVIVE_NETWORKS.map(({ name, value }) => ({ name, value })),
       default: defaultOptions.networks,
       validate: (networks: string[]) => {
         if (networks.length === 0) {
@@ -110,29 +109,22 @@ export function parseArguments(): Options {
     }
   }
 
-  if (args['--template'] && !TEMPLATES.includes(args['--template'] as any)) {
-    throw new Error(`Template ${args['--template']} is not supported. Please use a valid template.`);
+  const contractType = args['--template'];
+  if (contractType && !TEMPLATES.includes(contractType as any)) {
+    throw new Error(`Template ${contractType} is not available.`);
   }
 
-  const [contractType, walletConnector, ui] = args['--template']
-    ? (args['--template'] as string).split('-')
-    : [null, null, null];
-
   if (args['--networks'] && args['--networks'].length > 0) {
-    if (!contractType) {
-      throw new Error(`If you provide networks, you must also provide a template to determine the ink version.`);
-    } else {
-      // If args['networks'] is provided, we check if it supports the networks or examples
-      args['--networks'].forEach((network: string) => {
-        if (
-          contractType === ContractType.InkV5
-            ? !PALLET_CONTRACTS_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
-            : !PALLET_REVIVE_NETWORKS.map((o) => o.value).includes(stringCamelCase(network) as any)
-        ) {
-          throw new Error(`Network ${network} is not ink! ${contractType} supported. Please use supported network.`);
-        }
-      });
-    }
+    // If args['networks'] is provided, we check if it supports the networks or examples
+    args['--networks'].forEach((network: string) => {
+      if (
+        contractType === ContractType.InkV5
+          ? !PALLET_CONTRACTS_NETWORKS.map((o) => o.name).includes(network as any)
+          : !PALLET_REVIVE_NETWORKS.map((o) => o.name).includes(network as any)
+      ) {
+        throw new Error(`Network ${network} is not supported for template: ${contractType}.`);
+      }
+    });
   }
 
   return {

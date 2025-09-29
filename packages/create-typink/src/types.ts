@@ -55,23 +55,57 @@ export const CONTRACT_TYPES_CHOICES = [
   },
 ] as const;
 
-export const PALLET_CONTRACTS_NETWORKS = [
-  { name: 'Pop Testnet', value: 'popTestnet', address: '12L4yRvLh5qWSgS5ty5X7gPoL5UjUTpQvM81jioo1L48gkS5' },
+export const PALLET_CONTRACTS_NETWORKS: NetworkConfig[] = [
+  {
+    name: 'Pop Testnet',
+    value: 'popTestnet',
+    contractAddresses: {
+      [ContractType.InkV5]: '12L4yRvLh5qWSgS5ty5X7gPoL5UjUTpQvM81jioo1L48gkS5', // greeter
+    },
+  },
   {
     name: 'Aleph Zero Testnet',
     value: 'alephZeroTestnet',
-    address: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik',
+    contractAddresses: {
+      [ContractType.InkV5]: '5CDia8Y46K7CbD2vLej2SjrvxpfcbrLVqK2He3pTJod2Eyik', // greeter
+    },
   },
-  { name: 'Aleph Zero', value: 'alephZero', address: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1' },
-  { name: 'Astar', value: 'astar', address: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse' },
-] as const;
+  {
+    name: 'Aleph Zero',
+    value: 'alephZero',
+    contractAddresses: {
+      [ContractType.InkV5]: '5CYZtKBxuva33JREQkbeaE4ed2niWb1ijS4pgXbFD61yZti1', // greeter
+    },
+  },
+  {
+    name: 'Astar',
+    value: 'astar',
+    contractAddresses: {
+      [ContractType.InkV5]: 'WejJavPYsGgcY8Dr5KQSJrTssxUh5EbeYiCfdddeo5aTbse', // greeter
+    },
+  },
+];
 
-export const PALLET_REVIVE_NETWORKS = [
-  { name: 'Pop Testnet', value: 'popTestnet', address: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352' },
-  { name: 'Passet Hub', value: 'passetHub', address: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50' },
-  { name: 'Kusama Asset Hub', value: 'kusamaAssetHub', address: '0xFf6A8342Ae4440D95BB5b9204a72f328c671b751' },
-  { name: 'Westend Asset Hub', value: 'westendAssetHub', address: '0xA8237FBAC4387CBcc595757d9bA6DEA296332449' },
-] as const;
+export const PALLET_REVIVE_NETWORKS: NetworkConfig[] = [
+  {
+    name: 'Passet Hub',
+    value: 'passetHub',
+    contractAddresses: {
+      [ContractType.InkV6]: '0x87396fA7d7FcE9B3e4b11a733C98700968426c50', // flipper
+      [ContractType.InkV6Sol]: '0xad70e3fa83a3d8340e87226c54f1ac6171cd0d85', // flipper
+      [ContractType.Sol]: '0x5153977aabd805e5e93d7d0d1a6a6f3179f90da8', // storage
+    },
+  },
+  {
+    name: 'Pop Testnet',
+    value: 'popTestnet',
+    contractAddresses: {
+      [ContractType.InkV6]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // flipper
+      [ContractType.InkV6Sol]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // TODO fix this
+      [ContractType.Sol]: '0x73d678d38cd4b404223c4Ff8F0e7A5AF4beBA352', // TODO fix this
+    },
+  },
+];
 
 export type NetworkConfig = {
   name: string;
@@ -80,5 +114,5 @@ export type NetworkConfig = {
   value: string;
   // Example contract address for each network:
   // Flipper for ink! v6, Greeter for legacy.
-  address: string;
+  contractAddresses: Record<string, string>;
 };

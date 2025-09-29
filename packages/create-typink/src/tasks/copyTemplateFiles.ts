@@ -11,8 +11,7 @@ export async function copyTemplateFiles(
   targetDir: string,
   task: ListrTaskWrapper<any, typeof DefaultRenderer, typeof SimpleRenderer>,
 ) {
-  const { projectName, noGit, contractType } = options;
-  const template = `${contractType}-nextjs`;
+  const { projectName, noGit, contractType: template } = options;
 
   task.title = `🚀 Initializing new Typink dApp`;
 
@@ -22,7 +21,6 @@ export async function copyTemplateFiles(
 
   try {
     const ghMatch = /github\.com[/:]([^/]+)\/([^/.]+)(?:\.git)?/i.exec(repoUrl);
-    console.log('[SELECTED-TEMPLATE]', template);
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
@@ -32,7 +30,7 @@ export async function copyTemplateFiles(
       await downloadTemplate(spec, { dir: targetDir, force: true });
     }
   } catch (e) {
-    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
+    throw new Error(`Download template failed. Reason: ${(e as Error).message}`);
   }
 
   // Set package name
