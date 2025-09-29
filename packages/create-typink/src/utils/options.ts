@@ -111,7 +111,7 @@ export function parseArguments(): Options {
 
   const contractType = args['--template'];
   if (contractType && !TEMPLATES.includes(contractType as any)) {
-    throw new Error(`Template ${contractType} is not available.`);
+    throw new Error(`Template "${contractType}" is not available.`);
   }
 
   if (args['--networks'] && args['--networks'].length > 0) {
