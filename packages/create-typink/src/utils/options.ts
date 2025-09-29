@@ -129,7 +129,7 @@ export function parseArguments(): Options {
 
   return {
     projectName: args['--name'] || null,
-    contractType,
+    contractType: contractType?.replace('-nextjs', ''),
     template: args['--template'] || null,
     networks: args['--networks'] || null,
     skipInstall: !!args['--skip-install'],
