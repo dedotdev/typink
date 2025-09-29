@@ -40,7 +40,7 @@ jobs:
           node packages/create-typink/dist/index.js --help
 
           # Invalid template should be rejected
-          if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" -N "Passet Hub" 2>&1 | grep -q "not supported"; then
+          if node packages/create-typink/dist/index.js --name "test" --template "invalid-template" -N "Passet Hub" 2>&1 | grep -q "is not available"; then
             echo "✅ CLI correctly rejects invalid template"
           else
             echo "❌ CLI should reject invalid template"

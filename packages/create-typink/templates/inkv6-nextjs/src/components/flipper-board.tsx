@@ -9,18 +9,25 @@ import { shortenAddress } from '@/lib/utils';
 import { ToggleLeftIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { txToaster, useContract, useContractTx, useRootStorage, useWatchContractEvent } from 'typink';
+import {
+  txToaster,
+  useCheckMappedAccount,
+  useContract,
+  useContractQuery,
+  useContractTx,
+  useWatchContractEvent,
+} from 'typink';
 
 export function FlipperBoard() {
+  const { isMapped } = useCheckMappedAccount();
   const { contract } = useContract<FlipperContractApi>(ContractId.FLIPPER);
   const flipTx = useContractTx(contract, 'flip');
 
-  const { storage, isLoading } = useRootStorage({
+  const { data: value, isLoading } = useContractQuery({
     contract,
+    fn: 'get',
     watch: true,
   });
-
-  const value = storage?.value;
 
   const handleFlip = async () => {
     if (!contract) return;
@@ -116,6 +123,7 @@ export function FlipperBoard() {
             className='w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-white'>
             {flipTx.inBestBlockProgress ? 'Flipping...' : 'Flip Value!'}
           </Button>
+          {!isMapped && <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>}
         </div>
       </CardContent>
     </Card>

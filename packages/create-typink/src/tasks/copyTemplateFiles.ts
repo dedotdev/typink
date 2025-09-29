@@ -22,7 +22,6 @@ export async function copyTemplateFiles(
 
   try {
     const ghMatch = /github\.com[/:]([^/]+)\/([^/.]+)(?:\.git)?/i.exec(repoUrl);
-    console.log('[SELECTED-TEMPLATE]', template);
     if (ghMatch && template) {
       const owner = ghMatch[1];
       const repo = ghMatch[2];
@@ -32,7 +31,7 @@ export async function copyTemplateFiles(
       await downloadTemplate(spec, { dir: targetDir, force: true });
     }
   } catch (e) {
-    throw new Error(`giget download failed. Reason: ${(e as Error).message}`);
+    throw new Error(`Download template failed. Reason: ${(e as Error).message}`);
   }
 
   // Set package name

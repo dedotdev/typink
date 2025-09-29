@@ -8,7 +8,7 @@ export interface NetworkTemplateConfig {
 }
 
 export function getNetworkConfig(contractType: ContractType, selectedNetworks: string[]): NetworkTemplateConfig {
-  const availableNetworks = contractType === ContractType.InkV6 ? PALLET_REVIVE_NETWORKS : PALLET_CONTRACTS_NETWORKS;
+  const availableNetworks = contractType === ContractType.InkV5 ? PALLET_CONTRACTS_NETWORKS : PALLET_REVIVE_NETWORKS;
   const selectedNetworkConfigs = availableNetworks.filter((network) =>
     selectedNetworks.map((one) => stringCamelCase(one)).includes(network.value),
   );
@@ -28,21 +28,25 @@ export function getNetworkConfig(contractType: ContractType, selectedNetworks: s
   };
 }
 
-function generateDeploymentEntries(networkConfigs: NetworkConfig[], contractType: ContractType): string {
-  const contractName = contractType === ContractType.InkV6 ? 'flipper' : 'greeter';
-  const metadataName = contractType === ContractType.InkV6 ? 'flipperMetadata' : 'greeterMetadata';
+const CONTRACT_IDS = {
+  [ContractType.InkV5]: 'greeter',
+  [ContractType.InkV6]: 'flipper',
+  [ContractType.InkV6Sol]: 'flipper',
+  [ContractType.Sol]: 'storage',
+};
 
-  const deploymentEntries = networkConfigs
+function generateDeploymentEntries(networkConfigs: NetworkConfig[], contractType: ContractType): string {
+  const contractName = CONTRACT_IDS[contractType];
+
+  return networkConfigs
     .map(
       (network) =>
         `{
           id: ContractId.${contractName.toUpperCase()},
-          metadata: ${metadataName},
+          metadata: ${contractName},
           network: ${network.value}.id,
-          address: '${network.address}',
+          address: '${network.contractAddresses[contractType]}',
         }`,
     )
     .join(',\n');
-
-  return deploymentEntries;
 }

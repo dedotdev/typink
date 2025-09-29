@@ -2,7 +2,17 @@
 
 import { deployments } from '@/contracts/deployments';
 import { Props } from '@/lib/types';
-import { polkadotjs, popTestnet, setupTxToaster, SonnerAdapter, subwallet, talisman, TypinkProvider } from 'typink';
+import {
+  polkadotjs,
+  setupTxToaster,
+  SonnerAdapter,
+  subwallet,
+  talisman,
+  TypinkProvider,
+  // -- START_SUPPORTED_NETWORKS --
+  popTestnet,
+  // -- END_SUPPORTED_NETWORKS --
+} from 'typink';
 import { toast } from 'sonner';
 
 // Supported networks configuration
