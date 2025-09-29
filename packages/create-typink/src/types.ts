@@ -34,17 +34,17 @@ export enum ContractType {
 
 export const CONTRACT_TYPES_CHOICES = [
   {
-    name: 'Ink! v6 (PVM, pallet-revive)',
+    name: 'Ink! v6 (PolkaVM, pallet-revive)',
     value: ContractType.InkV6,
     short: 'v6',
   },
   {
-    name: 'Ink! v6 using Sol ABI (PVM, pallet-revive)',
+    name: 'Ink! v6 using Sol ABI (PolkaVM, pallet-revive)',
     value: ContractType.InkV6Sol,
     short: 'v6-sol',
   },
   {
-    name: 'Solidity (PVM, pallet-revive)',
+    name: 'Solidity (PolkaVM, pallet-revive)',
     value: ContractType.Sol,
     short: 'sol',
   },
