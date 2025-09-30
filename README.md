@@ -1,4 +1,4 @@
-<img width="1991" height="491" alt="image" src="https://github.com/user-attachments/assets/7ff1a34a-b4b5-45fe-b0b6-7f46c39dd7a5" />
+<img width="1991" height="491" alt="Typink banner (1991_496)" src="https://github.com/user-attachments/assets/9bb95b1a-7d56-40d7-b10c-525da2dadbbc" />
 
 
 # Typink
