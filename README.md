@@ -1,8 +1,11 @@
-![Typink banner (1991-491)](https://github.com/user-attachments/assets/63538317-f52b-4696-aeba-bef50473cdf6)
+<img width="1991" height="491" alt="image" src="https://github.com/user-attachments/assets/7ff1a34a-b4b5-45fe-b0b6-7f46c39dd7a5" />
+
 
 # Typink
 
-A comprehensive toolkit for [ink!](https://use.ink/) dApps development, powered by [Dedot!](https://github.com/dedotdev/dedot)
+The ultimate toolkit for dapps development on Polkadot, powered by [Dedot!](https://github.com/dedotdev/dedot)
+
+Typink is a fully type-safe React hooks library for seamless ink! and Solidity smart contract interactions. It supports both WASM (pallet-contracts) and PolkaVM (pallet-revive) on Polkadot, delivering robust, efficient, and developer-friendly dapps development.
 
 ![Version][ico-version]
 ![Unit test][ico-unit-test]
@@ -20,12 +23,11 @@ A comprehensive toolkit for [ink!](https://use.ink/) dApps development, powered 
 
 ---
 
-### Features
-- ✅ Fully typesafe react hooks at contract messages & events level
-- ✅ Choose your favorite wallet connector (Built-in Typink Connector, [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), or build your own connector ...)
-- ✅ Start a new project from scratch in seconds with `create-typink` cli.
-- ✅ Multi-chain supports, lazily initialize when in-use.
-- ⏳ ... and more to come
+### Why Typink?
+- ✅ **Unified Type-Safe Hooks** - Same React hooks work seamlessly across ink!, and Solidity contracts.
+- ✅ **Instant Project Scaffolding** - Launch new projects in seconds with create-typink CLI and pre-configured Next.js templates
+- ✅ **Flexible Wallet Connector Integration** - Supports external wallet connectors like [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect) or built your own using Typink's hooks & API.
+- ✅ **Multi-Network Support** - Connect to multiple networks simultaneously with lazy initialization and seamless network switching
 
 ### Quick look
 
@@ -38,19 +40,23 @@ A comprehensive toolkit for [ink!](https://use.ink/) dApps development, powered 
 Typink comes with a cli to help you start a new project from scratch faster & easier, to create a new project, run the below command:
 
 ```shell
-npx create-typink@latest
+# pnpm
+pnpm create typink@latest
+
+# yarn
+yarn create typink@latest
+
+# npm
+npm create typink@latest
+
+# bun
+bunx create-typink@latest
 ```
 
 > [!IMPORTANT]
 > The `create-typink` cli requires NodeJS version >= `v20` to work properly, make sure to check your NodeJS version.
 
-
-Following the instructions, the cli will help you generate a starter & working project ready for you to start integrate your own contracts and build your own logic:
-
-<img width="1919" alt="new-typink-project" src="https://github.com/user-attachments/assets/b10b1366-f97b-41a7-b3e9-97ceb1bd0748" />
-
-> [!IMPORTANT]
-> Please note that `yarn` is the current default package manager for the start project, make sure to [install `yarn`](https://yarnpkg.com/getting-started/install) on your machine to streamline the development process.
+Following the instructions, the cli will help you generate a starter & working project ready for you to start integrate your own contracts and build your own logic. Checkout the [getting started guide](https://docs.dedot.dev/typink/getting-started/start-a-new-dapp) for more details.
 
 
 #### Migrate from existing projects?
@@ -68,11 +74,10 @@ yarn add typink dedot
 pnpm add typink dedot
 ```
 
-Typink heavily uses Typescript to enable & ensure type-safety, so we recommend using Typescript for your Dapp project. Typink will also work with plain Javascript, but you don't get the auto-completion & suggestions when interacting with your ink! contracts.
+Typink heavily uses Typescript to enable & ensure type-safety, so we recommend using Typescript for your Dapp project. Typink will also work with plain Javascript, but you don't get the auto-completion & suggestions when interacting with your ink! contracts. Checkout [Typink's migration guide](https://docs.dedot.dev/typink/getting-started/migrate-from-existing-dapp).
 
 ### Documentation
 Check out Typink documentation on our website: https://typink.dev
-- [Introducing Typink](https://docs.dedot.dev/typink/introducing-typink)
 - [Getting started](https://docs.dedot.dev/typink/getting-started/start-a-new-dapp)
 - [Migrate from existing project](https://docs.dedot.dev/typink/getting-started/migrate-from-existing-dapp)
 - [Hooks & Providers](https://docs.dedot.dev/typink/hooks-and-providers)
