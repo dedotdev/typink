@@ -46,123 +46,159 @@ describe('TxProgress', () => {
 
   describe('message display', () => {
     it('should display the provided message', () => {
-      const status: TxStatus = { type: 'Ready' } as any;
-      
-      render(<TxProgress message="Transaction is processing" status={status} />);
-      
+      const progress = {
+        status: { type: 'Ready' } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
+      } as any;
+
+      render(<TxProgress message="Transaction is processing" progress={progress} />);
+
       expect(screen.getByText('Transaction is processing')).toBeTruthy();
     });
   });
 
   describe('status display', () => {
     it('should display Ready status', () => {
-      const status: TxStatus = { type: 'Ready' } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+      const progress = {
+        status: { type: 'Ready' } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
+      } as any;
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('Ready')).toBeTruthy();
     });
 
     it('should display BestChainBlockIncluded status with block info', () => {
-      const status: TxStatus = {
-        type: 'BestChainBlockIncluded',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'BestChainBlockIncluded',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('BestChainBlockIncluded (#12345 / 3)')).toBeTruthy();
     });
 
     it('should display Finalized status with block info', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 67890,
-          blockHash: '0xdef',
-          txIndex: 5,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 67890,
+            blockHash: '0xdef',
+            txIndex: 5,
+          },
+        } as any,
+        txHash: '0xabcdef1234567890',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('Finalized (#67890 / 5)')).toBeTruthy();
     });
 
     it('should display Invalid status with error', () => {
-      const status: TxStatus = {
-        type: 'Invalid',
-        value: {
-          error: 'Invalid nonce',
-        },
+      const progress = {
+        status: {
+          type: 'Invalid',
+          value: {
+            error: 'Invalid nonce',
+          },
+        } as any,
+        txHash: undefined,
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('Invalid (Invalid nonce)')).toBeTruthy();
     });
 
     it('should display Drop status with error', () => {
-      const status: TxStatus = {
-        type: 'Drop',
-        value: {
-          error: 'Transaction dropped from pool',
-        },
+      const progress = {
+        status: {
+          type: 'Drop',
+          value: {
+            error: 'Transaction dropped from pool',
+          },
+        } as any,
+        txHash: undefined,
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('Drop (Transaction dropped from pool)')).toBeTruthy();
     });
 
     it('should display status without extra info for other types', () => {
-      const status: TxStatus = { type: 'Broadcast' } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+      const progress = {
+        status: { type: 'Broadcast' } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
+      } as any;
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.getByText('Broadcast')).toBeTruthy();
     });
   });
 
   describe('explorer links', () => {
     it('should show Subscan link when transaction is included and subscanUrl exists', () => {
-      const status: TxStatus = {
-        type: 'BestChainBlockIncluded',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'BestChainBlockIncluded',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       const link = screen.getByText('👉 View transaction on Subscan');
       expect(link).toBeTruthy();
-      expect(link.getAttribute('href')).toBe('https://polkadot.subscan.io/extrinsic/12345-3');
+      expect(link.getAttribute('href')).toBe('https://polkadot.subscan.io/extrinsic/0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef');
       expect(link.getAttribute('target')).toBe('_blank');
       expect(link.getAttribute('rel')).toBe('noreferrer');
     });
 
     it('should show Subscan link when transaction is finalized', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 67890,
-          blockHash: '0xdef',
-          txIndex: 5,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 67890,
+            blockHash: '0xdef',
+            txIndex: 5,
+          },
+        } as any,
+        txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       const link = screen.getByText('👉 View transaction on Subscan');
       expect(link).toBeTruthy();
-      expect(link.getAttribute('href')).toBe('https://polkadot.subscan.io/extrinsic/67890-5');
+      expect(link.getAttribute('href')).toBe('https://polkadot.subscan.io/extrinsic/0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890');
     });
 
     it('should show Polkadot.js link when subscanUrl is not available but pjsUrl is', () => {
@@ -171,17 +207,21 @@ describe('TxProgress', () => {
         networks: [{ ...mockNetwork, subscanUrl: null }],
       });
 
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabcdef',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabcdef',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       const link = screen.getByText('👉 View transaction on Polkadot.js');
       expect(link).toBeTruthy();
       expect(link.getAttribute('href')).toBe(
@@ -195,74 +235,94 @@ describe('TxProgress', () => {
         networks: [mockNetworkNoExplorer],
       });
 
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.queryByText(/View transaction on/)).toBeNull();
     });
 
     it('should not show explorer link for non-included/finalized status', () => {
-      const status: TxStatus = { type: 'Ready' } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+      const progress = {
+        status: { type: 'Ready' } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
+      } as any;
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       expect(screen.queryByText(/View transaction on/)).toBeNull();
     });
   });
 
   describe('network selection', () => {
     it('should use current network when networkId is not provided', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} />);
-      
+
+      render(<TxProgress message="Test" progress={progress} />);
+
       const link = screen.getByText('👉 View transaction on Subscan');
       expect(link.getAttribute('href')).toContain('polkadot.subscan.io');
     });
 
     it('should use specified network when networkId is provided', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} networkId="kusama" />);
-      
+
+      render(<TxProgress message="Test" progress={progress} networkId="kusama" />);
+
       const link = screen.getByText('👉 View transaction on Subscan');
       expect(link.getAttribute('href')).toContain('kusama.subscan.io');
     });
 
     it('should fallback to current network if networkId is not found', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      render(<TxProgress message="Test" status={status} networkId="unknown" />);
-      
+
+      render(<TxProgress message="Test" progress={progress} networkId="unknown" />);
+
       const link = screen.getByText('👉 View transaction on Subscan');
       expect(link.getAttribute('href')).toContain('polkadot.subscan.io');
     });
@@ -270,17 +330,21 @@ describe('TxProgress', () => {
 
   describe('component structure', () => {
     it('should render with correct structure and styles', () => {
-      const status: TxStatus = {
-        type: 'Finalized',
-        value: {
-          blockNumber: 12345,
-          blockHash: '0xabc',
-          txIndex: 3,
-        },
+      const progress = {
+        status: {
+          type: 'Finalized',
+          value: {
+            blockNumber: 12345,
+            blockHash: '0xabc',
+            txIndex: 3,
+          },
+        } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
       } as any;
-      
-      const { container } = render(<TxProgress message="Success" status={status} />);
-      
+
+      const { container } = render(<TxProgress message="Success" progress={progress} />);
+
       const mainDiv = container.firstChild as HTMLElement;
       expect(mainDiv.tagName).toBe('DIV');
       expect(mainDiv.className).toBe('typink-tx-toaster');
@@ -312,10 +376,14 @@ describe('TxProgress', () => {
         networks: [mockNetworkNoExplorer],
       });
 
-      const status: TxStatus = { type: 'Ready' } as any;
-      
-      const { container } = render(<TxProgress message="Processing" status={status} />);
-      
+      const progress = {
+        status: { type: 'Ready' } as any,
+        txHash: '0x1234567890abcdef',
+        dispatchError: undefined,
+      } as any;
+
+      const { container } = render(<TxProgress message="Processing" progress={progress} />);
+
       const mainDiv = container.firstChild as HTMLElement;
       const paragraphs = mainDiv.querySelectorAll('p');
       expect(paragraphs).toHaveLength(2); // message and status only
