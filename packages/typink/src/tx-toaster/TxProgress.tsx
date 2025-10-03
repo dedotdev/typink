@@ -15,8 +15,9 @@ const getBlockInfo = (status: TxStatus) => {
   return '';
 };
 
-export function TxProgress({ message, status, networkId }: TxProgressProps) {
+export function TxProgress({ message, networkId, progress }: TxProgressProps) {
   const { network, networks } = useTypink();
+  const { status } = progress;
 
   // Use the specified network if networkId is provided, otherwise use current network
   const targetNetwork = networkId ? networks.find((n) => n.id === networkId) || network : network;
@@ -28,7 +29,7 @@ export function TxProgress({ message, status, networkId }: TxProgressProps) {
       if (subscanUrl) {
         return {
           label: 'View transaction on Subscan',
-          url: `${subscanUrl}/extrinsic/${status.value.blockNumber}-${status.value.txIndex}`,
+          url: `${subscanUrl}/extrinsic/${progress.txHash}`,
         };
       }
 

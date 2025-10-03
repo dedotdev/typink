@@ -102,7 +102,7 @@ export function txToaster(config?: string | TxToasterOptions): TxToaster {
       toastMessage = finalMessages.failed || 'Transaction Failed';
     }
 
-    const body = React.createElement(TxProgress, { message: toastMessage, status, networkId });
+    const body = React.createElement(TxProgress, { message: toastMessage, networkId, progress });
 
     toastAdapter.update(toastId, body, {
       type: toastType,

@@ -117,6 +117,7 @@ export const paseoPeople: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
+  subscanUrl: 'https://people-paseo.subscan.io',
 };
 
 export const paseoAssetHub: NetworkInfo = {
@@ -134,6 +135,7 @@ export const paseoAssetHub: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
+  subscanUrl: 'https://assethub-paseo.subscan.io',
 };
 
 export const passetHub: NetworkInfo = {
@@ -148,6 +150,7 @@ export const passetHub: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io/?parachain=1111',
+  subscanUrl: 'https://paseo.subscan.io',
 };
 
 export const paseoHydration: NetworkInfo = {
