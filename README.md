@@ -18,8 +18,10 @@ Typink is a fully type-safe React hooks library for seamless ink! and Solidity s
 [ico-e2e-test]: https://img.shields.io/github/actions/workflow/status/dedotdev/typink/zombienet-tests.yml?label=e2e%20tests&style=flat-square
 [ico-version]: https://img.shields.io/github/package-json/v/dedotdev/typink?filename=packages%2Ftypink%2Fpackage.json&style=flat-square
 [ico-license]: https://img.shields.io/github/license/dedotdev/typink?style=flat-square
-
 [link-telegram]: https://t.me/JoinDedot
+
+👉 Join our [Telegram group](https://t.me/JoinDedot) to receive the latest updates and support!! 👈
+
 
 ---
 
