@@ -20,7 +20,7 @@ export function NonMappedAccountAlert() {
       <AlertTitle>Account Not Mapped</AlertTitle>
       <AlertDescription>
         <p className='mb-2'>
-          Your account needs to be mapped before interacting with ink! v6 contracts on this network.
+          Your account needs to be mapped before interacting with Solidity contracts on this network.
         </p>
         <div className='mt-2 flex items-center'>
           <MapAccountButton variant='default' onSuccess={handleMappingSuccess} />
