@@ -121,7 +121,9 @@ export function FlipperBoard() {
             className='w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-white'>
             {flipTx.inBestBlockProgress ? 'Flipping...' : 'Flip Value!'}
           </Button>
-          {!isMapped && <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>}
+          {isMapped === false && (
+            <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>
+          )}
         </div>
       </CardContent>
     </Card>

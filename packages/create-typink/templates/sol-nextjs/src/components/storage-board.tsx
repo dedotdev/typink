@@ -142,7 +142,9 @@ export function StorageBoard() {
               {storeTx.inBestBlockProgress ? 'Updating...' : 'Update Value'}
             </Button>
           </div>
-          {!isMapped && <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>}
+          {isMapped === false && (
+            <p className='text-sm text-muted-foreground'>Connect and map your account to see the value!</p>
+          )}
         </div>
       </CardContent>
     </Card>
