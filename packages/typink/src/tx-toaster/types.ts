@@ -28,7 +28,7 @@ export interface TxToasterMessages {
 
 export interface TxProgressProps {
   message: string;
-  status: TxStatus;
+  progress: ISubmittableResult;
   networkId?: string;
 }
 
