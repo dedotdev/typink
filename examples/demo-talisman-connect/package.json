@@ -19,7 +19,7 @@
     "@talismn/connect-components": "^1.1.9",
     "@talismn/connect-ui": "^1.1.4",
     "@talismn/connect-wallets": "^1.2.8",
-    "dedot": "^0.18.0",
+    "dedot": "^0.18.1",
     "framer-motion": "^10.18.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
