@@ -995,7 +995,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dedot/utils@npm:0.18.0, @dedot/utils@npm:^0.18.0":
+"@dedot/utils@npm:0.18.0":
   version: 0.18.0
   resolution: "@dedot/utils@npm:0.18.0"
   dependencies:
@@ -1003,6 +1003,17 @@ __metadata:
     "@scure/base": "npm:^1.2.6"
     eventemitter3: "npm:^5.0.1"
   checksum: 10/707804bbc885fdb604a99aa5cf2449dda56f8bdea2188ec2ad39f50d61b2b967eebc819f8903e52767260d09dfae657a21f83babef3e8abc6b233f8608d873bc
+  languageName: node
+  linkType: hard
+
+"@dedot/utils@npm:^0.18.2":
+  version: 0.18.2
+  resolution: "@dedot/utils@npm:0.18.2"
+  dependencies:
+    "@noble/hashes": "npm:^1.8.0"
+    "@scure/base": "npm:^1.2.6"
+    eventemitter3: "npm:^5.0.1"
+  checksum: 10/38ef47f4c15172c9195fcb017e376fff61c1a2cce28010052a0d27ad2fecd30a4915aec07a6ace664a33fc384530420f6c838aac48290fce8010d3c8d8898896
   languageName: node
   linkType: hard
 
@@ -7789,7 +7800,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-typink@workspace:packages/create-typink"
   dependencies:
-    "@dedot/utils": "npm:^0.18.0"
+    "@dedot/utils": "npm:^0.18.2"
     "@types/ejs": "npm:^3.1.5"
     "@types/validate-npm-package-name": "npm:^4.0.2"
     arg: "npm:^5.0.2"
