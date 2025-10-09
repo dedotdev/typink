@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ISubmittableResult, TxStatus } from 'dedot/types';
+import { ISubmittableResult } from 'dedot/types';
 
 export type TxToaster = {
   onTxProgress: (progress: ISubmittableResult) => void;
@@ -28,7 +28,7 @@ export interface TxToasterMessages {
 
 export interface TxProgressProps {
   message: string;
-  status: TxStatus;
+  progress: ISubmittableResult;
   networkId?: string;
 }
 
