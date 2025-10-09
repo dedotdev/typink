@@ -28,6 +28,7 @@ import {
   updateClientSignerAtom,
 } from '../atoms/clientActions.js';
 import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
+import { useDeepDeps } from '../hooks/index.js';
 
 export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
   ISubstrateClient<ChainApi[RpcVersion]>;
@@ -205,13 +206,16 @@ export function ClientProvider({
   }, []); // Empty deps - only runs once on mount
 
   // Initialize all clients when network connections change
-  useEffect(() => {
-    if (networkConnections.length > 0) {
-      initializeClients().catch((e) => {
-        console.error('Failed to initialize clients:', e);
-      });
-    }
-  }, [networkConnections, initializeClients]);
+  useEffect(
+    () => {
+      if (networkConnections.length > 0) {
+        initializeClients().catch((e) => {
+          console.error('Failed to initialize clients:', e);
+        });
+      }
+    },
+    useDeepDeps([networkConnections]),
+  );
 
   // Update client signer when clients are ready or signer changes
   useEffect(() => {
