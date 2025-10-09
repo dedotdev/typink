@@ -19,7 +19,7 @@
     "@talismn/connect-components": "^1.1.9",
     "@talismn/connect-ui": "^1.1.4",
     "@talismn/connect-wallets": "^1.2.8",
-    "dedot": "^0.18.0",
+    "dedot": "^0.18.2",
     "framer-motion": "^10.18.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -28,7 +28,7 @@
     "typink": "workspace:*"
   },
   "devDependencies": {
-    "@dedot/chaintypes": "^0.157.0",
+    "@dedot/chaintypes": "^0.161.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.1",
