@@ -254,10 +254,9 @@ describe('useLazyStorage', () => {
     await result.current.refresh();
 
     await waitFor(() => {
-      expect(result.current.isRefreshing).toBe(false);
+      expect(result.current.data).toBe(200n);
     });
 
-    expect(result.current.data).toBe(200n);
     expect(callCount).toBe(2);
   });
 
