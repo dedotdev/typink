@@ -150,7 +150,6 @@ export const passetHub: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io/?parachain=1111',
-  subscanUrl: 'https://paseo.subscan.io',
 };
 
 export const paseoHydration: NetworkInfo = {
