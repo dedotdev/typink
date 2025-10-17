@@ -29,7 +29,7 @@ const SUPPORTED_NETWORK = [alephZero];
 export const walletConnect = new WalletConnect({
   name: 'WalletConnect',
   id: 'walletconnect',
-  logo: 'https://github.com/dedotdev/typink/blob/42c6f87eb40087c082dec2ee174e337d2b8812d9/assets/wallets/wallet-connect-logo.svg',
+  logo: 'https://raw.githubusercontent.com/dedotdev/typink/feature/wallet-connect/assets/wallets/wallet-connect-logo.svg',
   projectId: 'b56e18d47c72ab683b10814fe9495694', // Default
   relayUrl: 'wss://relay.walletconnect.com',
   metadata: {
