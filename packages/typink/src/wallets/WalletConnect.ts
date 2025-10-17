@@ -13,7 +13,7 @@ import {
 import { NetworkInfo } from '../types.js';
 import type { WalletConnectModal } from '@walletconnect/modal';
 import { assert, DedotError, HexString } from 'dedot/utils';
-import { genesisHashToCaipId, convertNetworkInfoToCaipId } from 'src/utils/chains.js';
+import { genesisHashToCaipId, convertNetworkInfoToCaipId } from '../utils/chains.js';
 import { polkadot } from '../networks/index.js';
 
 export interface WalletConnectOptions extends WalletOptions {
