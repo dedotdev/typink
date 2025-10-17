@@ -11,8 +11,8 @@ import {
   SignerResult,
 } from '../pjs-types.js';
 import { NetworkInfo } from '../types.js';
-import { WalletConnectModal } from '@walletconnect/modal';
-import { assert, DedotError } from 'dedot/utils';
+import type { WalletConnectModal } from '@walletconnect/modal';
+import { assert, DedotError, HexString } from 'dedot/utils';
 import { genesisHashToCaipId, convertNetworkInfoToCaipId } from 'src/utils/chains.js';
 import { polkadot } from '../networks/index.js';
 
@@ -60,27 +60,15 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
   }
 
   async waitUntilReady(): Promise<void> {
-    await this.#initializeModal();
     await this.#initialize();
+    await this.#setupModal();
+    await this.#connect();
   }
 
-  async #initialize(): Promise<void> {
-    const { projectId, relayUrl, metadata } = this.options;
-
-    assert(
-      this.options.projectId,
-      `${this.name} requires a projectId. Please visit https://cloud.walletconnect.com to get one.`,
-    );
-
-    const { UniversalProvider } = await import('@walletconnect/universal-provider');
+  async #connect(): Promise<void> {
+    assert(this.#provider, 'WalletConnect provider not initialized');
 
     try {
-      this.#provider = await UniversalProvider.init({
-        projectId,
-        relayUrl,
-        metadata,
-      });
-
       if (this.#provider.session) {
         this.#accounts = this.#getAccounts();
       } else {
@@ -99,38 +87,55 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
               events: ['accountsChanged', 'chainChanged', 'connect'],
             },
           },
-          optionalNamespaces: {
-            polkadot: {
-              chains,
-              methods: [
-                'polkadot_signMessage',
-                'polkadot_sendTransaction',
-                'polkadot_signTransaction',
-                'polkadot_requestAccounts',
-              ],
-              events: ['accountsChanged', 'chainChanged', 'connect'],
-            },
-          },
         });
 
         if (uri) {
           await this.#modal!.openModal({ uri });
         }
 
-        this.#provider.session = await approval();
+        const race = new Promise<never>((_, reject) => {
+          this.#modal!.subscribeModal((state: { open: boolean }) => {
+            !state.open && reject(new DedotError('User closed WalletConnect modal'));
+          });
+        });
+
+        this.#provider.session = await Promise.race([approval(), race]);
         this.#modal!.closeModal();
         this.#accounts = this.#getAccounts();
       }
 
       this.#subscribeToSessionEvents();
       this.#notifyAccountSubscribers(this.#accounts);
-      this.#createInjectedProvider();
-    } catch (error) {
-      throw new DedotError(`Failed to initialize WalletConnect: ${(error as Error).message}`);
+      this.#injectedProvider = this.#getInjectedProvider();
+    } catch (e) {
+      throw new DedotError(`Failed to connect WalletConnect: ${(e as Error).message}`);
     }
   }
 
-  async #initializeModal(): Promise<void> {
+  async #initialize(): Promise<void> {
+    if (this.#provider) return;
+
+    const { projectId, relayUrl, metadata } = this.options;
+
+    assert(
+      this.options.projectId,
+      `${this.name} requires a projectId. Please visit https://cloud.walletconnect.com to get one.`,
+    );
+
+    const { UniversalProvider } = await import('@walletconnect/universal-provider');
+
+    try {
+      this.#provider = await UniversalProvider.init({
+        projectId,
+        relayUrl,
+        metadata,
+      });
+    } catch (e) {
+      throw new DedotError(`Failed to initialize WalletConnect: ${(e as Error).message}`);
+    }
+  }
+
+  async #setupModal(): Promise<void> {
     if (this.#modal) return;
 
     try {
@@ -147,19 +152,19 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
           '--wcm-z-index': '9999',
         },
       });
-    } catch (error) {
-      throw new DedotError(`Failed to initialize WalletConnect Modal: ${(error as Error).message}`);
+    } catch (e) {
+      throw new DedotError(`Failed to initialize WalletConnect Modal: ${(e as Error).message}`);
     }
   }
 
   async disconnect(): Promise<void> {
+    if (!this.#provider) return;
+
     try {
-      if (this.#provider) {
-        await Promise.race([
-          await this.#provider.disconnect(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Disconnect timeout')), 5000)),
-        ]);
-      }
+      await Promise.race([
+        await this.#provider.disconnect(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Disconnect timeout')), 5000)),
+      ]);
     } catch (e) {}
 
     this.#cleanUp();
@@ -176,8 +181,6 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
 
     const accounts: InjectedAccount[] = [];
     const polkadotNamespace = this.#provider.session.namespaces.polkadot;
-
-    // TODO: Handle multiple chains and genesisHashes
 
     if (polkadotNamespace && polkadotNamespace.accounts) {
       // Get unique addresses across all chains
@@ -220,7 +223,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
 
           return {
             id: 0,
-            signature: result.signature as `0x${string}`,
+            signature: result.signature as HexString,
           };
         } catch (error) {
           throw new DedotError(`Failed to sign payload with WalletConnect: ${(error as Error).message}`);
@@ -231,13 +234,9 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
         assert(this.#provider?.client && this.#provider?.session, 'Provider client or session not initialized');
 
         try {
-          // Use the first chain from the session
-          const sessionChains = this.#provider.session.namespaces.polkadot?.chains || [];
-          const chainId = sessionChains[0] || genesisHashToCaipId(polkadot.genesisHash!);
-
           const result = (await this.#provider.client.request({
             topic: this.#provider.session.topic,
-            chainId,
+            chainId: genesisHashToCaipId(polkadot.genesisHash!),
             request: {
               method: 'polkadot_signMessage',
               params: {
@@ -250,7 +249,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
 
           return {
             id: 0,
-            signature: result.signature as `0x${string}`,
+            signature: result.signature as HexString,
           };
         } catch (error) {
           throw new DedotError(`Failed to sign raw message with WalletConnect: ${(error as Error).message}`);
@@ -279,11 +278,11 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
     };
   }
 
-  #createInjectedProvider(): void {
+  #getInjectedProvider(): InjectedWindowProvider {
     const signer = this.#getSigner();
     const accounts = this.#getInjectedAccounts();
 
-    this.#injectedProvider = {
+    return {
       enable: async (): Promise<{ accounts: InjectedAccounts; signer: InjectedSigner }> => {
         if (!this.#provider?.session) {
           throw new Error('WalletConnect session not established');
@@ -294,6 +293,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
           signer,
         };
       },
+
       version: '1.0.0',
     };
   }
