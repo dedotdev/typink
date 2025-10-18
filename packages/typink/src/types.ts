@@ -79,6 +79,7 @@ export interface NetworkInfo {
   pjsUrl?: string;
   faucetUrl?: string;
   jsonRpcApi?: JsonRpcApi; // default to new
+  genesisHash?: string;
   chainSpec?: () => Promise<string>;
   relayChain?: NetworkInfo;
 }

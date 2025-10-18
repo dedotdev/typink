@@ -17,6 +17,7 @@ vi.mock('jotai', () => ({
   useAtomValue: (atom: any) => mockUseAtomValue(atom),
   useSetAtom: (atom: any) => mockUseSetAtom(atom),
   createStore: vi.fn(() => ({})),
+  atom: (initialValue: any) => initialValue,
   Provider: ({ children }: any) => children,
 }));
 

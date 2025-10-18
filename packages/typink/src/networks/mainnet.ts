@@ -11,6 +11,7 @@ export const alephZero: NetworkInfo = {
   decimals: 12,
   jsonRpcApi: JsonRpcApi.LEGACY,
   subscanUrl: 'https://alephzero.subscan.io',
+  genesisHash: '0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0307e',
 };
 
 export const astar: NetworkInfo = {
@@ -22,6 +23,7 @@ export const astar: NetworkInfo = {
   symbol: 'ASTR',
   decimals: 18,
   subscanUrl: 'https://astar.subscan.io',
+  genesisHash: '0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6',
 };
 
 export const shiden: NetworkInfo = {
@@ -33,6 +35,7 @@ export const shiden: NetworkInfo = {
   symbol: 'SDN',
   decimals: 18,
   subscanUrl: 'https://shiden.subscan.io',
+  genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108',
 };
 
 export const polkadot: NetworkInfo = {
@@ -60,6 +63,7 @@ export const polkadot: NetworkInfo = {
   chainSpec: async () => {
     return (await import('@substrate/connect-known-chains/polkadot')).chainSpec;
   },
+  genesisHash: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
 };
 
 export const polkadotAssetHub: NetworkInfo = {
@@ -85,6 +89,7 @@ export const polkadotAssetHub: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/polkadot_asset_hub')).chainSpec;
   },
   relayChain: polkadot,
+  genesisHash: '0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f',
 };
 
 export const polkadotPeople: NetworkInfo = {
@@ -106,6 +111,7 @@ export const polkadotPeople: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/polkadot_people')).chainSpec;
   },
   relayChain: polkadot,
+  genesisHash: '0x67fa177a097bfa18f77ea95ab56e9bcdfeb0e5b8a40e46298bb93e16b6fc5008',
 };
 
 export const kusama: NetworkInfo = {
@@ -130,6 +136,7 @@ export const kusama: NetworkInfo = {
   chainSpec: async () => {
     return (await import('@substrate/connect-known-chains/ksmcc3')).chainSpec;
   },
+  genesisHash: '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
 };
 
 export const kusamaAssetHub: NetworkInfo = {
@@ -154,6 +161,7 @@ export const kusamaAssetHub: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/ksmcc3_asset_hub')).chainSpec;
   },
   relayChain: kusama,
+  genesisHash: '0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a',
 };
 
 export const kusamaPeople: NetworkInfo = {
@@ -178,6 +186,7 @@ export const kusamaPeople: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/ksmcc3_people')).chainSpec;
   },
   relayChain: kusama,
+  genesisHash: '0xc1af4cb4eb3918e5db15086c0cc5ec17fb334f728b7c65dd44bfe1e174ff8b3f',
 };
 
 export const hydration: NetworkInfo = {
@@ -195,6 +204,7 @@ export const hydration: NetworkInfo = {
   symbol: 'HDX',
   decimals: 12,
   subscanUrl: 'https://hydration.subscan.io',
+  genesisHash: '0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d',
 };
 
 export const basilisk: NetworkInfo = {
@@ -206,6 +216,7 @@ export const basilisk: NetworkInfo = {
   symbol: 'BSX',
   decimals: 12,
   subscanUrl: 'https://basilisk.subscan.io',
+  genesisHash: '0xa85cfb9b9fd4d622a5b28289a02347af987d8f73fa3108450e2b4a11c1ce5755',
 };
 
 export const vara: NetworkInfo = {
@@ -217,4 +228,5 @@ export const vara: NetworkInfo = {
   symbol: 'VARA',
   decimals: 12,
   subscanUrl: 'https://vara.subscan.io',
+  genesisHash: '0xfe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763',
 };

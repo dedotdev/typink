@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { TypinkAccount } from '../types.js';
-import { polkadotjs, subwallet, talisman, Wallet } from '../wallets/index.js';
+import { polkadotjs, subwallet, talisman, Wallet, WalletConnect } from '../wallets/index.js';
 import { noop } from '../utils/index.js';
 import { WalletProvider, WalletProviderProps } from './WalletProvider.js';
 import {
@@ -19,6 +19,7 @@ import {
   initializeWalletsAtom,
   setExternalSignerAtom,
 } from '../atoms/walletActions.js';
+import { supportedNetworksAtom } from '../atoms/clientAtoms.js';
 
 // Split these into 2 separate context (one for setup & one for signer & connected account)
 export interface WalletSetupContextProps {
@@ -86,6 +87,7 @@ export function WalletSetupProvider({
   const accounts = useAtomValue(allAccountsAtom);
   const availableWallets = useAtomValue(availableWalletsAtom);
   const finalEffectiveSigner = useAtomValue(finalEffectiveSignerAtom);
+  const supportedNetworks = useAtomValue(supportedNetworksAtom);
 
   // Use atom actions
   const connectWallet = useSetAtom(connectWalletAtom);
@@ -95,8 +97,16 @@ export function WalletSetupProvider({
   // Initialize wallets and app name
   useEffect(() => {
     const walletsToUse = initialWallets || DEFAULT_WALLETS;
+    
+    // Configure WalletConnect with supported networks
+    for (const wallet of walletsToUse) {
+      if (wallet instanceof WalletConnect && supportedNetworks.length > 0) {
+        wallet.setSupportedNetworks(supportedNetworks);
+      }
+    }
+    
     initializeWallets(walletsToUse);
-  }, [initialWallets, initializeWallets]);
+  }, [initialWallets, supportedNetworks, initializeWallets]);
 
   useEffect(() => {
     initializeAppName(appName);

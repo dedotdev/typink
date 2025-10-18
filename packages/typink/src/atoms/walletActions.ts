@@ -8,7 +8,7 @@ import {
   walletConnectionsAtomFamily,
 } from './walletAtoms.js';
 import { InjectedSigner, TypinkAccount } from '../types.js';
-import { Wallet } from '../wallets/index.js';
+import { Wallet, WalletConnect } from '../wallets/index.js';
 import { assert } from 'dedot/utils';
 import { transformInjectedToTypinkAccounts } from '../utils/index.js';
 
@@ -91,7 +91,7 @@ export const connectWalletAtom = atom(null, async (get, set, walletId: string) =
 });
 
 // Write-only atom for disconnecting wallet(s)
-export const disconnectWalletAtom = atom(null, (get, set, walletId?: string) => {
+export const disconnectWalletAtom = atom(null, async (get, set, walletId?: string) => {
   const walletIds = get(connectedWalletIdsAtom);
   const connectedAccount = get(connectedAccountAtom);
 
@@ -99,6 +99,11 @@ export const disconnectWalletAtom = atom(null, (get, set, walletId?: string) => 
     // Disconnect specific wallet
     const connectionAtom = walletConnectionsAtomFamily(walletId);
     const connection = get(connectionAtom);
+
+    // Clean up WalletConnect session if needed
+    if (connection?.wallet instanceof WalletConnect) {
+      await connection.wallet.disconnect();
+    }
 
     // Clean up subscription
     if (connection?.subscription) {
@@ -118,14 +123,20 @@ export const disconnectWalletAtom = atom(null, (get, set, walletId?: string) => 
     }
   } else {
     // Disconnect all wallets
-    walletIds.forEach((id) => {
+    for (const id of walletIds) {
       const connectionAtom = walletConnectionsAtomFamily(id);
       const connection = get(connectionAtom);
+
+      // Clean up WalletConnect session if needed
+      if (connection?.wallet instanceof WalletConnect) {
+        await connection.wallet.disconnect();
+      }
+
       if (connection?.subscription) {
         connection.subscription();
       }
       set(connectionAtom, null);
-    });
+    }
 
     set(connectedWalletIdsAtom, []);
     set(connectedAccountAtom, undefined);

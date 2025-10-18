@@ -11,6 +11,7 @@ export const popTestnet: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://onboard.popnetwork.xyz',
   pjsUrl: 'https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc1.paseo.popnetwork.xyz',
+  genesisHash: '0xe8b2d197b82a0da1fffca832c050894ebe343b289c61ef439aa694bdcef78aa1',
 };
 
 export const alephZeroTestnet: NetworkInfo = {
@@ -36,6 +37,7 @@ export const shibuyaTestnet: NetworkInfo = {
   decimals: 18,
   faucetUrl: 'https://docs.astar.network/docs/build/environment/faucet',
   subscanUrl: 'https://shibuya.subscan.io',
+  genesisHash: '0xddb89973361a170839f80f152d2e9e38a376a5a7eccefcade763f46a8e567019',
 };
 
 export const westend: NetworkInfo = {
@@ -51,6 +53,7 @@ export const westend: NetworkInfo = {
   chainSpec: async () => {
     return (await import('@substrate/connect-known-chains/westend2')).chainSpec;
   },
+  genesisHash: '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e',
 };
 
 export const westendAssetHub: NetworkInfo = {
@@ -67,6 +70,7 @@ export const westendAssetHub: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/westend2_asset_hub')).chainSpec;
   },
   relayChain: westend,
+  genesisHash: '0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9',
 };
 
 export const westendPeople: NetworkInfo = {
@@ -83,6 +87,7 @@ export const westendPeople: NetworkInfo = {
     return (await import('@substrate/connect-known-chains/westend_people')).chainSpec;
   },
   relayChain: westend,
+  genesisHash: '0x1eb6fb0ba5187434de017a70cb84d4f47142df1d571d0ef9e7e1407f2b80b93c',
 };
 
 export const paseo: NetworkInfo = {
@@ -103,6 +108,7 @@ export const paseo: NetworkInfo = {
   chainSpec: async () => {
     return (await import('@substrate/connect-known-chains/paseo')).chainSpec;
   },
+  genesisHash: '0x77afd6190f1554ad45fd0d31aee62aacc33c6db0ea801129acb813f913e0764f',
 };
 
 export const paseoPeople: NetworkInfo = {
@@ -118,6 +124,7 @@ export const paseoPeople: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://people-paseo.subscan.io',
+  genesisHash: '0xe6c30d6e148f250b887105237bcaa5cb9f16dd203bf7b5b9d4f1da7387cb86ec',
 };
 
 export const paseoAssetHub: NetworkInfo = {
@@ -136,6 +143,7 @@ export const paseoAssetHub: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://assethub-paseo.subscan.io',
+  genesisHash: '0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2',
 };
 
 export const passetHub: NetworkInfo = {
@@ -150,6 +158,7 @@ export const passetHub: NetworkInfo = {
   symbol: 'PAS',
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io/?parachain=1111',
+  genesisHash: '0xfd974cf9eaf028f5e44b9fdd1949ab039c6cf9cc54449b0b60d71b042e79aeb6',
 };
 
 export const paseoHydration: NetworkInfo = {
@@ -161,4 +170,5 @@ export const paseoHydration: NetworkInfo = {
   symbol: 'HDX',
   decimals: 12,
   faucetUrl: 'https://faucet.polkadot.io',
+  genesisHash: '0x05fab032a899566268235e3c89c847fb4644558a0d856282d47d17ff06cb2020',
 };
