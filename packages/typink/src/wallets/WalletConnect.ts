@@ -67,6 +67,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
 
   async #connect(): Promise<void> {
     assert(this.#provider, 'WalletConnect provider not initialized');
+    assert(this.#modal, 'WalletConnect modal not initialized');
 
     try {
       if (this.#provider.session) {
@@ -93,13 +94,13 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
           await this.#modal!.openModal({ uri });
         }
 
-        const race = new Promise<never>((_, reject) => {
+        const userCloseModal = new Promise<never>((_, reject) => {
           this.#modal!.subscribeModal((state: { open: boolean }) => {
             !state.open && reject(new DedotError('User closed WalletConnect modal'));
           });
         });
 
-        this.#provider.session = await Promise.race([approval(), race]);
+        this.#provider.session = await Promise.race([approval(), userCloseModal]);
         this.#modal!.closeModal();
         this.#accounts = this.#getAccounts();
       }
@@ -283,7 +284,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
     const accounts = this.#getInjectedAccounts();
 
     return {
-      enable: async (): Promise<{ accounts: InjectedAccounts; signer: InjectedSigner }> => {
+      enable: async (_origin: string): Promise<{ accounts: InjectedAccounts; signer: InjectedSigner }> => {
         if (!this.#provider?.session) {
           throw new Error('WalletConnect session not established');
         }

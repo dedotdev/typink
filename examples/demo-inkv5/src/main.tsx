@@ -14,7 +14,7 @@ import {
   subwallet,
   talisman,
   TypinkProvider,
-  WalletConnect,
+  walletConnect,
 } from 'typink';
 import { toast } from 'react-toastify';
 
@@ -25,20 +25,6 @@ const SUPPORTED_NETWORK = [alephZero];
 // if (process.env.NODE_ENV === 'development') {
 //   SUPPORTED_NETWORK.push(development);
 // }
-
-export const walletConnect = new WalletConnect({
-  name: 'WalletConnect',
-  id: 'walletconnect',
-  logo: 'https://raw.githubusercontent.com/dedotdev/typink/feature/wallet-connect/assets/wallets/wallet-connect-logo.svg',
-  projectId: 'b56e18d47c72ab683b10814fe9495694', // Default
-  relayUrl: 'wss://relay.walletconnect.com',
-  metadata: {
-    name: 'Typink Dapp',
-    description: 'Typink powered dApp',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://typink.dev',
-    icons: ['https://raw.githubusercontent.com/dedotdev/typink/main/assets/typink/typink-pink-logo.png'],
-  },
-});
 
 const enkrypt = new ExtensionWallet({
   name: 'Enkrypt',
