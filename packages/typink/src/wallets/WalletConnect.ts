@@ -14,7 +14,6 @@ import { NetworkInfo } from '../types.js';
 import type { WalletConnectModal } from '@walletconnect/modal';
 import { assert, DedotError, HexString } from 'dedot/utils';
 import { genesisHashToCaipId, convertNetworkInfoToCaipId } from '../utils/chains.js';
-import { polkadot } from '../networks/index.js';
 
 export interface WalletConnectOptions extends WalletOptions {
   projectId: string;
@@ -163,7 +162,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
 
     try {
       await Promise.race([
-        await this.#provider.disconnect(),
+        this.#provider.disconnect(),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Disconnect timeout')), 5000)),
       ]);
     } catch (e) {}
@@ -235,9 +234,13 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
         assert(this.#provider?.client && this.#provider?.session, 'Provider client or session not initialized');
 
         try {
+          // We choose the first one in the list because it is required to be one of the chain IDs
+          // that were requested during session creation, so we cannot make it to use a default one (e.g., polkadot mainnet)
+          const chainId = this.#provider.session.namespaces.polkadot.chains![0];
+
           const result = (await this.#provider.client.request({
             topic: this.#provider.session.topic,
-            chainId: genesisHashToCaipId(polkadot.genesisHash!),
+            chainId,
             request: {
               method: 'polkadot_signMessage',
               params: {
