@@ -75,7 +75,7 @@ export class WalletConnect extends Wallet<WalletConnectOptions> {
         const chains = convertNetworkInfoToCaipId(this.#supportedNetworks);
 
         const { uri, approval } = await this.#provider.client!.connect({
-          requiredNamespaces: {
+          optionalNamespaces: {
             polkadot: {
               chains,
               methods: [
