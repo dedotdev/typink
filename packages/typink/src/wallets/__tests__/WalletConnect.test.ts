@@ -158,7 +158,7 @@ describe('WalletConnect', () => {
       await walletConnect.waitUntilReady();
 
       expect(mockClient.connect).toHaveBeenCalledWith({
-        requiredNamespaces: {
+        optionalNamespaces: {
           polkadot: {
             chains: expect.any(Array),
             methods: [
