@@ -1,4 +1,5 @@
 import { InjectedWindow } from '../types.js';
+import { InjectedWindowProvider } from '../pjs-types.js';
 
 export interface WalletOptions {
   id: string;
@@ -35,7 +36,7 @@ export abstract class Wallet<Options extends WalletOptions = WalletOptions> {
     return injectedWindow.injectedWeb3;
   }
 
-  get injectedProvider() {
+  get injectedProvider(): InjectedWindowProvider | undefined {
     return this.injectedWeb3[this.id];
   }
 
