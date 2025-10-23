@@ -63,7 +63,7 @@ function Root() {
   return (
     <ChakraProvider theme={theme}>
       <LunoKitProvider config={config}>
-        <TypinApp />
+        <TypinkApp />
       </LunoKitProvider>
     </ChakraProvider>
   );
