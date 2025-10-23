@@ -1,0 +1,46 @@
+{
+  "name": "demo-lunokit",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "typink": "npx dedot typink -m ./src/contracts/artifacts/psp22/psp22.contract -o ./src/contracts/types && npx dedot typink -m ./src/contracts/artifacts/greeter/greeter.contract -o ./src/contracts/types"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "2.2.5",
+    "@chakra-ui/react": "^2.10.5",
+    "@chakra-ui/system": "^2.6.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@luno-kit/react": "^0.0.8",
+    "@luno-kit/ui": "^0.0.8",
+    "@tanstack/react-query": "5.81.5",
+    "dedot": "^0.18.3",
+    "framer-motion": "^10.18.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-use": "^17.6.0",
+    "sonner": "^2.0.7",
+    "svelte-qrcode": "^1.0.1",
+    "typink": "workspace:*"
+  },
+  "devDependencies": {
+    "@dedot/chaintypes": "^0.161.0",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.35.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.6",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

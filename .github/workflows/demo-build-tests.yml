@@ -30,3 +30,4 @@ jobs:
     - run: yarn workspace demo-inkv5 build
     - run: yarn workspace demo-inkv6 build
     - run: yarn workspace demo-subconnect build
+    - run: yarn workspace demo-lunokit build
