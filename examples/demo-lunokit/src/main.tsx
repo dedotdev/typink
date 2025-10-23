@@ -30,7 +30,7 @@ setupTxToaster({
   adapter: new SonnerAdapter(toast),
 });
 
-function TypinApp() {
+function TypinkApp() {
   const { data: signer } = useSigner();
   const { account } = useAccount();
 
