@@ -28,7 +28,7 @@ Typink is a fully type-safe React hooks library for seamless ink! and Solidity s
 ### Why Typink?
 - ✅ **Unified Type-Safe Hooks** - Same React hooks work seamlessly across ink!, and Solidity contracts.
 - ✅ **Instant Project Scaffolding** - Launch new projects in seconds with create-typink CLI and pre-configured Next.js templates
-- ✅ **Flexible Wallet Connector Integration** - Supports external wallet connectors like [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect) or built your own using Typink's hooks & API.
+- ✅ **Flexible Wallet Connector Integration** - Supports external wallet connectors like [SubConnect](https://github.com/Koniverse/SubConnect-v2), [Talisman Connect](https://github.com/TalismanSociety/talisman-connect), [LunoKit](https://www.lunolab.xyz/) or built your own using Typink's hooks & API.
 - ✅ **Multi-Network Support** - Connect to multiple networks simultaneously with lazy initialization and seamless network switching
 
 ### Quick look
@@ -91,6 +91,7 @@ Check out Typink documentation on our website: https://typink.dev
 
 - [Demo](https://github.com/dedotdev/typink/tree/main/examples/demo-inkv5) (https://typink-demo.netlify.app/)
 - [Demo with SubConnect](https://github.com/dedotdev/typink/tree/main/examples/demo-subconnect) (https://typink-subconnect.netlify.app/)
+- [Demo with LunoKit](https://github.com/dedotdev/typink/tree/main/examples/demo-lunokit) (https://typink-lunokit.netlify.app/)
 
 ### License
 
