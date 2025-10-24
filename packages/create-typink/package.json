@@ -25,7 +25,7 @@
     "inquirer": "^12.9.6",
     "listr2": "^9.0.4",
     "prettier": "^3.6.2",
-    "validate-npm-package-name": "^6.0.2"
+    "validate-npm-package-name": "^7.0.0"
   },
   "publishConfig": {
     "access": "public",
