@@ -5857,21 +5857,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.81.5":
-  version: 5.81.5
-  resolution: "@tanstack/query-core@npm:5.81.5"
-  checksum: 10/a324ab3380c1c282b95520de8b74af537cfe6b44ae06b6639b3e7a70757c81c2db03f765c27aa770d6c44ef8e1f7cbba243863021ded53fff965a522d1e5f698
+"@tanstack/query-core@npm:5.90.7":
+  version: 5.90.7
+  resolution: "@tanstack/query-core@npm:5.90.7"
+  checksum: 10/bb2a2caf1558c09276ab1e30ad343b31f56ba9421bb4319c1d5dd36efcb95fc2823dbe1eb7982e7aa76c1fbe48b8fecac7e465206c8d16886f552129c487c288
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.81.5":
-  version: 5.81.5
-  resolution: "@tanstack/react-query@npm:5.81.5"
+"@tanstack/react-query@npm:5.90.7":
+  version: 5.90.7
+  resolution: "@tanstack/react-query@npm:5.90.7"
   dependencies:
-    "@tanstack/query-core": "npm:5.81.5"
+    "@tanstack/query-core": "npm:5.90.7"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10/35c75cf902938a76d468c0e1f08d738afc989ddc3728c4d2c00b16975870500da98aea21c1a682726abb3ef5f6348cb739335e3b940224ccc527b27dddc20fd4
+  checksum: 10/d1461cfcaad90678d81c2ec1b5ff92cd54d4a08fed7710d67b01825d697e58951530954fdd59f344511da96bf001b218b25af60141683d54e4e279c7b16d3c6a
   languageName: node
   linkType: hard
 
@@ -9124,7 +9124,7 @@ __metadata:
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
     "@luno-kit/react": "npm:^0.0.8"
     "@luno-kit/ui": "npm:^0.0.8"
-    "@tanstack/react-query": "npm:5.81.5"
+    "@tanstack/react-query": "npm:5.90.7"
     "@types/react": "npm:^19.1.1"
     "@types/react-dom": "npm:^19.1.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.44.0"
