@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.14.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@luno-kit/react": "^0.0.8",
-    "@luno-kit/ui": "^0.0.8",
+    "@luno-kit/ui": "^0.0.9",
     "@tanstack/react-query": "5.81.5",
     "dedot": "^0.18.3",
     "framer-motion": "^10.18.0",
