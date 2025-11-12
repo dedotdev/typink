@@ -58,7 +58,7 @@ export const polkadot: NetworkInfo = {
   decimals: 10,
   subscanUrl: 'https://polkadot.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/polkadot')).chainSpec;
+    return (await import('@dedot/chain-specs/polkadot')).chainSpec;
   },
 };
 
@@ -82,7 +82,7 @@ export const polkadotAssetHub: NetworkInfo = {
   decimals: 10,
   subscanUrl: 'https://assethub-polkadot.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/polkadot_asset_hub')).chainSpec;
+    return (await import('@dedot/chain-specs/polkadot_asset_hub')).chainSpec;
   },
   relayChain: polkadot,
 };
@@ -103,7 +103,7 @@ export const polkadotPeople: NetworkInfo = {
   decimals: 10,
   subscanUrl: 'https://people-polkadot.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/polkadot_people')).chainSpec;
+    return (await import('@dedot/chain-specs/polkadot_people')).chainSpec;
   },
   relayChain: polkadot,
 };
@@ -128,7 +128,7 @@ export const kusama: NetworkInfo = {
   decimals: 12,
   subscanUrl: 'https://kusama.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/ksmcc3')).chainSpec;
+    return (await import('@dedot/chain-specs/ksmcc3')).chainSpec;
   },
 };
 
@@ -151,7 +151,7 @@ export const kusamaAssetHub: NetworkInfo = {
   decimals: 12,
   subscanUrl: 'https://assethub-kusama.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/ksmcc3_asset_hub')).chainSpec;
+    return (await import('@dedot/chain-specs/ksmcc3_asset_hub')).chainSpec;
   },
   relayChain: kusama,
 };
@@ -175,7 +175,7 @@ export const kusamaPeople: NetworkInfo = {
   decimals: 12,
   subscanUrl: 'https://people-kusama.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/ksmcc3_people')).chainSpec;
+    return (await import('@dedot/chain-specs/ksmcc3_people')).chainSpec;
   },
   relayChain: kusama,
 };

@@ -49,7 +49,7 @@ export const westend: NetworkInfo = {
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://westend.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/westend2')).chainSpec;
+    return (await import('@dedot/chain-specs/westend2')).chainSpec;
   },
 };
 
@@ -64,7 +64,7 @@ export const westendAssetHub: NetworkInfo = {
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://assethub-westend.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/westend2_asset_hub')).chainSpec;
+    return (await import('@dedot/chain-specs/westend2_asset_hub')).chainSpec;
   },
   relayChain: westend,
 };
@@ -80,7 +80,7 @@ export const westendPeople: NetworkInfo = {
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://people-westend.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/westend_people')).chainSpec;
+    return (await import('@dedot/chain-specs/westend2_people')).chainSpec;
   },
   relayChain: westend,
 };
@@ -101,7 +101,7 @@ export const paseo: NetworkInfo = {
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://paseo.subscan.io',
   chainSpec: async () => {
-    return (await import('@substrate/connect-known-chains/paseo')).chainSpec;
+    return (await import('@dedot/chain-specs/paseo')).chainSpec;
   },
 };
 
@@ -118,6 +118,10 @@ export const paseoPeople: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://people-paseo.subscan.io',
+  chainSpec: async () => {
+    return (await import('@dedot/chain-specs/paseo_people')).chainSpec;
+  },
+  relayChain: paseo,
 };
 
 export const paseoAssetHub: NetworkInfo = {
@@ -136,6 +140,10 @@ export const paseoAssetHub: NetworkInfo = {
   decimals: 10,
   faucetUrl: 'https://faucet.polkadot.io',
   subscanUrl: 'https://assethub-paseo.subscan.io',
+  chainSpec: async () => {
+    return (await import('@dedot/chain-specs/paseo_asset_hub')).chainSpec;
+  },
+  relayChain: paseo,
 };
 
 export const passetHub: NetworkInfo = {
