@@ -1,9 +1,17 @@
 import { vi } from 'vitest';
 import { createStore } from 'jotai';
 import { Wallet } from '../../wallets/index.js';
-import { NetworkInfo, TypinkAccount, InjectedSigner, JsonRpcApi, NetworkType, NetworkConnection, ProviderType } from '../../types.js';
-import { CompatibleSubstrateApi } from '../../providers/ClientProvider.js';
+import {
+  NetworkInfo,
+  TypinkAccount,
+  InjectedSigner,
+  JsonRpcApi,
+  NetworkType,
+  NetworkConnection,
+  ProviderType,
+} from '../../types.js';
 import { WalletConnection } from '../walletAtoms.js';
+import { DedotClient } from 'dedot';
 
 /**
  * Creates a fresh Jotai store for testing with isolation
@@ -27,11 +35,7 @@ export const createMockSigner = (walletId?: string): InjectedSigner => ({
 /**
  * Mock factory for creating TypinkAccount instances
  */
-export const createMockTypinkAccount = (
-  address: string,
-  source: string,
-  name?: string
-): TypinkAccount => ({
+export const createMockTypinkAccount = (address: string, source: string, name?: string): TypinkAccount => ({
   address,
   source,
   name,
@@ -56,7 +60,7 @@ export const createMockWallet = (
     readyError?: Error;
     name?: string;
     logo?: string;
-  } = {}
+  } = {},
 ): Wallet => {
   const walletOptions = {
     id,
@@ -91,7 +95,7 @@ export const createMockInjectedProvider = (
   options: {
     enableError?: Error;
     subscriptionCallback?: (accounts: any[]) => void;
-  } = {}
+  } = {},
 ) => {
   let currentAccounts = [...accounts];
   let subscriptionFn: ((accounts: any[]) => void) | null = null;
@@ -112,7 +116,7 @@ export const createMockInjectedProvider = (
         signer: createMockSigner(),
       });
     }),
-    
+
     // Test utility to simulate account changes
     _simulateAccountsChange: (newAccounts: any[]) => {
       currentAccounts = [...newAccounts];
@@ -140,7 +144,7 @@ export const createMockNetworkInfo = (
     type?: NetworkType;
     chainSpec?: () => Promise<string>;
     relayChain?: NetworkInfo;
-  } = {}
+  } = {},
 ): NetworkInfo => ({
   id,
   name: options.name || `Mock Network ${id}`,
@@ -162,16 +166,17 @@ export const createMockSubstrateClient = (
   options: {
     disconnectError?: Error;
     setSigner?: ReturnType<typeof vi.fn>;
-  } = {}
-): CompatibleSubstrateApi => ({
-  disconnect: vi.fn().mockImplementation(async () => {
-    if (options.disconnectError) {
-      throw options.disconnectError;
-    }
-  }),
-  setSigner: options.setSigner || vi.fn(),
-  _networkId: networkId, // For testing identification
-} as unknown as CompatibleSubstrateApi);
+  } = {},
+): DedotClient =>
+  ({
+    disconnect: vi.fn().mockImplementation(async () => {
+      if (options.disconnectError) {
+        throw options.disconnectError;
+      }
+    }),
+    setSigner: options.setSigner || vi.fn(),
+    _networkId: networkId, // For testing identification
+  }) as unknown as DedotClient;
 
 /**
  * Mock factory for creating WalletConnection instances
@@ -183,7 +188,7 @@ export const createMockWalletConnection = (
     wallet?: Wallet;
     signer?: InjectedSigner;
     subscription?: () => void;
-  } = {}
+  } = {},
 ): WalletConnection => ({
   walletId,
   wallet: options.wallet || createMockWallet(walletId),
@@ -200,7 +205,7 @@ export const createMockSmoldotClient = () => ({
 });
 
 /**
- * Mock factory for creating Smoldot chain instances  
+ * Mock factory for creating Smoldot chain instances
  */
 export const createMockSmoldotChain = () => ({
   remove: vi.fn().mockResolvedValue(undefined),
@@ -216,22 +221,22 @@ export const TEST_NETWORKS = {
     decimals: 10,
     providers: ['wss://polkadot.api.test'],
   }),
-  
+
   KUSAMA: createMockNetworkInfo('kusama', {
-    name: 'Kusama', 
+    name: 'Kusama',
     symbol: 'KSM',
     decimals: 12,
     providers: ['wss://kusama.api.test'],
   }),
-  
+
   WESTEND: createMockNetworkInfo('westend', {
     name: 'Westend',
-    symbol: 'WND', 
+    symbol: 'WND',
     decimals: 12,
     providers: ['wss://westend.api.test'],
     jsonRpcApi: JsonRpcApi.LEGACY,
   }),
-  
+
   LIGHT_CHAIN: createMockNetworkInfo('light-chain', {
     name: 'Light Chain',
     symbol: 'LIGHT',
@@ -239,7 +244,7 @@ export const TEST_NETWORKS = {
     providers: ['wss://light.api.test'],
     chainSpec: vi.fn().mockResolvedValue('mock-chain-spec'),
   }),
-  
+
   PARA_CHAIN: createMockNetworkInfo('para-chain', {
     name: 'Para Chain',
     symbol: 'PARA',
@@ -248,7 +253,7 @@ export const TEST_NETWORKS = {
     chainSpec: vi.fn().mockResolvedValue('mock-para-chain-spec'),
     relayChain: createMockNetworkInfo('relay-chain', {
       name: 'Relay Chain',
-      symbol: 'RELAY', 
+      symbol: 'RELAY',
       decimals: 12,
       providers: ['wss://relay.api.test'],
       chainSpec: vi.fn().mockResolvedValue('mock-relay-chain-spec'),
@@ -279,7 +284,7 @@ export const TEST_WALLETS = {
  * Test utility to wait for async operations
  */
 export const waitForAsync = (ms: number = 0) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 /**
@@ -292,35 +297,34 @@ export const setupWalletConnectionScenario = (
     accounts: TypinkAccount[];
     connectedAccount?: TypinkAccount;
     appName?: string;
-  }
+  },
 ) => {
   const { walletId, accounts, connectedAccount, appName = 'Test DApp' } = options;
-  
-  const injectedAccounts = accounts.map(acc => 
-    createMockInjectedAccount(acc.address, acc.name)
-  );
-  
+
+  const injectedAccounts = accounts.map((acc) => createMockInjectedAccount(acc.address, acc.name));
+
   const provider = createMockInjectedProvider(injectedAccounts);
   const wallet = createMockWallet(walletId, { injectedProvider: provider });
-  
+
   return {
     wallet,
     provider,
     injectedAccounts,
     setup: async () => {
-      const { initializeWalletsAtom, initializeAppNameAtom, connectWalletAtom, setConnectedAccountAtom } = 
-        await import('../walletActions.js');
-      
+      const { initializeWalletsAtom, initializeAppNameAtom, connectWalletAtom, setConnectedAccountAtom } = await import(
+        '../walletActions.js'
+      );
+
       store.set(initializeWalletsAtom, [wallet]);
       store.set(initializeAppNameAtom, appName);
       await store.set(connectWalletAtom, walletId);
-      
+
       if (connectedAccount) {
         store.set(setConnectedAccountAtom, connectedAccount);
       }
-      
+
       return { wallet, provider };
-    }
+    },
   };
 };
 
@@ -333,46 +337,48 @@ export const setupNetworkClientScenario = (
     networks: NetworkInfo[];
     connections: NetworkConnection[];
     cacheMetadata?: boolean;
-  }
+  },
 ) => {
   const { networks, connections, cacheMetadata = false } = options;
-  
+
   const clients = new Map();
-  connections.forEach(conn => {
+  connections.forEach((conn) => {
     clients.set(conn.networkId, createMockSubstrateClient(conn.networkId));
   });
-  
+
   return {
     clients,
     setup: async () => {
-      const { 
-        initializeSupportedNetworksAtom, 
-        initializeCacheMetadataAtom,
-        initializeClientsAtom 
-      } = await import('../clientActions.js');
+      const { initializeSupportedNetworksAtom, initializeCacheMetadataAtom, initializeClientsAtom } = await import(
+        '../clientActions.js'
+      );
       const { networkConnectionsAtom } = await import('../clientAtoms.js');
-      
+
       store.set(initializeSupportedNetworksAtom, networks);
       store.set(initializeCacheMetadataAtom, cacheMetadata);
       store.set(networkConnectionsAtom, connections);
-      
+
       // Mock the client creation
       const mockClients = Array.from(clients.values());
       const dedotModule = await import('dedot');
       const mockedDedot = vi.mocked(dedotModule);
-      
+
       let clientIndex = 0;
       if (mockedDedot.DedotClient.new) {
-        vi.mocked(mockedDedot.DedotClient.new).mockImplementation(() => Promise.resolve(mockClients[clientIndex++] as any));
+        vi.mocked(mockedDedot.DedotClient.new).mockImplementation(() =>
+          Promise.resolve(mockClients[clientIndex++] as any),
+        );
       }
       if (mockedDedot.LegacyClient.new) {
-        vi.mocked(mockedDedot.LegacyClient.new).mockImplementation(() => Promise.resolve(mockClients[clientIndex++] as any));
+        vi.mocked(mockedDedot.LegacyClient.new).mockImplementation(() =>
+          Promise.resolve(mockClients[clientIndex++] as any),
+        );
       }
-      
+
       await store.set(initializeClientsAtom);
-      
+
       return { clients };
-    }
+    },
   };
 };
 
@@ -387,7 +393,7 @@ export const setupGlobalMocks = () => {
         address: acc.address,
         source: walletId,
         name: acc.name,
-      }))
+      })),
     ),
   }));
 

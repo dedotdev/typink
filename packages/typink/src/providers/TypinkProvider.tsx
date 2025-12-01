@@ -3,7 +3,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import { ClientContextProps, ClientProvider, ClientProviderProps, useClient } from './ClientProvider.js';
 import { useWallet, WalletContextProps } from './WalletProvider.js';
 import { ContractDeployment, SubstrateAddress } from '../types.js';
-import { VersionedGenericSubstrateApi } from 'dedot/types';
+import { GenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import {
   useWalletSetup,
@@ -15,7 +15,7 @@ import { TypinkEventsContextProps, TypinkEventsProvider, useTypinkEvents } from 
 
 const DEFAULT_ADDRESS = '5FTZ6n1wY3GBqEZ2DWEdspbTarvRnp8DM8x2YXbWubu7JN98';
 
-export interface TypinkContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>
+export interface TypinkContextProps<ChainApi extends GenericSubstrateApi = SubstrateApi>
   extends ClientContextProps<ChainApi>,
     WalletSetupContextProps,
     WalletContextProps,
@@ -33,7 +33,7 @@ export interface TypinkProviderProps extends ClientProviderProps, WalletSetupPro
 
 export type TypinkProviderInnerProps = Omit<TypinkProviderProps, 'appName'>;
 
-function TypinkProviderInner<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>({
+function TypinkProviderInner<ChainApi extends GenericSubstrateApi = SubstrateApi>({
   children,
   deployments = [],
   defaultCaller = DEFAULT_ADDRESS,

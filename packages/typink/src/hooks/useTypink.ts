@@ -1,10 +1,8 @@
 import { useContext } from 'react';
 import { TypinkContext, TypinkContextProps } from '../providers/index.js';
-import { VersionedGenericSubstrateApi } from 'dedot/types';
+import { GenericSubstrateApi } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 
-export function useTypink<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
->(): TypinkContextProps<ChainApi> {
+export function useTypink<ChainApi extends GenericSubstrateApi = SubstrateApi>(): TypinkContextProps<ChainApi> {
   return useContext(TypinkContext) as TypinkContextProps<ChainApi>;
 }

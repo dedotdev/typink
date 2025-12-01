@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { ClientConnectionStatus, NetworkConnection, NetworkId, NetworkInfo } from '../types.js';
-import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
+import { DedotClient } from 'dedot';
 
 // Persistent atom for all network connections (primary first, then secondary)
 export const networkConnectionsAtom = atomWithStorage<NetworkConnection[]>(
@@ -12,12 +12,9 @@ export const networkConnectionsAtom = atomWithStorage<NetworkConnection[]>(
 );
 
 // Persistent atom for storing the intended default network IDs as JSON string to detect changes
-export const persistedDefaultNetworkIdsAtom = atomWithStorage<string>(
-  'TYPINK::DEFAULT_NETWORK_IDS',
-  '',
-  undefined,
-  { getOnInit: true },
-);
+export const persistedDefaultNetworkIdsAtom = atomWithStorage<string>('TYPINK::DEFAULT_NETWORK_IDS', '', undefined, {
+  getOnInit: true,
+});
 
 // Atom for supported networks (set during provider initialization)
 export const supportedNetworksAtom = atom<NetworkInfo[]>([]);
@@ -53,10 +50,10 @@ export const currentNetworkAtom = atom<NetworkInfo>((get) => {
 });
 
 // Atom for all clients map (primary + secondary)
-export const clientsMapAtom = atom<Map<NetworkId, CompatibleSubstrateApi>>(new Map());
+export const clientsMapAtom = atom<Map<NetworkId, DedotClient>>(new Map());
 
 // Atom for primary client instance (backward compatibility)
-export const clientAtom = atom<CompatibleSubstrateApi | undefined>((get) => {
+export const clientAtom = atom<DedotClient | undefined>((get) => {
   const connections = get(networkConnectionsAtom);
   const supportedNetworks = get(supportedNetworksAtom);
   const clientsMap = get(clientsMapAtom);
@@ -104,7 +101,7 @@ export const setNetworkAtom = atom(null, (get, set, connection: NetworkId | Netw
 
   // Update only the primary (first) connection, keep the rest
   const newConnections = [newPrimaryConnection, ...currentConnections.slice(1)];
-  
+
   // Reuse setNetworksAtom logic to handle connection status management
   set(setNetworksAtom, newConnections);
 });
@@ -126,22 +123,22 @@ export const setNetworksAtom = atom(null, (get, set, networks: (NetworkId | Netw
   // Clear connection status for networks that are no longer in the new connections
   const currentStatusMap = get(clientConnectionStatusMapAtom);
   const newStatusMap = new Map<NetworkId, ClientConnectionStatus>();
-  const newNetworkIds = new Set(connections.map(conn => conn.networkId));
-  
+  const newNetworkIds = new Set(connections.map((conn) => conn.networkId));
+
   // Keep status for networks that are still active, remove others
   for (const [networkId, status] of currentStatusMap.entries()) {
     if (newNetworkIds.has(networkId)) {
       newStatusMap.set(networkId, status);
     }
   }
-  
+
   // Initialize new networks with NotConnected status
   for (const conn of connections) {
     if (!newStatusMap.has(conn.networkId)) {
       newStatusMap.set(conn.networkId, ClientConnectionStatus.NotConnected);
     }
   }
-  
+
   set(clientConnectionStatusMapAtom, newStatusMap);
   // Update all connections (primary is first, rest are secondary)
   set(networkConnectionsAtom, connections);
