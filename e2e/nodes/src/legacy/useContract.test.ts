@@ -3,12 +3,12 @@ import { ContractId, deployFlipperContract, flipperMetadata, newDeployment, wrap
 import { numberToHex } from 'dedot/utils';
 import { ALICE, BOB } from '../shared';
 import { Contract } from 'dedot/contracts';
-import { FlipperContractApi } from './contracts/flipper';
+import { FlipperV5ContractApi } from './contracts/flipper-v5';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContract } from 'typink';
 
 describe('useContract', () => {
-  let contractAddress: string, contract: Contract<FlipperContractApi>;
+  let contractAddress: string, contract: Contract<FlipperV5ContractApi>;
   beforeAll(async () => {
     const randomSalt = numberToHex(Date.now());
     contractAddress = await deployFlipperContract(randomSalt);
@@ -24,7 +24,7 @@ describe('useContract', () => {
   });
 
   it('should initialize contract instance successfully', async () => {
-    const { result } = renderHook(() => useContract<FlipperContractApi>(ContractId.FLIPPER), {
+    const { result } = renderHook(() => useContract<FlipperV5ContractApi>(ContractId.FLIPPER), {
       wrapper: wrapperFn([newDeployment(ContractId.FLIPPER, contractAddress)]),
     });
 

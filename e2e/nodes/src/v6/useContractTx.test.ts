@@ -1,11 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { deployPsp22Contract, flipperMetadata, psp22Metadata, wrapper } from './utils.js';
 import { BOB } from '../shared';
-import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractTx, useRawContract } from 'typink';
-import { Psp22ContractApi } from './contracts/psp22';
-import { FlipperContractApi } from './contracts/flipper';
+import { Psp22v6ContractApi } from './contracts/psp22v6';
+import { Flipperv6ContractApi } from './contracts/flipperv6';
 import { toEvmAddress } from 'dedot/contracts';
 
 describe('useContractTx', () => {
@@ -16,9 +15,12 @@ describe('useContractTx', () => {
   });
 
   it('should transfer balance successfully', async () => {
-    const { result: rawContract } = renderHook(() => useRawContract<Psp22ContractApi>(psp22Metadata, contractAddress), {
-      wrapper,
-    });
+    const { result: rawContract } = renderHook(
+      () => useRawContract<Psp22v6ContractApi>(psp22Metadata, contractAddress),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => {
       expect(rawContract.current.contract).toBeDefined();
@@ -62,9 +64,12 @@ describe('useContractTx', () => {
   });
 
   it('should throw error on balance insufficient', async () => {
-    const { result: rawContract } = renderHook(() => useRawContract<Psp22ContractApi>(psp22Metadata, contractAddress), {
-      wrapper,
-    });
+    const { result: rawContract } = renderHook(
+      () => useRawContract<Psp22v6ContractApi>(psp22Metadata, contractAddress),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => {
       expect(rawContract.current.contract).toBeDefined();
@@ -88,7 +93,7 @@ describe('useContractTx', () => {
 
   it('should throw a lang error for invalid input', async () => {
     const { result: rawContract } = renderHook(
-      () => useRawContract<FlipperContractApi>(flipperMetadata, contractAddress),
+      () => useRawContract<Flipperv6ContractApi>(flipperMetadata, contractAddress),
       {
         wrapper,
       },

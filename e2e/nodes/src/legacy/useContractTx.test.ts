@@ -5,7 +5,7 @@ import { numberToHex } from 'dedot/utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContractTx, useRawContract } from 'typink';
 import { Psp22ContractApi } from './contracts/psp22';
-import { FlipperContractApi } from './contracts/flipper';
+import { FlipperV5ContractApi } from './contracts/flipper-v5';
 
 describe('useContractTx', () => {
   let contractAddress: string;
@@ -88,7 +88,7 @@ describe('useContractTx', () => {
 
   it('should throw a lang error for invalid input', async () => {
     const { result: rawContract } = renderHook(
-      () => useRawContract<FlipperContractApi>(flipperMetadata, contractAddress),
+      () => useRawContract<FlipperV5ContractApi>(flipperMetadata, contractAddress),
       {
         wrapper,
       },

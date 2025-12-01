@@ -3,13 +3,13 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer } from 'typink';
 import { flipperMetadata, wrapper } from './utils.js';
 import { ALICE, BOB } from '../shared';
-import { FlipperContractApi } from './contracts/flipper';
+import { Flipperv6ContractApi } from './contracts/flipperv6';
 import { generateRandomHex } from 'dedot/utils';
 
 describe('useDeployer', () => {
   it('should load deployer properly', async () => {
     const { result } = renderHook(
-      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.contract_binary!),
+      () => useDeployer<Flipperv6ContractApi>(flipperMetadata, flipperMetadata.source.contract_binary!),
       { wrapper },
     );
 

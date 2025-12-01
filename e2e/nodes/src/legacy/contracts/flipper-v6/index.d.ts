@@ -3,7 +3,7 @@
 import type { GenericSubstrateApi, RpcVersion, RpcV2 } from 'dedot/types';
 import type { InkGenericContractApi, WithLazyStorage } from 'dedot/contracts';
 import type { SubstrateApi } from 'dedot/chaintypes';
-import type { InkPrimitivesLangError, Psp22Token } from './types.js';
+import type { InkPrimitivesLangError, Flipper } from './types.js';
 import { ContractQuery } from './query.js';
 import { ContractTx } from './tx.js';
 import { ConstructorQuery } from './constructor-query.js';
@@ -13,30 +13,30 @@ import { ContractEvents } from './events.js';
 export * from './types.js';
 
 /**
- * @name: Psp22ContractApi
- * @contractName: psp22
- * @contractVersion: 2.0.0
- * @authors: Cardinal
- * @language: ink! 5.0.0
+ * @name: FlipperV6ContractApi
+ * @contractName: flipper
+ * @contractVersion: 6.0.0
+ * @authors: Parity Technologies <admin@parity.io>
+ * @language: ink! 6.0.0-alpha.3
  **/
-export interface Psp22ContractApi<
+export interface FlipperV6ContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends InkGenericContractApi<ChainApi> {
   metadataType: 'ink';
   query: ContractQuery<ChainApi, 'ink'>;
   tx: ContractTx<ChainApi, 'ink'>;
   constructorQuery: ConstructorQuery<ChainApi, 'ink'>;
-  constructorTx: ConstructorTx<ChainApi, Psp22ContractApi, 'ink'>;
+  constructorTx: ConstructorTx<ChainApi, FlipperV6ContractApi, 'ink'>;
   events: ContractEvents<ChainApi, 'ink'>;
   storage: {
-    root(): Promise<Psp22Token>;
-    lazy(): WithLazyStorage<Psp22Token>;
+    root(): Promise<Flipper>;
+    lazy(): WithLazyStorage<Flipper>;
   };
 
   types: {
     ChainApi: ChainApi;
-    RootStorage: Psp22Token;
-    LazyStorage: WithLazyStorage<Psp22Token>;
+    RootStorage: Flipper;
+    LazyStorage: WithLazyStorage<Flipper>;
     LangError: InkPrimitivesLangError;
   };
 }

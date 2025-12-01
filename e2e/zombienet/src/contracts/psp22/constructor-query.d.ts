@@ -8,10 +8,14 @@ import type {
   GenericConstructorCallResult,
   ConstructorCallOptions,
   ContractInstantiateResult,
+  MetadataType,
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends GenericConstructorQuery<ChainApi> {
+export interface ConstructorQuery<
+  ChainApi extends GenericSubstrateApi,
+  Type extends MetadataType,
+> extends GenericConstructorQuery<ChainApi, Type> {
   /**
    *
    * @param {bigint} supply
@@ -30,6 +34,7 @@ export interface ConstructorQuery<ChainApi extends GenericSubstrateApi> extends 
       symbol: string | undefined,
       decimals: number,
       options?: ConstructorCallOptions,
-    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult<ChainApi>>>
+    ) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult>>,
+    Type
   >;
 }

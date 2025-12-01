@@ -3,12 +3,12 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer } from 'typink';
 import { flipperMetadata, wrapper } from './utils.js';
 import { ALICE, BOB } from '../shared';
-import { FlipperContractApi } from './contracts/flipper';
+import { FlipperV5ContractApi } from './contracts/flipper-v5';
 
 describe('useDeployer', () => {
   it('should load deployer properly', async () => {
     const { result } = renderHook(
-      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
+      () => useDeployer<FlipperV5ContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
       { wrapper },
     );
 

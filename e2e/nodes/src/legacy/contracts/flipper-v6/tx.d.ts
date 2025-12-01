@@ -7,9 +7,13 @@ import type {
   GenericContractTxCall,
   ContractTxOptions,
   ContractSubmittableExtrinsic,
+  MetadataType,
 } from 'dedot/contracts';
 
-export interface ContractTx<ChainApi extends GenericSubstrateApi> extends GenericContractTx<ChainApi> {
+export interface ContractTx<ChainApi extends GenericSubstrateApi, Type extends MetadataType> extends GenericContractTx<
+  ChainApi,
+  Type
+> {
   /**
    * Flips the current value, value based on seed.
    *
@@ -20,7 +24,8 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi> extends Generi
    **/
   flipWithSeed: GenericContractTxCall<
     ChainApi,
-    (seed: Hash, options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
+    (seed: Hash, options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>,
+    Type
   >;
 
   /**
@@ -30,5 +35,5 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi> extends Generi
    *
    * @selector 0x633aa551
    **/
-  flip: GenericContractTxCall<ChainApi, (options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>>;
+  flip: GenericContractTxCall<ChainApi, (options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>, Type>;
 }
