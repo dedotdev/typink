@@ -8,10 +8,14 @@ import type {
   ContractCallOptions,
   GenericContractCallResult,
   ContractCallResult,
+  MetadataType,
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types.js';
 
-export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends GenericContractQuery<ChainApi> {
+export interface ContractQuery<
+  ChainApi extends GenericSubstrateApi,
+  Type extends MetadataType,
+> extends GenericContractQuery<ChainApi, Type> {
   /**
    *
    * @param {ContractCallOptions} options
@@ -20,7 +24,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22TotalSupply: GenericContractQueryCall<
     ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -32,10 +37,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22BalanceOf: GenericContractQueryCall<
     ChainApi,
-    (
-      owner: H160,
-      options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
+    (owner: H160, options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -52,7 +55,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       owner: H160,
       spender: H160,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<bigint, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -71,7 +75,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       value: bigint,
       data: BytesLike,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -92,7 +97,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       value: bigint,
       data: BytesLike,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -109,7 +115,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       spender: H160,
       value: bigint,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -126,7 +133,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       spender: H160,
       deltaValue: bigint,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -143,7 +151,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
       spender: H160,
       deltaValue: bigint,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -154,9 +163,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22MetadataTokenName: GenericContractQueryCall<
     ChainApi,
-    (
-      options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<string | undefined, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<string | undefined, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -167,9 +175,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22MetadataTokenSymbol: GenericContractQueryCall<
     ChainApi,
-    (
-      options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<string | undefined, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<string | undefined, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -180,7 +187,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    **/
   psp22MetadataTokenDecimals: GenericContractQueryCall<
     ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<number, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<number, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -195,6 +203,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
     (
       value: bigint,
       options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult<ChainApi>>>
+    ) => Promise<GenericContractCallResult<Result<[], Psp22ErrorsPsp22Error>, ContractCallResult>>,
+    Type
   >;
 }

@@ -32,5 +32,3 @@ export type Psp22ErrorsPsp22Error =
   | { type: 'ZeroRecipientAddress' }
   | { type: 'ZeroSenderAddress' }
   | { type: 'SafeTransferCheckFailed'; value: string };
-
-export type InkPrimitivesNoChainExtension = null;
