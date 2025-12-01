@@ -12,8 +12,10 @@ import type {
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ContractQuery<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
-  extends GenericContractQuery<ChainApi, Type> {
+export interface ContractQuery<
+  ChainApi extends GenericSubstrateApi,
+  Type extends MetadataType,
+> extends GenericContractQuery<ChainApi, Type> {
   /**
    * A message that can be called on instantiated contracts.
    * This one flips the value of the stored `bool` from `true`
@@ -25,7 +27,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi, Type extend
    **/
   flip: GenericContractQueryCall<
     ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<[], ContractCallResult<ChainApi>>>,
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<[], ContractCallResult>>,
     Type
   >;
 
@@ -38,7 +40,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi, Type extend
    **/
   get: GenericContractQueryCall<
     ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<boolean, ContractCallResult<ChainApi>>>,
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<boolean, ContractCallResult>>,
     Type
   >;
 }
