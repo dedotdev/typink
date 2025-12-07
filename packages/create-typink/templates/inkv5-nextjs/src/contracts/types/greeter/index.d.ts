@@ -23,11 +23,11 @@ export interface GreeterContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends InkGenericContractApi<ChainApi> {
   metadataType: 'ink';
-  query: ContractQuery<ChainApi, 'ink'>;
-  tx: ContractTx<ChainApi, 'ink'>;
-  constructorQuery: ConstructorQuery<ChainApi, 'ink'>;
-  constructorTx: ConstructorTx<ChainApi, GreeterContractApi, 'ink'>;
-  events: ContractEvents<ChainApi, 'ink'>;
+  query: ContractQuery<'ink'>;
+  tx: ContractTx<'ink'>;
+  constructorQuery: ConstructorQuery<'ink'>;
+  constructorTx: ConstructorTx<GreeterContractApi, 'ink'>;
+  events: ContractEvents<'ink'>;
   storage: {
     root(): Promise<Greeter>;
     lazy(): WithLazyStorage<Greeter>;

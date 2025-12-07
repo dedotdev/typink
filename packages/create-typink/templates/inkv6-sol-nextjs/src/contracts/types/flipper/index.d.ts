@@ -15,11 +15,11 @@ export interface FlipperContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends SolGenericContractApi<ChainApi> {
   metadataType: 'sol';
-  query: ContractQuery<ChainApi, 'sol'>;
-  tx: ContractTx<ChainApi, 'sol'>;
-  constructorQuery: ConstructorQuery<ChainApi, 'sol'>;
-  events: ContractEvents<ChainApi, 'sol'>;
-  constructorTx: ConstructorTx<ChainApi, FlipperContractApi, 'sol'>;
+  query: ContractQuery<'sol'>;
+  tx: ContractTx<'sol'>;
+  constructorQuery: ConstructorQuery<'sol'>;
+  events: ContractEvents<'sol'>;
+  constructorTx: ConstructorTx<FlipperContractApi, 'sol'>;
 
   types: {
     ChainApi: ChainApi;

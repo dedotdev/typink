@@ -15,11 +15,11 @@ export interface StorageContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends SolGenericContractApi<ChainApi> {
   metadataType: 'sol';
-  query: ContractQuery<ChainApi, 'sol'>;
-  tx: ContractTx<ChainApi, 'sol'>;
-  constructorQuery: ConstructorQuery<ChainApi, 'sol'>;
-  events: ContractEvents<ChainApi, 'sol'>;
-  constructorTx: ConstructorTx<ChainApi, StorageContractApi, 'sol'>;
+  query: ContractQuery<'sol'>;
+  tx: ContractTx<'sol'>;
+  constructorQuery: ConstructorQuery<'sol'>;
+  events: ContractEvents<'sol'>;
+  constructorTx: ConstructorTx<StorageContractApi, 'sol'>;
 
   types: {
     ChainApi: ChainApi;

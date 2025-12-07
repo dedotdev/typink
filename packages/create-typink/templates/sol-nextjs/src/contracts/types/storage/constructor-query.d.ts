@@ -10,15 +10,11 @@ import type {
   MetadataType,
 } from 'dedot/contracts';
 
-export interface ConstructorQuery<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericConstructorQuery<ChainApi, Type> {
+export interface ConstructorQuery<Type extends MetadataType> extends GenericConstructorQuery<Type> {
   /**
    * @param {ConstructorCallOptions} options
    **/
   new: GenericConstructorQueryCall<
-    ChainApi,
     (options?: ConstructorCallOptions) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult>>,
     Type
   >;
