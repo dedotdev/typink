@@ -16,7 +16,6 @@ import { useState, useMemo } from 'react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useTypink, useBalances, formatBalance } from 'typink';
 import { shortenAddress } from '@/utils/string.ts';
-import { PolkadotApi } from '@dedot/chaintypes';
 import AccountAvatar from './shared/AccountAvatar';
 
 interface RecipientSelectorProps {
@@ -40,7 +39,7 @@ export default function RecipientSelector({
   isDisabled = false,
   isInvalid = false,
 }: RecipientSelectorProps) {
-  const { accounts, connectedAccount, network } = useTypink<PolkadotApi>();
+  const { accounts, connectedAccount, network } = useTypink();
 
   // Get all accounts except the connected one
   const availableAccounts = useMemo(() => {

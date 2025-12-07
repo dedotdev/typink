@@ -2,10 +2,9 @@ import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakr
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
 import { useTypink, useTx, useTxFee, formatBalance, txToaster } from 'typink';
-import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
-  const { client, connectedAccount, network } = useTypink<PolkadotApi>();
+  const { client, connectedAccount, network } = useTypink();
   const [message, setMessage] = useState('Hello from Typink!');
 
   // Debounce message changes to avoid excessive fee calculations

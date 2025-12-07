@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useDeployer, useDeployerTx } from 'typink';
 import { flipperMetadata, wrapper } from '../utils.js';
-import { FlipperContractApi } from '../contracts/flipper/index.js';
+import { FlipperV5ContractApi } from '../contracts/flipper-v5/index.js';
 import { numberToHex } from 'dedot/utils';
 
 describe('useDeployerTx', () => {
   it('should load deployerTx properly', async () => {
     const { result: resultDeployer } = renderHook(
-      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
+      () => useDeployer<FlipperV5ContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
       { wrapper },
     );
 
@@ -30,7 +30,7 @@ describe('useDeployerTx', () => {
 
   it('should sign and send tx', async () => {
     const { result: resultDeployer } = renderHook(
-      () => useDeployer<FlipperContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
+      () => useDeployer<FlipperV5ContractApi>(flipperMetadata, flipperMetadata.source.wasm!),
       { wrapper },
     );
 

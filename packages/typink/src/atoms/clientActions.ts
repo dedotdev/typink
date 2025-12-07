@@ -15,10 +15,9 @@ import {
   NetworkInfo,
   validateProvider,
 } from '../types.js';
-import { DedotClient, ISubstrateClient, JsonRpcProvider, LegacyClient, SmoldotProvider, WsProvider } from 'dedot';
+import { DedotClient, JsonRpcProvider, SmoldotProvider, WsProvider } from 'dedot';
 import { startWithWorker } from 'dedot/smoldot/with-worker';
 import { type Chain, type Client } from 'smoldot';
-import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 
 // Global smoldot instances
 let smoldotClient: Client | null = null;
@@ -102,7 +101,7 @@ async function createClient(
   providerType: string | undefined,
   cacheMetadata: boolean,
   signer?: any,
-): Promise<CompatibleSubstrateApi> {
+): Promise<DedotClient> {
   const selectedProvider = validateProvider(providerType);
   let provider: JsonRpcProvider;
 
@@ -127,12 +126,9 @@ async function createClient(
   }
 
   // Create client based on API type
-  let client: ISubstrateClient<any>;
-  if (network.jsonRpcApi === JsonRpcApi.LEGACY) {
-    client = await LegacyClient.new({ provider, cacheMetadata });
-  } else {
-    client = await DedotClient.new({ provider, cacheMetadata });
-  }
+  const rpcVersion = network.jsonRpcApi === JsonRpcApi.LEGACY ? 'legacy' : 'v2';
+
+  const client = await DedotClient.new({ provider, cacheMetadata, rpcVersion });
 
   // Set signer if available
   if (signer) {
@@ -146,7 +142,7 @@ async function createClient(
  * Clean up a client and its resources
  */
 async function cleanupClient(
-  client: CompatibleSubstrateApi | undefined,
+  client: DedotClient | undefined,
   networkId: NetworkId,
   providerType?: string,
 ): Promise<void> {
@@ -286,18 +282,15 @@ export const cleanupAllClientsAtom = atom(null, async (get, set) => {
 });
 
 // Atomic update functions to prevent race conditions
-export const setNetworkClientAtom = atom(
-  null,
-  (get, set, networkId: NetworkId, client: CompatibleSubstrateApi | undefined) => {
-    const clientsMap = new Map(get(clientsMapAtom));
-    if (client) {
-      clientsMap.set(networkId, client);
-    } else {
-      clientsMap.delete(networkId);
-    }
-    set(clientsMapAtom, clientsMap);
-  },
-);
+export const setNetworkClientAtom = atom(null, (get, set, networkId: NetworkId, client: DedotClient | undefined) => {
+  const clientsMap = new Map(get(clientsMapAtom));
+  if (client) {
+    clientsMap.set(networkId, client);
+  } else {
+    clientsMap.delete(networkId);
+  }
+  set(clientsMapAtom, clientsMap);
+});
 
 export const removeNetworkStateAtom = atom(null, (get, set, networkId: NetworkId) => {
   const clientsMap = new Map(get(clientsMapAtom));

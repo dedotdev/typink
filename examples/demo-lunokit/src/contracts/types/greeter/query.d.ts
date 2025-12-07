@@ -8,10 +8,11 @@ import type {
   ContractCallOptions,
   GenericContractCallResult,
   ContractCallResult,
+  MetadataType,
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends GenericContractQuery<ChainApi> {
+export interface ContractQuery<Type extends MetadataType> extends GenericContractQuery<Type> {
   /**
    * Returns the current value of `message`.
    *
@@ -20,8 +21,8 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    * @selector 0x052cda08
    **/
   greet: GenericContractQueryCall<
-    ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<string, ContractCallResult<ChainApi>>>
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<string, ContractCallResult>>,
+    Type
   >;
 
   /**
@@ -33,10 +34,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi> extends Gen
    * @selector 0x1fe7426f
    **/
   setMessage: GenericContractQueryCall<
-    ChainApi,
-    (
-      newValue: string,
-      options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<[], ContractCallResult<ChainApi>>>
+    (newValue: string, options?: ContractCallOptions) => Promise<GenericContractCallResult<[], ContractCallResult>>,
+    Type
   >;
 }

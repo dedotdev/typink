@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ClientConnectionStatus, NetworkConnection, NetworkId, NetworkInfo, Props } from '../types.js';
-import { ISubstrateClient } from 'dedot';
+import { DedotClient } from 'dedot';
 import { SubstrateApi } from 'dedot/chaintypes';
-import { RpcVersion, VersionedGenericSubstrateApi } from 'dedot/types';
+import { GenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
 import { development } from '../networks/index.js';
 import {
@@ -30,12 +30,9 @@ import {
 import { finalEffectiveSignerAtom } from '../atoms/walletAtoms.js';
 import { useDeepDeps } from '../hooks/index.js';
 
-export type CompatibleSubstrateApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = // --
-  ISubstrateClient<ChainApi[RpcVersion]>;
-
-export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
+export interface ClientContextProps<ChainApi extends GenericSubstrateApi = SubstrateApi> {
   ready: boolean; // aggregated ready state when all clients are connected
-  client?: CompatibleSubstrateApi<ChainApi>; // primary client instance
+  client?: DedotClient<ChainApi>; // primary client instance
 
   network: NetworkInfo; // primary network info
   networkConnection: NetworkConnection; // primary network connection details
@@ -45,19 +42,17 @@ export interface ClientContextProps<ChainApi extends VersionedGenericSubstrateAp
   setNetwork: (connection: NetworkId | NetworkConnection) => void; // set primary connection
   setNetworks: (networks: (NetworkId | NetworkConnection)[]) => void; // set all network connections (primary first)
 
-  clients: Map<NetworkId, CompatibleSubstrateApi<ChainApi> | undefined>; // client instance per network id
+  clients: Map<NetworkId, DedotClient<ChainApi> | undefined>; // client instance per network id
   connectionStatus: Map<NetworkId, ClientConnectionStatus>; // connection status per network id
 
-  getClient: (networkId?: NetworkId) => CompatibleSubstrateApi<ChainApi> | undefined;
+  getClient: (networkId?: NetworkId) => DedotClient<ChainApi> | undefined;
   supportedNetworks: NetworkInfo[];
   cacheMetadata?: boolean;
 }
 
 export const ClientContext = createContext<ClientContextProps<any>>({} as any);
 
-export function useClient<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
->(): ClientContextProps<ChainApi> {
+export function useClient<ChainApi extends GenericSubstrateApi = SubstrateApi>(): ClientContextProps<ChainApi> {
   return useContext(ClientContext) as ClientContextProps<ChainApi>;
 }
 

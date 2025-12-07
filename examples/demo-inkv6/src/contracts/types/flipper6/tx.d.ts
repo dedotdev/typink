@@ -6,9 +6,10 @@ import type {
   GenericContractTxCall,
   ContractTxOptions,
   ContractSubmittableExtrinsic,
+  MetadataType,
 } from 'dedot/contracts';
 
-export interface ContractTx<ChainApi extends GenericSubstrateApi> extends GenericContractTx<ChainApi> {
+export interface ContractTx<Type extends MetadataType> extends GenericContractTx<Type> {
   /**
    * A message that can be called on instantiated contracts.
    * This one flips the value of the stored `bool` from `true`
@@ -18,5 +19,5 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi> extends Generi
    *
    * @selector 0x633aa551
    **/
-  flip: GenericContractTxCall<ChainApi, (options?: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>>;
+  flip: GenericContractTxCall<(options?: ContractTxOptions) => ContractSubmittableExtrinsic, Type>;
 }

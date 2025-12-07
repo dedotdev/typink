@@ -1,6 +1,6 @@
 import { ContractDeployment, development, InjectedSigner, Props, SignerPayloadJSON, TypinkProvider } from 'typink';
 import Keyring from '@polkadot/keyring';
-import { FlipperContractApi } from './contracts/flipper/index.js';
+import { FlipperV5ContractApi } from './contracts/flipper-v5/index.js';
 import { Psp22ContractApi } from './contracts/psp22/index.js';
 // @ts-ignore
 import flipperMetadata from './contracts/flipper_v5.json';
@@ -105,7 +105,7 @@ export const deployFlipperContract = async (salt?: string): Promise<string> => {
   const caller = alice.address;
 
   const wasm = flipperMetadata.source.wasm!;
-  const deployer = new ContractDeployer<FlipperContractApi>(client, flipperMetadata, wasm);
+  const deployer = new ContractDeployer<FlipperV5ContractApi>(client, flipperMetadata, wasm);
 
   // Dry-run to estimate gas fee
   const {

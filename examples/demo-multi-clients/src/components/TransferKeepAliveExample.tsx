@@ -2,7 +2,6 @@ import { Button, VStack, Input, Heading, Text, Spinner, Box, Flex } from '@chakr
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
 import { useTypink, useTx, useTxFee, useBalance, formatBalance, txToaster } from 'typink';
-import { PolkadotApi } from '@dedot/chaintypes';
 import RecipientSelector from './RecipientSelector';
 
 // Simple address validation helper
@@ -29,7 +28,7 @@ const parseAmount = (amountStr: string, decimals: number = 10): bigint | null =>
 };
 
 export default function TransferKeepAliveExample() {
-  const { client, connectedAccount, network } = useTypink<PolkadotApi>();
+  const { client, connectedAccount, network } = useTypink();
   const [recipient, setRecipient] = useState('');
   const [amountStr, setAmountStr] = useState('');
 

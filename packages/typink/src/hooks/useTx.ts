@@ -1,31 +1,27 @@
 import { useMemo, useState } from 'react';
 import { useTypink } from './useTypink.js';
 import {
+  GenericSubstrateApi,
   ISubmittableExtrinsic,
   ISubmittableResult,
   PayloadOptions,
-  RpcVersion,
   SignerOptions,
-  VersionedGenericSubstrateApi,
 } from 'dedot/types';
 import { SubstrateApi } from 'dedot/chaintypes';
 import { assert, deferred } from 'dedot/utils';
 import { withReadableErrorMessage } from '../utils/index.js';
 import { useDeepDeps } from './internal/index.js';
 import { checkBalanceSufficiency } from '../helpers/index.js';
-import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 // Import Args type from types.ts
 import type { Args, NetworkId, NetworkOptions } from '../types.js';
 import { usePolkadotClient } from './usePolkadotClient.js';
-
-// Get the actual ChainApi at runtime version
-export type RuntimeChainApi<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> = ChainApi[RpcVersion];
+import { DedotClient } from 'dedot';
 
 // Type for transaction builder callback that returns the transaction method (not called)
 export type TxBuilder<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  ChainApi extends GenericSubstrateApi = SubstrateApi,
   TxFn extends (...args: any[]) => ISubmittableExtrinsic<ISubmittableResult> = any,
-> = (tx: RuntimeChainApi<ChainApi>['tx']) => TxFn;
+> = (tx: ChainApi['tx']) => TxFn;
 
 // Helper type to infer TxFn from a TxBuilder function
 export type InferTxFn<T> = T extends TxBuilder<any, infer U> ? U : never;
@@ -75,7 +71,7 @@ export type UseTxReturnType<TxFn extends (...args: any[]) => ISubmittableExtrins
  *   - inBestBlockProgress: A boolean indicating if the transaction is being processed
  */
 export function useTx<
-  ChainApi extends VersionedGenericSubstrateApi = SubstrateApi,
+  ChainApi extends GenericSubstrateApi = SubstrateApi,
   TBuilder extends TxBuilder<ChainApi> = TxBuilder<ChainApi>,
 >(txBuilder: TBuilder, options?: NetworkOptions): UseTxReturnType<InferTxFn<TBuilder>> {
   const [inProgress, setInProgress] = useState(false);
@@ -158,7 +154,7 @@ export function useTx<
 }
 
 export async function generalTx(parameters: {
-  client: CompatibleSubstrateApi;
+  client: DedotClient;
   txBuilder: TxBuilder<any>;
   args?: any[];
   caller: string;

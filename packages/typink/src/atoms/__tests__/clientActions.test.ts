@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStore } from 'jotai';
 import {
-  initializeClientsAtom,
   cleanupAllClientsAtom,
-  setNetworkClientAtom,
-  removeNetworkStateAtom,
-  updateClientSignerAtom,
-  initializeSupportedNetworksAtom,
   initializeCacheMetadataAtom,
+  initializeClientsAtom,
+  initializeSupportedNetworksAtom,
+  removeNetworkStateAtom,
+  setNetworkClientAtom,
+  updateClientSignerAtom,
 } from '../clientActions.js';
 import {
   cacheMetadataAtom,
+  clientReadyAtom,
   clientsMapAtom,
   networkConnectionsAtom,
   supportedNetworksAtom,
-  clientReadyAtom,
 } from '../clientAtoms.js';
-import { finalEffectiveSignerAtom, externalSignerAtom } from '../walletAtoms.js';
-import { NetworkConnection, NetworkInfo, JsonRpcApi } from '../../types.js';
-import { CompatibleSubstrateApi } from '../../providers/ClientProvider.js';
+import { externalSignerAtom } from '../walletAtoms.js';
+import { JsonRpcApi, NetworkConnection, NetworkInfo } from '../../types.js';
+import { DedotClient } from 'dedot';
 
 // Mock dedot dependencies
 vi.mock('dedot', () => ({
@@ -95,19 +95,20 @@ describe('Client Actions', () => {
     },
   ];
 
-  const mockClient = (networkId: string, shouldFailDisconnect = false): CompatibleSubstrateApi => ({
-    disconnect: vi.fn().mockImplementation(async () => {
-      if (shouldFailDisconnect) {
-        throw new Error(`Disconnect failed for ${networkId}`);
-      }
-    }),
-    setSigner: vi.fn(),
-    provider: {
-      on: vi.fn(),
-      status: 'connected', // Mock status
-    },
-    _networkId: networkId, // For testing identification
-  } as unknown as CompatibleSubstrateApi);
+  const mockClient = (networkId: string, shouldFailDisconnect = false): DedotClient =>
+    ({
+      disconnect: vi.fn().mockImplementation(async () => {
+        if (shouldFailDisconnect) {
+          throw new Error(`Disconnect failed for ${networkId}`);
+        }
+      }),
+      setSigner: vi.fn(),
+      provider: {
+        on: vi.fn(),
+        status: 'connected', // Mock status
+      },
+      _networkId: networkId, // For testing identification
+    }) as unknown as DedotClient;
 
   const mockSigner = () => ({
     signRaw: vi.fn().mockResolvedValue({ id: 1, signature: '0xmock' }),
@@ -127,22 +128,22 @@ describe('Client Actions', () => {
   beforeEach(async () => {
     store = createStore();
     vi.clearAllMocks();
-    
+
     // Mock Worker for light client tests
     (global as any).Worker = vi.fn().mockImplementation(() => ({
       postMessage: vi.fn(),
       terminate: vi.fn(),
     }));
-    
+
     // Mock URL constructor
     (global as any).URL = vi.fn().mockImplementation((url) => ({ href: url }));
-    
+
     // Reset modules
     const dedotModule = await import('dedot');
     const smoldotModule = await import('dedot/smoldot/with-worker');
     const { DedotClient, LegacyClient, WsProvider, SmoldotProvider } = vi.mocked(dedotModule);
     const { startWithWorker } = vi.mocked(smoldotModule);
-    
+
     vi.mocked(DedotClient.new).mockClear();
     vi.mocked(LegacyClient.new).mockClear();
     vi.mocked(WsProvider).mockClear();
@@ -186,12 +187,12 @@ describe('Client Actions', () => {
     it('should remove client when undefined passed', () => {
       const client = mockClient('polkadot');
       store.set(setNetworkClientAtom, 'polkadot', client);
-      
+
       const clientsMap1 = store.get(clientsMapAtom);
       expect(clientsMap1.get('polkadot')).toBe(client);
 
       store.set(setNetworkClientAtom, 'polkadot', undefined);
-      
+
       const clientsMap2 = store.get(clientsMapAtom);
       expect(clientsMap2.has('polkadot')).toBe(false);
     });
@@ -199,7 +200,7 @@ describe('Client Actions', () => {
     it('should not affect other clients', () => {
       const polkadotClient = mockClient('polkadot');
       const kusamaClient = mockClient('kusama');
-      
+
       store.set(setNetworkClientAtom, 'polkadot', polkadotClient);
       store.set(setNetworkClientAtom, 'kusama', kusamaClient);
 
@@ -218,7 +219,7 @@ describe('Client Actions', () => {
     it('should remove network from clients map', () => {
       const polkadotClient = mockClient('polkadot');
       const kusamaClient = mockClient('kusama');
-      
+
       const initialMap = new Map();
       initialMap.set('polkadot', polkadotClient);
       initialMap.set('kusama', kusamaClient);
@@ -246,8 +247,6 @@ describe('Client Actions', () => {
   });
 
   describe('updateClientSignerAtom', () => {
-
-
     it('should handle empty clients map', () => {
       store.set(clientsMapAtom, new Map());
       store.set(externalSignerAtom, mockSigner());
@@ -260,16 +259,13 @@ describe('Client Actions', () => {
     it('should disconnect all clients and clear map', async () => {
       const polkadotClient = mockClient('polkadot');
       const kusamaClient = mockClient('kusama');
-      
+
       const clientsMap = new Map();
       clientsMap.set('polkadot', polkadotClient);
       clientsMap.set('kusama', kusamaClient);
       store.set(clientsMapAtom, clientsMap);
 
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
       await store.set(cleanupAllClientsAtom);
@@ -284,16 +280,13 @@ describe('Client Actions', () => {
     it('should handle client disconnect errors gracefully', async () => {
       const polkadotClient = mockClient('polkadot', true); // Will fail on disconnect
       const kusamaClient = mockClient('kusama');
-      
+
       const clientsMap = new Map();
       clientsMap.set('polkadot', polkadotClient);
       clientsMap.set('kusama', kusamaClient);
       store.set(clientsMapAtom, clientsMap);
 
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
       // Should not throw despite polkadot client failing
@@ -313,7 +306,7 @@ describe('Client Actions', () => {
     beforeEach(async () => {
       const dedotModule = vi.mocked(await import('dedot'));
       const smoldotModule = vi.mocked(await import('dedot/smoldot/with-worker'));
-      
+
       DedotClient = dedotModule.DedotClient;
       LegacyClient = dedotModule.LegacyClient;
       WsProvider = dedotModule.WsProvider;
@@ -350,6 +343,7 @@ describe('Client Actions', () => {
       });
       expect(DedotClient.new).toHaveBeenCalledWith({
         provider: expect.anything(),
+        rpcVersion: 'v2',
         cacheMetadata: false,
       });
 
@@ -358,9 +352,7 @@ describe('Client Actions', () => {
     });
 
     it('should initialize client with specific WS provider', async () => {
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot', provider: 'wss://custom.provider.test' }
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot', provider: 'wss://custom.provider.test' }];
       store.set(networkConnectionsAtom, connections);
 
       const mockClientInstance = mockClient('polkadot');
@@ -380,12 +372,13 @@ describe('Client Actions', () => {
       store.set(networkConnectionsAtom, connections);
 
       const mockClientInstance = mockClient('westend');
-      LegacyClient.new.mockResolvedValue(mockClientInstance);
+      DedotClient.new.mockResolvedValue(mockClientInstance);
 
       await store.set(initializeClientsAtom);
 
-      expect(LegacyClient.new).toHaveBeenCalledWith({
+      expect(DedotClient.new).toHaveBeenCalledWith({
         provider: expect.anything(),
+        rpcVersion: 'legacy',
         cacheMetadata: false,
       });
 
@@ -394,9 +387,7 @@ describe('Client Actions', () => {
     });
 
     it('should initialize light client when provider is light-client', async () => {
-      const connections: NetworkConnection[] = [
-        { networkId: 'light-chain', provider: 'light-client' }
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'light-chain', provider: 'light-client' }];
       store.set(networkConnectionsAtom, connections);
 
       const mockChain = mockSmoldotChain();
@@ -417,15 +408,12 @@ describe('Client Actions', () => {
       expect(SmoldotProvider).toHaveBeenCalledWith(mockChain);
     });
 
-
     it('should handle light client without chainSpec', async () => {
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot', provider: 'light-client' }
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot', provider: 'light-client' }];
       store.set(networkConnectionsAtom, connections);
 
       await expect(store.set(initializeClientsAtom)).rejects.toThrow(
-        'Network does not support light client - missing chainSpec'
+        'Network does not support light client - missing chainSpec',
       );
     });
 
@@ -442,7 +430,7 @@ describe('Client Actions', () => {
       const westendClient = mockClient('westend');
 
       DedotClient.new.mockResolvedValueOnce(polkadotClient as any).mockResolvedValueOnce(kusamaClient as any);
-      LegacyClient.new.mockResolvedValue(westendClient);
+      DedotClient.new.mockResolvedValue(westendClient);
 
       await store.set(initializeClientsAtom);
 
@@ -479,7 +467,7 @@ describe('Client Actions', () => {
       const polkadotClient = mockClient('polkadot');
       const kusamaClient = mockClient('kusama');
       const westendClient = mockClient('westend');
-      
+
       const existingMap = new Map();
       existingMap.set('polkadot', polkadotClient);
       existingMap.set('kusama', kusamaClient);
@@ -487,10 +475,7 @@ describe('Client Actions', () => {
       store.set(clientsMapAtom, existingMap);
 
       // Only initialize polkadot and kusama (westend should be cleaned up)
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
       const newPolkadotClient = mockClient('polkadot');
@@ -531,9 +516,7 @@ describe('Client Actions', () => {
       const error = new Error('Failed to create client');
       DedotClient.new.mockRejectedValue(error);
 
-      await expect(store.set(initializeClientsAtom)).rejects.toThrow(
-        'Failed to create client'
-      );
+      await expect(store.set(initializeClientsAtom)).rejects.toThrow('Failed to create client');
 
       const clientsMap = store.get(clientsMapAtom);
       expect(clientsMap.size).toBe(0);
@@ -564,21 +547,19 @@ describe('Client Actions', () => {
       expect(DedotClient.new).toHaveBeenCalledWith({
         provider: expect.anything(),
         cacheMetadata: true,
+        rpcVersion: 'v2',
       });
     });
   });
 
   describe('Integration with Client Atoms', () => {
     it('should update client ready state after initialization', async () => {
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
       const polkadotClient = mockClient('polkadot');
       const kusamaClient = mockClient('kusama');
-      
+
       const DedotClient = vi.mocked((await import('dedot')).DedotClient);
       DedotClient.new.mockResolvedValueOnce(polkadotClient as any).mockResolvedValueOnce(kusamaClient as any);
 
@@ -592,14 +573,11 @@ describe('Client Actions', () => {
     });
 
     it('should maintain not ready state when some clients fail to initialize', async () => {
-      const connections: NetworkConnection[] = [
-        { networkId: 'polkadot' },
-        { networkId: 'kusama' },
-      ];
+      const connections: NetworkConnection[] = [{ networkId: 'polkadot' }, { networkId: 'kusama' }];
       store.set(networkConnectionsAtom, connections);
 
       const polkadotClient = mockClient('polkadot');
-      
+
       const DedotClient = vi.mocked((await import('dedot')).DedotClient);
       DedotClient.new.mockResolvedValueOnce(polkadotClient as any).mockRejectedValueOnce(new Error('Kusama failed'));
 

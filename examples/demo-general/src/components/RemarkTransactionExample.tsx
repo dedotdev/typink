@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { formatBalance, setupTxToaster, txToaster, useTx, useTxFee, useTypink } from 'typink';
 import { getToastAdapter, toastLibraries, type ToastLibrary } from '@/utils/toastLibraries';
-import { PolkadotApi } from '@dedot/chaintypes';
 
 export default function RemarkTransactionExample() {
-  const { client, connectedAccount, network } = useTypink<PolkadotApi>();
+  const { client, connectedAccount, network } = useTypink();
   const [message, setMessage] = useState('Hello from Typink!');
   const [selectedLibrary, setSelectedLibrary] = useState<ToastLibrary>('sonner');
 

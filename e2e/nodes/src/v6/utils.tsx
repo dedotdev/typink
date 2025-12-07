@@ -1,10 +1,10 @@
 import { KeyringPair } from '@polkadot/keyring/types';
 import { Contract, ContractDeployer, toEvmAddress } from 'dedot/contracts';
 import { generateRandomHex } from 'dedot/utils';
-import { FlipperContractApi } from './contracts/flipper';
+import { Flipperv6ContractApi } from './contracts/flipperv6';
 import flipperV6Metadata from './contracts/flipperv6.json';
-import { ContractDeployment, development, JsonRpcApi, Props, TypinkProvider } from 'typink';
-import { Psp22ContractApi } from './contracts/psp22/index.js';
+import { ContractDeployment, development, Props, TypinkProvider } from 'typink';
+import { Psp22v6ContractApi } from './contracts/psp22v6/index.js';
 import psp22V6Metadata from './contracts/psp22v6.json';
 import { ALICE, devPairs, mockSigner } from '../shared';
 import { INK_NODE_ENDPOINT } from '../setup';
@@ -19,7 +19,7 @@ export const deployFlipperContract = async (): Promise<string> => {
   const caller = alice.address;
 
   const contractBinary = flipperMetadata.source.contract_binary!;
-  const deployer = new ContractDeployer<FlipperContractApi>(reviveClient, flipperMetadata, contractBinary);
+  const deployer = new ContractDeployer<Flipperv6ContractApi>(reviveClient, flipperMetadata, contractBinary);
 
   const salt = generateRandomHex();
 
@@ -48,7 +48,7 @@ export const deployPsp22Contract = async (): Promise<string> => {
   const caller = alice.address;
 
   const contractBinary = psp22Metadata.source.contract_binary!;
-  const deployer = new ContractDeployer<Psp22ContractApi>(reviveClient, psp22Metadata, contractBinary);
+  const deployer = new ContractDeployer<Psp22v6ContractApi>(reviveClient, psp22Metadata, contractBinary);
 
   const salt = generateRandomHex();
 
@@ -126,7 +126,7 @@ export const transferNativeBalance = async (from: KeyringPair, to: string, value
 export const mintPSP22Balance = async (psp22Address: string, pair: KeyringPair, amount: bigint): Promise<void> => {
   console.log('[mintPSP22Balance]', psp22Address, pair.address, amount);
 
-  const contract = new Contract<Psp22ContractApi>(reviveClient, psp22Metadata, psp22Address, {
+  const contract = new Contract<Psp22v6ContractApi>(reviveClient, psp22Metadata, psp22Address, {
     defaultCaller: pair.address,
   });
 

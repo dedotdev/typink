@@ -1,24 +1,24 @@
 import { useMemo } from 'react';
 import { useTypink } from './useTypink.js';
 import { ClientConnectionStatus, NetworkId, NetworkInfo } from '../types.js';
-import { CompatibleSubstrateApi } from '../providers/ClientProvider.js';
 import { SubstrateApi } from 'dedot/chaintypes';
-import { VersionedGenericSubstrateApi } from 'dedot/types';
+import { GenericSubstrateApi } from 'dedot/types';
 import { assert } from 'dedot/utils';
+import { DedotClient } from 'dedot';
 
-interface UsePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi> {
-  client?: CompatibleSubstrateApi<ChainApi> | undefined;
+interface UsePolkadotClient<ChainApi extends GenericSubstrateApi = SubstrateApi> {
+  client?: DedotClient<ChainApi> | undefined;
   status: ClientConnectionStatus;
   network: NetworkInfo;
 }
 /**
  * A React hook for accessing a specific client by network ID.
  *
- * @template ChainApi - The type of the chain API, extending VersionedGenericSubstrateApi
+ * @template ChainApi - The type of the chain API, extending GenericSubstrateApi
  * @param {NetworkId} [networkId] - The network ID to get the client for. If not provided, returns the primary client.
- * @returns {CompatibleSubstrateApi<ChainApi> | undefined} The client instance for the specified network, or undefined if not found
+ * @returns {DedotClient<ChainApi> | undefined} The client instance for the specified network, or undefined if not found
  */
-export function usePolkadotClient<ChainApi extends VersionedGenericSubstrateApi = SubstrateApi>(
+export function usePolkadotClient<ChainApi extends GenericSubstrateApi = SubstrateApi>(
   networkId?: NetworkId,
 ): UsePolkadotClient<ChainApi> {
   const { getClient, networks, connectionStatus } = useTypink<ChainApi>();

@@ -10,14 +10,16 @@ import type {
   MetadataType,
 } from 'dedot/contracts';
 
-export interface ContractQuery<ChainApi extends GenericSubstrateApi, Type extends MetadataType>
-  extends GenericContractQuery<ChainApi, Type> {
+export interface ContractQuery<
+  ChainApi extends GenericSubstrateApi,
+  Type extends MetadataType,
+> extends GenericContractQuery<ChainApi, Type> {
   /**
    * @param {ContractCallOptions} options
    **/
   retrieve: GenericContractQueryCall<
     ChainApi,
-    (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult<ChainApi>>>,
+    (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult>>,
     Type
   >;
 
@@ -27,10 +29,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi, Type extend
    **/
   store: GenericContractQueryCall<
     ChainApi,
-    (
-      num: bigint,
-      options?: ContractCallOptions,
-    ) => Promise<GenericContractCallResult<[], ContractCallResult<ChainApi>>>,
+    (num: bigint, options?: ContractCallOptions) => Promise<GenericContractCallResult<[], ContractCallResult>>,
     Type
   >;
 }

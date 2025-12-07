@@ -2,9 +2,9 @@
 
 import type { GenericSubstrateApi } from 'dedot/types';
 import type { AccountId32 } from 'dedot/codecs';
-import type { GenericContractEvent, GenericContractEvents } from 'dedot/contracts';
+import type { GenericContractEvents, GenericContractEvent, MetadataType } from 'dedot/contracts';
 
-export interface ContractEvents<ChainApi extends GenericSubstrateApi> extends GenericContractEvents<ChainApi> {
+export interface ContractEvents<Type extends MetadataType> extends GenericContractEvents<Type> {
   /**
    * Event emitted when allowance by `owner` to `spender` changes.
    *
@@ -31,7 +31,8 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi> extends Ge
        * @indexed: false
        **/
       amount: bigint;
-    }
+    },
+    Type
   >;
 
   /**
@@ -60,6 +61,7 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi> extends Ge
        * @indexed: false
        **/
       value: bigint;
-    }
+    },
+    Type
   >;
 }

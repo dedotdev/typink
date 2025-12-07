@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { deployPsp22Contract, psp22Metadata, wrapper } from './utils.js';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useRawContract } from 'typink';
-import { Psp22ContractApi } from './contracts/psp22';
+import { Psp22v6ContractApi } from './contracts/psp22v6';
 import { toEvmAddress } from 'dedot/contracts';
 
 describe('useRawContract', () => {
@@ -13,9 +13,12 @@ describe('useRawContract', () => {
   });
 
   it('should initialize contract instance successfully', async () => {
-    const { result: rawContract } = renderHook(() => useRawContract<Psp22ContractApi>(psp22Metadata, contractAddress), {
-      wrapper,
-    });
+    const { result: rawContract } = renderHook(
+      () => useRawContract<Psp22v6ContractApi>(psp22Metadata, contractAddress),
+      {
+        wrapper,
+      },
+    );
 
     await waitFor(() => {
       expect(rawContract.current.contract).toBeDefined();
@@ -24,7 +27,7 @@ describe('useRawContract', () => {
   });
 
   it('should return undefined contract when address is missing', () => {
-    const { result } = renderHook(() => useRawContract<Psp22ContractApi>(psp22Metadata, undefined), {
+    const { result } = renderHook(() => useRawContract<Psp22v6ContractApi>(psp22Metadata, undefined), {
       wrapper,
     });
 
@@ -32,7 +35,7 @@ describe('useRawContract', () => {
   });
 
   it('should return undefined contract when metadata is missing', () => {
-    const { result } = renderHook(() => useRawContract<Psp22ContractApi>(undefined, contractAddress), {
+    const { result } = renderHook(() => useRawContract<Psp22v6ContractApi>(undefined, contractAddress), {
       wrapper,
     });
 
@@ -40,10 +43,13 @@ describe('useRawContract', () => {
   });
 
   it('should update contract instance when address changes', async () => {
-    const { result, rerender } = renderHook(({ address }) => useRawContract<Psp22ContractApi>(psp22Metadata, address), {
-      wrapper,
-      initialProps: { address: contractAddress },
-    });
+    const { result, rerender } = renderHook(
+      ({ address }) => useRawContract<Psp22v6ContractApi>(psp22Metadata, address),
+      {
+        wrapper,
+        initialProps: { address: contractAddress },
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.contract).toBeDefined();

@@ -2,12 +2,12 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { ContractId, deployFlipperContract, flipperMetadata, newDeployment, wrapperFn } from './utils.js';
 import { ALICE, BOB } from '../shared';
 import { Contract } from 'dedot/contracts';
-import { FlipperContractApi } from './contracts/flipper';
+import { Flipperv6ContractApi } from './contracts/flipperv6';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useContract } from 'typink';
 
 describe('useContract', () => {
-  let contractAddress: string, contract: Contract<FlipperContractApi>;
+  let contractAddress: string, contract: Contract<Flipperv6ContractApi>;
   beforeAll(async () => {
     contractAddress = await deployFlipperContract();
     console.log('Deployed contract address', contractAddress);
@@ -22,7 +22,7 @@ describe('useContract', () => {
   });
 
   it('should initialize contract instance successfully', async () => {
-    const { result } = renderHook(() => useContract<FlipperContractApi>(ContractId.FLIPPER), {
+    const { result } = renderHook(() => useContract<Flipperv6ContractApi>(ContractId.FLIPPER), {
       wrapper: wrapperFn([newDeployment(ContractId.FLIPPER, contractAddress)]),
     });
 

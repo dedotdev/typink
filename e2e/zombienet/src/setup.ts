@@ -8,7 +8,7 @@ beforeAll(async () => {
   global.client = await DedotClient.new(new WsProvider(CONTRACTS_NODE_ENDPOINT));
 
   return new Promise((resolve) => {
-    global.client.chainHead.on('finalizedBlock', (x: PinnedBlock) => {
+    global.client.block.finalized((x) => {
       console.log('Current finalized block number:', x.number);
 
       if (x.number > 0) {
