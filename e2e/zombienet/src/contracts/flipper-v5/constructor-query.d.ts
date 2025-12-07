@@ -12,10 +12,7 @@ import type {
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError, FlipperFlipperError } from './types.js';
 
-export interface ConstructorQuery<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericConstructorQuery<ChainApi, Type> {
+export interface ConstructorQuery<Type extends MetadataType> extends GenericConstructorQuery<Type> {
   /**
    * Creates a new flipper smart contract initialized with the given value.
    *
@@ -25,7 +22,6 @@ export interface ConstructorQuery<
    * @selector 0x9bae9d5e
    **/
   new: GenericConstructorQueryCall<
-    ChainApi,
     (
       initValue: boolean,
       options?: ConstructorCallOptions,
@@ -41,7 +37,6 @@ export interface ConstructorQuery<
    * @selector 0x61ef7e3e
    **/
   newDefault: GenericConstructorQueryCall<
-    ChainApi,
     (options?: ConstructorCallOptions) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult>>,
     Type
   >;
@@ -55,7 +50,6 @@ export interface ConstructorQuery<
    * @selector 0x6d4cae81
    **/
   fromSeed: GenericConstructorQueryCall<
-    ChainApi,
     (
       seed: Hash,
       options?: ConstructorCallOptions,

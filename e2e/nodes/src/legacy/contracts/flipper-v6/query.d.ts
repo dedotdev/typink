@@ -12,10 +12,7 @@ import type {
 } from 'dedot/contracts';
 import type { FlipperFlipperError, InkPrimitivesLangError } from './types.js';
 
-export interface ContractQuery<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericContractQuery<ChainApi, Type> {
+export interface ContractQuery<Type extends MetadataType> extends GenericContractQuery<Type> {
   /**
    * Flips the current value, value based on seed.
    *
@@ -25,7 +22,6 @@ export interface ContractQuery<
    * @selector 0x847d0968
    **/
   flipWithSeed: GenericContractQueryCall<
-    ChainApi,
     (
       seed: Hash,
       options?: ContractCallOptions,
@@ -41,7 +37,6 @@ export interface ContractQuery<
    * @selector 0x633aa551
    **/
   flip: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<[], ContractCallResult>>,
     Type
   >;
@@ -54,7 +49,6 @@ export interface ContractQuery<
    * @selector 0x2f865bd9
    **/
   get: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<boolean, ContractCallResult>>,
     Type
   >;

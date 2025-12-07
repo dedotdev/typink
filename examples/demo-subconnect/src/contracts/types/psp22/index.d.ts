@@ -23,11 +23,11 @@ export interface Psp22ContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends InkGenericContractApi<ChainApi> {
   metadataType: 'ink';
-  query: ContractQuery<ChainApi, 'ink'>;
-  tx: ContractTx<ChainApi, 'ink'>;
-  constructorQuery: ConstructorQuery<ChainApi, 'ink'>;
-  constructorTx: ConstructorTx<ChainApi, Psp22ContractApi, 'ink'>;
-  events: ContractEvents<ChainApi, 'ink'>;
+  query: ContractQuery<'ink'>;
+  tx: ContractTx<'ink'>;
+  constructorQuery: ConstructorQuery<'ink'>;
+  constructorTx: ConstructorTx<Psp22ContractApi, 'ink'>;
+  events: ContractEvents<'ink'>;
   storage: {
     root(): Promise<Psp22Token>;
     lazy(): WithLazyStorage<Psp22Token>;

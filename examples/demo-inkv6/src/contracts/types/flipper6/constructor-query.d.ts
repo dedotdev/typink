@@ -12,10 +12,7 @@ import type {
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError } from './types.js';
 
-export interface ConstructorQuery<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericConstructorQuery<ChainApi, Type> {
+export interface ConstructorQuery<Type extends MetadataType> extends GenericConstructorQuery<Type> {
   /**
    * Constructor that initializes the `bool` value to the given `init_value`.
    *
@@ -25,7 +22,6 @@ export interface ConstructorQuery<
    * @selector 0x9bae9d5e
    **/
   new: GenericConstructorQueryCall<
-    ChainApi,
     (
       initValue: boolean,
       options?: ConstructorCallOptions,
@@ -43,7 +39,6 @@ export interface ConstructorQuery<
    * @selector 0xed4b9d1b
    **/
   default: GenericConstructorQueryCall<
-    ChainApi,
     (options?: ConstructorCallOptions) => Promise<GenericConstructorCallResult<[], ContractInstantiateResult>>,
     Type
   >;

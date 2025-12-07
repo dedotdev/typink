@@ -23,11 +23,11 @@ export interface Flipperv6ContractApi<
   ChainApi extends GenericSubstrateApi = SubstrateApi,
 > extends InkGenericContractApi<ChainApi> {
   metadataType: 'ink';
-  query: ContractQuery<ChainApi, 'ink'>;
-  tx: ContractTx<ChainApi, 'ink'>;
-  constructorQuery: ConstructorQuery<ChainApi, 'ink'>;
-  constructorTx: ConstructorTx<ChainApi, Flipperv6ContractApi, 'ink'>;
-  events: ContractEvents<ChainApi, 'ink'>;
+  query: ContractQuery<'ink'>;
+  tx: ContractTx<'ink'>;
+  constructorQuery: ConstructorQuery<'ink'>;
+  constructorTx: ConstructorTx<Flipperv6ContractApi, 'ink'>;
+  events: ContractEvents<'ink'>;
   storage: {
     root(): Promise<Flipper>;
     lazy(): WithLazyStorage<Flipper>;

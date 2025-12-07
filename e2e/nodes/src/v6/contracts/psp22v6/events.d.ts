@@ -4,10 +4,7 @@ import type { GenericSubstrateApi } from 'dedot/types';
 import type { H160 } from 'dedot/codecs';
 import type { GenericContractEvents, GenericContractEvent, MetadataType } from 'dedot/contracts';
 
-export interface ContractEvents<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericContractEvents<ChainApi, Type> {
+export interface ContractEvents<Type extends MetadataType> extends GenericContractEvents<Type> {
   /**
    * Event emitted when allowance by `owner` to `spender` changes.
    *

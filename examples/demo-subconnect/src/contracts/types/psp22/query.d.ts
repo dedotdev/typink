@@ -12,10 +12,7 @@ import type {
 } from 'dedot/contracts';
 import type { InkPrimitivesLangError, Psp22ErrorsPsp22Error } from './types.js';
 
-export interface ContractQuery<
-  ChainApi extends GenericSubstrateApi,
-  Type extends MetadataType,
-> extends GenericContractQuery<ChainApi, Type> {
+export interface ContractQuery<Type extends MetadataType> extends GenericContractQuery<Type> {
   /**
    *
    * @param {ContractCallOptions} options
@@ -23,7 +20,6 @@ export interface ContractQuery<
    * @selector 0x162df8c2
    **/
   psp22TotalSupply: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<bigint, ContractCallResult>>,
     Type
   >;
@@ -36,7 +32,6 @@ export interface ContractQuery<
    * @selector 0x6568382f
    **/
   psp22BalanceOf: GenericContractQueryCall<
-    ChainApi,
     (
       owner: AccountId32Like,
       options?: ContractCallOptions,
@@ -53,7 +48,6 @@ export interface ContractQuery<
    * @selector 0x4d47d921
    **/
   psp22Allowance: GenericContractQueryCall<
-    ChainApi,
     (
       owner: AccountId32Like,
       spender: AccountId32Like,
@@ -72,7 +66,6 @@ export interface ContractQuery<
    * @selector 0xdb20f9f5
    **/
   psp22Transfer: GenericContractQueryCall<
-    ChainApi,
     (
       to: AccountId32Like,
       value: bigint,
@@ -93,7 +86,6 @@ export interface ContractQuery<
    * @selector 0x54b3c76e
    **/
   psp22TransferFrom: GenericContractQueryCall<
-    ChainApi,
     (
       from: AccountId32Like,
       to: AccountId32Like,
@@ -113,7 +105,6 @@ export interface ContractQuery<
    * @selector 0xb20f1bbd
    **/
   psp22Approve: GenericContractQueryCall<
-    ChainApi,
     (
       spender: AccountId32Like,
       value: bigint,
@@ -131,7 +122,6 @@ export interface ContractQuery<
    * @selector 0x96d6b57a
    **/
   psp22IncreaseAllowance: GenericContractQueryCall<
-    ChainApi,
     (
       spender: AccountId32Like,
       deltaValue: bigint,
@@ -149,7 +139,6 @@ export interface ContractQuery<
    * @selector 0xfecb57d5
    **/
   psp22DecreaseAllowance: GenericContractQueryCall<
-    ChainApi,
     (
       spender: AccountId32Like,
       deltaValue: bigint,
@@ -165,7 +154,6 @@ export interface ContractQuery<
    * @selector 0x3d261bd4
    **/
   psp22MetadataTokenName: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<string | undefined, ContractCallResult>>,
     Type
   >;
@@ -177,7 +165,6 @@ export interface ContractQuery<
    * @selector 0x34205be5
    **/
   psp22MetadataTokenSymbol: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<string | undefined, ContractCallResult>>,
     Type
   >;
@@ -189,7 +176,6 @@ export interface ContractQuery<
    * @selector 0x7271b782
    **/
   psp22MetadataTokenDecimals: GenericContractQueryCall<
-    ChainApi,
     (options?: ContractCallOptions) => Promise<GenericContractCallResult<number, ContractCallResult>>,
     Type
   >;
@@ -202,7 +188,6 @@ export interface ContractQuery<
    * @selector 0xfc3c75d4
    **/
   psp22MintableMint: GenericContractQueryCall<
-    ChainApi,
     (
       value: bigint,
       options?: ContractCallOptions,
