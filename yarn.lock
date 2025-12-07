@@ -12652,9 +12652,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.15.0":
-  version: 2.15.0
-  resolution: "jotai@npm:2.15.0"
+"jotai@npm:^2.15.1":
+  version: 2.15.1
+  resolution: "jotai@npm:2.15.1"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -12669,7 +12669,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/d05469caf6b8e67110c835c1a4cade2e5b36c3b2baa7cbcbbff1fbdb6949c1a819d1d8bd77d47cf3d806ef3576324dc979bbd2589eee70a9f0d7c01145dcd0a1
+  checksum: 10/d346ded947768ba36ca70e8a55262281802bdb7ef2b14bc783a14c6a80c5a7e1bfcda6bf3ba4a747953c73dad8a8d205b2e0f57fa73e436a6188ecade5c6191b
   languageName: node
   linkType: hard
 
@@ -17818,7 +17818,7 @@ __metadata:
     "@types/react": "npm:^19.1.1"
     "@vitest/ui": "npm:^3.2.4"
     fast-deep-equal: "npm:^3.1.3"
-    jotai: "npm:^2.15.0"
+    jotai: "npm:^2.15.1"
     jsdom: "npm:^25.0.1"
     react: "npm:^19.1.1"
     react-dom: "npm:^19.1.1"
