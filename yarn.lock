@@ -3342,20 +3342,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luno-kit/ui@npm:^0.0.8":
-  version: 0.0.8
-  resolution: "@luno-kit/ui@npm:0.0.8"
+"@luno-kit/ui@npm:^0.0.9":
+  version: 0.0.9
+  resolution: "@luno-kit/ui@npm:0.0.9"
   dependencies:
     "@radix-ui/react-dialog": "npm:^1.0.5"
     clsx: "npm:^2.1.0"
     cuer: "npm:0.0.2"
     tailwind-merge: "npm:^2.2.1"
   peerDependencies:
-    "@luno-kit/react": 0.0.8
+    "@luno-kit/react": 0.0.9
     "@tanstack/react-query": ">=5.0.0"
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 10/397fd4fe5b30fc81fed9e798f3bda13707c720afeacef764e88dda0b619b310f297e2fa9c6a7b4d73d524378b0b2eb35abce52e7e503f3d32877d1b3f98dad0f
+  checksum: 10/94472bed55b2eea3bfba6e3a71144136f1a72838eae5372a91caa0513426ffd1239217c1363e4c9bcb0db4bdad4336adae62435b7cada974fccb718be5900bbd
   languageName: node
   linkType: hard
 
@@ -9205,7 +9205,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.0"
     "@esbuild-plugins/node-globals-polyfill": "npm:^0.2.3"
     "@luno-kit/react": "npm:^0.0.8"
-    "@luno-kit/ui": "npm:^0.0.8"
+    "@luno-kit/ui": "npm:^0.0.9"
     "@tanstack/react-query": "npm:5.81.5"
     "@types/react": "npm:^19.1.1"
     "@types/react-dom": "npm:^19.1.1"
